@@ -23,7 +23,6 @@ def new_company(
             telephone = new_company_data.telephone,
             email = new_company_data.email,
             type = "admin",
-            role_id=[],
             password = new_company_data.password,
             status = True,
         )

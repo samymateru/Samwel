@@ -1,7 +1,7 @@
 from pydantic_core import Url
 from pydantic import BaseModel, EmailStr, HttpUrl
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from pydantic_core import Url
 
@@ -32,6 +32,7 @@ class NewCompany(BaseModel):
     status: Optional[bool] = True
     type: UserType = UserType.ADMINISTRATOR
     password: str
+    module_id: List[int]
 
 class UpdateCompany(BaseModel):
     company_id: int

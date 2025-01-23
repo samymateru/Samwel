@@ -31,7 +31,6 @@ def create_new_user(
         db = Depends(get_db_connection),
         current_user: CurrentUser  = Depends(get_current_user)
     ):
-    print(user)
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     if current_user.type != "admin":

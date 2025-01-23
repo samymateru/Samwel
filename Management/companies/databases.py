@@ -9,8 +9,8 @@ from datetime import datetime
 
 def create_new_company(connection: Connection, company_data: NewCompany) -> int:
     query_insert = """
-        INSERT INTO public.companies (name, owner, email, telephone, website, description, status, created_at) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        INSERT INTO public.companies (name, owner, email, telephone, website, description, status, module_id, created_at) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     query_check = "SELECT 1 FROM public.companies WHERE email = %s"
 
@@ -30,6 +30,7 @@ def create_new_company(connection: Connection, company_data: NewCompany) -> int:
                 company_data.website,
                 company_data.description,
                 company_data.status,
+                company_data.module_id,
                 datetime.now()
             ))
             connection.commit()
