@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="initial commit" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;samymateru&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/samymateru/EGARC-Backend.git",
+    "accountId": "4742c2cc-18a7-4817-8e2d-15eb8e488e3d"
+  }
+}]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/AuditNew/engagement_profile/routes.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2pKwUw3Jtxqb2hKprpw5pP058Wj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.database.executor": "Run",
+    "Python.databases.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.roles.executor": "Run",
+    "Python.routes.executor": "Run",
+    "Python.schemas.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.utils.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "settings.editor.selected.configurable": "project.propVCSSupport.CommitDialog"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone" />
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\Management" />
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\Internal" />
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\features" />
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\routers" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-fb887030ada0-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.21565.199" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="" />
+      <created>1732528093482</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1732528093482</updated>
+    </task>
+    <task id="LOCAL-00001" summary="inital commit">
+      <option name="closed" value="true" />
+      <created>1732628695534</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1732628695534</updated>
+    </task>
+    <task id="LOCAL-00002" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1732734915492</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1732734915492</updated>
+    </task>
+    <task id="LOCAL-00003" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1732734934022</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1732734934022</updated>
+    </task>
+    <task id="LOCAL-00004" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1733130211037</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1733130211037</updated>
+    </task>
+    <task id="LOCAL-00005" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1733204097472</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1733204097472</updated>
+    </task>
+    <task id="LOCAL-00006" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1733216023592</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1733216023593</updated>
+    </task>
+    <task id="LOCAL-00007" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1733490708597</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1733490708597</updated>
+    </task>
+    <task id="LOCAL-00008" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1735204036907</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1735204036907</updated>
+    </task>
+    <task id="LOCAL-00009" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1735204676473</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1735204676473</updated>
+    </task>
+    <task id="LOCAL-00010" summary="refactoring code">
+      <option name="closed" value="true" />
+      <created>1737031306832</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1737031306832</updated>
+    </task>
+    <task id="LOCAL-00011" summary="adding git  ignore">
+      <option name="closed" value="true" />
+      <created>1737089491539</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1737089491539</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Adding tags">
+      <option name="closed" value="true" />
+      <created>1737102052934</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1737102052934</updated>
+    </task>
+    <task id="LOCAL-00013" summary="adding admin auth">
+      <option name="closed" value="true" />
+      <created>1737363570014</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1737363570014</updated>
+    </task>
+    <task id="LOCAL-00014" summary="refactor">
+      <option name="closed" value="true" />
+      <created>1737566309818</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1737566309818</updated>
+    </task>
+    <task id="LOCAL-00015" summary="initial commit">
+      <option name="closed" value="true" />
+      <created>1737608582032</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1737608582032</updated>
+    </task>
+    <task id="LOCAL-00016" summary="initial commit">
+      <option name="closed" value="true" />
+      <created>1737608697411</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737608697411</updated>
+    </task>
+    <task id="LOCAL-00017" summary="initial commit">
+      <option name="closed" value="true" />
+      <created>1737609026372</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1737609026372</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="inital commit" />
+    <MESSAGE value="refactoring code" />
+    <MESSAGE value="adding git  ignore" />
+    <MESSAGE value="Adding tags" />
+    <MESSAGE value="adding admin auth" />
+    <MESSAGE value="refactor" />
+    <MESSAGE value="initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Management/role_permissions/databases.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
