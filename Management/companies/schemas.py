@@ -28,11 +28,10 @@ class NewCompany(BaseModel):
     email: EmailStr
     telephone: str
     website:  str
-    description: Optional[str] = None
+    password: str
+    entity_type: str
     status: Optional[bool] = True
     type: UserType = UserType.ADMINISTRATOR
-    password: str
-    module_id: List[int]
 
 class UpdateCompany(BaseModel):
     company_id: int

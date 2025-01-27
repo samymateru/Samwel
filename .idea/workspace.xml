@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="initial commit" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding annual plans and fixing login issue" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,7 +28,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
-    "url": "https://github.com/samymateru/EGARC-Backend.git",
+    "url": "https://github.com/samymateru/Backend.git",
     "accountId": "4742c2cc-18a7-4817-8e2d-15eb8e488e3d"
   }
 }]]></component>
@@ -50,7 +50,7 @@
   "keyToString": {
     "Python.database.executor": "Run",
     "Python.databases.executor": "Run",
-    "Python.main.executor": "Run",
+    "Python.main.executor": "Debug",
     "Python.roles.executor": "Run",
     "Python.routes.executor": "Run",
     "Python.schemas.executor": "Run",
@@ -225,7 +225,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737609026372</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="adding annual plans and fixing login issue">
+      <option name="closed" value="true" />
+      <created>1737963923559</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1737963923559</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -259,7 +267,8 @@
     <MESSAGE value="adding admin auth" />
     <MESSAGE value="refactor" />
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value="adding annual plans and fixing login issue" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding annual plans and fixing login issue" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
