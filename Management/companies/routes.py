@@ -24,6 +24,7 @@ def new_company(
             email = new_company_data.email,
             type = "admin",
             password = new_company_data.password,
+            module_id=new_company_data.module_id,
             status = True,
         )
         user_database.create_new_user(db, user_data, company_id)

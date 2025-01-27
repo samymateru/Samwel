@@ -11,7 +11,7 @@ from Management.roles import databases as roles_database
 def create_new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
                INSERT INTO public.users (company_id, name, telephone, email,
-               type, role_id, password_hash, status, module_id, created_at) 
+               type, role_id, module_id, password_hash, status, created_at) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                """
     try:
@@ -29,9 +29,9 @@ def create_new_user(connection: Connection, user_data: NewUser, company_id: int)
                                    user_data.email,
                                    user_data.type,
                                    user_data.role_id,
+                                   user_data.module_id,
                                    generate_hash_password(user_data.password),
                                    user_data.status,
-                                   user_data.module_id,
                                    datetime.now()
                                ))
                 connection.commit()

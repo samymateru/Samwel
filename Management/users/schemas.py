@@ -2,6 +2,9 @@ from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 from typing import Optional, List
 
+from pygments.lexer import default
+
+
 class User(BaseModel):
     name: str
     telephone: str
@@ -21,11 +24,13 @@ class NewUser(BaseModel):
     name: str
     email: EmailStr
     role_id: List[int] = Field(default=[])
+    module_id: List[int] | int = Field(default=1)
     telephone: Optional[str] = None
     type: Optional[str] = Field(default="user")
     password: Optional[str] = Field(default="1234")
-    module_id: int = Field(default=0)
     status: Optional[bool] = True
+
+
 
 class DeleteUser(BaseModel):
     id: str

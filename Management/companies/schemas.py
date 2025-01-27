@@ -30,6 +30,7 @@ class NewCompany(BaseModel):
     website:  str
     password: str
     entity_type: str
+    module_id: List[int]
     status: Optional[bool] = True
     type: UserType = UserType.ADMINISTRATOR
 
