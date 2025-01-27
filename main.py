@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Response
+from fastapi import FastAPI, Depends, HTTPException, Response, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from AuditNew.Internal.audit_logs.routes import router as audit_logs_router
@@ -51,10 +51,9 @@ app.add_middleware(
 
 @app.post("/login", tags=["Authentication"])
 def users(
-          form_data: OAuth2PasswordRequestForm = Depends(),
+          email: str = Form(...),
+          password: str = Form(...),
           db: Connection = Depends(get_db_connection)):
-    email: str = form_data.username
-    password: str = form_data.password
     user_data: List[Dict] = get_user(db, column="email", value=email)
     if len(user_data) == 0:
         return HTTPException(status_code=405, detail="User doesn't exists")
@@ -78,11 +77,11 @@ def users(
 
 app.include_router(companies_router, tags=["Company"])
 app.include_router(users_router,tags=["User"])
+app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
 
 
 # app.include_router(modules_router, tags=["Modules"])
 # app.include_router(roles_router, tags=["Roles"])
-# app.include_router(annual_plans_router, tags=["Annual Plans"])
 # app.include_router(engagements_router, tags=["Engagements"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)
@@ -97,4 +96,4 @@ app.include_router(users_router,tags=["User"])
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 from utils import  get_db_connection
 from AuditNew.Internal.annual_plans import databases
 from AuditNew.Internal.annual_plans.schemas import *
@@ -34,16 +34,25 @@ def get_annual_plans(
 
 @router.post("/new_annual_plan")
 def create_new_annual_plan(
-        annual_plan: NewAnnualPlan,
+        name: str = Form(...),
+        year: str = Form(...),
+        start: datetime = Form(...),
+        end: datetime = Form(...),
+        file: UploadFile = File(...),
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    pass
-
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        return HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        # databases.create_new_annual_plan(db, new_annual_plan)
+        annual_audit_plan = NewAnnualPlan(
+            name=name,
+            year=year,
+            start=start,
+            end=end,
+            file=file.filename
+        )
+        databases.create_new_annual_plan(db, annual_audit_plan=annual_audit_plan, company_id=user.company_id)
         return {"detail": "Annual plan successfully created", "status_code": 501}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

@@ -11,12 +11,11 @@ class AnnualPlansStatus(str, Enum):
 class NewAnnualPlan(BaseModel):
     name: str
     year: Optional[str] = datetime.now().year
+    status: AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+    file: str
     created_at: Optional[datetime] = datetime.now()
-    status:  AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED
-    description: Optional[str] = None
-    audit_type: str = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
 
 class DeleteAnnualPlan(BaseModel):
     plan_id: List[int]

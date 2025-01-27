@@ -2,19 +2,26 @@ from fastapi import HTTPException
 from psycopg2.extensions import cursor as Cursor
 from psycopg2.extensions import connection as Connection
 from typing import List, Tuple, Dict
-from AuditNew.Internal.annual_plans.schemas import UpdateAnnualPlan
+from AuditNew.Internal.annual_plans.schemas import *
 from datetime import datetime
 
-def create_new_annual_plan(connection: Connection, annual_plan_data: Tuple) -> None:
+def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualPlan, company_id: int) -> None:
     query = """
-               INSERT INTO public.annual_plan (name, year, company_id, created_by, created_at, updated_at, status,
-               description, audit_type, start_date, end_date) 
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-               """
+                INSERT INTO public.annual_plans (company_id, name, year, status, start, "end", created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, annual_plan_data)
+            cursor.execute(query, (
+                company_id,
+                annual_audit_plan.name,
+                annual_audit_plan.year,
+                annual_audit_plan.status,
+                annual_audit_plan.start,
+                annual_audit_plan.end,
+                datetime.now()
+            ))
         connection.commit()
     except Exception as e:
         connection.rollback()
