@@ -98,12 +98,12 @@ def get_modules(connection: Connection, column: str = None, value: str = None, r
         print(f"Error querying modules {e}")
         raise HTTPException(status_code=400, detail="Error querying modules")
 
-def get_active_modules(connection: Connection, company_id: int):
-    query = "SELECT * FROM public.modules WHERE company_id = %s AND status = TRUE"
+def get_active_modules(connection: Connection, module_ids: List[int]):
+    query = "SELECT * FROM public.modules WHERE id = ANY(%s);"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (company_id,))
+            cursor.execute(query, (module_ids,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from datetime import datetime
 from utils import generate_hash_password
 from Management.roles import databases as roles_database
+from Management.modules import  databases as module_databases
 
 def create_new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
@@ -132,6 +133,11 @@ def get_user(connection: Connection, column: str = None, value: str | int = None
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
+            modules = module_databases.get_active_modules(connection, data[0].get("module_id"))
+            for i in data:
+                i["modules"] = modules
+                if "module_id" in i:
+                    del i["module_id"]
             return data
     except Exception as e:
         connection.rollback()

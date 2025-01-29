@@ -14,7 +14,6 @@ class User(BaseModel):
     role_id: List[int]
     module_id: List[int]
     id: int
-    company_id: int
     created_at: datetime
 
 class Role(BaseModel):
@@ -53,3 +52,8 @@ class AddRole(BaseModel):
 class RemoveRole(BaseModel):
     role_id: int
     user_id: int
+
+class ChangePassword(BaseModel):
+    email: EmailStr
+    old: str
+    new: str

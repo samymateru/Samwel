@@ -126,3 +126,10 @@ def remove_role(
         return {"detail": "role remove successfully", "status_code": 503}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/change_password")
+def delete_user(
+        user: ChangePassword,
+        db = Depends(get_db_connection),
+    ):
+    pass
