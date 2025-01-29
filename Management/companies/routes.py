@@ -51,7 +51,7 @@ def get_company(
     try:
         company_data: List[Dict] = databases.get_companies(db, column="id", value=current_user.company_id)
         if company_data.__len__() == 0:
-            return {"detail": "no company available", "status_code": 300}
+            return {"payload": [], "status_code": 200}
         return {"payload": company_data[0], "status_code": 200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
