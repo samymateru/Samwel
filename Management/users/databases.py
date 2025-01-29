@@ -132,9 +132,6 @@ def get_user(connection: Connection, column: str = None, value: str | int = None
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-            for i in data:
-                roles = roles_database.get_user_roles(connection, i.get("role_id"))
-                i["roles"] = roles  # Add the roles to the current row dictionary
             return data
     except Exception as e:
         connection.rollback()

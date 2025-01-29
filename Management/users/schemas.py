@@ -12,6 +12,7 @@ class User(BaseModel):
     email: str
     status: str
     role_id: List[int]
+    module_id: List[int]
     id: int
     company_id: int
     created_at: datetime
