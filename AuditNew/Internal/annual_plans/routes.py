@@ -24,7 +24,7 @@ def get_annual_plans(
         # print(matching_dicts)
         # for i in matching_dicts:
         #     if i.get("read"):
-        annual_plans_data: List[Dict] = databases.get_annual_plans(db)
+        annual_plans_data: List[Dict] = databases.get_annual_plans(db, column="company_id", value=current_user.company_id)
         if annual_plans_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": annual_plans_data, "status_code": 200}
