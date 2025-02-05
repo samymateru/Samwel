@@ -18,17 +18,16 @@ def get_annual_plans(
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        role_ids: List[int] = user_database.get_user(db, column="id", value=1)[0].get("role_id")
-        user_roles: List[Dict] = role_database.get_user_roles(db, role_ids)
-        matching_dicts = [d for d in user_roles if d.get("category") == "AnnualPlan"]
-        print(matching_dicts)
-        for i in matching_dicts:
-            if i.get("read"):
-                annual_plans_data: List[Dict] = databases.get_annual_plans(db)
-                if annual_plans_data.__len__() == 0:
-                    return {"message": "no annual plans available", "status_code": 100}
-                return {"payload": annual_plans_data, "status_code": 200}
-        return HTTPException(status_code=205, detail="Permission denied")
+        # role_ids: List[int] = user_database.get_user(db, column="id", value=1)[0].get("role_id")
+        # user_roles: List[Dict] = role_database.get_user_roles(db, role_ids)
+        # matching_dicts = [d for d in user_roles if d.get("category") == "AnnualPlan"]
+        # print(matching_dicts)
+        # for i in matching_dicts:
+        #     if i.get("read"):
+        annual_plans_data: List[Dict] = databases.get_annual_plans(db)
+        if annual_plans_data.__len__() == 0:
+            return {"payload": [], "status_code": 200}
+        return {"payload": annual_plans_data, "status_code": 200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
