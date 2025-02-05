@@ -7,8 +7,8 @@ from datetime import datetime
 
 def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualPlan, company_id: int) -> None:
     query = """
-                INSERT INTO public.annual_plans (company_id, name, year, status, start, "end", created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO public.annual_plans (company_id, name, year, status, start, "end" "attachment", created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
     try:
         with connection.cursor() as cursor:
@@ -20,6 +20,7 @@ def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualP
                 annual_audit_plan.status,
                 annual_audit_plan.start,
                 annual_audit_plan.end,
+                annual_audit_plan.file,
                 datetime.now()
             ))
         connection.commit()
