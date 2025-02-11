@@ -1,31 +1,35 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.schemas import UpdateEngagement, NewEngagement
+import json
 
-def create_new_engagement(connection: Connection, engagement_data: NewEngagement, annual_plan_id: str):
+def create_new_engagement(connection: Connection, engagement_data: NewEngagement, plan_id: str, code: str):
     query = """
-                INSERT INTO public.engagement (annual_plan_id, engagement_name, engagement_risk,
-                 engagement_type, template_id, engagement_status, engagement_phase, quarter, start_date, end_date,
-                 created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO public.engagements (plan_id, code, name, risk, type, status, leads, stage, department,
+                sub_departments, quarter, start_date, end_date, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
     try:
         with connection.cursor() as cursor:
-            print(str(engagement_data.engagement_phase))
+            print(json.dumps(engagement_data.department.model_dump()))
             cursor: Cursor
             cursor.execute(query,
                            (
-                               annual_plan_id,
-                               engagement_data.engagement_name,
-                               engagement_data.engagement_risk,
-                               engagement_data.engagement_type,
-                               engagement_data.template_id,
-                               engagement_data.engagement_status,
-                               engagement_data.engagement_phase,
-                               engagement_data.quarter,
-                               engagement_data.start_date,
-                               engagement_data.end_date,
+                               plan_id,
+                               code,
+                               engagement_data.engagementName,
+                               json.dumps(engagement_data.engagementRisk.model_dump()),
+                               engagement_data.engagementType,
+                               engagement_data.status,
+                               json.dumps(engagement_data.model_dump().get("engagementLead")),
+                               engagement_data.stage,
+                               json.dumps(engagement_data.department.model_dump()),
+                               json.dumps(engagement_data.sub_departments),
+                               engagement_data.plannedQuarter,
+                               engagement_data.startDate,
+                               engagement_data.endDate,
                                engagement_data.created_at
                            ))
         connection.commit()
@@ -143,3 +147,18 @@ def get_engagements(connection: Connection, column: str = None, value: str = Non
         connection.rollback()
         print(f"Error querying engagements {e}")
         raise HTTPException(status_code=400, detail="Error querying engagements")
+
+def get_engagement_code(connection: Connection, annual_plan_id: str):
+    query = "SELECT code FROM public.engagements WHERE plan_id = %s;"
+
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (annual_plan_id,))
+            id_ = cursor.fetchall()
+            if id_ is None:
+                return []
+            return id_
+    except Exception as e:
+        print(f"error ${e}")
+        return []

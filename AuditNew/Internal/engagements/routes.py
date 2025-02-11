@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from utils import  get_db_connection
 from AuditNew.Internal.engagements import databases
@@ -27,16 +29,23 @@ def get_engagements(
 
 @router.post("/new_engagement/{annual_id}")
 def create_new_engagement(
-        annual_id: str,
+        annual_id: int,
         engagement: NewEngagement,
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        # current_user: CurrentUser  = Depends(get_current_user)
     ):
-    print(annual_id)
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    print(engagement.department.code)
+    eng: str | int = databases.get_engagement_code(db, str(annual_id))
+    # if current_user.status_code != 200:
+    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    max_ = 0
     try:
-        databases.create_new_engagement(db, engagement, annual_id)
+        for data in eng:
+            if engagement.department.code == data[0].split("-")[0]:
+                if int(data[0].split("-")[1]) >= max_:
+                    max_ = int(data[0].split("-")[1])
+        code: str = engagement.department.code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
+        databases.create_new_engagement(db, engagement, str(annual_id), code=code)
         return {"detail": "engagement successfully created", "status_code": 501}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

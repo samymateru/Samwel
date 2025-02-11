@@ -82,7 +82,7 @@ app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
 
 # app.include_router(modules_router, tags=["Modules"])
 # app.include_router(roles_router, tags=["Roles"])
-# app.include_router(engagements_router, tags=["Engagements"])
+app.include_router(engagements_router, tags=["Engagements"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)
 # app.include_router(audit_logs_router)
