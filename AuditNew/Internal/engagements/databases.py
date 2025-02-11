@@ -26,7 +26,7 @@ def create_new_engagement(connection: Connection, engagement_data: NewEngagement
                                json.dumps(engagement_data.model_dump().get("engagementLead")),
                                engagement_data.stage,
                                json.dumps(engagement_data.department.model_dump()),
-                               json.dumps(engagement_data.sub_departments),
+                               json.dumps(engagement_data.sub_department),
                                engagement_data.plannedQuarter,
                                engagement_data.startDate,
                                engagement_data.endDate,

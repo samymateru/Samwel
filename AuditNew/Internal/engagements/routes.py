@@ -32,12 +32,12 @@ def create_new_engagement(
         annual_id: int,
         engagement: NewEngagement,
         db = Depends(get_db_connection),
-        # current_user: CurrentUser  = Depends(get_current_user)
+        current_user: CurrentUser  = Depends(get_current_user)
     ):
     print(engagement.department.code)
     eng: str | int = databases.get_engagement_code(db, str(annual_id))
-    # if current_user.status_code != 200:
-    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     max_ = 0
     try:
         for data in eng:

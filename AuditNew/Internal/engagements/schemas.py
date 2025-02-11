@@ -49,7 +49,7 @@ class NewEngagement(BaseModel):
     engagementLead: List[Lead]
     plannedQuarter: str
     department: Department
-    sub_departments: List[str]
+    sub_department: List[str]
     status: EngagementStatus = EngagementStatus.NOT_STARTED
     stage: EngagementStage = EngagementStage.NOT_STARTED
     startDate: datetime = None
