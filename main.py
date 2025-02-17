@@ -25,6 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from schema import CurrentUser
 from Management.users import databases as user_database
 from Management.roles import databases as role_database
+from Management.companies.databases import  get_companies
 
 from Management.templates.databases import *
 from fastapi.responses import RedirectResponse
@@ -64,11 +65,13 @@ def users(
             "company_id": user_data[0].get("company_id"),
             "type": user_data[0].get("type")
         }
+        company_name = get_companies(db, column="id", value=user_data[0].get("company_id"), row="name")[0].get("name")
         token: str = create_jwt_token(user)
         user: dict = {
             "id": user_data[0].get("id"),
             "name": user_data[0].get("name"),
             "email": user_data[0].get("email"),
+            "company_name": company_name,
             "type": user_data[0].get("type")
         }
         return {"token": token, "token_type": "bearer", "status_code": 203, "detail": "login success", "content": user}

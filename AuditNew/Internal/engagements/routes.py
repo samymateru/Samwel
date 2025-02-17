@@ -20,9 +20,9 @@ def get_engagements(
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        engagement_data: List[Dict] = databases.get_engagements(db, row=list(Engagement.model_fields.keys()), column="annual_plan_id", value=annual_id)
+        engagement_data: List[Dict] = databases.get_engagements(db, column="plan_id", value=annual_id)
         if engagement_data.__len__() == 0:
-            return {"detail": "no engagement available", "status_code": 100}
+            return {"payload": [], "status_code": 200}
         return {"payload": engagement_data, "status_code":200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

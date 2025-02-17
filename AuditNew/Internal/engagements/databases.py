@@ -131,7 +131,7 @@ def delete_engagements(connection: Connection, engagement_id: List[int]):
 
 
 def get_engagements(connection: Connection, column: str = None, value: str = None, row: List[str] = None ) -> List[Dict]:
-    query = "SELECT * FROM public.engagement "
+    query = "SELECT * FROM public.engagements "
     if row:
         query = f"SELECT {" ,".join(row)} FROM public.engagement "
     if column and value:
