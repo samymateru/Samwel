@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from utils import get_db_connection
 from Management.companies.schemas import *
 from typing import Tuple, List, Dict
@@ -7,7 +7,7 @@ from Management.users import databases as user_database
 from schema import CurrentUser
 from utils import generate_hash_password, get_current_user
 from Management.companies import databases
-from Management.users.schemas import NewUser
+from Management.users.schemas import *
 
 router = APIRouter(prefix="/companies")
 
@@ -22,7 +22,7 @@ def new_company(
             name = new_company_data.owner,
             telephone = new_company_data.telephone,
             email = new_company_data.email,
-            type = "admin",
+            type = "owner",
             password = new_company_data.password,
             module_id=new_company_data.module_id,
             status = True,
@@ -55,3 +55,32 @@ def get_company(
         return {"payload": company_data[0], "status_code": 200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.get("/setup")
+def get_resource(
+        db = Depends(get_db_connection),
+        #current_user: CurrentUser  = Depends(get_current_user),
+        resource: ResourceTypes = Query()
+    ):
+    # if current_user.status_code != 200:
+    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    try:
+        resource_data = databases.get_resource(db, resource.value, column="company_id", value="1")
+        if resource_data.__len__() == 0:
+            return {"payload": [], "status_code": 200}
+        return {"payload": resource_data, "status_code": 200}
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.post("/setup")
+def add_resource(
+        resource: Resource,
+        db = Depends(get_db_connection),
+        #current_user: CurrentUser  = Depends(get_current_user),
+
+    ):
+    # if current_user.status_code != 200:
+    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    print(resource)

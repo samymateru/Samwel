@@ -10,6 +10,22 @@ class UserType(str, Enum):
     ADMINISTRATOR = "administrator",
     USER = "user"
 
+class ResourceTypes(str, Enum):
+    RISK_RATING = "risk_rating",
+    BUSINESS_PROCESS = "business_process"
+    SUB_PROCESS = "sub_process",
+    RISK_TYPE = "risk_type",
+    ROOT_CAUSE_CATEGORY = "root_cause_category",
+    CONTROL_TYPE = "control_type",
+    IMPACT_CATEGORY_RATING = "impact_category_rating"
+    CONTROL_EFFECTIVE_RATING = "control_effective_rating",
+    CONTROL_WEAKNESS_RATING = "control_weakness_rating",
+    AUDIT_OPINION_RATING = "audit_opinion_rating",
+    RISK_MATURITY_RATING = "risk_maturity_rating",
+    ISSUE_IMPLEMENTATION_STATUS = "issue_implementation_status",
+    EXTENDED_TESTING = "extended_testing",
+    ISSUE_SOURCE = "issue_source",
+
 
 class Company(BaseModel):
     name: str
@@ -31,7 +47,7 @@ class NewCompany(BaseModel):
     password: str
     entity_type: str
     module_id: List[int]
-    status: Optional[bool] = True
+    status: Optional[str] = "setup"
     type: UserType = UserType.ADMINISTRATOR
 
 class UpdateCompany(BaseModel):
@@ -43,4 +59,7 @@ class UpdateCompany(BaseModel):
     telephone: Optional[str] = None
     website: Optional[str] = None
 
+class Resource(BaseModel):
+    resource: ResourceTypes
+    name: str
 
