@@ -3,7 +3,7 @@ from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
-from Management.companies.schemas import UpdateCompany, NewCompany
+from Management.companies.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
 from Management.modules import  databases as module_databases
@@ -14,7 +14,6 @@ def create_new_company(connection: Connection, company_data: NewCompany) -> int:
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     query_check = "SELECT 1 FROM public.companies WHERE email = %s"
-
     try:
         with connection.cursor(cursor_factory=RealDictCursor) as cursor:
             # Check if the company already exists
@@ -166,5 +165,34 @@ def get_resource(connection: Connection, resource: str, column: str = None, valu
             return data
     except Exception as e:
         connection.rollback()
-        print(f"Error querying resource {resource} {e}")
-        raise HTTPException(status_code=400, detail="Error querying resource")
+        print(f"Error querying  {resource} {e}")
+        raise HTTPException(status_code=400, detail=f"Error querying {resource}")
+
+#################################################################
+def add_business_process(connection: Connection, business_process: BusinessProcess, company_id: str):
+    query: str = f"INSERT INTO public.business_process (name, code, company) VALUES(%s, %s, %s)"
+    try:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(query, (
+                business_process.name,business_process.code,
+                company_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        print(f"Error creating business process {e}")
+        raise HTTPException(status_code=400, detail="Error creating business process")
+
+def add_business_sub_process(connection: Connection, business_sub_process: BusinessSubProcess, business_process_id: str):
+    query: str = f"INSERT INTO public.business_sub_process (name, business_process) VALUES(%s, %s)"
+    try:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(query, (
+                business_sub_process.name,
+                business_process_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        print(f"Error creating business sub process {e}")
+        raise HTTPException(status_code=400, detail="Error creating business sub process")

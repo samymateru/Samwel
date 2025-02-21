@@ -57,30 +57,64 @@ def get_company(
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/setup")
+@router.get("/resource")
 def get_resource(
         db = Depends(get_db_connection),
-        #current_user: CurrentUser  = Depends(get_current_user),
+        current_user: CurrentUser  = Depends(get_current_user),
         resource: ResourceTypes = Query()
     ):
-    # if current_user.status_code != 200:
-    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        resource_data = databases.get_resource(db, resource.value, column="company_id", value="1")
+        resource_data = databases.get_resource(db, resource.value, column="company", value=current_user.company_id)
         if resource_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": resource_data, "status_code": 200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-
-@router.post("/setup")
-def add_resource(
-        resource: Resource,
+@router.get("/sub_resource")
+def get_sub_resource(
         db = Depends(get_db_connection),
         #current_user: CurrentUser  = Depends(get_current_user),
-
+        resource: SubResourceTypes = Query()
     ):
     # if current_user.status_code != 200:
     #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    print(resource)
+    try:
+        resource_data = databases.get_resource(db, resource.value, column="company", value="3")
+        if resource_data.__len__() == 0:
+            return {"payload": [], "status_code": 200}
+        return {"payload": resource_data, "status_code": 200}
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/business_process")
+def add_business_process(
+        business_process: BusinessProcess,
+        db = Depends(get_db_connection),
+        current_user: CurrentUser  = Depends(get_current_user),
+    ):
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    try:
+        databases.add_business_process(db, business_process, str(current_user.company_id))
+        return {"detail": "Business process added successfully", "status_code": 501}
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/business_sub_process/{business_process_id}")
+def add_business_sub_process(
+        business_process_id: str,
+        business_sub_process: BusinessSubProcess,
+        db = Depends(get_db_connection),
+        current_user: CurrentUser  = Depends(get_current_user),
+
+    ):
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    try:
+        databases.add_business_sub_process(db, business_sub_process, business_process_id)
+        return {"detail": "Business sub process added successfully", "status_code": 501}
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=e.detail)
