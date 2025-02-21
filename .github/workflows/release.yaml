@@ -1,0 +1,29 @@
+name: Deploy FastAPI to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your repository code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Deploy via SSH to your EC2 instance
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd /home/${{ secrets.EC2_USER }}/project/Backend
+            git pull origin main
+            sudo systemctl restart backend.service
+
