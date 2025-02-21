@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
     yield
     from utils import connection_pool
     connection_pool.closeall()
-    print("Database connection pool closed.")
+    print("Database connection pool closed")
 
 app = FastAPI(lifespan=lifespan)
 
