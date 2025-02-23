@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding work flows">
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding workflows yaml">
       <change beforePath="$PROJECT_DIR$/.github/workflows/release.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/release.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
@@ -308,7 +308,23 @@
       <option name="project" value="LOCAL" />
       <updated>1740140460383</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="adding workflows yaml">
+      <option name="closed" value="true" />
+      <created>1740141603434</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1740141603434</updated>
+    </task>
+    <task id="LOCAL-00029" summary="adding workflows yaml">
+      <option name="closed" value="true" />
+      <created>1740141956926</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1740141956926</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -349,7 +365,8 @@
     <MESSAGE value="fixing upload file issue" />
     <MESSAGE value="fixing business process" />
     <MESSAGE value="adding work flows" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding work flows" />
+    <MESSAGE value="adding workflows yaml" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding workflows yaml" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
