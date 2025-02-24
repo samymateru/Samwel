@@ -1,9 +1,9 @@
-name: Deploy to Server
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to the branch you want to trigger deployment
 
 jobs:
   deploy:
@@ -11,9 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-          - name: Add SSH known hosts
-              run: |
-            ssh-keyscan -H 18.212.87.23 >> ~/.ssh/known_hosts
+        uses: actions/checkout@v4
 
-      
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 18.212.87.23 >> ~/.ssh/known_hosts
+
+      - name: Connect to EC2 and Run Commands
+        run: |
+          ssh -i ~/.ssh/id_rsa ubuntu@18.212.87.23 "echo 'Connected to EC2 successfully!'"

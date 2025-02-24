@@ -134,3 +134,11 @@ def add_business_sub_process(
         return {"detail": "Business sub process added successfully", "status_code": 501}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/positions")
+def get_members(
+        db=Depends(get_db_connection),
+        current_user: CurrentUser = Depends(get_current_user)
+):
+    pass
+
