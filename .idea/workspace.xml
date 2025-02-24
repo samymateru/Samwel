@@ -9,6 +9,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,14 +94,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00002" summary="refactoring code">
-      <option name="closed" value="true" />
-      <created>1732734915492</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1732734915492</updated>
     </task>
     <task id="LOCAL-00003" summary="refactoring code">
       <option name="closed" value="true" />
@@ -486,7 +479,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740385112363</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="adding workflows yaml">
+      <option name="closed" value="true" />
+      <created>1740386871296</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1740386871297</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -173,7 +173,7 @@ def get_sub_resource(connection: Connection, resource: str, column: str = None, 
     if row:
         query = f"SELECT {row} FROM public.{resource} "
     if column and value:
-        query += f"WHERE  ({column}).id = %s"
+        query += f"WHERE  {column}_ = %s"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor

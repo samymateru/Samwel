@@ -12,9 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Add SSH known hosts
-          run: |
+          - name: Add SSH known hosts
+              run: |
             ssh-keyscan -H 18.212.87.23 >> ~/.ssh/known_hosts
 
       
