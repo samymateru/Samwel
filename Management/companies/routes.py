@@ -104,6 +104,21 @@ def add_business_process(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.get("/business_process")
+def add_business_process(
+        db = Depends(get_db_connection),
+        current_user: CurrentUser  = Depends(get_current_user),
+    ):
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    try:
+        data = databases.get_business_process(db, column="company", value=current_user.company_id)
+        if data.__len__() == 0:
+            return {"payload":[], "status_code": 200}
+        return {"payload": data, "status_code": 200}
+    except HTTPException as e:
+        return HTTPException(status_code=e.status_code, detail=e.detail)
+
 @router.post("/business_sub_process/{business_process_id}")
 def add_business_sub_process(
         business_process_id: str,

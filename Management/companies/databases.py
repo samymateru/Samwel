@@ -1,3 +1,4 @@
+import json
 from typing import Tuple, List, Dict
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
@@ -7,7 +8,7 @@ from Management.companies.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
 from Management.modules import  databases as module_databases
-
+from collections import defaultdict
 def create_new_company(connection: Connection, company_data: NewCompany) -> int:
     query_insert = """
         INSERT INTO public.companies (name, owner, email, telephone, website, entity_type, module_id, status, created_at) 
@@ -186,6 +187,51 @@ def get_sub_resource(connection: Connection, resource: str, column: str = None, 
         connection.rollback()
         print(f"Error querying  {resource} {e}")
         raise HTTPException(status_code=400, detail=f"Error querying {resource}")
+
+
+
+def get_business_process(connection: Connection, column: str = None, value: str = None, row: str = None) -> List[Dict]:
+    datax = []
+    sub =[]
+    query = """
+            SELECT * FROM public.business_process INNER JOIN public.business_sub_process
+            ON public.business_process.id = public.business_sub_process.business_sub_process_
+            """
+    if row:
+        query = f"SELECT {row} FROM public.business_process "
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            # Extract unique process names with codes
+            process_set = {(item["process_name"], item["code"]) for item in data}
+
+            # Step 2: Group sub-processes under their respective process
+            sub_process_dict = defaultdict(list)
+
+            for item in data:
+                key = (item["process_name"], item["code"])
+                sub_process_dict[key].append(item["name"])
+
+            # Convert sub-process dictionary to a list of dictionaries
+            sub_process_list = [
+                {"process_name": name, "code": code, "sub_process_name": sub_processes}
+                for (name, code), sub_processes in sub_process_dict.items()
+            ]
+
+
+
+
+            return sub_process_list
+    except Exception as e:
+        connection.rollback()
+        print(f"Error business process {e}")
+        raise HTTPException(status_code=400, detail=f"Error business process ")
 
 #################################################################
 def add_business_process(connection: Connection, business_process: BusinessProcess, company_id: str):
