@@ -1,76 +1,23 @@
-name: Deploy FastAPI to EC2
-
 on:
   push:
     branches:
-      - main  # Change to your deployment branch
+      - main
+  workflow_dispatch:
+
 jobs:
-  deploy:
+  run_pull:
+    name: run pull
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: "18.212.87.23" # Replace with your EC2 IP
-          username: "ubuntu"    # Change if using a different user
-          key: "-----BEGIN OPENSSH PRIVATE KEY-----
-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
------END OPENSSH PRIVATE KEY-----
-"
-
-          script: |
-            cd /home/ubuntu/my-fastapi-app  # Change to your FastAPI project path
-            git pull origin main            # Pull latest changes
-            source venv/bin/activate        # Activate virtual environment
-            pip install -r requirements.txt  # Install dependencies
-            sudo systemctl restart fastapi   # Restart FastAPI service
+    - name: install ssh keys
+      # check this thread to understand why its needed:
+      # https://stackoverflow.com/a/70447517
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+    - name: connect and pull
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+    - name: cleanup
+      run: rm -rf ~/.ssh
