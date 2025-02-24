@@ -3,28 +3,25 @@ name: Deploy FastAPI to EC2
 on:
   push:
     branches:
-      - main
+      - main  # Change to your deployment branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout your repository code
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      # Step 2: Deploy via SSH to your EC2 instance
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          password: "12345"
+          host: "18.212.87.23"  # Replace with your EC2 IP
+          username: "ubuntu"    # Change if using a different user
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_PORT }}
           script: |
-            cd /home/${{ secrets.EC2_USER }}/project/Backend
-            git pull origin main
-            sudo systemctl restart backend.service
-
+            cd /home/ubuntu/my-fastapi-app  # Change to your FastAPI project path
+            git pull origin main            # Pull latest changes
+            source venv/bin/activate        # Activate virtual environment
+            pip install -r requirements.txt  # Install dependencies
+            sudo systemctl restart fastapi   # Restart FastAPI service
