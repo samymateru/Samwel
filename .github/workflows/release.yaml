@@ -15,7 +15,7 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.EC2_HOST }}  # Replace with your EC2 IP
+          host: "18.212.87.23" # Replace with your EC2 IP
           username: "ubuntu"    # Change if using a different user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
