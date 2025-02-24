@@ -168,6 +168,25 @@ def get_resource(connection: Connection, resource: str, column: str = None, valu
         print(f"Error querying  {resource} {e}")
         raise HTTPException(status_code=400, detail=f"Error querying {resource}")
 
+def get_sub_resource(connection: Connection, resource: str, column: str = None, value: str = None, row: str = None) -> List[Dict]:
+    query = f"SELECT * FROM public.{resource} "
+    if row:
+        query = f"SELECT {row} FROM public.{resource} "
+    if column and value:
+        query += f"WHERE  ({column}).id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            return data
+    except Exception as e:
+        connection.rollback()
+        print(f"Error querying  {resource} {e}")
+        raise HTTPException(status_code=400, detail=f"Error querying {resource}")
+
 #################################################################
 def add_business_process(connection: Connection, business_process: BusinessProcess, company_id: str):
     query: str = f"INSERT INTO public.business_process (name, code, company) VALUES(%s, %s, %s)"

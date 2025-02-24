@@ -1,4 +1,4 @@
-name: SSH Connection Example
+name: Deploy to Server
 
 on:
   push:
@@ -13,14 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up SSH
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: "18.212.87.23"
-          username: "ubuntu"
-          key: ${{secrets.SSH_PRIVATE_KEY}}
-          port: 22
-          script: |
-            echo "Connecting to server..."
-            # Add the commands to execute on the server
-            ls -l
+      - name: Add SSH known hosts
+          run: |
+            ssh-keyscan -H 18.212.87.23 >> ~/.ssh/known_hosts
+
+      

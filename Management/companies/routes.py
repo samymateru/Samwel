@@ -73,16 +73,17 @@ def get_resource(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/sub_resource")
+@router.get("/sub_resource/{sub_resource_id}")
 def get_sub_resource(
+        sub_resource_id: str,
         db = Depends(get_db_connection),
-        #current_user: CurrentUser  = Depends(get_current_user),
+        current_user: CurrentUser  = Depends(get_current_user),
         resource: SubResourceTypes = Query()
     ):
-    # if current_user.status_code != 200:
-    #     return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if current_user.status_code != 200:
+        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        resource_data = databases.get_resource(db, resource.value, column="company", value="3")
+        resource_data = databases.get_sub_resource(db, resource.value, column=resource.value, value=sub_resource_id)
         if resource_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": resource_data, "status_code": 200}
