@@ -50,7 +50,7 @@ app.add_middleware(
 )
 
 
-@app.post("/login", tags=["Authenticatio"])
+@app.post("/login", tags=["Authentication"])
 def users(
           email: str = Form(...),
           password: str = Form(...),
