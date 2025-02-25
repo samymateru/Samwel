@@ -14,4 +14,4 @@ jobs:
           script: |
             cd project/Backend
             git pull
-            sudo systemctl restart backed.service
+            sudo systemctl restart backend.service
