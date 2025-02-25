@@ -10,5 +10,5 @@ jobs:
         with:
           host: "18.212.87.23"
           username: "ubuntu"
-          key: ${{ secrets.KEY }}
+          key: ${{ secret.KEY }}
           script: whoami
