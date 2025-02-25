@@ -1,25 +1,14 @@
-name: Deploy to EC2
-
-on:
-  push:
-    branches:
-      - main  # Change this to the branch you want to trigger deployment
-
+name: remote ssh command
+on: [push]
 jobs:
-  deploy:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 18.212.87.23 >> ~/.ssh/known_hosts
-
-      - name: Connect to EC2 and Run Commands
-        run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@18.212.87.23 "echo 'Connected to EC2 successfully!'"
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: "18.212.87.23"
+          username: "ubuntu"
+          key: ${{ secrets.KEY }}
+          script: whoami
