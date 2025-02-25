@@ -140,5 +140,6 @@ def get_members(
         db=Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
 ):
+
     pass
 
