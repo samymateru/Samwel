@@ -89,22 +89,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00011" summary="adding git  ignore">
-      <option name="closed" value="true" />
-      <created>1737089491539</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1737089491539</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Adding tags">
-      <option name="closed" value="true" />
-      <created>1737102052934</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1737102052934</updated>
-    </task>
     <task id="LOCAL-00013" summary="adding admin auth">
       <option name="closed" value="true" />
       <created>1737363570014</created>
@@ -481,7 +465,23 @@
       <option name="project" value="LOCAL" />
       <updated>1740459287742</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="busines porcess">
+      <option name="closed" value="true" />
+      <created>1740459427185</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1740459427185</updated>
+    </task>
+    <task id="LOCAL-00061" summary="busines porcess">
+      <option name="closed" value="true" />
+      <created>1740459686137</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1740459686137</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
