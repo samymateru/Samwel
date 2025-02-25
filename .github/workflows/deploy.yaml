@@ -10,7 +10,7 @@ jobs:
         with:
           host: "18.212.87.23"
           username: "ubuntu"
-          key: '-----BEGIN RSA PRIVATE KEY-----
+          key: "-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAv32fELCdzFX79406FgP3ncIIgZof7znNm24rMogDl8do/u4w
 YG5XtGCBSg+gvCT2iXc1umSj8zU0sKpPZi2vRJU0rS1d6s+Hg4XiaEEBB4gTLkHa
 OcpfesFeDC360fsjxjS+ZTExKYawZ3gMssnur+FDxgpkCtJxIA10Wp9lyrFUR1fb
@@ -36,5 +36,5 @@ zpDqkOLYCY8GoVFgvlhgQs+AssCriv+F3bmXpXms5pqFFssDb4zX12GeN/3QzzbE
 45oBAoGBAJt5OSMRB2S+4es9oDQyWqm2lmkuSelAWr53tMRAup1V4yJMZJ9uD7x3
 U6V0ZkUZ5veIXFViNkc4V3PDx2wKHKJJVhWBRhqjmTtjNiVllhXag4OwDZtL6Ze8
 uKfJIWAOR2A6KbqR8fIJv0Ife/YnlIeIVEecnjWZwTp4Ckb5H4Ah
------END RSA PRIVATE KEY-----'
+-----END RSA PRIVATE KEY-----"
           script: whoami
