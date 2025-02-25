@@ -11,7 +11,7 @@ from Management.users.schemas import *
 
 router = APIRouter(prefix="/companies")
 
-@router.post("/new_company")
+@router.post("/new_companies")
 def new_company(
         new_company_data: NewCompany,
         db = Depends(get_db_connection)
