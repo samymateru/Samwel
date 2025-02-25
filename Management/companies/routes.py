@@ -9,7 +9,7 @@ from utils import generate_hash_password, get_current_user
 from Management.companies import databases
 from Management.users.schemas import *
 
-router = APIRouter(prefix="/company")
+router = APIRouter(prefix="/companies")
 
 @router.post("/new_company")
 def new_company(
