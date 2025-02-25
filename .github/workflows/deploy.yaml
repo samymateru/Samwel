@@ -11,4 +11,7 @@ jobs:
           host: "18.212.87.23"
           username: "ubuntu"
           key: ${{ secrets.KEY }}
-          script: whoami
+          script: |
+            cd project/Backend
+            git pull
+            sudo systemctl restart backed.service
