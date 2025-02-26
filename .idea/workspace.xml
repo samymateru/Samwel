@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding risk rating">
-      <change afterPath="$PROJECT_DIR$/Management/settings/engagement_types/databases.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Management/settings/engagement_types/routes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Management/settings/engagement_types/schemas.py" afterDir="false" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding engagement types">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,14 +91,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00022" summary="adding the constraints  to fetch the the annual plans">
-      <option name="closed" value="true" />
-      <created>1738740539667</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1738740539667</updated>
     </task>
     <task id="LOCAL-00023" summary="fixing upload file issue">
       <option name="closed" value="true" />
@@ -487,7 +476,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740579157084</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="adding engagement types">
+      <option name="closed" value="true" />
+      <created>1740582403286</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1740582403287</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -531,7 +528,8 @@
     <MESSAGE value="busines porcess" />
     <MESSAGE value="fixing business process" />
     <MESSAGE value="adding risk rating" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding risk rating" />
+    <MESSAGE value="adding engagement types" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding engagement types" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

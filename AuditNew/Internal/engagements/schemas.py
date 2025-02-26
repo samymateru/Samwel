@@ -28,7 +28,7 @@ class Risk(BaseModel):
 class Lead(BaseModel):
     name: str
     user_id: int
-    role_id: int
+    role_id: List[int]
 
 class Engagement(BaseModel):
     engagement_id: int
