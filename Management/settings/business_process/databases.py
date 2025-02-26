@@ -23,7 +23,6 @@ def get_business_process(connection: Connection, column: str = None, value: str 
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-            print(data)
             sub_process_dict = defaultdict(list)
 
             for item in data:
@@ -38,4 +37,4 @@ def get_business_process(connection: Connection, column: str = None, value: str 
             return sub_process_list
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching business process {e}")
+        raise HTTPException(status_code=400, detail=f"Error fetching business process: {e}")
