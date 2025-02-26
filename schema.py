@@ -19,4 +19,3 @@ class ErrorResponse(BaseModel):
 
 class ResponseMessage(BaseModel):
     detail: str
-    status_code: int
