@@ -1,34 +1,19 @@
-from fastapi import FastAPI, Depends, HTTPException, Response, Form
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-from AuditNew.Internal.audit_logs.routes import router as audit_logs_router
 from Management.companies.routes import router as companies_router
-from Management.company_modules.routes import router as company_modules_router
-from Management.permissions.routes import router as permission_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
-from AuditNew.Internal.features.routes import router as features_router
-from Management.modules.routes import router as modules_router
 from Management.roles.routes import router as roles_router
+from Management.settings.business_process.routes import router as setting_router
 from Management.users.routes import router as users_router
-from Management.templates.routes import router as templates_router
-from AuditNew.Internal.feature_records.routes import router as feature_record_router
-from AuditNew.Internal.staff_assignment.routes import router as staff_assignment_router
-from AuditNew.Internal.planning_details.routes import router as planning_details_router
-from AuditNew.Internal.engagement_profile.routes import router as engagement_profile_router
 from contextlib import asynccontextmanager
-from utils import get_current_user
-from psycopg2.extensions import connection as Connection
 from utils import verify_password, get_db_connection, create_jwt_token
-from typing import List, Tuple, Dict
 from Management.users.databases import get_user
 from fastapi.middleware.cors import CORSMiddleware
-from schema import CurrentUser
-from Management.users import databases as user_database
-from Management.roles import databases as role_database
 from Management.companies.databases import  get_companies
 
 from Management.templates.databases import *
-from fastapi.responses import RedirectResponse
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from utils import connection_pool
@@ -84,8 +69,9 @@ app.include_router(users_router,tags=["User"])
 app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
 
 # app.include_router(modules_router, tags=["Modules"])
-# app.include_router(roles_router, tags=["Roles"])
+app.include_router(roles_router, tags=["Roles"])
 app.include_router(engagements_router, tags=["Engagements"])
+app.include_router(setting_router, tags=["Settings"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)
 # app.include_router(audit_logs_router)

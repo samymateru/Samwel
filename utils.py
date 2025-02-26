@@ -34,9 +34,9 @@ def verify_password(stored_hash: bytes, password: str) -> bool:
     return stored_hash == bcrypt.hashpw(password.encode(), stored_hash)
 
 
-def create_jwt_token(data: dict, expiration_minutes: int = 30) -> str:
+def create_jwt_token(data: dict, expiration_days: int = 3) -> str:
     payload = data.copy()
-    expiration = datetime.now() + timedelta(minutes=expiration_minutes)
+    expiration = datetime.now() + timedelta(days=expiration_days)
     payload.update({"exp": expiration})
     token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
     return token

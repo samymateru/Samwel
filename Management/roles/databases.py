@@ -103,7 +103,7 @@ def get_roles(connection: Connection, column: str = None, value: str = None, row
         raise HTTPException(status_code=400, detail="Error querying roles")
 
 def get_user_roles(connection: Connection, role_id: List[int]):
-    query = "SELECT * FROM public.roles WHERE id = ANY(%s)"
+    query = "SELECT * FROM public.types WHERE i = ANY(%s)"
     try:
         with connection.cursor() as cursor:
             # Use IN clause for better performance
@@ -121,3 +121,21 @@ def get_user_roles(connection: Connection, role_id: List[int]):
         connection.rollback()
         print(f"Error querying roles {e}")
         raise HTTPException(status_code=400, detail="Error querying roles")
+
+def fetch_module_roles(connection: Connection, column: str = None, value: str = None, row: str = None):
+    query = f"SELECT * FROM public.types "
+    if row:
+        query = f"SELECT {row} FROM public.types "
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            return data
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching module roles {e}")

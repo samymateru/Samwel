@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="busines porcess" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="busines porcess">
+      <change afterPath="$PROJECT_DIR$/Management/settings/business_process/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/settings/business_process/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/settings/business_process/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/schema.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,11 +77,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\Management" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\Internal" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\features" />
-      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\routers" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -88,14 +99,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00019" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1737973979709</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1737973979709</updated>
     </task>
     <task id="LOCAL-00020" summary="refactoring">
       <option name="closed" value="true" />
@@ -481,7 +484,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740460646632</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="busines porcess">
+      <option name="closed" value="true" />
+      <created>1740460729379</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1740460729379</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -532,6 +543,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Management/role_permissions/databases.py</url>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Management/companies/routes.py</url>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

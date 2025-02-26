@@ -190,15 +190,11 @@ def get_sub_resource(connection: Connection, resource: str, column: str = None, 
 
 
 
-def get_business_process(connection: Connection, column: str = None, value: str = None, row: str = None) -> List[Dict]:
-    datax = []
-    sub =[]
+def get_business_process(connection: Connection, column: str = None, value: str = None) -> List[Dict]:
     query = """
             SELECT * FROM public.business_process INNER JOIN public.business_sub_process
             ON public.business_process.id = public.business_sub_process.business_sub_process_
             """
-    if row:
-        query = f"SELECT {row} FROM public.business_process "
     if column and value:
         query += f"WHERE  {column} = %s"
     try:
@@ -223,9 +219,6 @@ def get_business_process(connection: Connection, column: str = None, value: str 
                 {"process_name": name, "code": code, "sub_process_name": sub_processes}
                 for (name, code), sub_processes in sub_process_dict.items()
             ]
-
-
-
 
             return sub_process_list
     except Exception as e:

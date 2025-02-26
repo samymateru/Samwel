@@ -12,3 +12,11 @@ class CurrentUser(BaseModel):
 class TokenError(BaseModel):
     status_code: int
     description: str
+
+class ErrorResponse(BaseModel):
+       message: str
+       status_code: int
+
+class ResponseMessage(BaseModel):
+    detail: str
+    status_code: int

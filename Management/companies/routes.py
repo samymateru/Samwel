@@ -8,7 +8,6 @@ from schema import CurrentUser
 from utils import generate_hash_password, get_current_user
 from Management.companies import databases
 from Management.users.schemas import *
-
 router = APIRouter(prefix="/companies")
 
 @router.post("/new_companies")
@@ -32,14 +31,12 @@ def new_company(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-
 @router.put("/update_company")
 def update_company(
         update_company_data: UpdateCompany,
         db = Depends(get_db_connection)
 ):
     pass
-
 
 @router.get("/")
 def get_company(
@@ -55,7 +52,6 @@ def get_company(
         return {"payload": company_data[0], "status_code": 200}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
-
 
 @router.get("/resource")
 def get_resource(
