@@ -31,13 +31,6 @@ def new_company(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/update_company")
-def update_company(
-        update_company_data: UpdateCompany,
-        db = Depends(get_db_connection)
-):
-    pass
-
 @router.get("/")
 def get_company(
         db = Depends(get_db_connection),
@@ -53,88 +46,8 @@ def get_company(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/resource")
-def get_resource(
-        db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user),
-        resource: ResourceTypes = Query()
-    ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    try:
-        resource_data = databases.get_resource(db, resource.value, column="company", value=current_user.company_id)
-        if resource_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": resource_data, "status_code": 200}
-    except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/sub_resource/{sub_resource_id}")
-def get_sub_resource(
-        sub_resource_id: str,
-        db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user),
-        resource: SubResourceTypes = Query()
-    ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    try:
-        resource_data = databases.get_sub_resource(db, resource.value, column=resource.value, value=sub_resource_id)
-        if resource_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": resource_data, "status_code": 200}
-    except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/business_process")
-def add_business_process(
-        business_process: BusinessProcess,
-        db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user),
-    ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    try:
-        databases.add_business_process(db, business_process, str(current_user.company_id))
-        return {"detail": "Business process added successfully", "status_code": 501}
-    except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/business_process")
-def add_business_process(
-        db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user),
-    ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    try:
-        data = databases.get_business_process(db, column="company", value=current_user.company_id)
-        if data.__len__() == 0:
-            return {"payload":[], "status_code": 200}
-        return {"payload": data, "status_code": 200}
-    except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/business_sub_process/{business_process_id}")
-def add_business_sub_process(
-        business_process_id: str,
-        business_sub_process: BusinessSubProcess,
-        db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user),
-
-    ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    try:
-        databases.add_business_sub_process(db, business_sub_process, business_process_id)
-        return {"detail": "Business sub process added successfully", "status_code": 501}
-    except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.get("/positions")
-def get_members(
-        db=Depends(get_db_connection),
-        current_user: CurrentUser = Depends(get_current_user)
-):
-    pass
 
