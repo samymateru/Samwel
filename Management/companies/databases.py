@@ -39,8 +39,7 @@ def create_new_company(connection: Connection, company_data: NewCompany) -> int:
         raise
     except Exception as e:
         connection.rollback()
-        print(f"Error creating new company: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error creating new company")
+        raise HTTPException(status_code=500, detail=f"Error creating new company {e}")
 
 
 def update_company(connection: Connection, company_data: UpdateCompany):
