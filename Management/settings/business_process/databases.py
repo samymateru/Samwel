@@ -7,7 +7,7 @@ from collections import defaultdict
 def get_business_process(connection: Connection, column: str = None, value: str = None):
     query = """
             SELECT 
-            public.business_process.name,
+            public.business_process.process_name,
             public.business_process.id,
             public.business_process.code,
             public.business_sub_process.name
