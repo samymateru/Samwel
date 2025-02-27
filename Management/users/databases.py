@@ -29,7 +29,7 @@ def create_new_user(connection: Connection, user_data: NewUser, company_id: int)
                                    user_data.telephone,
                                    user_data.email,
                                    user_data.type,
-                                   user_data.role_id,
+                                   user_data.role,
                                    user_data.module_id,
                                    generate_hash_password(user_data.password),
                                    user_data.status,
