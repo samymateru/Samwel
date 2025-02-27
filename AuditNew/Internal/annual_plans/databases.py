@@ -26,7 +26,7 @@ def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualP
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error occur while adding annual plan {company_id}")
+        raise HTTPException(status_code=400, detail=f"Error occur while adding annual plan {e}")
 
 def update_annual_plan(connection: Connection, annual_plan_data: UpdateAnnualPlan) -> None:
     query_parts = []
