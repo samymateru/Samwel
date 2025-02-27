@@ -12,7 +12,7 @@ def get_business_process(connection: Connection, column: str = None, value: str 
             public.business_process.code,
             public.business_sub_process.name
             FROM public.business_process INNER JOIN public.business_sub_process
-            ON public.business_process.id = public.business_sub_process.business_sub_process_
+            ON public.business_process.id = public.business_sub_process.business_process
             """
     if column and value:
         query += f"WHERE  {column} = %s"

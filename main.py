@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     print("Database connection pool closed")
 
 app = FastAPI(lifespan=lifespan)
-
+from seedings import *
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Replace with specific domains in production
@@ -36,6 +36,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def get(db: Connection = Depends(get_db_connection)):
+    business_process(db, 4)
 
 @app.post("/login", tags=["Authentication"])
 def users(

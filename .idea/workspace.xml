@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding roles" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring the company endpoint">
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,24 +55,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.database.executor&quot;: &quot;Run&quot;,
-    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
-    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.CommitDialog&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.database.executor": "Run",
+    "Python.databases.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.roles.executor": "Run",
+    "Python.routes.executor": "Run",
+    "Python.schemas.executor": "Run",
+    "Python.seedings.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.utils.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "settings.editor.selected.configurable": "project.propVCSSupport.CommitDialog"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
@@ -88,14 +98,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00025" summary="fixing upload file issue">
-      <option name="closed" value="true" />
-      <created>1739877276943</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1739877276943</updated>
     </task>
     <task id="LOCAL-00026" summary="fixing business process">
       <option name="closed" value="true" />
@@ -481,7 +483,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740607649520</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="refactoring the company endpoint">
+      <option name="closed" value="true" />
+      <created>1740607943998</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1740607943998</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -528,7 +538,8 @@
     <MESSAGE value="adding engagement types" />
     <MESSAGE value="fixing role id" />
     <MESSAGE value="adding roles" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding roles" />
+    <MESSAGE value="refactoring the company endpoint" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring the company endpoint" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

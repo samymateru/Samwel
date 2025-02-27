@@ -13,7 +13,6 @@ def create_new_engagement(connection: Connection, engagement_data: NewEngagement
             """
     try:
         with connection.cursor() as cursor:
-            print(json.dumps(engagement_data.department.model_dump()))
             cursor: Cursor
             cursor.execute(query,
                            (
