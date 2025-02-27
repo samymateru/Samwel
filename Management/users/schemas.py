@@ -23,6 +23,7 @@ class Role(BaseModel):
 class NewUser(BaseModel):
     name: str
     email: EmailStr
+    module: List[int] = Field(default=[])
     role: List[int] = Field(default=[])
     telephone: Optional[str] = None
     type: Optional[str] = Field(default="user")
