@@ -12,7 +12,7 @@ from Management.modules import  databases as module_databases
 def create_new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
                INSERT INTO public.users (company_id, name, telephone, email,
-               type, role_id, module_id, password_hash, status, created_at) 
+               type, role, module_id, password_hash, status, created_at) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                """
     try:
