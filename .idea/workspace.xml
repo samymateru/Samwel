@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -91,38 +89,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00052" summary="adding workflows yaml">
-      <option name="closed" value="true" />
-      <created>1740387932366</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1740387932366</updated>
-    </task>
-    <task id="LOCAL-00053" summary="busines porcess">
-      <option name="closed" value="true" />
-      <created>1740392183381</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1740392183381</updated>
-    </task>
-    <task id="LOCAL-00054" summary="busines porcess">
-      <option name="closed" value="true" />
-      <created>1740392697128</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1740392697128</updated>
-    </task>
-    <task id="LOCAL-00055" summary="busines porcess">
-      <option name="closed" value="true" />
-      <created>1740395295596</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1740395295596</updated>
     </task>
     <task id="LOCAL-00056" summary="busines porcess">
       <option name="closed" value="true" />
@@ -484,7 +450,39 @@
       <option name="project" value="LOCAL" />
       <updated>1740667775212</updated>
     </task>
-    <option name="localTasksCounter" value="101" />
+    <task id="LOCAL-00101" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740667938722</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1740667938722</updated>
+    </task>
+    <task id="LOCAL-00102" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740668218134</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1740668218134</updated>
+    </task>
+    <task id="LOCAL-00103" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740668279600</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1740668279600</updated>
+    </task>
+    <task id="LOCAL-00104" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740668437245</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1740668437245</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
