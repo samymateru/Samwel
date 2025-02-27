@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 class BusinessProcess(BaseModel):
-    name: str
+    process_name: str
     code: str
     id: int
     sub_process_name: List[str]

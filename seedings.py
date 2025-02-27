@@ -271,7 +271,7 @@ def business_process(connection: Connection, company: int):
         # 1️⃣ Insert Business Processes & Get Their IDs
         for process in data:
             cursor.execute(
-                "INSERT INTO business_process (name, code, company) VALUES (%s, %s, %s) RETURNING id;",
+                "INSERT INTO business_process (process_name, code, company) VALUES (%s, %s, %s) RETURNING id;",
                 (process["name"], process["code"], company)
             )
             process_id = cursor.fetchone()[0]
