@@ -8,6 +8,7 @@ from schema import CurrentUser
 from utils import generate_hash_password, get_current_user
 from Management.companies import databases
 from Management.users.schemas import *
+from seedings import *
 router = APIRouter(prefix="/companies")
 
 @router.post("/new_companies")
@@ -23,10 +24,20 @@ def new_company(
             email = new_company_data.email,
             type = "owner",
             password = new_company_data.password,
-            module_id=new_company_data.module_id,
             status = True,
         )
         user_database.create_new_user(db, user_data, company_id)
+        risk_rating(db, company_id)
+        engagement_types(db, company_id)
+        issue_finding_source(db, company_id)
+        control_effectiveness_rating(db, company_id)
+        control_weakness_rating(db, company_id)
+        audit_opinion_rating(db, company_id)
+        risk_maturity_rating(db, company_id)
+        issue_implementation_status(db, company_id)
+        control_type(db, company_id)
+        roles(db, company_id)
+        business_process(db, company_id)
         return {"detail": "company successfully created", "status_code":201}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

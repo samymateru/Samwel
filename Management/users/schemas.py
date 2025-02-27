@@ -23,13 +23,11 @@ class Role(BaseModel):
 class NewUser(BaseModel):
     name: str
     email: EmailStr
-    role_id: List[int] = Field(default=[])
-    module_id: List[int] | int = Field(default=1)
+    role: List[int] = Field(default=[])
     telephone: Optional[str] = None
     type: Optional[str] = Field(default="user")
     password: Optional[str] = Field(default="1234")
     status: Optional[bool] = True
-
 
 
 class DeleteUser(BaseModel):

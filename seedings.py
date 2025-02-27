@@ -1,4 +1,26 @@
+import json
+
 from psycopg2.extensions import connection as Connection
+
+def engagement_types(connection: Connection, company: int):
+    values = [
+        (company, "Internal Audit"),
+        (company, "Compliance Audit"),
+        (company, "Operational Audit"),
+        (company, "IT Audit"),
+        (company, "Forensic Audit"),
+        (company, "Financial Audit"),
+        (company, "Performance Audit"),
+        (company, "Environmental Audit"),
+        (company, "Tax Audit")
+    ]
+    query: str = f"""
+                 INSERT INTO public.engagement_types (company, name)
+                 VALUES(%s, %s)
+                 """
+    with connection.cursor() as cursor:
+        cursor.executemany(query, values)
+    connection.commit()
 
 def risk_rating(connection: Connection, company: int):
     values = [
@@ -77,7 +99,7 @@ def audit_opinion_rating(connection: Connection, company: int):
 
 def risk_maturity_rating(connection: Connection, company: int):
     query: str = """
-                 INSERT INTO public.maturity_rating (name, company)
+                 INSERT INTO public.risk_maturity_rating (name, company)
                  VALUES (%s, %s)
                  """
     values = [
@@ -128,10 +150,6 @@ def control_type(connection: Connection, company: int):
     connection.commit()
 
 def roles(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.roles (roles, company)
-                 VALUES (%s, %s)
-                 """
     values = [
 	{
 	  "name": "Owner",
@@ -255,9 +273,14 @@ def roles(connection: Connection, company: int):
         }
 	}
    ]
-
     with connection.cursor() as cursor:
-        cursor.execute(query, (values, company))
+        role_values = [(json.dumps({"name": role["name"], "categories": role["categories"]}), company) for role in values]
+
+        cursor.executemany(
+            "INSERT INTO public.roles (roles, company) VALUES (%s::jsonb, %s);",
+            role_values
+        )
+
     connection.commit()
 
 def business_process(connection: Connection, company: int):

@@ -38,7 +38,7 @@ app.add_middleware(
 
 @app.get("/")
 def get(db: Connection = Depends(get_db_connection)):
-    business_process(db, 4)
+    engagement_types(db, 4)
 
 @app.post("/login", tags=["Authentication"])
 def users(
