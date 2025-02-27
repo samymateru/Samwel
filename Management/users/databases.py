@@ -40,8 +40,7 @@ def create_new_user(connection: Connection, user_data: NewUser, company_id: int)
         raise HTTPException(status_code=401, detail="user exists")
     except Exception as e:
         connection.rollback()
-        print(f"Error creating new user {e}")
-        raise HTTPException(status_code=400, detail="Error creating new user")
+        raise HTTPException(status_code=400, detail=f"Error creating new user {e}")
 
 
 
