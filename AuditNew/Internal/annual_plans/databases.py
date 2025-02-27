@@ -11,6 +11,7 @@ def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualP
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
     try:
+        print(company_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query, (
