@@ -42,7 +42,7 @@ def new_company(
         business_process(db, company_id)
         return {"detail": "company successfully created", "status_code":201}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/")
 def get_company(
