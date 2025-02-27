@@ -15,7 +15,7 @@ def fetch_risk_rating(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_risk_rating(db, column="company", value="4")
+        data = get_risk_rating(db, column="company", value=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
