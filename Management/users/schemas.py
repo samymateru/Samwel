@@ -4,6 +4,9 @@ from typing import Optional, List
 
 from pygments.lexer import default
 
+class Role(BaseModel):
+    id: int
+    name: str
 
 class User(BaseModel):
     name: str
@@ -16,20 +19,16 @@ class User(BaseModel):
     id: int
     created_at: datetime
 
-class Role(BaseModel):
-    value: str
-    label: str
 
 class NewUser(BaseModel):
     name: str
     email: EmailStr
     module: List[int] = Field(default=[])
-    role: List[int] = Field(default=[])
-    telephone: Optional[str] = None
+    role: Role
+    telephone: Optional[str] = Field(default="12345678")
     type: Optional[str] = Field(default="user")
     password: Optional[str] = Field(default="1234")
-    status: Optional[bool] = True
-
+    status: Optional[bool] = False
 
 class DeleteUser(BaseModel):
     id: str

@@ -1,3 +1,4 @@
+import json
 from typing import Tuple
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
@@ -9,7 +10,7 @@ from utils import generate_hash_password
 from Management.roles import databases as roles_database
 from Management.modules import  databases as module_databases
 
-def create_new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
+def new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
                INSERT INTO public.users (company, name, telephone, email,
                type, role, module, password_hash, status, created_at) 
@@ -29,7 +30,7 @@ def create_new_user(connection: Connection, user_data: NewUser, company_id: int)
                                    user_data.telephone,
                                    user_data.email,
                                    user_data.type,
-                                   user_data.role,
+                                   user_data.role.model_dump_json(),
                                    user_data.module,
                                    generate_hash_password(user_data.password),
                                    user_data.status,
@@ -118,10 +119,8 @@ def delete_user(connection: Connection, user_id: str) -> None:
         print(f"Error deleting the user {e}")
         raise HTTPException(status_code=400, detail="Error deleting the user")
 
-def get_user(connection: Connection, column: str = None, value: str | int = None, row: List[str] = None) -> List[Dict]:
+def get_user(connection: Connection, column: str, value: int | str):
     query = "SELECT * FROM public.users "
-    if row:
-        query = f"SELECT {" ,".join(row)} FROM public.users "
     if column and value:
         query += f"WHERE  {column} = %s"
 
@@ -132,12 +131,12 @@ def get_user(connection: Connection, column: str = None, value: str | int = None
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-            if len(data) != 0:
-                modules = module_databases.get_active_modules(connection, data[0].get("module_id"))
-                for i in data:
-                    i["modules"] = modules
-                    if "module_id" in i:
-                        del i["module_id"]
+            # if len(data) != 0:
+            #     modules = module_databases.get_active_modules(connection, data[0].get("module_id"))
+            #     for i in data:
+            #         i["modules"] = modules
+            #         if "module_id" in i:
+            #             del i["module_id"]
             return data
     except Exception as e:
         connection.rollback()
@@ -180,7 +179,7 @@ def remove_role(connection: Connection, user_id: int, role_id: int):
         connection.rollback()
         print(f"Error add role to a user {e}")
         raise HTTPException(status_code=400, detail="Error adding role")
-    pass
+
 
 
 

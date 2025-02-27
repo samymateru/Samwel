@@ -22,13 +22,16 @@ def new_company(
             name = new_company_data.owner,
             telephone = new_company_data.telephone,
             module= new_company_data.module_id,
-            role=[1],
+            role=Role(
+                id = 1,
+                name = "Owner"
+            ),
             email = new_company_data.email,
             type = "owner",
             password = new_company_data.password,
             status = True,
         )
-        user_database.create_new_user(db, user_data, company_id)
+        user_database.new_user(db, user_data, company_id)
         risk_rating(db, company_id)
         engagement_types(db, company_id)
         issue_finding_source(db, company_id)

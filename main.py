@@ -36,10 +36,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def get(db: Connection = Depends(get_db_connection)):
-    engagement_types(db, 4)
-
 @app.post("/login", tags=["Authentication"])
 def users(
           email: str = Form(...),
