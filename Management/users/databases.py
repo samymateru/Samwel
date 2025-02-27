@@ -141,8 +141,7 @@ def get_user(connection: Connection, column: str = None, value: str | int = None
             return data
     except Exception as e:
         connection.rollback()
-        print(f"Error querying users {e}")
-        raise HTTPException(status_code=400, detail="Error querying users")
+        raise HTTPException(status_code=400, detail=f"Error querying users {e}")
 
 def get_roles_ids(connection: Connection, user_id: int):
     query = "SELECT role_id FROM public.users WHERE id = %s"
