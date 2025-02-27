@@ -90,14 +90,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00031" summary="adding workflows yaml">
-      <option name="closed" value="true" />
-      <created>1740372522313</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1740372522313</updated>
-    </task>
     <task id="LOCAL-00032" summary="adding workflows yaml">
       <option name="closed" value="true" />
       <created>1740377712545</created>
@@ -482,7 +474,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740655834695</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740655985427</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1740655985427</updated>
+    </task>
+    <option name="localTasksCounter" value="81" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
