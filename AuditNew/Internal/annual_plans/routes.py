@@ -41,7 +41,7 @@ def create_new_annual_plan(
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
-    return user.company_id
+    return {"hello": user.company_id}
     if user.status_code != 200:
         return HTTPException(status_code=user.status_code, detail=user.description)
     try:
