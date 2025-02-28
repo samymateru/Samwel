@@ -129,10 +129,8 @@ def delete_engagements(connection: Connection, engagement_id: List[int]):
         raise HTTPException(status_code=400, detail="Error deleting engagement")
 
 
-def get_engagements(connection: Connection, column: str = None, value: str = None, row: List[str] = None ) -> List[Dict]:
+def get_engagements(connection: Connection, column: str = None, value: str = None):
     query = "SELECT * FROM public.engagements "
-    if row:
-        query = f"SELECT {" ,".join(row)} FROM public.engagement "
     if column and value:
         query += f"WHERE  {column} = %s"
     try:
