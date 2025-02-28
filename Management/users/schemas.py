@@ -13,7 +13,7 @@ class User(BaseModel):
     telephone: str
     type: str
     email: str
-    status: str
+    status: bool
     role: List[int]
     module: List[int]
     id: int

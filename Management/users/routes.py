@@ -24,19 +24,17 @@ def fetch_users(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=User)
 def fetch_user(
         user_id: int,
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
 ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        return HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        user_data: List[Dict] = get_user(db, column="id", value=user_id)
-        if user_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": user_data, "status_code": 200}
+        data = get_user(db, column="id", value=user_id)[0]
+        return data
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
