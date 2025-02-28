@@ -29,7 +29,7 @@ def add_roles(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_role(db, company_id=user.company_id, data=role)
+        add_role(db, company_id=2, data=role)
         return {"detail": "Role added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
