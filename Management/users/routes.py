@@ -40,14 +40,14 @@ def fetch_user(
 
 @router.post("/")
 def create_new_user(
-        user: NewUser,
+        user_data: NewUser,
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    if current_user.status_code != 200:
-        raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_user(connection=db, user_data=user,  company_id=1)
+        new_user(connection=db, user_data=user_data,  company_id=user.company_id)
         return {"detail": "user successfully created", "status_code": 501}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

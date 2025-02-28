@@ -6,6 +6,7 @@ from Management.roles.routes import router as roles_router
 from Management.settings.business_process.routes import router as business_process_router
 from Management.settings.risk_rating.routes import router as risk_rating_router
 from Management.settings.engagement_types.routes import router as engagement_types_router
+from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
 from utils import verify_password, get_db_connection, create_jwt_token
@@ -75,6 +76,7 @@ app.include_router(engagements_router, tags=["Engagements"])
 app.include_router(business_process_router, tags=["Business Process"])
 app.include_router(risk_rating_router, tags=["Risk Rating"])
 app.include_router(engagement_types_router, tags=["Engagement Types"])
+app.include_router(administration_router, tags=["Engagement Profile"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)
 # app.include_router(audit_logs_router)
