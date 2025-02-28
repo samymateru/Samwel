@@ -15,14 +15,14 @@ def fetch_users(
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         user_data = get_user(db, column="company", value=user.company_id)
         if user_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": user_data, "status_code": 200}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/{user_id}", response_model=User)
 def fetch_user(
@@ -31,12 +31,12 @@ def fetch_user(
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = get_user(db, column="id", value=user_id)[0]
         return data
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/")
 def create_new_user(
@@ -45,12 +45,12 @@ def create_new_user(
         current_user: CurrentUser  = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+        raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
         new_user(connection=db, user_data=user,  company_id=1)
         return {"detail": "user successfully created", "status_code": 501}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 @router.put("/")
