@@ -1,10 +1,7 @@
-from typing import Dict, List
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.administration.schemas import *
 from psycopg2.extensions import cursor as Cursor
-from AuditNew.Internal.engagements.schemas import UpdateEngagement, NewEngagement
-import json
 
 def add_engagement_profile(connection: Connection, profile: EngagementProfile, engagement_id: int):
     query: str = """
@@ -19,7 +16,7 @@ def add_engagement_profile(connection: Connection, profile: EngagementProfile, e
                         scope_exclusion,
                         core_risk,
                         estimated_dates
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -39,8 +36,109 @@ def add_engagement_profile(connection: Connection, profile: EngagementProfile, e
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error adding engagement profile")
+        raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")
 
+def add_engagement_policies(connection: Connection, policy: Policy, engagement_id: int):
+    query: str = """
+                   INSERT INTO public.policies (
+                        engagement,
+                        name,
+                        version,
+                        key_areas,
+                        attachment,
+                   ) VALUES(%s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                policy.name,
+                policy.version,
+                policy.key_areas,
+                policy.attachment
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement policy {e}")
+
+def add_engagement_process(connection: Connection, process: EngagementProcess, engagement_id: int):
+    query: str = """
+                   INSERT INTO public.engagement_process (
+                        engagement,
+                        process,
+                        sub_process,
+                        description,
+                        business_unit
+                   ) VALUES(%s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                process.process,
+                process.sub_proces,
+                process.description,
+                process.business_unit
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement process {e}")
+
+def add_engagement_regulations(connection: Connection, regulation: Regulations, engagement_id: int):
+    query: str = """
+                   INSERT INTO public.regulations (
+                        engagement,
+                        name,
+                        issue_date,
+                        key_areas,
+                        attachment
+                   ) VALUES(%s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                regulation.name,
+                regulation.issue_date,
+                regulation.ke_areas,
+                regulation.attachment
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement regulation {e}")
+
+def add_engagement_staff(connection: Connection, staff: Staff, engagement_id: int):
+    query: str = """
+                   INSERT INTO public.staff (
+                        engagement,
+                        name,
+                        role,
+                        start_date,
+                        end_date,
+                        tasks
+                   ) VALUES(%s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                staff.name,
+                staff.role,
+                staff.start_date,
+                staff.end_date,
+                staff.tasks
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement staff {e}")
 
 def get_engagement_profile(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
@@ -141,3 +239,16 @@ def delete_profile(connection: Connection, engagement_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting engagement profile {e}")
+
+def delete_policy(connection: Connection, engagement_id: int):
+    query: str = """
+                    DELETE FROM public.policies WHERE engagement = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (engagement_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting engagement policy {e}")

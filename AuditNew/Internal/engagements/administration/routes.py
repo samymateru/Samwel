@@ -21,7 +21,7 @@ def fetch_engagement_profile(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/policies/{engagement_id}", response_model=EngagementProfile)
+@router.get("/context/policies/{engagement_id}", response_model=Policy)
 def fetch_engagement_policies(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -35,7 +35,7 @@ def fetch_engagement_policies(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/engagement_process/{engagement_id}", response_model=EngagementProfile)
+@router.get("/context/engagement_process/{engagement_id}", response_model=EngagementProcess)
 def fetch_engagement_process(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -81,6 +81,7 @@ def fetch_staff(
 @router.post("/profile/{engagement_id}")
 def create_engagement_profile(
         engagement_id: int,
+        profile: EngagementProfile,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -88,8 +89,63 @@ def create_engagement_profile(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         delete_profile(db, engagement_id)
-        create_engagement_profile
+        add_engagement_profile(db, profile=profile, engagement_id=engagement_id)
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.post("/context/policies/{engagement_id}")
+def create_engagement_profile(
+        engagement_id: int,
+        policy: Policy,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        add_engagement_policies(db, policy=policy, engagement_id=engagement_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/context/engagement_process/{engagement_id}")
+def create_engagement_process(
+        engagement_id: int,
+        process: EngagementProcess,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        add_engagement_process(db, process=process, engagement_id=engagement_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/context/regulations/{engagement_id}")
+def create_engagement_regulations(
+        engagement_id: int,
+        regulation: Regulations,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        add_engagement_regulations(db, regulation=regulation, engagement_id=engagement_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/staff/{engagement_id}")
+def create_engagement_staff(
+        engagement_id: int,
+        staff: Staff,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        add_engagement_staff(db, staff=staff, engagement_id=engagement_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 

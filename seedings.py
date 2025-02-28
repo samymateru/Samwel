@@ -162,116 +162,6 @@ def roles(connection: Connection, company: int):
             "role": ["view", "edit", "delete", "assign", "approve"]
         }
 	},
-	{
-	  "name": "Administrator",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Auditor",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Chief Executive Officer",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Chief Financial Officer",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Chief Information Officer",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Chief Operations Officer",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Chief Information Security Officer",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Head of Internal Audit",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Senior Audit Manager",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	},
-	{
-	  "name": "Risk Manager",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
-        }
-	}
    ]
     with connection.cursor() as cursor:
         role_values = [(json.dumps({"name": role["name"], "categories": role["categories"]}), company) for role in values]
@@ -285,8 +175,168 @@ def roles(connection: Connection, company: int):
 
 def business_process(connection: Connection, company: int):
     data = [
-        {"name": "process1", "code": "CQ", "sub":["sub1", "sub2"]},
-        {"name": "process1", "code": "CQ", "sub": ["sub1", "sub2"]}
+        {
+            "name": "Finance",
+            "code": "FN",
+            "sub": [
+                "Revenue management",
+                "Payment management",
+                "Tax compliance",
+                "General ledger and financial reporting",
+                "Cash management",
+                "Accounts payable",
+                "Accounts receivable",
+                "Budgeting",
+                "Fixed asset management"
+            ]
+        },
+        {
+            "name": "Credit / Lending",
+            "code": "CR",
+            "sub": [
+                "Credit origination",
+                "Loan disbursement",
+                "Loan provisioning/Impairment",
+                "Collaterals management",
+                "Credit",
+                "Loan recovery"
+            ]
+        },
+        {
+            "name": "Human Resources",
+            "code": "HR",
+            "sub": [
+                "Recruitment and onboarding",
+                "Payroll and employee benefits",
+                "Training and development",
+                "Promotion",
+                "Performance Management",
+                "Disciplinary management and employee relations",
+                "Termination and Separation"
+            ]
+        },
+        {
+            "name": "Information Technology",
+            "code": "IT",
+            "sub": [
+                "System development",
+                "IT General Controls (ITGCs)",
+                "IT security",
+                "IT infrastructure and data security",
+                "Software acquisition and licensing",
+                "Backup",
+                "Disaster recovery",
+                "Business continuity"
+            ]
+        },
+        {
+            "name": "Business Development",
+            "code": "BD",
+            "sub": [
+                "Business originations",
+                "Customer relationship management (CRM)",
+                "Pricing and promotions",
+                "Commission",
+                "Proposals and Bidding",
+                "Delivery management"
+            ]
+        },
+        {
+            "name": "Compliance",
+            "code": "CM",
+            "sub": [
+                "Regulatory compliance",
+                "Licensing",
+                "Anti-fraud process",
+                "Data privacy and confidentiality"
+            ]
+        },
+        {
+            "name": "Operations",
+            "code": "OP",
+            "sub": [
+                "Process design",
+                "Inventory management and supply chain",
+                "Production and manufacturing processes."
+            ]
+        },
+        {
+            "name": "Procurement",
+            "code": "PR",
+            "sub": [
+                "Vendor selection and contract management",
+                "Purchase order approvals and payments",
+                "Fraud prevention and compliance",
+                "Supply Chain Management"
+            ]
+        },
+        {
+            "name": "Risk Management",
+            "code": "RM",
+            "sub": [
+                "Risk Assessment",
+                "Key risk indicators",
+                "Insurance and risk mitigation plans",
+                "Incident responses",
+                "Crisis management",
+                "Environmental, social, and governance (ESG)"
+            ]
+        },
+        {
+            "name": "Customer Management",
+            "code": "CU",
+            "sub": [
+                "Complaints management",
+                "Customer satisfaction and retention programs",
+                "Data privacy and service-level agreements (SLAs)"
+            ]
+        },
+        {
+            "name": "Deposit Management",
+            "code": "DP",
+            "sub": [
+                "Customer onboarding",
+                "Deposits pricing",
+                "Deposit mix",
+                "Product design"
+            ]
+        },
+        {
+            "name": "Banking Operations",
+            "code": "BO",
+            "sub": [
+                "New clients take on",
+                "Cheque process",
+                "Bank transfers",
+                "Fixed Deposits",
+                "Product design"
+            ]
+        },
+        {
+            "name": "Branch Operations",
+            "code": "BR",
+            "sub": [
+                "Branch security",
+                "Deposits management",
+                "Account opening",
+                "KYC",
+                "Branch credit",
+                "Documentation management"
+            ]
+        },
+        {
+            "name": "Treasury Operations",
+            "code": "TR",
+            "sub": [
+                "Forex transaction",
+                "Global markets",
+                "Assets and Liability Management (ALM)",
+                "Liquidity management",
+                "Sensitivity and stress testing",
+                "Product design and pricing"
+            ]
+        }
+
     ]
     with connection.cursor() as cursor:
         process_ids = {}
@@ -312,9 +362,6 @@ def business_process(connection: Connection, company: int):
             "INSERT INTO business_sub_process (name, business_process) VALUES (%s, %s);",
             subprocess_values
         )
-
         connection.commit()
-
-
 
 
