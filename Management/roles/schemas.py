@@ -7,6 +7,7 @@ class SubCategory(BaseModel):
 
 class NewRole(BaseModel):
     name: str
+    creator: str
     categories: List[SubCategory]
 
 class Role(BaseModel):

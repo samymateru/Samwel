@@ -63,30 +63,33 @@ def fetch_regulations(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-x = {
-  "name": "Owner", # Role name
-  "categories": [
-    {
-      "name": "Eaudit settings",
-      "permissions": {
-        "roles": ["view", "edit", "delete"],
-        "profile": ["view", "edit", "delete"],
-        "subscription": ["view", "edit", "delete"]
-      }
-    },
-    {
-      "name": "Planning",
-      "permissions": {
-        "Audit plan": ["view", "edit", "delete"],
-        "procedures": ["view", "edit", "delete"]
-      }
-    },
-    {
-        "name": "Fieldwork",
-        "permission": {
-            "Summary": ["view", "edit", "delete"],
-            "Procedures": ["view", "edit", "delete"]
-        }
-    }
-  ]
-}
+
+@router.get("/staff/{engagement_id}", response_model=EngagementProfile)
+def fetch_staff(
+        engagement_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = get_engagement_staff(db, column="engagement", value=engagement_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/profile/{engagement_id}")
+def create_engagement_profile(
+        engagement_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        delete_profile(db, engagement_id)
+        create_engagement_profile
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
