@@ -33,7 +33,7 @@ def fetch_user(
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        user_data: List[Dict] = get_user(db, row=list(User.model_fields.keys()), column="id", value=user_id)
+        user_data: List[Dict] = get_user(db, column="id", value=user_id)
         if user_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": user_data, "status_code": 200}
