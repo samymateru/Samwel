@@ -13,7 +13,7 @@ def fetch_roles(
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
-       return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         roles = get_roles(db, column="company", value=user.company_id)
         return roles
@@ -27,7 +27,7 @@ def add_roles(
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_role(db, company_id=user.company_id, data=role)
         return {"detail": "Role added successfully"}

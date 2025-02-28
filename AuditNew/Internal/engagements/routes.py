@@ -1,5 +1,3 @@
-import json
-
 from fastapi import APIRouter, Depends, HTTPException
 from utils import  get_db_connection
 from AuditNew.Internal.engagements import databases
