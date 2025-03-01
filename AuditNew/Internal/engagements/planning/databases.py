@@ -98,9 +98,10 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
                         observation,
                         attachments,
                         conclusion,
+                        type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -114,6 +115,7 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
                 std_template.observation.model_dump_json(),
                 std_template.attachments,
                 std_template.conclusion.model_dump_json(),
+                std_template.type,
                 std_template.prepared_by.model_dump_json(),
                 std_template.reviewed_by.model_dump_json()
             ))
