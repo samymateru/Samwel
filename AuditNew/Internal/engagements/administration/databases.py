@@ -24,15 +24,15 @@ def add_engagement_profile(connection: Connection, profile: EngagementProfile, e
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                json.dumps(profile.audit_background.model_dump()),
-                json.dumps(profile.audit_objectives.model_dump()),
-                json.dumps(profile.key_legislations.model_dump()),
-                json.dumps(profile.relevant_systems.model_dump()),
-                json.dumps(profile.key_changes.model_dump()),
-                json.dumps(profile.reliance.model_dump()),
-                json.dumps(profile.scope_exclusion.model_dump()),
+                profile.audit_background.model_dump_json(),
+                profile.audit_objectives.model_dump_json(),
+                profile.key_legislations.model_dump_json(),
+                profile.relevant_systems.model_dump_json(),
+                profile.key_changes.model_dump_json(),
+                profile.reliance.model_dump_json(),
+                profile.scope_exclusion.model_dump_json(),
                 profile.core_risk,
-                profile.estimated_dates
+                profile.estimated_dates.model_dump_json()
             ))
         connection.commit()
     except Exception as e:

@@ -14,7 +14,7 @@ class EngagementProfile(BaseModel):
     reliance: Section
     scope_exclusion: Section
     core_risk: Any
-    estimated_dates: Any
+    estimated_dates: Section
 
 class Policy(BaseModel):
     id: Optional[int]
