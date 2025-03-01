@@ -24,13 +24,13 @@ def add_engagement_profile(connection: Connection, profile: EngagementProfile, e
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                json.dumps(profile.audit_background),
-                json.dumps(profile.audit_objectives),
-                json.dumps(profile.key_legislations),
-                json.dumps(profile.relevant_systems),
-                json.dumps(profile.key_changes),
-                json.dumps(profile.reliance),
-                json.dumps(profile.scope_exclusion),
+                json.dumps(profile.audit_background.model_dump()),
+                json.dumps(profile.audit_objectives.model_dump()),
+                json.dumps(profile.key_legislations.model_dump()),
+                json.dumps(profile.relevant_systems.model_dump()),
+                json.dumps(profile.key_changes.model_dump()),
+                json.dumps(profile.reliance.model_dump()),
+                json.dumps(profile.scope_exclusion.model_dump()),
                 profile.core_risk,
                 profile.estimated_dates
             ))
