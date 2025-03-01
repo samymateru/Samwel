@@ -87,10 +87,57 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
 
 
 def add_planning_procedure(connection: Connection, std_template: StandardTemplate, engagement_id: int):
-    pass
+
+    query: str = """
+                   INSERT INTO public.std_template (
+                        engagement,
+                        reference,
+                        title,
+                        tests,
+                        results,
+                        observation,
+                        attachments,
+                        conclusion,
+                        prepared_by,
+                        reviewed_by
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                std_template.reference,
+                std_template.title,
+                std_template.tests.model_dump_json(),
+                std_template.results.model_dump_json(),
+                std_template.observation.model_dump_json(),
+                std_template.attachments,
+                std_template.conclusion.model_dump_json(),
+                std_template.prepared_by.model_dump_json(),
+                std_template.reviewed_by.model_dump_json()
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding planning procedures {e}")
 
 def get_planning_procedures(connection: Connection, column: str = None, value: int | str = None):
-    pass
+    query: str = """
+                   SELECT * from public.std_template
+                 """
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching planning procedures {e}")
 
 def get_prcm(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
@@ -142,3 +189,4 @@ def get_summary_audit_program(connection: Connection, column: str = None, value:
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of audit program {e}")
+

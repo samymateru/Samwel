@@ -36,7 +36,8 @@ class StandardTemplate(BaseModel):
     tests: Section
     results: Section
     observation: Section
-    attachment: List[str]
+    attachments: List[str]
+    conclusion: Section
     prepared_by: User
     reviewed_by: User
 
