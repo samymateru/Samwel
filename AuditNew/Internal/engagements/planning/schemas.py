@@ -16,36 +16,35 @@ class User(BaseModel):
     name: str | None
 
 class PRCM(BaseModel):
-    id: Optional[int] | None
-    process: Any | None
-    risk: Section | None
-    risk_rating: str | None
-    control: Section | None
-    control_objective: Section | None
-    control_type: str | None
-    residue_risk: str | None
+    id: Optional[int] = None
+    process: Optional[Section] = None
+    risk: Optional[Section] = None
+    risk_rating: Optional[str] = None
+    control: Optional[Section] = None
+    control_objective: Optional[Section] = None
+    control_type: Optional[str] = None
+    residue_risk: Optional[str] = None
 
 class SummaryAuditProgram(BaseModel):
-    process: Section | None
-    risk: Section | None
-    risk_rating: str | None
-    control: Section | None
-    procedure: str | None
-    program: str | None
+    process: Optional[Section] = None
+    risk: Optional[Section] = None
+    risk_rating: Optional[str] = None
+    control: Optional[Section] = None
+    procedure: Optional[str] = None
+    program: Optional[str] = None
 
 class EngagementLetter(BaseModel):
-    name: str | None
-    value: str | None
+    name: Optional[str] = None
+    value: Optional[str] = None
 
 class StandardTemplate(BaseModel):
-    reference: Optional[str] | None
-    title: str | None
-    tests: Section | None
-    results: Section | None
-    observation: Section | None
-    attachments: List[str] | None
-    conclusion: Section | None
-    type: Type | None = Type.STANDARD
-    prepared_by: User | None
-    reviewed_by: User | None
-
+    reference: Optional[str] = ""
+    title: Optional[str] = ""
+    tests: Optional[Section] | None
+    results: Optional[Section] | None
+    observation: Optional[Section] | None
+    attachments: Optional[List[str]] | None
+    conclusion: Optional[Section] | None
+    type: Optional[Type] | None = Type.STANDARD
+    prepared_by: Optional[User] | None
+    reviewed_by: Optional[User] | None

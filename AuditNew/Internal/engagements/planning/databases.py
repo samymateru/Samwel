@@ -85,6 +85,8 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding summary of audit program {e}")
 
+def safe_json_dump(obj):
+    return obj.model_dump_json() if obj is not None else '{}'
 
 def add_planning_procedure(connection: Connection, std_template: StandardTemplate, engagement_id: int):
 
@@ -110,14 +112,14 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
                 engagement_id,
                 std_template.reference,
                 std_template.title,
-                std_template.tests.model_dump_json(),
-                std_template.results.model_dump_json(),
-                std_template.observation.model_dump_json(),
+                safe_json_dump(std_template.tests),
+                safe_json_dump(std_template.results),
+                safe_json_dump(std_template.observation),
                 std_template.attachments,
-                std_template.conclusion.model_dump_json(),
+                safe_json_dump(std_template.conclusion),
                 std_template.type,
-                std_template.prepared_by.model_dump_json(),
-                std_template.reviewed_by.model_dump_json()
+                safe_json_dump(std_template.prepared_by),
+                safe_json_dump(std_template.reviewed_by)
             ))
         connection.commit()
     except Exception as e:
