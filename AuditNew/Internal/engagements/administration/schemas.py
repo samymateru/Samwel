@@ -6,36 +6,36 @@ class Section(BaseModel):
     value: str
 
 class EngagementProfile(BaseModel):
-    audit_background: Optional[Section] = None
-    audit_objectives: Optional[Section] = None
-    key_legislations: Optional[Section] = None
-    relevant_systems: Optional[Section] = None
-    key_changes: Optional[Section] = None
-    reliance: Optional[Section] = None
-    scope_exclusion: Optional[Section] = None
-    core_risk: Optional[List[str]] = None
-    estimated_dates: Optional[Section] = None
+    audit_background: Optional[Section]
+    audit_objectives: Optional[Section]
+    key_legislations: Optional[Section]
+    relevant_systems: Optional[Section]
+    key_changes: Optional[Section]
+    reliance: Optional[Section]
+    scope_exclusion: Optional[Section]
+    core_risk: Optional[List[str]]
+    estimated_dates: Optional[Section]
 
 class Policy(BaseModel):
-    id: Optional[int] = None
-    name: Optional[str] = None
-    version: Optional[str] = None
-    key_areas: Optional[Section] = None
-    attachment: Optional[str] = None
+    id: Optional[int]
+    name: Optional[str]
+    version: Optional[str]
+    key_areas: Optional[Section]
+    attachment: Optional[str]
 
 class EngagementProcess(BaseModel):
-    id: Optional[int] = None
-    process: Optional[str] = None
-    sub_proces: Optional[List[str]] = None
-    description: Optional[str] = None
-    business_unit: Optional[str] = None
+    id: Optional[int]
+    process: Optional[str]
+    sub_proces: Optional[List[str]]
+    description: Optional[str]
+    business_unit: Optional[str]
 
 class Regulations(BaseModel):
     id: Optional[int]
-    name: Optional[str] = None
-    issue_date: Optional[datetime] = None
-    key_areas: Optional[str] = None
-    attachment: Optional[str] = None
+    name: Optional[str]
+    issue_date: Optional[datetime]
+    key_areas: Optional[str]
+    attachment: Optional[str]
 
 class Role(BaseModel):
     id: int
@@ -44,8 +44,8 @@ class Role(BaseModel):
 
 class Staff(BaseModel):
     id: Optional[int]
-    name: Optional[str] = None
-    role: Optional[Role] = None
+    name: Optional[str]
+    role: Optional[Role]
     start_date: datetime = datetime.now()
-    end_date: Optional[datetime] = None
-    tasks: Optional[Any] = None
+    end_date: Optional[datetime]
+    tasks: Optional[Any]

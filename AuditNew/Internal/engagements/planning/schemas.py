@@ -9,43 +9,43 @@ class Type(str, Enum):
     PROGRAM = "program"
 
 class Section(BaseModel):
-    value: str | None
+    value: str
 
 class User(BaseModel):
-    id: int | None
-    name: str | None
+    id: int
+    name: str
 
 class PRCM(BaseModel):
-    id: Optional[int] = None
-    process: Optional[Section] = None
-    risk: Optional[Section] = None
-    risk_rating: Optional[str] = None
-    control: Optional[Section] = None
-    control_objective: Optional[Section] = None
-    control_type: Optional[str] = None
-    residue_risk: Optional[str] = None
+    id: Optional[int]
+    process: Optional[Section]
+    risk: Optional[Section]
+    risk_rating: Optional[str]
+    control: Optional[Section]
+    control_objective: Optional[Section]
+    control_type: Optional[str]
+    residue_risk: Optional[str]
 
 class SummaryAuditProgram(BaseModel):
-    process: Optional[Section] = None
-    risk: Optional[Section] = None
-    risk_rating: Optional[str] = None
-    control: Optional[Section] = None
-    procedure: Optional[str] = None
-    program: Optional[str] = None
+    process: Optional[Section]
+    risk: Optional[Section]
+    risk_rating: Optional[str]
+    control: Optional[Section]
+    procedure: Optional[str]
+    program: Optional[str]
 
 class EngagementLetter(BaseModel):
-    name: Optional[str] = None
-    value: Optional[str] = None
+    name: Optional[str]
+    value: Optional[str]
 
 class StandardTemplate(BaseModel):
     id: Optional[int]
     reference: Optional[str] = ""
-    title: Optional[str] = ""
-    tests: Optional[Section] | None
-    results: Optional[Section] | None
-    observation: Optional[Section] | None
-    attachments: Optional[List[str]] | None
-    conclusion: Optional[Section] | None
-    type: Optional[Type] | None = Type.STANDARD
-    prepared_by: Optional[User] | None
-    reviewed_by: Optional[User] | None
+    title: Optional[str]
+    tests: Optional[Section]
+    results: Optional[Section]
+    observation: Optional[Section]
+    attachments: Optional[List[str]]
+    conclusion: Optional[Section]
+    type: Optional[Type]  = Type.STANDARD
+    prepared_by: Optional[User]
+    reviewed_by: Optional[User]
