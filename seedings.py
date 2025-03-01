@@ -151,17 +151,114 @@ def control_type(connection: Connection, company: int):
 
 def roles(connection: Connection, company: int):
     values = [
-	{
-	  "name": "Owner",
-        "categories": {
-            "module": ["view", "edit", "delete", "assign", "approve"],
-            "user": ["view", "edit", "delete", "assign", "approve"],
-            "annual_plan": ["view", "edit", "delete", "assign", "approve"],
-            "engagement": ["view", "edit", "delete", "assign", "approve"],
-            "store": ["view", "edit", "delete", "assign", "approve"],
-            "role": ["view", "edit", "delete", "assign", "approve"]
+        {
+            "name": "Owner",
+            "creator": "Owner",
+            "categories": [
+                {
+                    "name": "eAudit_Setting",
+                    "permissions": {
+                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
+                        "profile": ["view", "edit", "delete", "assign", "approve"],
+                        "subscription": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "planning",
+                    "permissions": {
+                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
+                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "fieldwork",
+                    "permissions": {
+                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "reporting",
+                    "permissions": {
+                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
+                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "finalization",
+                    "permissions": {
+                        "procedures": ["view", "edit", "delete", "assign", "approve"],
+                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "audit_procedures",
+                    "permissions": {
+                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "follow_up",
+                    "permissions": {
+                        "reopen": ["view", "edit", "delete", "assign", "approve"],
+                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "creator": "Owner",
+            "categories": [
+                {
+                    "name": "eAudit_Setting",
+                    "permissions": {
+                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
+                        "profile": ["view", "edit", "delete", "assign", "approve"],
+                        "subscription": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "planning",
+                    "permissions": {
+                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
+                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "fieldwork",
+                    "permissions": {
+                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "reporting",
+                    "permissions": {
+                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
+                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "finalization",
+                    "permissions": {
+                        "procedures": ["view", "edit", "delete", "assign", "approve"],
+                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "audit_procedures",
+                    "permissions": {
+                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                },
+                {
+                    "name": "follow_up",
+                    "permissions": {
+                        "reopen": ["view", "edit", "delete", "assign", "approve"],
+                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
+                    }
+                }
+            ]
         }
-	},
    ]
     with connection.cursor() as cursor:
         role_values = [(json.dumps({"name": role["name"], "categories": role["categories"]}), company) for role in values]

@@ -10,10 +10,28 @@ class User(BaseModel):
     name: str
 
 class SummaryProcedures(BaseModel):
-    pass
+    id: Optional[int]
+    reference: str
+    title: Section
+    date_raised: datetime
+    raised_by: User
+    resolution_summary: Section
+    resolution_details: Section
+    resolved_by: User
+    date_resolved: datetime
+    decision: str
 
 class SummaryReviewNotes(BaseModel):
-    pass
+    id: Optional[int]
+    reference: str
+    title: Section
+    date_raised: datetime
+    raised_by: User
+    resolution_summary: Section
+    resolution_details: Section
+    resolved_by: User
+    date_resolved: datetime
+    decision: str
 
 class Task(BaseModel):
     id: Optional[int]
@@ -29,15 +47,15 @@ class Task(BaseModel):
     decision: str
 
 class Note(BaseModel):
-    class Task(BaseModel):
-        id: Optional[int]
-        title: str
-        description: Section
-        date_raised: datetime
-        raised_by: User
-        action_owner: User
-        resolution_summary: Section
-        resolution_details: Section
-        resolved_by: User
-        date_resolved: datetime
-        decision: str
+    id: Optional[int]
+    title: str
+    description: Section
+    date_raised: datetime
+    raised_by: User
+    action_owner: User
+    resolution_summary: Section
+    resolution_details: Section
+    resolved_by: User
+    date_resolved: datetime
+    decision: str
+
