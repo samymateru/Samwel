@@ -1,8 +1,12 @@
 from pydantic import BaseModel
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 class Section(BaseModel):
     value: str
+
+class User(BaseModel):
+    id: int
+    name: str
 
 class PRCM(BaseModel):
     id: Optional[int]
@@ -26,5 +30,13 @@ class EngagementLetter(BaseModel):
     name: str
     value: str
 
-class Planning(BaseModel):
-    pass
+class StandardTemplate(BaseModel):
+    reference: Optional[str]
+    title: str
+    tests: Section
+    results: Section
+    observation: Section
+    attachment: List[str]
+    prepared_by: User
+    reviewed_by: User
+
