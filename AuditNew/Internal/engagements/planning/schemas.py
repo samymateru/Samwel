@@ -38,6 +38,7 @@ class EngagementLetter(BaseModel):
     value: Optional[str] = None
 
 class StandardTemplate(BaseModel):
+    id: Optional[int]
     reference: Optional[str] = ""
     title: Optional[str] = ""
     tests: Optional[Section] | None
