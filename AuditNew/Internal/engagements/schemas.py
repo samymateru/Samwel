@@ -32,7 +32,7 @@ class Risk(BaseModel):
 class Lead(BaseModel):
     name: str
     user_id: int
-    role: Role
+    role: List[Role]
 
 class Engagement(BaseModel):
     engagement_id: int
