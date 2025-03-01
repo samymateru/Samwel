@@ -85,6 +85,13 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding summary of audit program {e}")
 
+
+def add_planning_procedure(connection: Connection, std_template: StandardTemplate, engagement_id: int):
+    pass
+
+def get_planning_procedures(connection: Connection, column: str = None, value: int | str = None):
+    pass
+
 def get_prcm(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
                    SELECT * from public.PRCM
