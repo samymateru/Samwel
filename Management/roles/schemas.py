@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class SubCategory(BaseModel):
     name: str
@@ -7,7 +7,7 @@ class SubCategory(BaseModel):
 
 class NewRole(BaseModel):
     name: str
-    creator: str
+    creator: Optional[str]
     categories: List[SubCategory]
 
 class Role(BaseModel):

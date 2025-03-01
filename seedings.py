@@ -261,7 +261,7 @@ def roles(connection: Connection, company: int):
         }
    ]
     with connection.cursor() as cursor:
-        role_values = [(json.dumps({"name": role["name"], "categories": role["categories"]}), company) for role in values]
+        role_values = [(json.dumps({"name": role["name"], "creator": role["creator"], "categories": role["categories"]}), company) for role in values]
 
         cursor.executemany(
             "INSERT INTO public.roles (roles, company) VALUES (%s::jsonb, %s);",
