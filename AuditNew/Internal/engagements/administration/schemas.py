@@ -13,7 +13,7 @@ class EngagementProfile(BaseModel):
     key_changes: Section
     reliance: Section
     scope_exclusion: Section
-    core_risk: Any
+    core_risk: List[str]
     estimated_dates: Section
 
 class Policy(BaseModel):
