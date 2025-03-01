@@ -8,6 +8,10 @@ class Role(BaseModel):
     id: int
     name: str
 
+class Module(BaseModel):
+    id: int
+    name: str
+
 class User(BaseModel):
     name: str
     telephone: str
@@ -15,15 +19,14 @@ class User(BaseModel):
     email: str
     status: bool
     role: List[int]
-    module: List[int]
+    module: Module
     id: int
     created_at: datetime
-
 
 class NewUser(BaseModel):
     name: str
     email: EmailStr
-    module: List[int] = Field(default=[])
+    module: Module
     role: Role
     telephone: Optional[str] = Field(default="12345678")
     type: Optional[str] = Field(default="user")
