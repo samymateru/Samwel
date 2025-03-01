@@ -194,3 +194,34 @@ def get_summary_audit_program(connection: Connection, column: str = None, value:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of audit program {e}")
 
+def edit_planning_procedure(connection: Connection, std_template: StandardTemplate, procedure_id: int):
+    query: str = """
+                    UPDATE public.std_template
+                    SET 
+                    title = %s,
+                    tests = %s::jsonb,
+                    results = %s::jsonb,
+                    observation = %s::jsonb,
+                    attachments = %s,
+                    conclusion = %s::jsonb,
+                    prepared_by = %s::jsonb,
+                    reviewed_by = %s::jsonb  WHERE id = %s; 
+                   """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                std_template.title,
+                safe_json_dump(std_template.tests),
+                safe_json_dump(std_template.results),
+                safe_json_dump(std_template.observation),
+                std_template.attachments,
+                safe_json_dump(std_template.conclusion),
+                safe_json_dump(std_template.prepared_by),
+                safe_json_dump(std_template.reviewed_by),
+                procedure_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating planning procedure {e}")
