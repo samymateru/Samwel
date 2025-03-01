@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 class Section(BaseModel):
     value: str
