@@ -7,6 +7,11 @@ class Type(str, Enum):
     RISKS = "risk"
     LETTERS = "letter"
     PROGRAM = "program"
+    FINDING = "finding"
+    PROCEDURE = "procedure"
+    SHEET = "sheet"
+    SURVEY = "survey"
+    ARCHIVE = "archive"
 
 class Section(BaseModel):
     value: str

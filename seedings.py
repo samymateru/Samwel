@@ -1366,5 +1366,429 @@ def planning_procedures(connection: Connection, engagement: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding planning procedures {e}")
 
+def reporting_procedures(connection: Connection, engagement: int):
+    values = [
+        {
+            "title": "Engagement scope",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "finding",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Summary of audit procedures",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "procedure",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Finding sheet",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "sheet",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Exit meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Draft audit report",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Final audit report",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Updating audit finding",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Audit closure meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Circulation of final audit report",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+    ]
+    query: str = """
+                   INSERT INTO public.reporting_procedure (
+                        engagement,
+                        title,
+                        tests,
+                        results,
+                        observation,
+                        attachments,
+                        conclusion,
+                        type,
+                        prepared_by,
+                        reviewed_by
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            for value in values:
+                cursor.execute(query, (
+                    engagement,
+                    value["title"],
+                    json.dumps(value["tests"]),
+                    json.dumps(value["results"]),
+                    json.dumps(value["observation"]),
+                    value["attachments"],
+                    json.dumps(value["conclusion"]),
+                    value["type"],
+                    json.dumps(value["prepared_by"]),
+                    json.dumps(value["reviewed_by"]),
+                ))
 
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding report procedures {e}")
 
+def finalization_procedures(connection: Connection, engagement: int):
+    values = [
+        {
+            "title": "Audit feedback process",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "survey",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Post audit meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Closure of audit file",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Archive file",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "archive",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+    ]
+    query: str = """
+                   INSERT INTO public.finalization_procedure (
+                        engagement,
+                        title,
+                        tests,
+                        results,
+                        observation,
+                        attachments,
+                        conclusion,
+                        type,
+                        prepared_by,
+                        reviewed_by
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            for value in values:
+                cursor.execute(query, (
+                    engagement,
+                    value["title"],
+                    json.dumps(value["tests"]),
+                    json.dumps(value["results"]),
+                    json.dumps(value["observation"]),
+                    value["attachments"],
+                    json.dumps(value["conclusion"]),
+                    value["type"],
+                    json.dumps(value["prepared_by"]),
+                    json.dumps(value["reviewed_by"]),
+                ))
+
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding finalization procedures {e}")
