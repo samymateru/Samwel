@@ -93,7 +93,6 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
     query: str = """
                    INSERT INTO public.std_template (
                         engagement,
-                        reference,
                         title,
                         tests,
                         results,
@@ -103,14 +102,13 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                std_template.reference,
                 std_template.title,
                 safe_json_dump(std_template.tests),
                 safe_json_dump(std_template.results),

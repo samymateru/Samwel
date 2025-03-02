@@ -9,7 +9,7 @@ def create_new_engagement(connection: Connection, engagement_data: NewEngagement
     query = """
                 INSERT INTO public.engagements (plan_id, code, name, risk, type, status, leads, stage, department,
                 sub_departments, quarter, start_date, end_date, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
             """
     try:
         with connection.cursor() as cursor:
@@ -31,11 +31,14 @@ def create_new_engagement(connection: Connection, engagement_data: NewEngagement
                                engagement_data.endDate,
                                engagement_data.created_at
                            ))
-        connection.commit()
+
+            id = cursor.fetchone()[0]
+            connection.commit()
+        return id
+
     except Exception as e:
         connection.rollback()
-        print(f"Error creating engagement {e}")
-        raise HTTPException(status_code=400, detail="Error creating engagement")
+        raise HTTPException(status_code=400, detail=f"Error creating engagement {e}")
 
 def update_engagement(connection: Connection, engagement_data: UpdateEngagement):
     query_parts = []

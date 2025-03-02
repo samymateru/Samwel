@@ -1,6 +1,8 @@
 import json
+from fastapi import HTTPException
 
 from psycopg2.extensions import connection as Connection
+from AuditNew.Internal.engagements.planning.databases import add_planning_procedure
 
 def engagement_types(connection: Connection, company: int):
     values = [
@@ -891,5 +893,478 @@ def business_process(connection: Connection, company: int):
             subprocess_values
         )
         connection.commit()
+
+
+def planning_procedures(connection: Connection, engagement: int):
+    values = [
+        {
+            "title": "Pre-engagement meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Client notification",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Audit mobilization meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Allocation of staff",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "id": 0,
+            "title": "Collection of client information",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Analyze client information",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Review of prior audit reports",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Engagement risk assessment",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "risk",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Fraud risk assessment",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Data analytics",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Identification of laws",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Benchmarking",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Engagement scope",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Audit engagement letters",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "letter",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Engagement work program",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "program",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        },
+        {
+            "title": "Audit kick off meeting",
+            "tests": {
+                "value": ""
+            },
+            "results": {
+                "value": ""
+            },
+            "observation": {
+                "value": ""
+            },
+            "attachments": [
+                ""
+            ],
+            "conclusion": {
+                "value": ""
+            },
+            "type": "standard",
+            "prepared_by": {
+                "id": 0,
+                "name": ""
+            },
+            "reviewed_by": {
+                "id": 0,
+                "name": ""
+            }
+        }
+    ]
+    query: str = """
+                   INSERT INTO public.std_template (
+                        engagement,
+                        title,
+                        tests,
+                        results,
+                        observation,
+                        attachments,
+                        conclusion,
+                        type,
+                        prepared_by,
+                        reviewed_by
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            for value in values:
+                cursor.execute(query, (
+                    engagement,
+                    value["title"],
+                    json.dumps(value["tests"]),
+                    json.dumps(value["results"]),
+                    json.dumps(value["observation"]),
+                    value["attachments"],
+                    json.dumps(value["conclusion"]),
+                    value["type"],
+                    json.dumps(value["prepared_by"]),
+                    json.dumps(value["reviewed_by"]),
+                ))
+
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding planning procedures {e}")
+
 
 
