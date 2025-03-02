@@ -31,6 +31,9 @@ class SubResourceTypes(str, Enum):
     SUB_IMPACT_CATEGORY_RATING = "sub_impact_category_rating"
     BUSINESS_SUB_PROCESS = "business_sub_process",
 
+class Module(BaseModel):
+    id: int
+    name: str
 
 class Company(BaseModel):
     name: str

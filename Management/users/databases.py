@@ -31,7 +31,7 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
                                    user_data.email,
                                    user_data.type,
                                    user_data.role.model_dump_json(),
-                                   user_data.module.model_dump_json(),
+                                   user_data.module,
                                    generate_hash_password(user_data.password),
                                    user_data.status,
                                    datetime.now()
