@@ -10,7 +10,7 @@ from typing import List
 router = APIRouter(prefix="/engagements")
 
 @router.post("/reporting_procedures/{engagement_id}")
-def create_new_planning_procedure(
+def create_new_reporting_procedure(
         engagement_id: int,
         report: StandardTemplate,
         db=Depends(get_db_connection),
@@ -25,7 +25,7 @@ def create_new_planning_procedure(
 
 
 @router.get("/reporting_procedures/{engagement_id}", response_model=List[StandardTemplate])
-def fetch_planning_procedures(
+def fetch_reporting_procedures(
         engagement_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -38,8 +38,8 @@ def fetch_planning_procedures(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/planning_procedures/{procedure_id}")
-def create_new_planning_procedure(
+@router.put("/reporting_procedures/{procedure_id}")
+def edit_reporting_procedure(
         procedure_id: int,
         report: StandardTemplate,
         db=Depends(get_db_connection),
