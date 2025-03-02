@@ -46,7 +46,7 @@ def add_engagement_policies(connection: Connection, policy: Policy, engagement_i
                         name,
                         version,
                         key_areas,
-                        attachment,
+                        attachment
                    ) VALUES(%s, %s, %s, %s, %s)
                  """
     try:

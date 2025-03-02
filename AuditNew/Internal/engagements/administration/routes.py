@@ -96,10 +96,19 @@ def create_engagement_profile(
 @router.post("/context/policies/{engagement_id}")
 def create_engagement_profile(
         engagement_id: int,
-        policy: Policy,
+        name: str = Form(...),
+        version: str = Form(...),
+        key_ares: str = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
+    policy = Policy(
+        name=name,
+        version=version,
+        key_areas=key_ares,
+        attachment=attachment.filename
+    )
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:

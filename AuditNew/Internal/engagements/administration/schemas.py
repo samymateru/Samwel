@@ -17,10 +17,10 @@ class EngagementProfile(BaseModel):
     estimated_dates: Optional[Section]
 
 class Policy(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     name: Optional[str]
     version: Optional[str]
-    key_areas: Optional[Section]
+    key_areas: Optional[str]
     attachment: Optional[str]
 
 class EngagementProcess(BaseModel):
