@@ -31,7 +31,7 @@ class EngagementProcess(BaseModel):
     business_unit: Optional[str]
 
 class Regulations(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     name: Optional[str]
     issue_date: Optional[datetime]
     key_areas: Optional[str]

@@ -43,7 +43,7 @@ def add_reporting_procedure(connection: Connection, report: StandardTemplate, en
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding reporting procedures {e}")
 
-def get_planning_procedures(connection: Connection, column: str = None, value: int | str = None):
+def get_reporting_procedures(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
                    SELECT * from public.reporting_procedure
                  """
@@ -59,3 +59,35 @@ def get_planning_procedures(connection: Connection, column: str = None, value: i
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reporting procedures {e}")
+
+def edit_reporting_procedure(connection: Connection, report: StandardTemplate, procedure_id: int):
+    query: str = """
+                    UPDATE public.reporting_template
+                    SET 
+                    title = %s,
+                    tests = %s::jsonb,
+                    results = %s::jsonb,
+                    observation = %s::jsonb,
+                    attachments = %s,
+                    conclusion = %s::jsonb,
+                    prepared_by = %s::jsonb,
+                    reviewed_by = %s::jsonb  WHERE id = %s; 
+                   """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                report.title,
+                safe_json_dump(report.tests),
+                safe_json_dump(report.results),
+                safe_json_dump(report.observation),
+                report.attachments,
+                safe_json_dump(report.conclusion),
+                safe_json_dump(report.prepared_by),
+                safe_json_dump(report.reviewed_by),
+                procedure_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating reporting procedure {e}")

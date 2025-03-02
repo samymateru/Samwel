@@ -62,3 +62,35 @@ def get_finalization_procedures(connection: Connection, column: str = None, valu
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching finalization procedures {e}")
+
+def edit_finalization_procedure(connection: Connection, finalization: StandardTemplate, procedure_id: int):
+    query: str = """
+                    UPDATE public.finalization_procedure
+                    SET 
+                    title = %s,
+                    tests = %s::jsonb,
+                    results = %s::jsonb,
+                    observation = %s::jsonb,
+                    attachments = %s,
+                    conclusion = %s::jsonb,
+                    prepared_by = %s::jsonb,
+                    reviewed_by = %s::jsonb  WHERE id = %s; 
+                   """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                finalization.title,
+                safe_json_dump(finalization.tests),
+                safe_json_dump(finalization.results),
+                safe_json_dump(finalization.observation),
+                finalization.attachments,
+                safe_json_dump(finalization.conclusion),
+                safe_json_dump(finalization.prepared_by),
+                safe_json_dump(finalization.reviewed_by),
+                procedure_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating finalization procedure {e}")

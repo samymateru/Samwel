@@ -35,3 +35,17 @@ def fetch_planning_procedures(
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/finalization_procedures/{procedure_id}")
+def create_new_planning_procedure(
+        procedure_id: int,
+        finalization: StandardTemplate,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_finalization_procedure(db, finalization=finalization, procedure_id=procedure_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -106,7 +106,7 @@ def add_engagement_regulations(connection: Connection, regulation: Regulations, 
                 engagement_id,
                 regulation.name,
                 regulation.issue_date,
-                regulation.ke_areas,
+                regulation.key_areas,
                 regulation.attachment
             ))
         connection.commit()

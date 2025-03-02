@@ -1,6 +1,6 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.administration.schemas import *
 from AuditNew.Internal.engagements.administration.databases import *
@@ -124,10 +124,19 @@ def create_engagement_process(
 @router.post("/context/regulations/{engagement_id}")
 def create_engagement_regulations(
         engagement_id: int,
-        regulation: Regulations,
+        name: str = Form(...),
+        issue_date: datetime = Form(...),
+        key_areas = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
+    regulation = Regulations(
+        name = name,
+        issue_date= issue_date,
+        key_areas = key_areas,
+        attachment = attachment.filename
+    )
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
