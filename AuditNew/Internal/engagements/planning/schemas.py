@@ -4,8 +4,8 @@ from enum import Enum
 
 class Type(str, Enum):
     STANDARD = "standard"
-    RISKS = "risks"
-    LETTERS = "letters"
+    RISKS = "risk"
+    LETTERS = "letter"
     PROGRAM = "program"
 
 class Section(BaseModel):
@@ -39,7 +39,7 @@ class EngagementLetter(BaseModel):
 
 class StandardTemplate(BaseModel):
     id: Optional[int]
-    reference: Optional[str] = ""
+    reference: Optional[str] | None = ""
     title: Optional[str]
     tests: Optional[Section]
     results: Optional[Section]
