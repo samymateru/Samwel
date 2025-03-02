@@ -13,10 +13,10 @@ router = APIRouter(prefix="/engagements")
 def get_engagements(
         annual_id: str,
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        #user: CurrentUser  = Depends(get_current_user)
 ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    #if user.status_code != 200:
+        #return HTTPException(status_code=user.status_code, detail=user.description)
     try:
         engagement_data: List[Dict] = databases.get_engagements(db, column="plan_id", value=annual_id)
         if engagement_data.__len__() == 0:
@@ -30,12 +30,11 @@ def create_new_engagement(
         annual_id: int,
         engagement: NewEngagement,
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    print(engagement.department.code)
     eng: str | int = databases.get_engagement_code(db, str(annual_id))
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        return HTTPException(status_code=user.status_code, detail=user.description)
     max_ = 0
     try:
         for data in eng:
