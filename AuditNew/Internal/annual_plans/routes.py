@@ -13,10 +13,10 @@ router = APIRouter(prefix="/annual_plans")
 @router.get("/")
 def get_annual_plans(
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        #user: CurrentUser  = Depends(get_current_user)
 ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    #if user.status_code != 200:
+        #return HTTPException(status_code=user.status_code, detail=user.description)
     try:
         # role_ids: List[int] = user_database.get_user(db, column="id", value=1)[0].get("role_id")
         # user_roles: List[Dict] = role_database.get_user_roles(db, role_ids)
@@ -24,7 +24,7 @@ def get_annual_plans(
         # print(matching_dicts)
         # for i in matching_dicts:
         #     if i.get("read"):
-        annual_plans_data: List[Dict] = databases.get_annual_plans(db, column="company_id", value=current_user.company_id)
+        annual_plans_data: List[Dict] = databases.get_annual_plans(db, column="company", value=1)
         if annual_plans_data.__len__() == 0:
             return {"payload": [], "status_code": 200}
         return {"payload": annual_plans_data, "status_code": 200}

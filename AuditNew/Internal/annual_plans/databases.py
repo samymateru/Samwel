@@ -7,7 +7,7 @@ from datetime import datetime
 
 def create_new_annual_plan(connection: Connection, annual_audit_plan: NewAnnualPlan, company_id: int) -> None:
     query = """
-                INSERT INTO public.annual_plans (company_id, name, year, status, start, "end", attachment, created_at)
+                INSERT INTO public.annual_plans (company, name, year, status, start, "end", attachment, created_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
     try:
@@ -110,7 +110,7 @@ def delete_annual_plan(connection: Connection, annual_plan_id: List[int]) -> Non
         print(f"Error occur during delete of the annual plan {e}")
         raise HTTPException(status_code=400, detail="Error occur during delete of the annual plan")
 
-def get_annual_plans(connection: Connection,  column: str = None, value: str = None, row: str = None) -> List[Dict]:
+def get_annual_plans(connection: Connection,  column: str = None, value: str | int  = None, row: str = None) -> List[Dict]:
     query = "SELECT * FROM public.annual_plans "
     if row:
         query = f"SELECT {row} FROM public.annual_plans "
