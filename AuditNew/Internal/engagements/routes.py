@@ -13,10 +13,10 @@ router = APIRouter(prefix="/engagements")
 def get_engagements(
         annual_id: str,
         db = Depends(get_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #return HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        return HTTPException(status_code=user.status_code, detail=user.description)
     try:
         engagement_data: List[Dict] = databases.get_engagements(db, column="plan_id", value=annual_id)
         if engagement_data.__len__() == 0:
