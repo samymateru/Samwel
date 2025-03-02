@@ -8,6 +8,8 @@ from Management.settings.risk_rating.routes import router as risk_rating_router
 from Management.settings.engagement_types.routes import router as engagement_types_router
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.work_program.routes import router as work_program_router
+from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
+from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from Management.users.routes import router as users_router
@@ -72,17 +74,18 @@ def users(
 app.include_router(companies_router, tags=["Company"])
 app.include_router(users_router,tags=["User"])
 app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
-
-# app.include_router(modules_router, tags=["Modules"])
+app.include_router(administration_router, tags=["Engagement Administration"])
+app.include_router(planning_router, tags=["Engagement Planning"])
+app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
+app.include_router(finalization_router, tags=["Engagement Finalization"])
+app.include_router(reporting_router, tags=["Engagement Reporting"])
+app.include_router(work_program_router, tags=["Engagement Work Program"])
 app.include_router(roles_router, tags=["Roles"])
 app.include_router(engagements_router, tags=["Engagements"])
 app.include_router(business_process_router, tags=["Business Process"])
 app.include_router(risk_rating_router, tags=["Risk Rating"])
 app.include_router(engagement_types_router, tags=["Engagement Types"])
-app.include_router(administration_router, tags=["Engagement Administration"])
-app.include_router(planning_router, tags=["Engagement Planning"])
-app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
-app.include_router(work_program_router, tags=["Engagement Work Program"])
+# app.include_router(modules_router, tags=["Modules"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)
 # app.include_router(audit_logs_router)
