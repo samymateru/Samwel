@@ -94,7 +94,7 @@ def create_engagement_profile(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/context/policies/{engagement_id}")
-def create_engagement_profile(
+def create_engagement_policy(
         engagement_id: int,
         name: str = Form(...),
         version: str = Form(...),

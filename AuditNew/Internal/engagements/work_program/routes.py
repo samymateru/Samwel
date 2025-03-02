@@ -24,7 +24,7 @@ def create_new_main_program(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/sub_program/{program_id}")
-def create_new_main_program(
+def create_new_sub_program(
         program_id: int,
         sub_program: SubProgram,
         db=Depends(get_db_connection),

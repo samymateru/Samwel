@@ -23,7 +23,7 @@ def fetch_prcm(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/summary_audit_program/{engagement_id}", response_model=SummaryAuditProgram)
-def fetch_prcm(
+def fetch_summary_of_audit_program(
         engagement_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -51,7 +51,7 @@ def fetch_engagement_letter(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/engagement_letter/{engagement_id}")
-def create_new_letter(
+def create_new_engagement_letter(
         engagement_id: int,
         letter: EngagementLetter,
         db=Depends(get_db_connection),
@@ -80,7 +80,7 @@ def create_new_prcm(
 
 
 @router.post("/summary_audit_program/{engagement_id}")
-def create_new_prcm(
+def create_new_summary_of_audit_program(
         engagement_id: int,
         summary: SummaryAuditProgram,
         db=Depends(get_db_connection),
@@ -123,7 +123,7 @@ def fetch_planning_procedures(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/planning_procedures/{procedure_id}")
-def create_new_planning_procedure(
+def edit_planning_procedure(
         procedure_id: int,
         std_template: StandardTemplate,
         db=Depends(get_db_connection),
