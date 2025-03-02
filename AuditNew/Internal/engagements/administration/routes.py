@@ -49,7 +49,7 @@ def fetch_engagement_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/regulations/{engagement_id}", response_model=EngagementProfile)
+@router.get("/context/regulations/{engagement_id}", response_model=Regulations)
 def fetch_regulations(
         engagement_id: int,
         db=Depends(get_db_connection),

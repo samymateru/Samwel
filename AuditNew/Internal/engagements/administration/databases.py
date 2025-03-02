@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.administration.schemas import *
 from psycopg2.extensions import cursor as Cursor
-import json
+
 
 def add_engagement_profile(connection: Connection, profile: EngagementProfile, engagement_id: int):
     query: str = """

@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/reporting/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/reporting/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/reporting/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,22 +98,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00103" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740668279600</created>
-      <option name="number" value="00103" />
-      <option name="presentableId" value="LOCAL-00103" />
-      <option name="project" value="LOCAL" />
-      <updated>1740668279600</updated>
-    </task>
-    <task id="LOCAL-00104" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740668437245</created>
-      <option name="number" value="00104" />
-      <option name="presentableId" value="LOCAL-00104" />
-      <option name="project" value="LOCAL" />
-      <updated>1740668437245</updated>
     </task>
     <task id="LOCAL-00105" summary="refactoring">
       <option name="closed" value="true" />
@@ -484,7 +475,23 @@
       <option name="project" value="LOCAL" />
       <updated>1740929439239</updated>
     </task>
-    <option name="localTasksCounter" value="152" />
+    <task id="LOCAL-00152" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740929602960</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1740929602960</updated>
+    </task>
+    <task id="LOCAL-00153" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1740929627527</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1740929627528</updated>
+    </task>
+    <option name="localTasksCounter" value="154" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
