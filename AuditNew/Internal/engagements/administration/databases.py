@@ -131,7 +131,7 @@ def add_engagement_staff(connection: Connection, staff: Staff, engagement_id: in
             cursor.execute(query, (
                 engagement_id,
                 staff.name,
-                staff.role,
+                staff.role.model_dump_json(),
                 staff.start_date,
                 staff.end_date,
                 staff.tasks
