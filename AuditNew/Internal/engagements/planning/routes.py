@@ -1,6 +1,6 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.planning.schemas import *
 from AuditNew.Internal.engagements.planning.databases import *
@@ -51,17 +51,23 @@ def fetch_engagement_letter(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/engagement_letter/{engagement_id}")
+@router.post("/engagement_letter/{engagement_id}", response_model=ResponseMessage)
 def create_new_engagement_letter(
         engagement_id: int,
-        letter: EngagementLetter,
+        name: str = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        letter = EngagementLetter(
+            name=name,
+            attachment=attachment.filename
+        )
         add_engagement_letter(db, letter=letter, engagement_id=engagement_id)
+        return {"detail": "Letter added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

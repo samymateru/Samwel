@@ -42,7 +42,7 @@ class SummaryAuditProgram(BaseModel):
 class EngagementLetter(BaseModel):
     id: Optional[int] = None
     name: Optional[str]
-    value: Optional[str]
+    attachment: Optional[str]
 
 class StandardTemplate(BaseModel):
     id: Optional[int] = None
