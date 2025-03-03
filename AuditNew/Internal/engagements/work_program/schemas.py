@@ -7,6 +7,7 @@ class User(BaseModel):
     id: int
     name: str
     email: str
+    date_issued: datetime
 
 class MainProgram(BaseModel):
     id: Optional[int] = None
@@ -28,7 +29,8 @@ class SubProgram(BaseModel):
     extended_results: Optional[str]
     effectiveness: Optional[str]
     conclusion: Optional[str]
-    evidence: List[str]
+    reviewed_by: Optional[User]
+    prepared_by: Optional[User]
 
 class Issue(BaseModel):
     id: Optional[int] = None
@@ -80,3 +82,7 @@ class ReviewNote(BaseModel):
     resolved_by: Optional[str]
     date_resolved: Optional[datetime]
     decision: Optional[str]
+
+class SubProgramEvidence(BaseModel):
+    id: Optional[int] = None
+    attachment: Optional[str]

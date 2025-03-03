@@ -39,9 +39,10 @@ def add_new_sub_program(connection: Connection, sub_program: SubProgram, program
                                 extended_results,
                                 effectiveness,
                                 conclusion,
-                                evidence
+                                reviewed_by,
+                                prepared_by
                                 ) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -62,7 +63,8 @@ def add_new_sub_program(connection: Connection, sub_program: SubProgram, program
                 sub_program.extended_results,
                 sub_program.effectiveness,
                 sub_program.conclusion,
-                sub_program.evidence
+                sub_program.reviewed_by,
+                sub_program.prepared_by
             ))
         connection.commit()
     except Exception as e:
@@ -202,3 +204,39 @@ def add_new_review_note(connection: Connection, review_note: ReviewNote, sub_pro
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating review note {e}")
+
+def add_new_sub_program_evidence(connection: Connection, evidence: SubProgramEvidence, sub_program_id: int):
+    query: str = """
+                       INSERT INTO public.sub_program_evidence (
+                           sub_program,
+                           attachment
+                           ) VALUES (%s, %s); 
+                    """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                sub_program_id,
+                evidence.attachment
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating sub program evidence {e}")
+
+def get_sub_program_evidence(connection: Connection, column: str = None, value: int | str = None):
+    query: str = """
+                   SELECT * from public.sub_program_evidence
+                 """
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching sub program evidence {e}")

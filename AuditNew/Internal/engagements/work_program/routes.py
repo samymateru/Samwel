@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.work_program.databases import *
 from AuditNew.Internal.engagements.work_program.schemas import *
 from utils import get_current_user
 from schema import CurrentUser
+from schema import ResponseMessage
 
 
 router = APIRouter(prefix="/engagements")
@@ -80,5 +81,38 @@ def create_new_review_note(
     try:
 
         add_new_review_note(db, review_note=review_note, sub_program_id=sub_program_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/sub_program/evidence/{sub_program_id}", response_model=ResponseMessage)
+def create_new_sub_program_evidence(
+        sub_program_id: int,
+        attachment: UploadFile = File(...),
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        evidence = SubProgramEvidence(
+            attachment=attachment.filename
+        )
+        add_new_sub_program_evidence(db, evidence=evidence, sub_program_id=sub_program_id)
+        return {"detail": "Evidence added successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.get("/sub_program/evidence/{sub_program_id}", response_model=List[SubProgramEvidence])
+def fetch_engagement_letter(
+        sub_program_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = get_sub_program_evidence(db, column="sub_program", value=sub_program_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

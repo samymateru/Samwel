@@ -9,8 +9,9 @@ def add_engagement_letter(connection: Connection, letter: EngagementLetter, enga
                    INSERT INTO public.engagement_letter (
                         engagement,
                         name,
-                        value
-                   ) VALUES(%s, %s, %s)
+                        date_attached,
+                        attachment
+                   ) VALUES(%s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -18,7 +19,8 @@ def add_engagement_letter(connection: Connection, letter: EngagementLetter, enga
             cursor.execute(query, (
                 engagement_id,
                 letter.name,
-                letter.value
+                letter.date_attached,
+                letter.attachment
             ))
         connection.commit()
     except Exception as e:

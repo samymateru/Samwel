@@ -34,7 +34,7 @@ class SummaryReviewNotes(BaseModel):
     decision: str
 
 class Task(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     title: str
     description: Section
     date_raised: datetime
@@ -47,7 +47,7 @@ class Task(BaseModel):
     decision: str
 
 class Note(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     title: str
     description: Section
     date_raised: datetime
