@@ -90,15 +90,11 @@ def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
 def add_planning_procedure(connection: Connection, std_template: StandardTemplate, engagement_id: int):
-    query_ = f"""
-        SELECT reference FROM public.std_template
-        WHERE reference IS NOT NULL
-        ORDER BY reference DESC 
-        LIMIT 1
-    """
+
     query: str = """
                    INSERT INTO public.std_template (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -108,14 +104,15 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            get_next_reference(connection=connection, resource="std_template", engagement=engagement_id)
+            ref = get_next_reference(connection=connection, resource="std_template", engagement=engagement_id)
             cursor.execute(query, (
                 engagement_id,
+                ref,
                 std_template.title,
                 safe_json_dump(std_template.tests),
                 safe_json_dump(std_template.results),

@@ -4,6 +4,7 @@ from AuditNew.Internal.engagements.finalizations.schemas import *
 from AuditNew.Internal.engagements.planning.schemas import StandardTemplate
 from psycopg2.extensions import cursor as Cursor
 
+from utils import get_next_reference
 
 
 def safe_json_dump(obj):
@@ -15,6 +16,7 @@ def add_finalization_procedure(connection: Connection, finalization: StandardTem
     query: str = """
                    INSERT INTO public.finalization_procedure (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -24,13 +26,15 @@ def add_finalization_procedure(connection: Connection, finalization: StandardTem
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
+            ref = get_next_reference(connection=connection, resource="finalization_procedure", engagement=engagement_id)
             cursor.execute(query, (
                 engagement_id,
+                ref,
                 finalization.title,
                 safe_json_dump(finalization.tests),
                 safe_json_dump(finalization.results),

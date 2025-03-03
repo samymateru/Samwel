@@ -4,6 +4,9 @@ from AuditNew.Internal.engagements.reporting.schemas import *
 from AuditNew.Internal.engagements.planning.schemas import StandardTemplate
 from psycopg2.extensions import cursor as Cursor
 
+from utils import get_next_reference
+
+
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
@@ -12,6 +15,7 @@ def add_reporting_procedure(connection: Connection, report: StandardTemplate, en
     query: str = """
                    INSERT INTO public.reporting_procedure (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -21,13 +25,15 @@ def add_reporting_procedure(connection: Connection, report: StandardTemplate, en
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
+            ref = get_next_reference(connection=connection, resource="reporting_procedure", engagement=engagement_id)
             cursor.execute(query, (
                 engagement_id,
+                ref,
                 report.title,
                 safe_json_dump(report.tests),
                 safe_json_dump(report.results),

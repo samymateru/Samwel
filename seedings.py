@@ -1334,6 +1334,7 @@ def planning_procedures(connection: Connection, engagement: int):
     query: str = """
                    INSERT INTO public.std_template (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -1343,13 +1344,15 @@ def planning_procedures(connection: Connection, engagement: int):
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
+            ref = 1
             for value in values:
                 cursor.execute(query, (
                     engagement,
+                    f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),
@@ -1360,6 +1363,7 @@ def planning_procedures(connection: Connection, engagement: int):
                     json.dumps(value["prepared_by"]),
                     json.dumps(value["reviewed_by"]),
                 ))
+                ref = ref + 1
 
         connection.commit()
     except Exception as e:
@@ -1615,6 +1619,7 @@ def reporting_procedures(connection: Connection, engagement: int):
     query: str = """
                    INSERT INTO public.reporting_procedure (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -1624,13 +1629,15 @@ def reporting_procedures(connection: Connection, engagement: int):
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
+            ref = 1
             for value in values:
                 cursor.execute(query, (
                     engagement,
+                    f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),
@@ -1641,6 +1648,7 @@ def reporting_procedures(connection: Connection, engagement: int):
                     json.dumps(value["prepared_by"]),
                     json.dumps(value["reviewed_by"]),
                 ))
+                ref = ref + 1
 
         connection.commit()
     except Exception as e:
@@ -1761,6 +1769,7 @@ def finalization_procedures(connection: Connection, engagement: int):
     query: str = """
                    INSERT INTO public.finalization_procedure (
                         engagement,
+                        reference,
                         title,
                         tests,
                         results,
@@ -1770,13 +1779,15 @@ def finalization_procedures(connection: Connection, engagement: int):
                         type,
                         prepared_by,
                         reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
+            ref = 1
             for value in values:
                 cursor.execute(query, (
                     engagement,
+                    f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),
@@ -1787,6 +1798,7 @@ def finalization_procedures(connection: Connection, engagement: int):
                     json.dumps(value["prepared_by"]),
                     json.dumps(value["reviewed_by"]),
                 ))
+                ref = ref + 1
 
         connection.commit()
     except Exception as e:

@@ -79,25 +79,21 @@ def get_next_reference(connection: Connection, resource: str, engagement: int):
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query)
+            cursor.execute(query, (engagement,))
             result = cursor.fetchone()
-            last_ref = result[0] if result else "REF-0000"
-            print(last_ref)
-            # Extract number, increment, and format
-            #last_number = int(last_ref.split("-")[1])
-            #new_ref = f"REF-{last_number + 1:04d}"
 
-            #return new_ref
+            if result is None:
+                return "REF-0001"
+
+            print(result[0])
+
+            #Extract number, increment, and format
+            last_number = int(result[0].split("-")[1])
+            print(last_number)
+            new_ref = f"REF-{last_number + 1:04d}"
+            return new_ref
 
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
-
-
-
-    # Extract number, increment, and format
-    last_number = int(last_ref.split("-")[1])
-    new_ref = f"REF-{last_number + 1:04d}"
-
-    return new_ref
