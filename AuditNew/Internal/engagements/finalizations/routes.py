@@ -14,10 +14,10 @@ def create_new_finalization_procedure(
         engagement_id: int,
         finalization: StandardTemplate,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_finalization_procedure(db, finalization=finalization, engagement_id=engagement_id)
         return {"detail": "Finalization procedure added successfully"}
@@ -28,10 +28,10 @@ def create_new_finalization_procedure(
 def fetch_finalization_procedures(
         engagement_id: int,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = get_finalization_procedures(db, column="engagement", value=engagement_id)
         return data
