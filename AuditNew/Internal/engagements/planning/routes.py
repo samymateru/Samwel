@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.planning.schemas import *
 from AuditNew.Internal.engagements.planning.databases import *
+from schema import ResponseMessage
 
 router = APIRouter(prefix="/engagements")
 
@@ -64,7 +65,7 @@ def create_new_engagement_letter(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/PRCM/{engagement_id}")
+@router.post("/PRCM/{engagement_id}", response_model=ResponseMessage)
 def create_new_prcm(
         engagement_id: int,
         prcm: PRCM,
@@ -75,11 +76,12 @@ def create_new_prcm(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_engagement_prcm(db, prcm=prcm, engagement_id=engagement_id)
+        return {"detail": "PRCM added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.post("/summary_audit_program/{engagement_id}")
+@router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
 def create_new_summary_of_audit_program(
         engagement_id: int,
         summary: SummaryAuditProgram,
@@ -90,10 +92,11 @@ def create_new_summary_of_audit_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_summary_audit_program(db, summary=summary, engagement_id=engagement_id)
+        return {"detail": "Audit program added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/planning_procedures/{engagement_id}")
+@router.post("/planning_procedures/{engagement_id}", response_model=ResponseMessage)
 def create_new_planning_procedure(
         engagement_id: int,
         std_template: StandardTemplate,
@@ -104,6 +107,7 @@ def create_new_planning_procedure(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_planning_procedure(db, std_template=std_template, engagement_id=engagement_id)
+        return {"detail": "Planning procedure added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
