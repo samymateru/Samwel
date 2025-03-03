@@ -26,7 +26,7 @@ class User(BaseModel):
 class NewUser(BaseModel):
     name: str
     email: EmailStr
-    module: List[int]
+    module: str
     role: Role
     telephone: Optional[str] = Field(default="12345678")
     type: Optional[str] = Field(default="user")

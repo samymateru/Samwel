@@ -93,6 +93,7 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
     query: str = """
                    INSERT INTO public.std_template (
                         engagement,
+                        re
                         title,
                         tests,
                         results,

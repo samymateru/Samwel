@@ -67,3 +67,19 @@ def generated_password() -> str:
     return password
 
 
+def get_next_reference(db, resource: str):
+    query = f"""
+        SELECT reference FROM public.{resource}
+        WHERE reference IS NOT NULL
+        ORDER BY reference DESC 
+        LIMIT 1
+    """
+
+    result = db.execute(query).fetchone()
+    last_ref = result[0] if result else "REF-0000"
+
+    # Extract number, increment, and format
+    last_number = int(last_ref.split("-")[1])
+    new_ref = f"REF-{last_number + 1:04d}"
+
+    return new_ref
