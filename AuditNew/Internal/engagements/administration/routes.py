@@ -79,7 +79,7 @@ def fetch_staff(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/profile/{engagement_id}")
+@router.post("/profile/{engagement_id}", response_model=ResponseMessage)
 def create_engagement_profile(
         engagement_id: int,
         profile: EngagementProfile,
@@ -91,6 +91,7 @@ def create_engagement_profile(
     try:
         delete_profile(db, engagement_id)
         add_engagement_profile(db, profile=profile, engagement_id=engagement_id)
+        return {"detail": "Profile added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -118,7 +119,7 @@ def create_engagement_policy(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/context/engagement_process/{engagement_id}")
+@router.post("/context/engagement_process/{engagement_id}", response_model=ResponseMessage)
 def create_engagement_process(
         engagement_id: int,
         process: EngagementProcess,
@@ -129,10 +130,11 @@ def create_engagement_process(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_engagement_process(db, process=process, engagement_id=engagement_id)
+        return {"detail": "Engagement process added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/context/regulations/{engagement_id}")
+@router.post("/context/regulations/{engagement_id}", response_model=ResponseMessage)
 def create_engagement_regulations(
         engagement_id: int,
         name: str = Form(...),
@@ -152,6 +154,7 @@ def create_engagement_regulations(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_engagement_regulations(db, regulation=regulation, engagement_id=engagement_id)
+        return {"detail": "Regulation added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
