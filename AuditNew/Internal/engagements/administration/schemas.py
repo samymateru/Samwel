@@ -48,4 +48,4 @@ class Staff(BaseModel):
     role: Optional[Role]
     start_date: datetime = datetime.now()
     end_date: Optional[datetime]
-    tasks: Optional[Any]
+    tasks: Optional[str]
