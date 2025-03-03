@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.planning.schemas import *
 from psycopg2.extensions import cursor as Cursor
+from utils import get_next_reference
 
 def add_engagement_letter(connection: Connection, letter: EngagementLetter, engagement_id: int):
     query: str = """
@@ -73,10 +74,10 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                summary.process,
-                summary.risk,
+                summary.process.model_dump_json(),
+                summary.risk.model_dump_json(),
                 summary.risk_rating,
-                summary.control,
+                summary.control.model_dump_json(),
                 summary.procedure,
                 summary.program,
             ))
@@ -89,11 +90,15 @@ def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
 def add_planning_procedure(connection: Connection, std_template: StandardTemplate, engagement_id: int):
-
+    query_ = f"""
+        SELECT reference FROM public.std_template
+        WHERE reference IS NOT NULL
+        ORDER BY reference DESC 
+        LIMIT 1
+    """
     query: str = """
                    INSERT INTO public.std_template (
                         engagement,
-                        re
                         title,
                         tests,
                         results,
@@ -108,6 +113,7 @@ def add_planning_procedure(connection: Connection, std_template: StandardTemplat
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
+            get_next_reference(connection=connection, resource="std_template", engagement=engagement_id)
             cursor.execute(query, (
                 engagement_id,
                 std_template.title,

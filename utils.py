@@ -6,10 +6,12 @@ from dotenv import load_dotenv
 from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from schema import TokenError, CurrentUser
 import secrets
 import string
+from psycopg2.extensions import connection as Connection
+from psycopg2.extensions import cursor as Cursor
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -67,16 +69,32 @@ def generated_password() -> str:
     return password
 
 
-def get_next_reference(db, resource: str):
+def get_next_reference(connection: Connection, resource: str, engagement: int):
     query = f"""
         SELECT reference FROM public.{resource}
-        WHERE reference IS NOT NULL
+        WHERE engagement = %s
         ORDER BY reference DESC 
         LIMIT 1
     """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query)
+            result = cursor.fetchone()
+            last_ref = result[0] if result else "REF-0000"
+            print(last_ref)
+            # Extract number, increment, and format
+            #last_number = int(last_ref.split("-")[1])
+            #new_ref = f"REF-{last_number + 1:04d}"
 
-    result = db.execute(query).fetchone()
-    last_ref = result[0] if result else "REF-0000"
+            #return new_ref
+
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
+
+
+
 
     # Extract number, increment, and format
     last_number = int(last_ref.split("-")[1])
