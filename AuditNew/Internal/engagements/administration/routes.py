@@ -31,7 +31,7 @@ def fetch_engagement_policies(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_engagement_profile(db, column="engagement", value=engagement_id)
+        data = get_engagement_policies(db, column="engagement", value=engagement_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
