@@ -43,8 +43,8 @@ class EngagementLetter(BaseModel):
     value: Optional[str]
 
 class StandardTemplate(BaseModel):
-    id: Optional[int] | Any
-    reference: Optional[str] | Any = ""
+    id: Optional[int] = None
+    reference: Optional[str] = None
     title: Optional[str] | Any
     tests: Optional[Section] | Any
     results: Optional[Section] | Any
