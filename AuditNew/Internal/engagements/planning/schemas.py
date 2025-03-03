@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Any, Optional, List
 from enum import Enum
+from datetime import datetime
 
 class Type(str, Enum):
     STANDARD = "standard"
@@ -42,6 +43,7 @@ class SummaryAuditProgram(BaseModel):
 class EngagementLetter(BaseModel):
     id: Optional[int] = None
     name: Optional[str]
+    date_attached: Optional[datetime]
     attachment: Optional[str]
 
 class StandardTemplate(BaseModel):

@@ -55,6 +55,7 @@ def fetch_engagement_letter(
 def create_new_engagement_letter(
         engagement_id: int,
         name: str = Form(...),
+        date_attached: datetime = Form(...),
         attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -64,6 +65,7 @@ def create_new_engagement_letter(
     try:
         letter = EngagementLetter(
             name=name,
+            date_attached=date_attached,
             attachment=attachment.filename
         )
         add_engagement_letter(db, letter=letter, engagement_id=engagement_id)
