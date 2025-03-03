@@ -37,7 +37,7 @@ def fetch_finalization_procedures(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/finalization_procedures/{procedure_id}")
-def edit_finalization_procedure(
+def update_finalization_procedure(
         procedure_id: int,
         finalization: StandardTemplate,
         db=Depends(get_db_connection),

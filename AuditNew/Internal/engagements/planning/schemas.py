@@ -43,14 +43,14 @@ class EngagementLetter(BaseModel):
     value: Optional[str]
 
 class StandardTemplate(BaseModel):
-    id: Optional[int]
-    reference: Optional[str] | None = ""
-    title: Optional[str]
-    tests: Optional[Section]
-    results: Optional[Section]
-    observation: Optional[Section]
-    attachments: Optional[List[str]]
-    conclusion: Optional[Section]
-    type: Optional[Type]  = Type.STANDARD
-    prepared_by: Optional[User]
-    reviewed_by: Optional[User]
+    id: Optional[int] | Any
+    reference: Optional[str] | Any = ""
+    title: Optional[str] | Any
+    tests: Optional[Section] | Any
+    results: Optional[Section] | Any
+    observation: Optional[Section] | Any
+    attachments: Optional[List[str]] | Any
+    conclusion: Optional[Section] | Any
+    type: Optional[Type] | Any  = Type.STANDARD
+    prepared_by: Optional[User] | Any
+    reviewed_by: Optional[User] | Any

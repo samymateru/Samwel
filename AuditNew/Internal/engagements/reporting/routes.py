@@ -39,7 +39,7 @@ def fetch_reporting_procedures(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/reporting_procedures/{procedure_id}")
-def edit_reporting_procedure(
+def update_reporting_procedure(
         procedure_id: int,
         report: StandardTemplate,
         db=Depends(get_db_connection),

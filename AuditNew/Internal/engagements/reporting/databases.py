@@ -62,7 +62,7 @@ def get_reporting_procedures(connection: Connection, column: str = None, value: 
 
 def edit_reporting_procedure(connection: Connection, report: StandardTemplate, procedure_id: int):
     query: str = """
-                    UPDATE public.reporting_template
+                    UPDATE public.reporting_procedure
                     SET 
                     title = %s,
                     tests = %s::jsonb,

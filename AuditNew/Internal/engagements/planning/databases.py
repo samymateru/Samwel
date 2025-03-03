@@ -26,7 +26,7 @@ def add_engagement_letter(connection: Connection, letter: EngagementLetter, enga
 
 def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
     query: str = """
-                   INSERT INTO public.PRCM (
+                   INSERT INTO public."PRCM" (
                         engagement,
                         process,
                         risk,
@@ -42,11 +42,11 @@ def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                prcm.process,
-                prcm.risk,
+                prcm.process.model_dump_json(),
+                prcm.risk.model_dump_json(),
                 prcm.risk_rating,
-                prcm.control,
-                prcm.control_objective,
+                prcm.control.model_dump_json(),
+                prcm.control_objective.model_dump_json(),
                 prcm.control_type,
                 prcm.residue_risk
             ))
@@ -143,7 +143,7 @@ def get_planning_procedures(connection: Connection, column: str = None, value: i
 
 def get_prcm(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
-                   SELECT * from public.PRCM
+                   SELECT * from public."PRCM"
                  """
     if column and value:
         query += f"WHERE  {column} = %s"

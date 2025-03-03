@@ -8,7 +8,7 @@ from AuditNew.Internal.engagements.planning.databases import *
 router = APIRouter(prefix="/engagements")
 
 
-@router.get("/PRCM/{engagement_id}", response_model=PRCM)
+@router.get("/PRCM/{engagement_id}", response_model=List[PRCM])
 def fetch_prcm(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -123,7 +123,7 @@ def fetch_planning_procedures(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/planning_procedures/{procedure_id}")
-def edit_planning_procedure(
+def update_planning_procedure(
         procedure_id: int,
         std_template: StandardTemplate,
         db=Depends(get_db_connection),
