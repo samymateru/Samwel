@@ -102,10 +102,10 @@ def create_new_planning_procedure(
         engagement_id: int,
         std_template: StandardTemplate,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_planning_procedure(db, std_template=std_template, engagement_id=engagement_id)
         return {"detail": "Planning procedure added successfully"}
