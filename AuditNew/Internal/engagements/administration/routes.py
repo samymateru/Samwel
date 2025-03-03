@@ -65,7 +65,7 @@ def fetch_regulations(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/staff/{engagement_id}", response_model=EngagementProfile)
+@router.get("/staff/{engagement_id}", response_model=List[Staff])
 def fetch_staff(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -158,7 +158,7 @@ def create_engagement_regulations(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/staff/{engagement_id}")
+@router.post("/staff/{engagement_id}", response_model=ResponseMessage)
 def create_engagement_staff(
         engagement_id: int,
         staff: Staff,
@@ -169,6 +169,7 @@ def create_engagement_staff(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_engagement_staff(db, staff=staff, engagement_id=engagement_id)
+        return {"detail": "Staff added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
