@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.administration.schemas import *
 from AuditNew.Internal.engagements.administration.databases import *
+from schema import ResponseMessage
 
 router = APIRouter(prefix="/engagements")
 
@@ -21,7 +22,7 @@ def fetch_engagement_profile(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/policies/{engagement_id}", response_model=Policy)
+@router.get("/context/policies/{engagement_id}", response_model=List[Policy])
 def fetch_engagement_policies(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -35,7 +36,7 @@ def fetch_engagement_policies(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/engagement_process/{engagement_id}", response_model=EngagementProcess)
+@router.get("/context/engagement_process/{engagement_id}", response_model=List[EngagementProcess])
 def fetch_engagement_process(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -49,7 +50,7 @@ def fetch_engagement_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/context/regulations/{engagement_id}", response_model=Regulations)
+@router.get("/context/regulations/{engagement_id}", response_model=List[Regulations])
 def fetch_regulations(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -93,7 +94,7 @@ def create_engagement_profile(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/context/policies/{engagement_id}")
+@router.post("/context/policies/{engagement_id}", response_model=ResponseMessage)
 def create_engagement_policy(
         engagement_id: int,
         name: str = Form(...),
@@ -113,6 +114,7 @@ def create_engagement_policy(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_engagement_policies(db, policy=policy, engagement_id=engagement_id)
+        return {"detail": "Policy added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

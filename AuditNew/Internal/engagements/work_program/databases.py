@@ -7,7 +7,7 @@ from AuditNew.Internal.engagements.work_program.schemas import *
 
 def add_new_main_program(connection: Connection, program: MainProgram, engagement_id: int):
     query: str = """
-                     INSERT INTO public.main_program (engagement, name) VALUES (%s, %S)
+                     INSERT INTO public.main_program (engagement, name) VALUES (%s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -24,7 +24,7 @@ def add_new_main_program(connection: Connection, program: MainProgram, engagemen
 def add_new_sub_program(connection: Connection, sub_program: SubProgram, program_id: int):
     query: str = """
                      INSERT INTO public.sub_program (
-                                program_id,
+                                program,
                                 reference,
                                 title,
                                 brief_description,
