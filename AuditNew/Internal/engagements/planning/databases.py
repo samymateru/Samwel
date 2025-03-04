@@ -1,5 +1,4 @@
 import json
-
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.planning.schemas import *

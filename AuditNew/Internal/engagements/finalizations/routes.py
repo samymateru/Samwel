@@ -12,7 +12,7 @@ router = APIRouter(prefix="/engagements")
 @router.post("/finalization_procedures/{engagement_id}", response_model=ResponseMessage)
 def create_new_finalization_procedure(
         engagement_id: int,
-        finalization: StandardTemplate,
+        finalization: NewFinalizationProcedure,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):

@@ -3,16 +3,41 @@ from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.finalizations.schemas import *
 from AuditNew.Internal.engagements.planning.schemas import StandardTemplate
 from psycopg2.extensions import cursor as Cursor
-
 from utils import get_next_reference
-
+import json
 
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
 
-def add_finalization_procedure(connection: Connection, finalization: StandardTemplate, engagement_id: int):
-
+def add_finalization_procedure(connection: Connection, finalization: NewFinalizationProcedure, engagement_id: int):
+    data = {
+        "title": f"{finalization.title}",
+        "tests": {
+            "value": ""
+        },
+        "results": {
+            "value": ""
+        },
+        "observation": {
+            "value": ""
+        },
+        "attachments": [
+            ""
+        ],
+        "conclusion": {
+            "value": ""
+        },
+        "type": "standard",
+        "prepared_by": {
+            "id": 0,
+            "name": ""
+        },
+        "reviewed_by": {
+            "id": 0,
+            "name": ""
+        }
+    }
     query: str = """
                    INSERT INTO public.finalization_procedure (
                         engagement,
@@ -35,15 +60,15 @@ def add_finalization_procedure(connection: Connection, finalization: StandardTem
             cursor.execute(query, (
                 engagement_id,
                 ref,
-                finalization.title,
-                safe_json_dump(finalization.tests),
-                safe_json_dump(finalization.results),
-                safe_json_dump(finalization.observation),
-                finalization.attachments,
-                safe_json_dump(finalization.conclusion),
-                finalization.type,
-                safe_json_dump(finalization.prepared_by),
-                safe_json_dump(finalization.reviewed_by)
+                data["title"],
+                json.dumps(data["tests"]),
+                json.dumps(data["results"]),
+                json.dumps(data["observation"]),
+                data["attachments"],
+                json.dumps(data["conclusion"]),
+                data["type"],
+                json.dumps(data["prepared_by"]),
+                json.dumps(data["reviewed_by"])
             ))
         connection.commit()
     except Exception as e:

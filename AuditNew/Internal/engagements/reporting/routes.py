@@ -12,7 +12,7 @@ router = APIRouter(prefix="/engagements")
 @router.post("/reporting_procedures/{engagement_id}")
 def create_new_reporting_procedure(
         engagement_id: int,
-        report: StandardTemplate,
+        report: NewReportingProcedure,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
