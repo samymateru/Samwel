@@ -80,7 +80,7 @@ def add_engagement_process(connection: Connection, process: EngagementProcess, e
             cursor.execute(query, (
                 engagement_id,
                 process.process,
-                process.sub_proces,
+                process.sub_process,
                 process.description,
                 process.business_unit
             ))

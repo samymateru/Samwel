@@ -26,7 +26,7 @@ class Policy(BaseModel):
 class EngagementProcess(BaseModel):
     id: Optional[int]
     process: Optional[str]
-    sub_proces: Optional[List[str]]
+    sub_process: Optional[List[str]]
     description: Optional[str]
     business_unit: Optional[str]
 
