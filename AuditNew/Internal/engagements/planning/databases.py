@@ -256,3 +256,4 @@ def edit_planning_procedure(connection: Connection, std_template: StandardTempla
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating planning procedure {e}")
+

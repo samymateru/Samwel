@@ -89,7 +89,7 @@ def create_engagement_profile(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        delete_profile(db, engagement_id)
+        remove_profile(db, engagement_id)
         add_engagement_profile(db, profile=profile, engagement_id=engagement_id)
         return {"detail": "Profile added successfully"}
     except HTTPException as e:
@@ -172,4 +172,23 @@ def create_engagement_staff(
         return {"detail": "Staff added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/context/policies/{policy_id}", response_model=ResponseMessage)
+def delete_policy(
+        policy_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_policy(connection=db, policy_id=policy_id)
+        return {"detail": "Policy deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+
+
+
 

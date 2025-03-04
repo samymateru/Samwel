@@ -228,7 +228,8 @@ def get_engagement_staff(connection: Connection, column: str = None, value: int 
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching engagement staffing {e}")
 
-def delete_profile(connection: Connection, engagement_id: int):
+
+def remove_profile(connection: Connection, engagement_id: int):
     query: str = """
                     DELETE FROM public.profile WHERE engagement = %s
                  """
@@ -241,15 +242,38 @@ def delete_profile(connection: Connection, engagement_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting engagement profile {e}")
 
-def delete_policy(connection: Connection, engagement_id: int):
-    query: str = """
-                    DELETE FROM public.policies WHERE engagement = %s
-                 """
+
+def remove_policy(connection: Connection, policy_id: int):
+    query: str = "DELETE FROM public.policies WHERE id = %s"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (engagement_id,))
+            cursor.execute(query, (policy_id,))
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error deleting engagement policy {e}")
+        raise HTTPException(status_code=400, detail=f"Error removing policy {e}")
+
+
+def remove_staff(connection: Connection, staff_id: int):
+    query: str = "DELETE FROM public.staff WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (staff_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error removing staff {e}")
+
+def remove_regulation(connection: Connection, regulation_id: int):
+    query: str = "DELETE FROM public.regulations WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (regulation_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error removing regulation {e}")
+
