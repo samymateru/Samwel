@@ -34,7 +34,6 @@ def create_new_sub_program(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
         add_new_sub_program(db, sub_program=sub_program, program_id=program_id)
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

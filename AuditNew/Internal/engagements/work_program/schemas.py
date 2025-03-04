@@ -7,7 +7,7 @@ class User(BaseModel):
     id: int
     name: str
     email: str
-    date_issued: datetime
+    date_issued: str
 
 class MainProgram(BaseModel):
     id: Optional[int] = None

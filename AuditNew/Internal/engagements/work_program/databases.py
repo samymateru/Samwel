@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.work_program.schemas import *
-from utils import get_next_reference
+from utils import get_reference
 
 
 def safe_json_dump(obj):
@@ -51,7 +51,7 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
-        reference = get_next_reference(connection=connection, resource="sub_program", engagement=program_id)
+        reference = get_reference(connection=connection, resource="sub_program", id=program_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
@@ -74,13 +74,13 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                     "id": 0,
                     "name": "",
                     "email": "example@gmail.com",
-                    "date_issue": datetime.now(),
+                    "date_issue": str(datetime.now())
                 }),
                 json.dumps({
                     "id": 0,
                     "name": "",
                     "email": "example@gmail.com",
-                    "date_issue": datetime.now(),
+                    "date_issue": str(datetime.now())
                 })
             ))
         connection.commit()
