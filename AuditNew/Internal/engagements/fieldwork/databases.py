@@ -6,11 +6,21 @@ from AuditNew.Internal.engagements.schemas import UpdateEngagement, NewEngagemen
 import json
 
 def get_summary_procedures(connection: Connection, column: str = None, value: int | str = None):
-    query: str = """
-                   SELECT * from public.PRCM
+    query: str = f"""                 
+                    SELECT 
+                        sub_program.reference,
+                        sub_program.title,
+                        sub_program.prepared_by,
+                        sub_program.reviewed_by,
+                        sub_program.effectiveness,
+                        COUNT(issue.id) AS issue_count  -- Count the number of issues per sub_program
+                    FROM main_program 
+                    JOIN sub_program ON main_program.id = sub_program.program
+                    LEFT JOIN issue ON sub_program.id = issue.sub_program
+                    WHERE main_program.{column} = %s
+                    GROUP BY sub_program.reference, sub_program.title, sub_program.prepared_by, 
+                    sub_program.reviewed_by, sub_program.effectiveness;
                  """
-    if column and value:
-        query += f"WHERE  {column} = %s"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
@@ -23,11 +33,21 @@ def get_summary_procedures(connection: Connection, column: str = None, value: in
         raise HTTPException(status_code=400, detail=f"Error fetching summary of procedures {e}")
 
 def get_summary_review_notes(connection: Connection, column: str = None, value: int | str = None):
-    query: str = """
-                   SELECT * from public.PRCM
+    query: str = f"""
+                    SELECT 
+                    review_comment.reference,
+                    review_comment.title,
+                    review_comment.date_raised,
+                    review_comment.raised_by,
+                    review_comment.resolution_summary,
+                    review_comment.resolved_by,
+                    review_comment.date_resolved,
+                    review_comment.decision
+                    FROM main_program 
+                    JOIN sub_program ON main_program.id = sub_program.program
+                    JOIN review_comment ON review_comment.sub_program = sub_program.id
+                    WHERE main_program.{column} = %s;
                  """
-    if column and value:
-        query += f"WHERE  {column} = %s"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
@@ -37,4 +57,4 @@ def get_summary_review_notes(connection: Connection, column: str = None, value: 
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching summary of procedures {e}")
+        raise HTTPException(status_code=400, detail=f"Error fetching summary of review notes {e}")
