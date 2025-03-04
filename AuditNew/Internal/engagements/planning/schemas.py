@@ -58,3 +58,8 @@ class StandardTemplate(BaseModel):
     type: Optional[Type]  = Type.STANDARD
     prepared_by: Optional[User]
     reviewed_by: Optional[User]
+
+class NewPlanningProcedure(BaseModel):
+    title: str
+
+
