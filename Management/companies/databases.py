@@ -11,7 +11,7 @@ from Management.modules import  databases as module_databases
 from collections import defaultdict
 def create_new_company(connection: Connection, company_data: NewCompany) -> int:
     query_insert = """
-        INSERT INTO public.companies (name, owner, email, telephone, website, entity_type, module_id, status, created_at) 
+        INSERT INTO public.companies (name, owner, email, telephone, website, entity_type, module, status, created_at) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     query_check = "SELECT 1 FROM public.companies WHERE email = %s"
