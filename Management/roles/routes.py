@@ -10,12 +10,12 @@ router = APIRouter(prefix="/roles")
 @router.get("/", response_model=List[Role])
 def fetch_roles(
         db = Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        roles = get_roles(db, column="company", value=1)
+        roles = get_roles(db, column="company", value=user.company_id)
         return roles
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
