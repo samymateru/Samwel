@@ -103,6 +103,20 @@ def create_new_sub_program_evidence(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
+@router.get("/main_program/{engagement_id}", response_model=List[MainProgram])
+def fetch_main_program(
+        engagement_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = get_main_program(db, column="engagement", value=engagement_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 @router.get("/sub_program/evidence/{sub_program_id}", response_model=List[SubProgramEvidence])
 def fetch_engagement_letter(
         sub_program_id: int,
