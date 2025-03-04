@@ -5,6 +5,10 @@ from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.work_program.schemas import *
 
 
+def safe_json_dump(obj):
+    return obj.model_dump_json() if obj is not None else '{}'
+
+
 def add_new_main_program(connection: Connection, program: MainProgram, engagement_id: int):
     query: str = """
                      INSERT INTO public.main_program (engagement, name) VALUES (%s, %s)
@@ -274,3 +278,49 @@ def get_sub_program(connection: Connection, column: str = None, value: int | str
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
+
+def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id: int):
+    query: str = """
+                    UPDATE public.sub_program
+                    SET 
+                    title = %s,
+                    brief_description = %s,
+                    audit_objective = %s,
+                    test_description = %s,
+                    test_type = %s,
+                    sampling_approach = %s,
+                    results_of_test = %s,
+                    observation = %s,
+                    extended_testing = %s,
+                    extended_procedure = %s,
+                    extended_results = %s,
+                    effectiveness = %s,
+                    conclusion = %s,
+                    prepared_by = %s::jsonb,
+                    reviewed_by = %s::jsonb  WHERE id = %s; 
+                   """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                sub_program.title,
+                sub_program.brief_description,
+                sub_program.audit_objective,
+                sub_program.test_description,
+                sub_program.test_type,
+                sub_program.sampling_approach,
+                sub_program.results_of_test,
+                sub_program.observation,
+                sub_program.extended_testing,
+                sub_program.extended_procedure,
+                sub_program.extended_results,
+                sub_program.effectiveness,
+                sub_program.conclusion,
+                sub_program.reviewed_by.model_dump_json(),
+                sub_program.prepared_by.model_dump_json(),
+                program_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating sub program procedure {e}")

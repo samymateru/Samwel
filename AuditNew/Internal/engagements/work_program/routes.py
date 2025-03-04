@@ -144,3 +144,18 @@ def fetch_engagement_letter(
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/sub_program/{program_id}", response_model=ResponseMessage)
+def update_reporting_procedure(
+        program_id: int,
+        sub_program: SubProgram,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_sub_program(db, sub_program=sub_program, program_id=program_id)
+        return {"detail": "Sub program successfully updated"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
