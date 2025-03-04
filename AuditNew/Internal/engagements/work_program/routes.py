@@ -118,7 +118,7 @@ def fetch_main_program(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/sub_program/{program_id}", response_model=List[SubProgram])
-def fetch_main_program(
+def fetch_sub_program(
         program_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
