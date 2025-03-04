@@ -21,7 +21,7 @@ def new_company(
         user_data = NewUser(
             name = new_company_data.owner,
             telephone = new_company_data.telephone,
-            module= new_company_data.module_id,
+            module= "",
             role=Role(
                 id = 1,
                 name = "Owner"
