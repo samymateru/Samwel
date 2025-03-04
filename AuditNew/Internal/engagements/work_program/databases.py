@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
@@ -26,7 +27,7 @@ def add_new_main_program(connection: Connection, program: MainProgram, engagemen
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating main program {e}")
 
-def add_new_sub_program(connection: Connection, sub_program: SubProgram, program_id: int):
+def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, program_id: int):
     query: str = """
                      INSERT INTO public.sub_program (
                                 program,
@@ -50,27 +51,37 @@ def add_new_sub_program(connection: Connection, sub_program: SubProgram, program
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
-        reference = get_next_reference(connection, )
+        reference = get_next_reference(connection=connection, resource="sub_program", engagement=program_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
                 program_id,
-                sub_program.reference,
+                reference,
                 sub_program.title,
-                sub_program.brief_description,
-                sub_program.audit_objective,
-                sub_program.test_description,
-                sub_program.test_type,
-                sub_program.sampling_approach,
-                sub_program.results_of_test,
-                sub_program.observation,
-                sub_program.extended_testing,
-                sub_program.extended_procedure,
-                sub_program.extended_results,
-                sub_program.effectiveness,
-                sub_program.conclusion,
-                sub_program.reviewed_by,
-                sub_program.prepared_by
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                True,
+                "",
+                "",
+                "",
+                "",
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": datetime.now(),
+                }),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": datetime.now(),
+                })
             ))
         connection.commit()
     except Exception as e:

@@ -27,7 +27,7 @@ def create_new_main_program(
 @router.post("/sub_program/{program_id}")
 def create_new_sub_program(
         program_id: int,
-        sub_program: SubProgram,
+        sub_program: NewSubProgram,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):

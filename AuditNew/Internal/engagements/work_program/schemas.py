@@ -86,3 +86,6 @@ class ReviewNote(BaseModel):
 class SubProgramEvidence(BaseModel):
     id: Optional[int] = None
     attachment: Optional[str]
+
+class NewSubProgram(BaseModel):
+    title: str
