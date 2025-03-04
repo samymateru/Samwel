@@ -73,7 +73,7 @@ def get_next_reference(connection: Connection, resource: str, engagement: int):
     query = f"""
         SELECT reference FROM public.{resource}
         WHERE engagement = %s
-        ORDER BY reference DESC 
+        ORDER BY reference DESC
         LIMIT 1
     """
     try:
