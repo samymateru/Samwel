@@ -257,3 +257,20 @@ def get_main_program(connection: Connection, column: str = None, value: int | st
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching main program {e}")
+
+def get_sub_program(connection: Connection, column: str = None, value: int | str = None):
+    query: str = """
+                   SELECT * from public.sub_program
+                 """
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
