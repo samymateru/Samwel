@@ -1373,7 +1373,7 @@ def planning_procedures(connection: Connection, engagement: int):
 def reporting_procedures(connection: Connection, engagement: int):
     values = [
         {
-            "title": "Engagement scope",
+            "title": "Summary of audit findings",
             "tests": {
                 "value": ""
             },
@@ -1400,7 +1400,7 @@ def reporting_procedures(connection: Connection, engagement: int):
             }
         },
         {
-            "title": "Summary of audit procedures",
+            "title": "Summary of audit process and rating",
             "tests": {
                 "value": ""
             },
@@ -1416,7 +1416,7 @@ def reporting_procedures(connection: Connection, engagement: int):
             "conclusion": {
                 "value": ""
             },
-            "type": "procedure",
+            "type": "audit_process",
             "prepared_by": {
                 "id": 0,
                 "name": ""
@@ -1427,7 +1427,7 @@ def reporting_procedures(connection: Connection, engagement: int):
             }
         },
         {
-            "title": "Finding sheet",
+            "title": "Finding sheet and management letter",
             "tests": {
                 "value": ""
             },
@@ -1535,7 +1535,7 @@ def reporting_procedures(connection: Connection, engagement: int):
             }
         },
         {
-            "title": "Updating audit finding",
+            "title": "Updating audit findings",
             "tests": {
                 "value": ""
             },

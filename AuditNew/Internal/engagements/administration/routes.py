@@ -100,7 +100,7 @@ def create_engagement_policy(
         engagement_id: int,
         name: str = Form(...),
         version: str = Form(...),
-        key_ares: str = Form(...),
+        key_areas: str = Form(...),
         attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -108,7 +108,7 @@ def create_engagement_policy(
     policy = Policy(
         name=name,
         version=version,
-        key_areas=key_ares,
+        key_areas=key_areas,
         attachment=attachment.filename
     )
     if user.status_code != 200:

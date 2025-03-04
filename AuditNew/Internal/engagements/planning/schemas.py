@@ -10,6 +10,7 @@ class Type(str, Enum):
     PROGRAM = "program"
     FINDING = "finding"
     PROCEDURE = "procedure"
+    AUDIT_PROCEDURE = "audit_process"
     SHEET = "sheet"
     SURVEY = "survey"
     ARCHIVE = "archive"

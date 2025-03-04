@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.work_program.schemas import *
+from utils import get_next_reference
 
 
 def safe_json_dump(obj):
@@ -49,6 +50,7 @@ def add_new_sub_program(connection: Connection, sub_program: SubProgram, program
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
+        reference = get_next_reference(connection, )
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
@@ -174,6 +176,7 @@ def add_new_review_note(connection: Connection, review_note: ReviewNote, sub_pro
     query: str = """
                     INSERT INTO public.review_note (
                         sub_program,
+                        reference,
                         title,
                         reference,
                         description,
@@ -185,7 +188,7 @@ def add_new_review_note(connection: Connection, review_note: ReviewNote, sub_pro
                         resolved_by,
                         date_resolved,
                         decision
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);  
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);  
                  """
     try:
         with connection.cursor() as cursor:
