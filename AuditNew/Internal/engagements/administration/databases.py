@@ -229,14 +229,14 @@ def get_engagement_staff(connection: Connection, column: str = None, value: int 
         raise HTTPException(status_code=400, detail=f"Error fetching engagement staffing {e}")
 
 
-def remove_profile(connection: Connection, engagement_id: int):
+def remove_profile(connection: Connection, profile_id: int):
     query: str = """
-                    DELETE FROM public.profile WHERE engagement = %s
+                    DELETE FROM public.profile WHERE id = %s
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (engagement_id,))
+            cursor.execute(query, (profile_id,))
         connection.commit()
     except Exception as e:
         connection.rollback()

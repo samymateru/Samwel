@@ -187,6 +187,47 @@ def delete_policy(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.delete("/context/staff/{staff_id}", response_model=ResponseMessage)
+def delete_staff(
+        staff_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_staff(connection=db, staff_id=staff_id)
+        return {"detail": "Staff deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/context/regulations/{regulation_id}", response_model=ResponseMessage)
+def delete_regulation(
+        regulation_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_regulation(connection=db, regulation_id=regulation_id)
+        return {"detail": "Regulation deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/profile/{profile_id}", response_model=ResponseMessage)
+def delete_profile(
+        profile_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_profile(connection=db, profile_id=profile_id)
+        return {"detail": "Profile deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 

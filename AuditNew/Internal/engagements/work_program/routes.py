@@ -146,7 +146,7 @@ def fetch_engagement_letter(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/sub_program/{program_id}", response_model=ResponseMessage)
-def update_reporting_procedure(
+def update_sub_program(
         program_id: int,
         sub_program: SubProgram,
         db=Depends(get_db_connection),
