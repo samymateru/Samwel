@@ -159,3 +159,45 @@ def update_sub_program(
         return {"detail": "Sub program successfully updated"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/main_program/{program_id}", response_model=ResponseMessage)
+def delete_main_program(
+        program_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_work_program(connection=db, id=program_id, table="main_program", resource="Main program")
+        return {"detail": "Main program deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/sub_program/issue/{issue_id}", response_model=ResponseMessage)
+def delete_issue(
+        issue_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_work_program(connection=db, id=issue_id, table="issue", resource="Issue")
+        return {"detail": "Issue deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/sub_program/task/{task_id}", response_model=ResponseMessage)
+def delete_task(
+        task_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_work_program(connection=db, id=task_id, table="task", resource="Task")
+        return {"detail": "Task deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)

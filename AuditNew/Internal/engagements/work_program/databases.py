@@ -327,3 +327,14 @@ def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating sub program procedure {e}")
+
+def remove_work_program(connection: Connection, id: int, table: str, resource: str):
+    query: str = f"DELETE FROM public.{table} WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting {resource} {e}")
