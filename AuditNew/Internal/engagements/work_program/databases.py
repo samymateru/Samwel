@@ -90,7 +90,7 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
 
 def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int):
     query: str = """
-                    INSERT INTO public.your_table_name (
+                    INSERT INTO public.issue (
                             sub_program,
                             title,
                             criteria,
@@ -144,7 +144,7 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating issue {e}")
 
-def add_new_task(connection: Connection, task: Task, sub_program_id: int):
+def add_new_task(connection: Connection, task: NewTask, sub_program_id: int):
     query: str = """
                     INSERT INTO public.task (
                         sub_program,
@@ -162,34 +162,49 @@ def add_new_task(connection: Connection, task: Task, sub_program_id: int):
                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                  """
     try:
+        reference: str = get_reference(connection=connection, resource="task", id=sub_program_id)
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query,(
+            cursor.execute(query, (
                 sub_program_id,
+                reference,
                 task.title,
-                task.reference,
-                task.description,
-                task.date_raised,
-                task.raised_by,
-                task.action_owner,
-                task.resolution_summary,
-                task.resolution_details,
-                task.resolved_by,
-                task.date_resolved,
-                task.decision
+                "",
+                datetime.now(),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                "",
+                "",
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                datetime.now(),
+                ""
             ))
         connection.commit()
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating task {e}")
 
-def add_new_review_note(connection: Connection, review_note: ReviewNote, sub_program_id: int):
+def add_new_review_comment(connection: Connection, review_comment: NewReviewComment, sub_program_id: int):
     query: str = """
-                    INSERT INTO public.review_note (
+                    INSERT INTO public.review_comment (
                         sub_program,
                         reference,
                         title,
-                        reference,
                         description,
                         date_raised,
                         raised_by,
@@ -199,29 +214,45 @@ def add_new_review_note(connection: Connection, review_note: ReviewNote, sub_pro
                         resolved_by,
                         date_resolved,
                         decision
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);  
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);  
                  """
     try:
+        reference: str = get_reference(connection=connection, resource="review_comment", id=sub_program_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
                 sub_program_id,
-                review_note.title,
-                review_note.reference,
-                review_note.description,
-                review_note.date_raised,
-                review_note.raised_by,
-                review_note.action_owner,
-                review_note.resolution_summary,
-                review_note.resolution_details,
-                review_note.resolved_by,
-                review_note.date_resolved,
-                review_note.decision
+                reference,
+                review_comment.title,
+                "",
+                datetime.now(),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                "",
+                "",
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "example@gmail.com",
+                    "date_issue": str(datetime.now())
+                }),
+                datetime.now(),
+                ""
             ))
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error creating review note {e}")
+        raise HTTPException(status_code=400, detail=f"Error creating review comment {e}")
 
 def add_new_sub_program_evidence(connection: Connection, evidence: SubProgramEvidence, sub_program_id: int):
     query: str = """
@@ -293,6 +324,17 @@ def get_sub_program(connection: Connection, column: str = None, value: int | str
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
 
+def remove_work_program(connection: Connection, id: int, table: str, resource: str):
+    query: str = f"DELETE FROM public.{table} WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting {resource} {e}")
+
 def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id: int):
     query: str = """
                     UPDATE public.sub_program
@@ -339,13 +381,156 @@ def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating sub program procedure {e}")
 
-def remove_work_program(connection: Connection, id: int, table: str, resource: str):
-    query: str = f"DELETE FROM public.{table} WHERE id = %s"
+def edit_issue(connection: Connection, issue: Issue, issue_id: int):
+    query = """
+    UPDATE public.issue
+    SET 
+        title = %s,
+        criteria = %s,
+        finding = %s,
+        risk_rating = %s,
+        process = %s,
+        sub_process = %s,
+        root_cause_description = %s,
+        root_cause = %s,
+        sub_root_cause = %s,
+        risk_category = %s,
+        sub_risk_category = %s,
+        impact_description = %s,
+        impact_category = %s,
+        impact_sub_category = %s,
+        recurring_status = %s,
+        recommendation = %s,
+        management_action_plan = %s,
+        estimated_implementation_date = %s,
+        implementation_contacts = %s
+    WHERE id = %s;
+    """
+    values = (
+        issue.title,
+        issue.criteria,
+        issue.finding,
+        issue.risk_rating,
+        issue.process,
+        issue.sub_process,
+        issue.root_cause_description,
+        issue.root_cause,
+        issue.sub_root_cause,
+        issue.risk_category,
+        issue.sub_risk_category,
+        issue.impact_description,
+        issue.impact_category,
+        issue.impact_sub_category,
+        issue.recurring_status,
+        issue.recommendation,
+        issue.management_action_plan,
+        issue.estimated_implementation_date,
+        issue.implementation_contacts,
+        issue_id
+    )
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (id,))
+            cursor.execute(query, values)
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error deleting {resource} {e}")
+        raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
+
+def edit_main_program(connection: Connection, program: MainProgram, program_id: int):
+    query = """
+        UPDATE public.task
+        SET 
+        name = %s
+        WHERE id = %s;
+        """
+    values = (
+        program.name,
+        program
+    )
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, values)
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating main program {e}")
+
+def edit_task(connection: Connection, task: Task, task_id: int):
+    query = """
+    UPDATE public.task
+    SET 
+        title = %s,
+        description = %s,
+        date_raised = %s,
+        raised_by = %s,
+        action_owner = %s,
+        resolution_summary = %s,
+        resolution_details = %s,
+        resolved_by = %s,
+        date_resolved = %s,
+        decision = %s
+    WHERE id = %s;
+    """
+    values = (
+        task.title,
+        task.description,
+        task.date_raised,
+        task.raised_by,
+        task.action_owner,
+        task.resolution_summary,
+        task.resolution_details,
+        task.resolved_by,
+        task.date_resolved,
+        task.decision,
+        task_id
+    )
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, values)
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating task {e}")
+
+def edit_review_comment(connection: Connection, review_comment: ReviewComment, review_comment_id: int):
+    query = """
+    UPDATE public.review_comment
+    SET 
+        title = %s,
+        description = %s,
+        date_raised = %s,
+        raised_by = %s,
+        action_owner = %s,
+        resolution_summary = %s,
+        resolution_details = %s,
+        resolved_by = %s,
+        date_resolved = %s,
+        decision = %s
+    WHERE id = %s;
+    """
+    values = (
+        review_comment.title,
+        review_comment.description,
+        review_comment.date_raised,
+        review_comment.raised_by,
+        review_comment.action_owner,
+        review_comment.resolution_summary,
+        review_comment.resolution_details,
+        review_comment.resolved_by,
+        review_comment.date_resolved,
+        review_comment.decision,
+        review_comment_id
+    )
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, values)
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating review note {e}")
+
+

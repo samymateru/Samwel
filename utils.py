@@ -99,9 +99,18 @@ def get_next_reference(connection: Connection, resource: str, engagement: int):
 
 
 def get_reference(connection: Connection, resource: str, id: int):
+    if resource == "review_comment":
+        start: str = "RC"
+        relation: str = "sub_program"
+    elif resource == "task":
+        start = "TSK"
+        relation: str = "sub_program"
+    else:
+        start = "PROC"
+        relation: str = "program"
     query = f"""
         SELECT reference FROM public.{resource}
-        WHERE program = %s
+        WHERE {relation} = %s
         ORDER BY reference DESC
         LIMIT 1
     """
@@ -112,14 +121,11 @@ def get_reference(connection: Connection, resource: str, id: int):
             result = cursor.fetchone()
 
             if result is None:
-                return "REF-0001"
+                return f"{start}-0001"
 
-            print(result[0])
-
-            #Extract number, increment, and format
             last_number = int(result[0].split("-")[1])
             print(last_number)
-            new_ref = f"REF-{last_number + 1:04d}"
+            new_ref = f"{start}-{last_number + 1:04d}"
             return new_ref
 
     except Exception as e:

@@ -7,7 +7,7 @@ class User(BaseModel):
     id: int
     name: str
     email: str
-    date_issued: str
+    date_issue: str
 
 class MainProgram(BaseModel):
     id: Optional[int] = None
@@ -69,7 +69,7 @@ class Task(BaseModel):
     decision: Optional[str]
 
 
-class ReviewNote(BaseModel):
+class ReviewComment(BaseModel):
     id: Optional[int] = None
     title: Optional[str]
     reference: Optional[str]
@@ -79,7 +79,7 @@ class ReviewNote(BaseModel):
     action_owner: Optional[User]
     resolution_summary: Optional[str]
     resolution_details: Optional[str]
-    resolved_by: Optional[str]
+    resolved_by: Optional[User]
     date_resolved: Optional[datetime]
     decision: Optional[str]
 
@@ -88,4 +88,13 @@ class SubProgramEvidence(BaseModel):
     attachment: Optional[str]
 
 class NewSubProgram(BaseModel):
+    title: str
+
+class NewReviewComment(BaseModel):
+    title: str
+
+class NewTask(BaseModel):
+    title: str
+
+class NewIssue(BaseModel):
     title: str
