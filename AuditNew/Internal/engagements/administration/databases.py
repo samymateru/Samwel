@@ -1,43 +1,45 @@
+import json
+
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.administration.schemas import *
 from psycopg2.extensions import cursor as Cursor
 
 
-def add_engagement_profile(connection: Connection, profile: EngagementProfile, engagement_id: int):
+def edit_engagement_profile(connection: Connection, profile: EngagementProfile, engagement_id: int):
     query: str = """
-                   INSERT INTO public.profile (
-                        engagement,
-                        audit_background,
-                        audit_objectives,
-                        key_legislations,
-                        relevant_systems,
-                        key_changes,
-                        reliance,
-                        scope_exclusion,
-                        core_risk,
-                        estimated_dates
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   UPDATE public.profile
+                    SET 
+                        audit_background = %s::jsonb,
+                        audit_objectives = %s::jsonb,
+                        key_legislations = %s::jsonb ,
+                        relevant_systems = %s::jsonb,
+                        key_changes = %s::jsonb,
+                        reliance = %s::jsonb,
+                        scope_exclusion = %s::jsonb,
+                        core_risk = %s,
+                        estimated_dates = %s::jsonb
+                        WHERE engagement = %s;
                  """
     try:
+        values = (
+            profile.audit_background.model_dump_json(),
+            profile.audit_objectives.model_dump_json(),
+            profile.key_legislations.model_dump_json(),
+            profile.relevant_systems.model_dump_json(),
+            profile.key_changes.model_dump_json(),
+            profile.reliance.model_dump_json(),
+            profile.scope_exclusion.model_dump_json(),
+            profile.core_risk,
+            profile.estimated_dates.model_dump_json(),
+            engagement_id
+        )
         with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (
-                engagement_id,
-                profile.audit_background.model_dump_json(),
-                profile.audit_objectives.model_dump_json(),
-                profile.key_legislations.model_dump_json(),
-                profile.relevant_systems.model_dump_json(),
-                profile.key_changes.model_dump_json(),
-                profile.reliance.model_dump_json(),
-                profile.scope_exclusion.model_dump_json(),
-                profile.core_risk,
-                profile.estimated_dates.model_dump_json()
-            ))
+            cursor.execute(query, values)
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")
+        raise HTTPException(status_code=400, detail=f"Error updating engagement profile {e}")
 
 def add_engagement_policies(connection: Connection, policy: Policy, engagement_id: int):
     query: str = """

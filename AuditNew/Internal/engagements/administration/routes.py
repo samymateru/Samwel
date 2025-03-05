@@ -79,8 +79,8 @@ def fetch_staff(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/profile/{engagement_id}", response_model=ResponseMessage)
-def create_engagement_profile(
+@router.put("/profile/{engagement_id}", response_model=ResponseMessage)
+def update_profile(
         engagement_id: int,
         profile: EngagementProfile,
         db=Depends(get_db_connection),
@@ -89,9 +89,8 @@ def create_engagement_profile(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        remove_profile(db, engagement_id)
-        add_engagement_profile(db, profile=profile, engagement_id=engagement_id)
-        return {"detail": "Profile added successfully"}
+        edit_engagement_profile(db, profile=profile, engagement_id=engagement_id)
+        return {"detail": "Profile updated successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

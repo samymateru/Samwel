@@ -1,5 +1,6 @@
 import json
 from fastapi import HTTPException
+from psycopg import Cursor
 
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.planning.databases import add_planning_procedure
@@ -1804,3 +1805,54 @@ def finalization_procedures(connection: Connection, engagement: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding finalization procedures {e}")
+
+def add_engagement_profile(connection: Connection, engagement: int):
+    query: str = """
+                   INSERT INTO public.profile (
+                        engagement,
+                        audit_background,
+                        audit_objectives,
+                        key_legislations,
+                        relevant_systems,
+                        key_changes,
+                        reliance,
+                        scope_exclusion,
+                        core_risk,
+                        estimated_dates
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 """
+    try:
+        values = (
+            engagement,
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            json.dumps({
+                "value": ""
+            }),
+            [""],
+            json.dumps({
+                "value": ""
+            })
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query, values)
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")

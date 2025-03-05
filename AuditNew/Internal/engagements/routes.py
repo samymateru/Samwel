@@ -5,7 +5,8 @@ from AuditNew.Internal.engagements.schemas import *
 from typing import Dict, List
 from utils import get_current_user
 from schema import CurrentUser
-from seedings import planning_procedures, finalization_procedures, reporting_procedures
+from seedings import planning_procedures, finalization_procedures, reporting_procedures, add_engagement_profile
+
 
 router = APIRouter(prefix="/engagements")
 
@@ -46,6 +47,7 @@ def create_new_engagement(
         planning_procedures(connection=db, engagement=id)
         finalization_procedures(connection=db, engagement=id)
         reporting_procedures(connection=db, engagement=id)
+        add_engagement_profile(connection=db, engagement=id)
         return {"detail": "engagement successfully created", "status_code": 501}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
