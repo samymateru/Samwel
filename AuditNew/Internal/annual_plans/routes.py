@@ -70,16 +70,16 @@ def update_annual_plan(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/delete_annual_plan")
+@router.delete("/{plan_id}")
 def delete_annual_plan(
-        plan_id: DeleteAnnualPlan,
+        plan_id: int,
         db = Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        databases.delete_annual_plan(db, plan_id.plan_id)
+        databases.delete_annual_plan(db, plan_id=plan_id)
         return {"detail": "successfully delete the annual plan", "status_code": 503}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

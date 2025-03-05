@@ -94,21 +94,19 @@ def update_annual_plan(connection: Connection, annual_plan_data: UpdateAnnualPla
         print(f"Error occur while updating annual plan {e}")
         raise HTTPException(status_code=400, detail="Error occur while updating annual plan")
 
-def delete_annual_plan(connection: Connection, annual_plan_id: List[int]) -> None:
+def delete_annual_plan(connection: Connection, plan_id: int):
     query = """
                 DELETE FROM public.annual_plans
-                WHERE annual_plan_id = ANY(%s)
-                RETURNING annual_plan_id;
+                WHERE id = %s
                 """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (annual_plan_id,))
+            cursor.execute(query, (plan_id,))
         connection.commit()
     except Exception as e:
         connection.rollback()
-        print(f"Error occur during delete of the annual plan {e}")
-        raise HTTPException(status_code=400, detail="Error occur during delete of the annual plan")
+        raise HTTPException(status_code=400, detail=f"Error deleting annual plan {e}")
 
 def get_annual_plans(connection: Connection,  column: str = None, value: str | int  = None, row: str = None) -> List[Dict]:
     query = "SELECT * FROM public.annual_plans "
