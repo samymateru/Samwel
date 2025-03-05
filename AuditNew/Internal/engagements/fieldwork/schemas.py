@@ -8,6 +8,8 @@ class Section(BaseModel):
 class User(BaseModel):
     id: int
     name: str
+    email: str
+    date_issue: str
 
 class SummaryProcedures(BaseModel):
     id: Optional[int]
@@ -59,3 +61,10 @@ class Note(BaseModel):
     date_resolved: datetime
     decision: str
 
+class SummaryAuditProcedure(BaseModel):
+    reference: str
+    title: str
+    prepared_by: User
+    reviewed_by: User
+    effectiveness: str
+    issue_count: int
