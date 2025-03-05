@@ -115,11 +115,10 @@ def update_engagement(connection: Connection, engagement_data: UpdateEngagement)
         print(f"Error updating engagement {e}")
         raise HTTPException(status_code=400, detail="Error updating engagement")
 
-def delete_engagements(connection: Connection, engagement_id: List[int]):
+def delete_engagements(connection: Connection, engagement_id: int):
     query = """
-            DELETE FROM public.engagement
-            WHERE engagement_id = ANY(%s)
-            RETURNING engagement_id;
+            DELETE FROM public.engagements
+            WHERE id = %s
             """
     try:
         with connection.cursor() as cursor:
@@ -128,8 +127,7 @@ def delete_engagements(connection: Connection, engagement_id: List[int]):
         connection.commit()
     except Exception as e:
         connection.rollback()
-        print(f"Error deleting engagement {e}")
-        raise HTTPException(status_code=400, detail="Error deleting engagement")
+        raise HTTPException(status_code=400, detail=f"Error deleting engagement {e}")
 
 
 def get_engagements(connection: Connection, column: str = None, value: str = None):

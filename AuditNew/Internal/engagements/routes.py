@@ -66,16 +66,16 @@ def update_engagement(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/delete_engagement")
+@router.delete("/{engagement_id}")
 def delete_engagement(
-        engagement_id: DeleteEngagements,
+        engagement_id: int,
         db = Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        databases.delete_engagements(db, engagement_id.engagement_id)
+        databases.delete_engagements(db, engagement_id=engagement_id)
         return {"message": "successfully delete the engagement", "code": 503}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
