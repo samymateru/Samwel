@@ -5,9 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_implementation/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_implementation/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_implementation/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_source/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_source/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/issue_source/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_rating/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_rating/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_rating/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,22 +111,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00156" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740942108190</created>
-      <option name="number" value="00156" />
-      <option name="presentableId" value="LOCAL-00156" />
-      <option name="project" value="LOCAL" />
-      <updated>1740942108190</updated>
-    </task>
-    <task id="LOCAL-00157" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740942349256</created>
-      <option name="number" value="00157" />
-      <option name="presentableId" value="LOCAL-00157" />
-      <option name="project" value="LOCAL" />
-      <updated>1740942349256</updated>
     </task>
     <task id="LOCAL-00158" summary="refactoring">
       <option name="closed" value="true" />
@@ -486,7 +488,23 @@
       <option name="project" value="LOCAL" />
       <updated>1741163947371</updated>
     </task>
-    <option name="localTasksCounter" value="205" />
+    <task id="LOCAL-00205" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1741164449283</created>
+      <option name="number" value="00205" />
+      <option name="presentableId" value="LOCAL-00205" />
+      <option name="project" value="LOCAL" />
+      <updated>1741164449284</updated>
+    </task>
+    <task id="LOCAL-00206" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1741164844594</created>
+      <option name="number" value="00206" />
+      <option name="presentableId" value="LOCAL-00206" />
+      <option name="project" value="LOCAL" />
+      <updated>1741164844594</updated>
+    </task>
+    <option name="localTasksCounter" value="207" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

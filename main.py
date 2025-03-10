@@ -6,6 +6,11 @@ from Management.roles.routes import router as roles_router
 from Management.settings.business_process.routes import router as business_process_router
 from Management.settings.risk_rating.routes import router as risk_rating_router
 from Management.settings.engagement_types.routes import router as engagement_types_router
+from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
+from Management.companies.profile.control_weakness_rating.routes import router as control_weakness
+from Management.companies.profile.issue_implementation.routes import router as issue_implementation
+from Management.companies.profile.issue_source.routes import router as issue_source
+from Management.companies.profile.opinion_rating.routes import router as opinion_rating
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.work_program.routes import router as work_program_router
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
@@ -86,6 +91,11 @@ app.include_router(roles_router, tags=["Roles"])
 app.include_router(business_process_router, tags=["Business Process"])
 app.include_router(risk_rating_router, tags=["Risk Rating"])
 app.include_router(engagement_types_router, tags=["Engagement Types"])
+app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
+app.include_router(control_weakness, tags=["Control Weakness Rating"])
+app.include_router(issue_implementation, tags=["Issue Implementation"])
+app.include_router(issue_source, tags=["Issue Source"])
+app.include_router(opinion_rating, tags=["Opinion Rating"])
 # app.include_router(modules_router, tags=["Modules"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)

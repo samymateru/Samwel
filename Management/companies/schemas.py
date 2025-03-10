@@ -1,9 +1,7 @@
-from pydantic_core import Url
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
-from pydantic_core import Url
 
 
 class UserType(str, Enum):
