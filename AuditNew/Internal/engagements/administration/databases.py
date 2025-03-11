@@ -65,21 +65,27 @@ def add_engagement_policies(connection: Connection, policy: Policy, engagement_i
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement policy {e}")
 
-def add_new_business_contact(connection: Connection, business_contact: BusinessContact, engagement_id: int):
+def add_new_business_contact(connection: Connection, engagement_id: int):
     query: str = """
                    INSERT INTO public.business_contact (
                         engagement,
-                        user,
+                        "user",
                         type
-                   ) VALUES(%s, %s, %s)
+                   ) VALUES(%s, %s::jsonb, %s)
                  """
     try:
+
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                business_contact.user,
-                business_contact.type
+                json.dumps([]),
+                "action"
+            ))
+            cursor.execute(query, (
+                engagement_id,
+                json.dumps([]),
+                "info"
             ))
         connection.commit()
     except Exception as e:
@@ -316,14 +322,22 @@ def remove_regulation(connection: Connection, regulation_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error removing regulation {e}")
 
-
-def remove_business_contact(connection: Connection, business_contact_id: int):
-    query: str = "DELETE FROM public.business_contact WHERE id = %s"
+def edit_business_contact(connection: Connection, business_contact: BusinessContact, engagement_id: int):
+    query: str = """
+                  UPDATE public.business_contact
+                  SET 
+                  "user" = %s::jsonb
+                  WHERE engagement = %s AND type = %s
+                 """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (business_contact_id,))
+            cursor.execute(query, (
+                json.dumps(business_contact.model_dump().get("user")),
+                engagement_id,
+                business_contact.type
+                ,))
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error removing business contact {e}")
+        raise HTTPException(status_code=400, detail=f"Error updating business contact {e}")

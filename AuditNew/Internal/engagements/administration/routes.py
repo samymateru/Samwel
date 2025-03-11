@@ -23,8 +23,8 @@ def fetch_business_contacts(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/business_contacts/{engagement_id}", response_model=ResponseMessage)
-def create_new_business_contact(
+@router.put("/business_contact{engagement_id}", response_model=ResponseMessage)
+def update_business_contact(
         engagement_id: int,
         business_contact: BusinessContact,
         db=Depends(get_db_connection),
@@ -33,22 +33,8 @@ def create_new_business_contact(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_new_business_contact(db, business_contact=business_contact, engagement_id=engagement_id)
-        return {"detail": "Business contact added successfully"}
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.delete("/business_contacts/{business_contact_id}", response_model=ResponseMessage)
-def delete_business_contact(
-        business_contact_id: int,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        remove_business_contact(connection=db, business_contact_id=business_contact_id)
-        return {"detail": "Business contact deleted successfully"}
+        edit_business_contact(db, business_contact=business_contact, engagement_id=engagement_id)
+        return {"detail": "Business contact updated successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

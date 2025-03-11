@@ -56,6 +56,6 @@ class User(BaseModel):
     email: str
 
 class BusinessContact(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     user: List[User]
-    type: str
+    type: Optional[str]

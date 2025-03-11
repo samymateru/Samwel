@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+
+from AuditNew.Internal.engagements.administration.databases import add_new_business_contact
 from utils import  get_db_connection
 from AuditNew.Internal.engagements import databases
 from AuditNew.Internal.engagements.schemas import *
@@ -48,6 +50,7 @@ def create_new_engagement(
         finalization_procedures(connection=db, engagement=id)
         reporting_procedures(connection=db, engagement=id)
         add_engagement_profile(connection=db, engagement=id)
+        add_new_business_contact(connection=db, engagement_id=id)
         return {"detail": "engagement successfully created", "status_code": 501}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
