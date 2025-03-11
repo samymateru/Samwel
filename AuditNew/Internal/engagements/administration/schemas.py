@@ -1,11 +1,12 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Any, Optional, List
+from typing import Optional, List
 
 class Section(BaseModel):
     value: str
 
 class EngagementProfile(BaseModel):
+    id: None
     audit_background: Optional[Section]
     audit_objectives: Optional[Section]
     key_legislations: Optional[Section]
@@ -24,7 +25,7 @@ class Policy(BaseModel):
     attachment: Optional[str]
 
 class EngagementProcess(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     process: Optional[str]
     sub_process: Optional[List[str]]
     description: Optional[str]
@@ -41,11 +42,20 @@ class Role(BaseModel):
     id: int
     name: str
 
-
 class Staff(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None
     name: Optional[str]
     role: Optional[Role]
     start_date: datetime = datetime.now()
     end_date: Optional[datetime]
     tasks: Optional[str]
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+class BusinessContact(BaseModel):
+    id: Optional[int]
+    user: List[User]
+    type: str

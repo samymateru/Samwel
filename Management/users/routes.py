@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-
 from AuditNew.Internal.engagements.databases import update_engagement
 from utils import  get_db_connection
 from Management.users.databases import *
 from Management.users.schemas import *
 from utils import get_current_user
-from schema import CurrentUser
+from schema import CurrentUser, ResponseMessage
 from Management.roles.databases import *
 
 
@@ -40,7 +39,7 @@ def fetch_user(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/")
+@router.post("/", response_model=ResponseMessage)
 def create_new_user(
         user_data: NewUser,
         db = Depends(get_db_connection),
@@ -50,7 +49,7 @@ def create_new_user(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         new_user(connection=db, user_data=user_data,  company_id=user.company_id)
-        return {"detail": "user successfully created", "status_code": 501}
+        return {"detail": "User successfully created"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

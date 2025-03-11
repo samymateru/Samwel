@@ -1,5 +1,4 @@
 import json
-
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.administration.schemas import *
@@ -65,6 +64,27 @@ def add_engagement_policies(connection: Connection, policy: Policy, engagement_i
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement policy {e}")
+
+def add_new_business_contact(connection: Connection, business_contact: BusinessContact, engagement_id: int):
+    query: str = """
+                   INSERT INTO public.business_contact (
+                        engagement,
+                        user,
+                        type
+                   ) VALUES(%s, %s, %s)
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_id,
+                business_contact.user,
+                business_contact.type
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding business contact {e}")
 
 def add_engagement_process(connection: Connection, process: EngagementProcess, engagement_id: int):
     query: str = """
@@ -160,6 +180,23 @@ def get_engagement_profile(connection: Connection, column: str = None, value: in
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching engagement profile {e}")
 
+
+def get_business_contacts(connection: Connection, column: str = None, value: int | str = None):
+    query: str = """
+                    SELECT * from public.business_contact 
+                 """
+    if column and value:
+        query += f"WHERE  {column} = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (value,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching business contacts {e}")
 
 def get_engagement_policies(connection: Connection, column: str = None, value: int | str = None):
     query: str = """
@@ -279,3 +316,14 @@ def remove_regulation(connection: Connection, regulation_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error removing regulation {e}")
 
+
+def remove_business_contact(connection: Connection, business_contact_id: int):
+    query: str = "DELETE FROM public.business_contact WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (business_contact_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error removing business contact {e}")
