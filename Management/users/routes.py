@@ -70,9 +70,9 @@ def update_user(
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/")
+@router.delete("/{user_id}")
 def delete_user(
-        users_id: DeleteUser,
+        user_id: int,
         db = Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
@@ -81,12 +81,7 @@ def delete_user(
     if current_user.type != "admin":
         return HTTPException(status_code=101, detail="your not admin")
     try:
-        user_type: str = get_user(db, column="id", value=users_id.id, row=["type"])[0].get("type")
-        if user_type == "user":
-            delete_user(db, users_id.id)
-            return {"detail": "successfully delete the user", "status_code": 503}
-        else:
-            return HTTPException(status_code=101, detail="This user cant be deleted")
+        pass
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 

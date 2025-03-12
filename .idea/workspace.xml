@@ -5,12 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/impact_ category/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/impact_ category/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/impact_ category/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_category/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_category/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/risk_category/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_type/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_type/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_type/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/engagement_type/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/engagement_type/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/engagement_type/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +66,9 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/AuditNew/engagement_profile/routes.py" root0="FORCE_HIGHLIGHTING" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -72,6 +99,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.CommitDialog&quot;
   }
 }</component>
+  <component name="QodanaReportsService">
+    <option name="descriptions">
+      <ReportDescription localRun="true" path="C:\Users\Samuel\AppData\Local\Temp\qodana_output\qodana.sarif.json" reportGuid="ee390e1c-873c-4a95-9a07-ba957332cdf3" reportId="CornerStone-Client/qodana/2025-03-11" />
+    </option>
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
@@ -96,14 +128,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00161" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740946088489</created>
-      <option name="number" value="00161" />
-      <option name="presentableId" value="LOCAL-00161" />
-      <option name="project" value="LOCAL" />
-      <updated>1740946088489</updated>
     </task>
     <task id="LOCAL-00162" summary="refactoring">
       <option name="closed" value="true" />
@@ -489,7 +513,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741685657465</updated>
     </task>
-    <option name="localTasksCounter" value="210" />
+    <task id="LOCAL-00210" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1741691456578</created>
+      <option name="number" value="00210" />
+      <option name="presentableId" value="LOCAL-00210" />
+      <option name="project" value="LOCAL" />
+      <updated>1741691456579</updated>
+    </task>
+    <option name="localTasksCounter" value="211" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

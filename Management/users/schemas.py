@@ -33,28 +33,11 @@ class NewUser(BaseModel):
     password: Optional[str] = Field(default="1234")
     status: Optional[bool] = False
 
-class DeleteUser(BaseModel):
-    id: str
-
 class UpdateUser(BaseModel):
-    id: int
-    role: Optional[int] = None
-    name: Optional[str] = None
+    name: Optional[str]
     telephone: Optional[str] = None
     type: Optional[str] = None
     email: Optional[ EmailStr] = None
     password: Optional[str] = None
     status: Optional[bool] = None
 
-class AddRole(BaseModel):
-    user_id: int
-    role_id: int
-
-class RemoveRole(BaseModel):
-    role_id: int
-    user_id: int
-
-class ChangePassword(BaseModel):
-    email: EmailStr
-    old: str
-    new: str

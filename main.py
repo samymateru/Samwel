@@ -11,6 +11,10 @@ from Management.companies.profile.control_weakness_rating.routes import router a
 from Management.companies.profile.issue_implementation.routes import router as issue_implementation
 from Management.companies.profile.issue_source.routes import router as issue_source
 from Management.companies.profile.opinion_rating.routes import router as opinion_rating
+from Management.companies.profile.control_effectiveness_rating.routes import router as control_effectiveness
+from Management.companies.profile.control_type.routes import router as control_type_
+from Management.companies.profile.risk_rating.routes import router as risk_rating_
+from Management.companies.profile.engagement_type.routes import router as engagement_type
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.work_program.routes import router as work_program_router
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
@@ -96,6 +100,11 @@ app.include_router(control_weakness, tags=["Control Weakness Rating"])
 app.include_router(issue_implementation, tags=["Issue Implementation"])
 app.include_router(issue_source, tags=["Issue Source"])
 app.include_router(opinion_rating, tags=["Opinion Rating"])
+app.include_router(engagement_type, tags=["Engagement Types"])
+app.include_router(control_effectiveness, tags=["Control Effectiveness Rating"])
+app.include_router(control_type_, tags=["Control Type"])
+app.include_router(risk_rating_, tags=["Risk rating"])
+
 # app.include_router(modules_router, tags=["Modules"])
 # app.include_router(templates_router, tags=["Templates"])
 # app.include_router(company_modules_router)

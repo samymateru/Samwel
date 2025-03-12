@@ -43,66 +43,6 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating new user {e}")
 
-
-
-def update_user(connection: Connection, user_data: UpdateUser) -> None:
-    query_parts = []
-    params = []
-
-    # Check if the first_name is set
-    if user_data.name is not None:
-        query_parts.append("name = %s")
-        params.append(user_data.name)
-
-    # Check if the telephone date is set
-    if user_data.telephone is not None:
-        query_parts.append("telephone = %s")
-        params.append(user_data.telephone)
-
-    # Check if the  type is set
-    if user_data.type is not None:
-        query_parts.append("type = %s")
-        params.append(user_data.type)
-
-    # Check if the  email is set
-    if user_data.email is not None:
-        query_parts.append("email = %s")
-        params.append(user_data.email)
-
-    # Check if the  is active is set
-    if user_data.status is not None:
-        query_parts.append("status = %s")
-        params.append(user_data.status)
-
-    # Check if the  role is set
-    if user_data.role is not None:
-        query_parts.append("role = %s")
-        params.append(user_data.role)
-
-    # If no fields to update, raise an error and return
-    if not query_parts:
-        raise HTTPException(status_code=400, detail="No fields to update")
-
-    # query_parts.append("updated_at = %s")
-    # params.append(datetime.now())
-
-    set_clause = ", ".join(query_parts)
-    # Add the WHERE condition
-    where_clause = "WHERE id = %s"
-    params.append(user_data.id)
-
-    # Combine the SET and WHERE parts into the final query
-    query = f"UPDATE public.users SET {set_clause} {where_clause}"
-    try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, tuple(params))
-        connection.commit()
-    except Exception as e:
-        connection.rollback()
-        print(f"Error updating the user {e}")
-        raise HTTPException(status_code=400, detail="Error updating the user")
-
 def delete_user(connection: Connection, user_id: str) -> None:
     query = """
                DELETE FROM public.users

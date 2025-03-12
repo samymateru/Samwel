@@ -7,6 +7,8 @@ from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
+from starlette import status
+
 from schema import TokenError, CurrentUser
 import secrets
 import string
@@ -131,3 +133,41 @@ def get_reference(connection: Connection, resource: str, id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
+
+# def check_permission(
+#     category_name: str,
+#     permission: str,
+#     user: CurrentUser = Depends(get_current_user),
+#     db=Depends(get_db_connection),
+# ):
+#     # Fetch the role of the current user (we are assuming "Owner" role here for demonstration)
+#     user_role = user.user_id
+#     query: str = """
+#                     SELECT role-->'id' from public.users WHERE id = %s
+#                  """
+#
+#     if user_role == "Owner":
+#         # In a real scenario, you would pull the role from the database or other data source
+#         # Here we just use the example `owner_role` object.
+#         role = ""  # Simulated role object
+#
+#         # Check if the category exists in the role
+#         for category in role.categories:
+#             if category.name == category_name:
+#                 # Check if the user has the required permission in that category
+#                 if permission in category.permissions.dict().get(permission, []):
+#                     return True
+#                 else:
+#                     raise HTTPException(
+#                         status_code=status.HTTP_403_FORBIDDEN,
+#                         detail=f"You do not have {permission} permission for category {category_name}"
+#                     )
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"Category {category_name} not found for role {user_role}"
+#         )
+#
+#     raise HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Unauthorized"
+#     )

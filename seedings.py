@@ -116,7 +116,6 @@ def risk_maturity_rating(connection: Connection, company: int):
         cursor.executemany(query, values)
     connection.commit()
 
-
 def issue_implementation_status(connection: Connection, company: int):
     query: str = """
                  INSERT INTO public.issue_implementation_status (name, company)

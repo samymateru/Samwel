@@ -148,3 +148,4 @@ def update_planning_procedure(
         edit_planning_procedure(db, std_template=std_template, procedure_id=procedure_id)
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
