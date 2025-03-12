@@ -87,7 +87,7 @@ def control_weakness_rating(connection: Connection, company: int):
 
 def audit_opinion_rating(connection: Connection, company: int):
     query: str = """
-                 INSERT INTO public.audit_opinion_rating (name, company)
+                 INSERT INTO public.opinion_rating (name, company)
                  VALUES (%s, %s)
                  """
     values = [
@@ -118,7 +118,7 @@ def risk_maturity_rating(connection: Connection, company: int):
 
 def issue_implementation_status(connection: Connection, company: int):
     query: str = """
-                 INSERT INTO public.issue_implementation_status (name, company)
+                 INSERT INTO public.issue_implementation (name, company)
                  VALUES (%s, %s)
                  """
     values = [
@@ -874,7 +874,7 @@ def business_process(connection: Connection, company: int):
         # 1️⃣ Insert Business Processes & Get Their IDs
         for process in data:
             cursor.execute(
-                "INSERT INTO business_process (process_name, code, company) VALUES (%s, %s, %s) RETURNING id;",
+                "INSERT INTO public.business_process (process_name, code, company) VALUES (%s, %s, %s) RETURNING id;",
                 (process["name"], process["code"], company)
             )
             process_id = cursor.fetchone()[0]
@@ -889,11 +889,10 @@ def business_process(connection: Connection, company: int):
 
         # Execute batch insert
         cursor.executemany(
-            "INSERT INTO business_sub_process (name, business_process) VALUES (%s, %s);",
+            "INSERT INTO public.business_sub_process (name, business_process) VALUES (%s, %s);",
             subprocess_values
         )
         connection.commit()
-
 
 def planning_procedures(connection: Connection, engagement: int):
     values = [

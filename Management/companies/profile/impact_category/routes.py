@@ -3,15 +3,15 @@ from schema import CurrentUser
 from utils import get_current_user, get_db_connection
 from typing import List
 from schema import *
-from Management.companies.profile.business_process.schemas import *
-from Management.companies.profile.business_process.databases import *
+from Management.companies.profile.impact_category.schemas import *
+from Management.companies.profile.impact_category.databases import *
 
 router = APIRouter(prefix="/profile")
 
-@router.post("/business_process/{company_id}", response_model=ResponseMessage)
-def create_new_business_process(
+@router.post("/impact_category/{company_id}", response_model=ResponseMessage)
+def create_new_impact_category(
         company_id: int,
-        business_process: NewBusinessProcess,
+        impact_category: NewImpactCategory,
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
@@ -22,10 +22,10 @@ def create_new_business_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/business_sub_process/{business_process_id}", response_model=ResponseMessage)
-def create_new_business_sub_process(
-        business_process_id: int,
-        business_sub_process: NewBusinessProcess,
+@router.post("/impact_sub_category/{impact_category_id}", response_model=ResponseMessage)
+def create_new_impact_sub_category(
+        impact_category_id: int,
+        impact_sub_category: NewImpactSubCategory,
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
@@ -37,8 +37,8 @@ def create_new_business_sub_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/business_process/{company_id}", response_model=List[BusinessProcess])
-def fetch_business_process(
+@router.get("/impact_category/{company_id}", response_model=List[NewImpactCategory])
+def fetch_impact_category(
         company_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -50,9 +50,9 @@ def fetch_business_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("business_sub_process/{business_process_id}", response_model=List[BusinessProcess])
-def fetch_business_sub_process(
-        business_process_id: int,
+@router.get("/impact_sub_category/{impact_category_id}", response_model=List[NewImpactSubCategory])
+def fetch_impact_sub_category(
+        impact_category_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
@@ -63,10 +63,10 @@ def fetch_business_sub_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/business_process/{business_process_id}")
-def update_business_process(
-        business_process_id: int,
-        business_process: NewBusinessProcess,
+@router.put("/impact_category/{impact_category_id}")
+def update_impact_category(
+        impact_category_id: int,
+        impact_category: NewImpactCategory,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -77,10 +77,10 @@ def update_business_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/business_sub_process/{business_sub_process_id}")
-def update_business_sub_process(
-        business_sub_process_id: int,
-        business_sub_process: NewBusinessSubProcess,
+@router.put("/impact_sub_category/{impact_sub_category_id}")
+def update_impact_sub_category(
+        impact_sub_category_id: int,
+        impact_sub_category: NewImpactSubCategory,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -91,9 +91,9 @@ def update_business_sub_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/business_process/{business_process_id}")
+@router.delete("/impact_category/{impact_category_id}")
 def delete_business_process(
-        business_process_id: int,
+        impact_category_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -104,9 +104,9 @@ def delete_business_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/business_sub_process/{business_sub_process_id}")
-def delete_business_sub_process(
-        business_sub_process_id: int,
+@router.delete("/impact_sub_category/{impact_sub_category_id}")
+def delete_impact_sub_category(
+        impact_sub_category_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
