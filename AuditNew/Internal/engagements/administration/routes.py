@@ -23,7 +23,7 @@ def fetch_business_contacts(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/business_contact{engagement_id}", response_model=ResponseMessage)
+@router.put("/business_contact/{engagement_id}", response_model=ResponseMessage)
 def update_business_contact(
         engagement_id: int,
         business_contact: BusinessContact,
