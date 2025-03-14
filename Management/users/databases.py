@@ -25,8 +25,8 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
                                    user_data.telephone,
                                    user_data.email,
                                    user_data.type,
-                                   json.dumps(user_data.role),
-                                   json.dumps(user_data.module),
+                                   '[]',
+                                   '[]',
                                    generate_hash_password(user_data.password),
                                    user_data.status,
                                    datetime.now()
@@ -113,7 +113,7 @@ def remove_role(connection: Connection, user_id: int, role_id: int):
 def add_user_module(connection: Connection, module: Module, user_id: int):
     query: str = """
                   UPDATE public.users SET 
-                  module = %s::jsonb
+                  module = module || %s::jsonb
                   WHERE id = %s
                  """
     try:
