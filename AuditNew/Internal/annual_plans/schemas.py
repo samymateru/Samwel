@@ -8,6 +8,18 @@ class AnnualPlansStatus(str, Enum):
     PROGRESS = "In progress"
     COMPLETED = "Completed"
 
+
+class AnnualPlan(BaseModel):
+    id: Optional[int] = None
+    name: str
+    year: Optional[str] = datetime.now().year
+    status: AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+    attachment: str
+    created_at: Optional[datetime] = datetime.now()
+
+
 class NewAnnualPlan(BaseModel):
     name: str
     year: Optional[str] = datetime.now().year

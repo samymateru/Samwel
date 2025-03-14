@@ -23,9 +23,8 @@ def fetch_company_modules(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_new_company_module(
-        company_id: int,
         company_module: CompanyModule,
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
@@ -38,7 +37,7 @@ def create_new_company_module(
             purchase_date=None,
             status="active"
         )
-        id = add_new_company_module(connection=db, company_module=module, company_id=company_id)
+        id = add_new_company_module(connection=db, company_module=module, company_id=user.company_id)
         user_module = Module(
             id = id,
             name = module.name

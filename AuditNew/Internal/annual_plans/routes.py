@@ -1,85 +1,92 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
+
+from AuditNew.Internal.annual_plans.databases import *
 from utils import  get_db_connection
 from AuditNew.Internal.annual_plans import databases
 from AuditNew.Internal.annual_plans.schemas import *
-from typing import Tuple, Dict, List
+from typing import List
 from utils import get_current_user
-from schema import CurrentUser
-from Management.users import databases as user_database
-from Management.roles import databases as role_database
+from schema import CurrentUser, ResponseMessage
+
 
 router = APIRouter(prefix="/annual_plans")
 
-@router.get("/")
+@router.get("/{company_module_id}", response_model=List[AnnualPlan])
 def get_annual_plans(
+        company_module_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
         return HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        # role_ids: List[int] = user_database.get_user(db, column="id", value=1)[0].get("role_id")
-        # user_roles: List[Dict] = role_database.get_user_roles(db, role_ids)
-        # matching_dicts = [d for d in user_roles if d.get("category") == "AnnualPlan"]
-        # print(matching_dicts)
-        # for i in matching_dicts:
-        #     if i.get("read"):
-        annual_plans_data: List[Dict] = databases.get_annual_plans(db, column="company", value=user.company_id)
-        if annual_plans_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": annual_plans_data, "status_code": 200}
+        data = get_annual_plans(db, column="company_module", value=company_module_id)
+        return data
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/new_annual_plan")
+@router.post("/{company_module_id}", response_model=ResponseMessage)
 def create_new_annual_plan(
+        company_module_id: int,
         name: str = Form(...),
         year: str = Form(...),
         start: datetime = Form(...),
         end: datetime = Form(...),
-        file: UploadFile = File(...),
+        attachment: UploadFile = File(...),
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        annual_audit_plan = NewAnnualPlan(
+        audit_plan = AnnualPlan(
             name=name,
             year=year,
             start=start,
             end=end,
-            file=file.filename
+            attachment=attachment.filename
         )
-        databases.create_new_annual_plan(db, annual_audit_plan=annual_audit_plan, company_id=user.company_id)
-        return {"detail": "Annual plan successfully created", "status_code": 501}
+        create_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
+        return {"detail": "Annual plan successfully created"}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/update_annual_plan")
+@router.put("/{annual_plan_id}", response_model=ResponseMessage)
 def update_annual_plan(
-        annual_plan: UpdateAnnualPlan,
+        annual_plan_id: int,
+        name: str = Form(...),
+        year: str = Form(...),
+        start: datetime = Form(...),
+        end: datetime = Form(...),
+        attachment: UploadFile = File(...),
         db = Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
+    annual_plan = AnnualPlan(
+        name=name,
+        year=year,
+        start=start,
+        end=end,
+        attachment=attachment.filename
+    )
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        databases.update_annual_plan(db, annual_plan)
-        return {"detail": "annual plan successfully updated", "status_code": 502}
+        edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
+        return {"detail": "annual plan successfully updated"}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/{plan_id}")
+@router.delete("/{annual_plan_id}", response_model=ResponseMessage)
 def delete_annual_plan(
-        plan_id: int,
+        annual_plan_id: int,
         db = Depends(get_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        databases.delete_annual_plan(db, plan_id=plan_id)
-        return {"detail": "successfully delete the annual plan", "status_code": 503}
+        remove_annual_plan(db, annual_plan_id=annual_plan_id)
+        return {"detail": "successfully delete the annual plan"}
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
