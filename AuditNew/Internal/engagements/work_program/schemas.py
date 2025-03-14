@@ -30,57 +30,6 @@ class SubProgram(BaseModel):
     effectiveness: Optional[str]
     conclusion: Optional[str]
 
-class Issue(BaseModel):
-    id: Optional[int] = None
-    title: Optional[str]
-    criteria: Optional[str]
-    finding: Optional[str]
-    risk_rating: Optional[str]
-    process: Optional[str]
-    sub_process: Optional[str]
-    root_cause_description: Optional[str]
-    root_cause: Optional[str]
-    sub_root_cause: Optional[str]
-    risk_category: Optional[str]
-    sub_risk_category: Optional[str]
-    impact_description: Optional[str]
-    impact_category: Optional[str]
-    impact_sub_category: Optional[str]
-    recurring_status: Optional[bool]
-    recommendation: Optional[str]
-    management_action_plan: Optional[str]
-    estimated_implementation_date: Optional[datetime]
-    implementation_contacts: Optional[str]
-
-class Task(BaseModel):
-    id: Optional[int] = None
-    title: Optional[str]
-    reference: Optional[str]
-    description: Optional[str]
-    date_raised: Optional[datetime]
-    raised_by: Optional[User]
-    action_owner: Optional[User]
-    resolution_summary: Optional[str]
-    resolution_details: Optional[str]
-    resolved_by: Optional[str]
-    date_resolved: Optional[datetime]
-    decision: Optional[str]
-
-
-class ReviewComment(BaseModel):
-    id: Optional[int] = None
-    title: Optional[str]
-    reference: Optional[str]
-    description: Optional[str]
-    date_raised: Optional[datetime]
-    raised_by: Optional[User]
-    action_owner: Optional[User]
-    resolution_summary: Optional[str]
-    resolution_details: Optional[str]
-    resolved_by: Optional[User]
-    date_resolved: Optional[datetime]
-    decision: Optional[str]
-
 class SubProgramEvidence(BaseModel):
     id: Optional[int] = None
     attachment: Optional[str]
@@ -88,11 +37,7 @@ class SubProgramEvidence(BaseModel):
 class NewSubProgram(BaseModel):
     title: str
 
-class NewReviewComment(BaseModel):
-    title: str
 
-class NewTask(BaseModel):
-    title: str
 
-class NewIssue(BaseModel):
-    title: str
+
+

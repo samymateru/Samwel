@@ -6,5 +6,5 @@ class CompanyModule(BaseModel):
     id: Optional[int] = None
     name: str
     purchase_date: datetime | None
-    status: str
+    status: str | None
 
