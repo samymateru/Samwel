@@ -3,6 +3,7 @@ from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
+from Management.company_modules.routes import router as company_modules_router
 from Management.settings.business_process.routes import router as business_process_router
 from Management.settings.risk_rating.routes import router as risk_rating_router
 from Management.settings.engagement_types.routes import router as engagement_types_router
@@ -33,6 +34,8 @@ from Management.companies.databases import  get_companies
 from Management.templates.databases import *
 
 
+from seedings import impact_category,risk_category,root_cause_category
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from utils import connection_pool
@@ -52,6 +55,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+@app.get("/")
+def test(
+        db=Depends(get_db_connection),
+):
+    root_cause_category(db, 1)
+    impact_category(db, 1)
+    risk_category(db, 1)
+    return "hello"
 
 @app.post("/login", tags=["Authentication"])
 def users(
@@ -84,6 +98,7 @@ def users(
         return {"detail":"Invalid password", "status_code": 204}
 
 app.include_router(companies_router, tags=["Company"])
+app.include_router(company_modules_router, tags=["Company Modules"])
 app.include_router(users_router,tags=["User"])
 app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
 app.include_router(engagements_router, tags=["Engagements"])
@@ -109,9 +124,9 @@ app.include_router(risk_rating_, tags=["Risk rating"])
 app.include_router(business_process_, tags=["Engagement Business Processes"])
 app.include_router(impact_category_, tags=["Impact Category Rating"])
 
+
 # app.include_router(modules_router, tags=["Modules"])
 # app.include_router(templates_router, tags=["Templates"])
-# app.include_router(company_modules_router)
 # app.include_router(audit_logs_router)
 # app.include_router(engagement_profile_router)
 # app.include_router(permission_router)

@@ -1,28 +1,56 @@
-# import smtplib
-# from email.message import EmailMessage
-#
-# # Email details
-# sender_email = "samymateru1999@gmail.com"
-# receiver_email = "swaicatherine26@gmail.com"
-# subject = "Hello from Python!"
-# body = "Punguza umbea binti"
-#
-# # Create the email
-# email = EmailMessage()
-# email['From'] = sender_email
-# email['To'] = receiver_email
-# email['Subject'] = subject
-# email.set_content(body)
-#
-# # Send the email
-# try:
-#     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-#         smtp.login(sender_email, "eqdi kxuv vwmq fnth")  # Replace with your password
-#         smtp.send_message(email)
-#         print("Email sent successfully!")
-# except Exception as e:
-#     print(f"Failed to send email: {e}")
+import os
+import google.auth
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
-import json
+# Define the scope (permission level)
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
-print(json.dumps([{"dad": "hello"}]))
+
+def authenticate():
+    """Handles OAuth 2.0 authentication."""
+
+    # Use the OAuth2.0 credentials (downloaded JSON file from Google Cloud Console)
+    creds = None
+    if os.path.exists('token.json'):
+        creds = google.auth.load_credentials_from_file('token.json')[0]
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            # Launch OAuth 2.0 flow to get credentials
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)  # Specify your credentials file
+            creds = flow.run_local_server(port=0)  # Start the local server for authentication
+
+        # Save credentials for future use
+        with open('token.json', 'w') as token:
+            print(creds.to_json())
+            token.write(creds.to_json())
+
+    return creds
+
+
+def upload_file(file_path):
+    """Uploads a file to Google Drive."""
+
+    creds = authenticate()  # Authenticate using OAuth credentials
+
+    # Build the service
+    service = build('drive', 'v3', credentials=creds)
+
+    # Create the file metadata
+    file_metadata = {'name': os.path.basename(file_path)}
+
+    # Prepare the file for upload
+    media = MediaFileUpload(file_path, resumable=True)
+
+    # Upload the file
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    print(f'File uploaded. File ID: {file["id"]}')
+
+
+# Example usage: upload a file to Google Drive
+upload_file('schema.py')  # Replace with the actual file path

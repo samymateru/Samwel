@@ -44,11 +44,9 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                                 extended_procedure,
                                 extended_results,
                                 effectiveness,
-                                conclusion,
-                                reviewed_by,
-                                prepared_by
+                                conclusion
                                 ) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         reference = get_reference(connection=connection, resource="sub_program", id=program_id)
@@ -69,19 +67,7 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                 "",
                 "",
                 "",
-                "",
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                })
+                ""
             ))
         connection.commit()
     except Exception as e:
@@ -351,9 +337,7 @@ def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id
                     extended_procedure = %s,
                     extended_results = %s,
                     effectiveness = %s,
-                    conclusion = %s,
-                    prepared_by = %s::jsonb,
-                    reviewed_by = %s::jsonb  WHERE id = %s; 
+                    conclusion = %s WHERE id = %s; 
                    """
     try:
         with connection.cursor() as cursor:
@@ -372,8 +356,6 @@ def edit_sub_program(connection: Connection, sub_program: SubProgram, program_id
                 sub_program.extended_results,
                 sub_program.effectiveness,
                 sub_program.conclusion,
-                sub_program.reviewed_by.model_dump_json(),
-                sub_program.prepared_by.model_dump_json(),
                 program_id
             ))
         connection.commit()

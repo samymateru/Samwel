@@ -37,8 +37,8 @@ def create_new_business_sub_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/business_process/{company_id}", response_model=List[BusinessProcess])
-def fetch_business_process(
+@router.get("/business_process/{company_id}", response_model=List[CombinedBusinessProcess])
+def fetch_combined_business_process(
         company_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -46,7 +46,8 @@ def fetch_business_process(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        pass
+        data = get_combined_business_process(db, column="company", value=company_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

@@ -42,7 +42,7 @@ def risk_rating(connection: Connection, company: int):
 
 def issue_finding_source(connection: Connection, company: int):
     query: str = """
-                 INSERT INTO public.issue_finding_source (name, company)
+                 INSERT INTO public.issue_source (name, company)
                  VALUES (%s, %s)
                  """
     values = [
@@ -890,6 +890,169 @@ def business_process(connection: Connection, company: int):
         # Execute batch insert
         cursor.executemany(
             "INSERT INTO public.business_sub_process (name, business_process) VALUES (%s, %s);",
+            subprocess_values
+        )
+        connection.commit()
+
+def root_cause_category(connection: Connection, company: int):
+    data = [
+        {
+            "name": "People",
+            "sub": []
+        },
+        {
+            "name": "Governance",
+            "sub": []
+        },
+        {
+            "name": "Technology/Systems",
+            "sub": []
+        },
+        {
+            "name": "Process",
+            "sub": []
+        },
+        {
+            "name": "Financial",
+            "sub": []
+        },
+        {
+            "name": "External Factors",
+            "sub": []
+        },
+    ]
+    with connection.cursor() as cursor:
+        process_ids = {}
+
+        # 1️⃣ Insert Business Processes & Get Their IDs
+        for process in data:
+            cursor.execute(
+                "INSERT INTO public.root_cause_category (name, company) VALUES (%s, %s) RETURNING id;",
+                (process["name"], company)
+            )
+            process_id = cursor.fetchone()[0]
+            process_ids[process["name"]] = process_id  # Store process ID
+
+        # 2️⃣ Insert Business Subprocesses (Batch Insert)
+        subprocess_values = []
+        for process in data:
+            process_id = process_ids[process["name"]]
+            for sub in process["sub"]:
+                subprocess_values.append((sub, process_id))
+
+        # Execute batch insert
+        cursor.executemany(
+            "INSERT INTO public.root_cause_sub_category (sub_name, root_cause_category) VALUES (%s, %s);",
+            subprocess_values
+        )
+        connection.commit()
+
+def risk_category(connection: Connection, company: int):
+    data = [
+        {
+            "name": "Operational",
+            "sub": []
+        },
+        {
+            "name": "Credit",
+            "sub": []
+        },
+        {
+            "name": "Strategic",
+            "sub": []
+        },
+        {
+            "name": "Liquidity",
+            "sub": []
+        },
+        {
+            "name": "Compliance/ Regulatory",
+            "sub": []
+        },
+        {
+            "name": "Market",
+            "sub": []
+        },
+        {
+            "name": "Environmental (ESG)",
+            "sub": []
+        },
+        {
+            "name": "Others",
+            "sub": []
+        },
+    ]
+    with connection.cursor() as cursor:
+        process_ids = {}
+
+        # 1️⃣ Insert Business Processes & Get Their IDs
+        for process in data:
+            cursor.execute(
+                "INSERT INTO public.risk_category (name, company) VALUES (%s, %s) RETURNING id;",
+                (process["name"], company)
+            )
+            process_id = cursor.fetchone()[0]
+            process_ids[process["name"]] = process_id  # Store process ID
+
+        # 2️⃣ Insert Business Subprocesses (Batch Insert)
+        subprocess_values = []
+        for process in data:
+            process_id = process_ids[process["name"]]
+            for sub in process["sub"]:
+                subprocess_values.append((sub, process_id))
+
+        # Execute batch insert
+        cursor.executemany(
+            "INSERT INTO public.sub_risk_category (sub_name, risk_category) VALUES (%s, %s);",
+            subprocess_values
+        )
+        connection.commit()
+
+def impact_category(connection: Connection, company: id):
+    data = [
+        {
+            "name": "Financial",
+            "sub": []
+        },
+        {
+            "name": "Operational",
+            "sub": []
+        },
+        {
+            "name": "Governance",
+            "sub": []
+        },
+        {
+            "name": "Regulatory",
+            "sub": []
+        },
+        {
+            "name": "Reputation",
+            "sub": []
+        }
+    ]
+    with connection.cursor() as cursor:
+        process_ids = {}
+
+        # 1️⃣ Insert Business Processes & Get Their IDs
+        for process in data:
+            cursor.execute(
+                "INSERT INTO public.impact_category (name, company) VALUES (%s, %s) RETURNING id;",
+                (process["name"], company)
+            )
+            process_id = cursor.fetchone()[0]
+            process_ids[process["name"]] = process_id  # Store process ID
+
+        # 2️⃣ Insert Business Subprocesses (Batch Insert)
+        subprocess_values = []
+        for process in data:
+            process_id = process_ids[process["name"]]
+            for sub in process["sub"]:
+                subprocess_values.append((sub, process_id))
+
+        # Execute batch insert
+        cursor.executemany(
+            "INSERT INTO public.impact_sub_category (sub_name, impact_category) VALUES (%s, %s);",
             subprocess_values
         )
         connection.commit()
@@ -1854,3 +2017,4 @@ def add_engagement_profile(connection: Connection, engagement: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")
+

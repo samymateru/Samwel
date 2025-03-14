@@ -5,7 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/databases.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/impact_category/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/company_modules/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/company_modules/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/company_modules/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/company_modules/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/company_modules/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/company_modules/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/settings/business_process/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/settings/business_process/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +95,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.CommitDialog&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="QodanaReportsService">
@@ -99,14 +127,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00164" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740961995489</created>
-      <option name="number" value="00164" />
-      <option name="presentableId" value="LOCAL-00164" />
-      <option name="project" value="LOCAL" />
-      <updated>1740961995489</updated>
     </task>
     <task id="LOCAL-00165" summary="refactoring">
       <option name="closed" value="true" />
@@ -492,7 +512,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741769382596</updated>
     </task>
-    <option name="localTasksCounter" value="213" />
+    <task id="LOCAL-00213" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1741780070162</created>
+      <option name="number" value="00213" />
+      <option name="presentableId" value="LOCAL-00213" />
+      <option name="project" value="LOCAL" />
+      <updated>1741780070162</updated>
+    </task>
+    <option name="localTasksCounter" value="214" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -548,6 +576,10 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Management/role_permissions/databases.py</url>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Management/settings/business_process/databases.py</url>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -3,7 +3,6 @@ from psycopg2.extensions import cursor as Cursor
 from fastapi import HTTPException
 from collections import defaultdict
 
-
 def get_business_process(connection: Connection, column: str = None, value: str = None):
     query = """
             SELECT 

@@ -29,8 +29,6 @@ class SubProgram(BaseModel):
     extended_results: Optional[str]
     effectiveness: Optional[str]
     conclusion: Optional[str]
-    reviewed_by: Optional[User]
-    prepared_by: Optional[User]
 
 class Issue(BaseModel):
     id: Optional[int] = None

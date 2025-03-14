@@ -1,16 +1,10 @@
 from pydantic import BaseModel
-from datetime import datetime
 from typing import List, Optional
+from datetime import datetime
 
-class NewCompanyModule(BaseModel):
-    module_id: int
-    is_active: Optional[bool] = True
+class CompanyModule(BaseModel):
+    id: Optional[int] = None
+    name: str
+    purchase_date: datetime | None
+    status: str
 
-
-class UpdateCompanyModule(BaseModel):
-    company_module_id: int
-    module_id: Optional[int] = None
-    is_active: Optional[bool] = None
-
-class DeleteCompanyModule(BaseModel):
-    company_module_id: List[int]

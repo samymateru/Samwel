@@ -4,31 +4,28 @@ from Management.companies.schemas import *
 from typing import Tuple, List, Dict
 from Management.companies import databases as company_database
 from Management.users import databases as user_database
-from schema import CurrentUser
+from schema import CurrentUser, ResponseMessage
 from utils import generate_hash_password, get_current_user
 from Management.companies import databases
 from Management.users.schemas import *
 from seedings import *
 router = APIRouter(prefix="/companies")
 
-@router.post("/new_company")
+@router.post("/", response_model=ResponseMessage)
 def new_company(
-        new_company_data: NewCompany,
+        company: NewCompany,
         db = Depends(get_db_connection)
     ):
     try:
-        company_id: int = company_database.create_new_company(db, new_company_data)
+        company_id: int = company_database.create_new_company(db, company)
         user_data = NewUser(
-            name = new_company_data.owner,
-            telephone = new_company_data.telephone,
-            module= [""],
-            role=Role(
-                id = 1,
-                name = "Owner"
-            ),
-            email = new_company_data.email,
+            name = company.owner,
+            telephone = company.telephone,
+            module= [],
+            role=[],
+            email = company.email,
             type = "owner",
-            password = new_company_data.password,
+            password = company.password,
             status = True,
         )
         user_database.new_user(db, user_data, company_id)
@@ -43,24 +40,25 @@ def new_company(
         control_type(db, company_id)
         roles(db, company_id)
         business_process(db, company_id)
+        impact_category(db, company_id)
+        root_cause_category(db, company_id)
+        risk_category(db, company_id)
         return {"detail": "company successfully created", "status_code":201}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/")
+@router.get("/", response_model=Company)
 def get_company(
         db = Depends(get_db_connection),
-        current_user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        company_data: List[Dict] = databases.get_companies(db, column="id", value=current_user.company_id)
-        if company_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": company_data[0], "status_code": 200}
+        data = databases.get_companies(db, column="id", value=user.company_id)[0]
+        return data
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 

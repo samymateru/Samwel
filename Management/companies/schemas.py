@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Optional, List
 from enum import Enum
 
-
 class UserType(str, Enum):
     ADMINISTRATOR = "administrator",
     USER = "user"
@@ -34,13 +33,14 @@ class Module(BaseModel):
     name: str
 
 class Company(BaseModel):
+    id: Optional[int]
     name: str
     owner: str
     email: str
     telephone: str
-    website: str
-    description: str
-    status: bool
+    website: Optional[str] = None
+    entity_type: str
+    status: str
     created_at: datetime
 
 class NewCompany(BaseModel):
@@ -48,21 +48,10 @@ class NewCompany(BaseModel):
     owner: str
     email: EmailStr
     telephone: str
-    website:  str
+    website:  Optional[str]
     password: str
     entity_type: str
-    module_id: List[int]
     status: Optional[str] = "setup"
-    type: UserType = UserType.ADMINISTRATOR
-
-class UpdateCompany(BaseModel):
-    company_id: int
-    name: Optional[str] = None
-    owner: Optional[str] = None
-    description: Optional[str] = None
-    email: Optional[str] = None
-    telephone: Optional[str] = None
-    website: Optional[str] = None
 
 class Resource(BaseModel):
     resource: ResourceTypes

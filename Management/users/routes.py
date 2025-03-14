@@ -10,7 +10,7 @@ from Management.roles.databases import *
 
 router = APIRouter(prefix="/users")
 
-@router.get("/")
+@router.get("/", response_model=List[User])
 def fetch_users(
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
@@ -18,10 +18,8 @@ def fetch_users(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        user_data = get_user(db, column="company", value=user.company_id)
-        if user_data.__len__() == 0:
-            return {"payload": [], "status_code": 200}
-        return {"payload": user_data, "status_code": 200}
+        data = get_user(db, column="company", value=user.company_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class BusinessProcess(BaseModel):
     id: int
@@ -13,3 +13,9 @@ class NewBusinessProcess(BaseModel):
 
 class NewBusinessSubProcess(BaseModel):
     name: str
+
+class CombinedBusinessProcess(BusinessProcess):
+    id: Optional[int]
+    process_name: str
+    code: str
+    sub_process_name: List[str]

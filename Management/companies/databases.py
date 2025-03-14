@@ -9,10 +9,10 @@ from fastapi import HTTPException
 from datetime import datetime
 from Management.modules import  databases as module_databases
 from collections import defaultdict
-def create_new_company(connection: Connection, company_data: NewCompany) -> int:
+def create_new_company(connection: Connection, company_data: NewCompany):
     query_insert = """
-        INSERT INTO public.companies (name, owner, email, telephone, website, entity_type, module, status, created_at) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        INSERT INTO public.companies (name, owner, email, telephone, website, entity_type, status, created_at) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     query_check = "SELECT 1 FROM public.companies WHERE email = %s"
     try:
@@ -30,7 +30,6 @@ def create_new_company(connection: Connection, company_data: NewCompany) -> int:
                 company_data.telephone,
                 company_data.website,
                 company_data.entity_type,
-                company_data.module_id,
                 company_data.status,
                 datetime.now()
             ))
@@ -41,73 +40,6 @@ def create_new_company(connection: Connection, company_data: NewCompany) -> int:
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new company {e}")
-
-
-def update_company(connection: Connection, company_data: UpdateCompany):
-    query_parts = []
-    params = []
-
-    # Check if the name is set
-    if company_data.name is not None:
-        query_parts.append("name = %s")
-        params.append(company_data.name)
-
-    # Check if the description data is set
-    if company_data.description is not None:
-        query_parts.append("description = %s")
-        params.append(company_data.description)
-
-    # Check if the owner data is set
-    if company_data.owner is not None:
-        query_parts.append("owner = %s")
-        params.append(company_data.owner)
-
-    # Check if the email date is set
-    if company_data.email is not None:
-        query_parts.append("email = %s")
-        params.append(company_data.email)
-
-    # Check if the  telephone is set
-    if company_data.telephone is not None:
-        query_parts.append("telephone = %s")
-        params.append(company_data.telephone)
-
-    # Check if the  status is set
-    if company_data.status is not None:
-        query_parts.append("status = %s")
-        params.append(company_data.status)
-
-    # Check if the  website is set
-    if company_data.website is not None:
-        query_parts.append("website = %s")
-        params.append(company_data.website)
-
-
-        # If no fields to update, raise an error and return
-    if not query_parts:
-        raise HTTPException(status_code=300, detail="No fields to update")
-
-    query_parts.append("updated_at = %s")
-    params.append(datetime.now())
-
-    # Construct the SET part without trailing commas
-    set_clause = ", ".join(query_parts)
-
-    # Add the WHERE condition
-    where_clause = "WHERE id = %s"
-    params.append(company_data.company_id)
-
-    # Combine the SET and WHERE parts into the final query
-    query = f"UPDATE public.company SET {set_clause} {where_clause}"
-    try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, tuple(params))
-        connection.commit()
-    except Exception as e:
-        connection.rollback()
-        print(f"Error updating company {e}")
-        raise HTTPException(status_code=400, detail="Error updating company")
 
 def delete_company(connection: Connection, company_id: List[int]):
     query = """
@@ -122,10 +54,9 @@ def delete_company(connection: Connection, company_id: List[int]):
         connection.commit()
     except Exception as e:
         connection.rollback()
-        print(f"Error deleting module {e}")
         raise HTTPException(status_code=400, detail="Error deleting module")
 
-def get_companies(connection: Connection, column: str = None, value: str = None, row: str = None) -> List[Dict]:
+def get_companies(connection: Connection, column: str = None, value: str | int = None, row: str = None) -> List[Dict]:
     query = "SELECT * FROM public.companies "
     if row:
         query = f"SELECT {row} FROM public.companies "
@@ -138,11 +69,6 @@ def get_companies(connection: Connection, column: str = None, value: str = None,
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-            modules = module_databases.get_active_modules(connection, data[0].get("module_id"))
-            for i in data:
-                i["modules"] = modules
-                if "module_id" in i:
-                    del i["module_id"]
             return data
     except Exception as e:
         connection.rollback()

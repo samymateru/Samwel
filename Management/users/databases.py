@@ -1,14 +1,9 @@
 import json
-from typing import Tuple
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
-from typing import List, Dict
-from Management.users.schemas import UpdateUser, NewUser
 from fastapi import HTTPException
-from datetime import datetime
 from utils import generate_hash_password
-from Management.roles import databases as roles_database
-from Management.modules import  databases as module_databases
+from Management.users.schemas import *
 
 def new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
@@ -30,8 +25,8 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
                                    user_data.telephone,
                                    user_data.email,
                                    user_data.type,
-                                   user_data.role.model_dump_json(),
-                                   user_data.module,
+                                   json.dumps(user_data.role),
+                                   json.dumps(user_data.module),
                                    generate_hash_password(user_data.password),
                                    user_data.status,
                                    datetime.now()
@@ -71,12 +66,6 @@ def get_user(connection: Connection, column: str, value: int | str):
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-            # if len(data) != 0:
-            #     modules = module_databases.get_active_modules(connection, data[0].get("module_id"))
-            #     for i in data:
-            #         i["modules"] = modules
-            #         if "module_id" in i:
-            #             del i["module_id"]
             return data
     except Exception as e:
         connection.rollback()
@@ -120,6 +109,24 @@ def remove_role(connection: Connection, user_id: int, role_id: int):
         print(f"Error add role to a user {e}")
         raise HTTPException(status_code=400, detail="Error adding role")
 
+
+def add_user_module(connection: Connection, module: Module, user_id: int):
+    query: str = """
+                  UPDATE public.users SET 
+                  module = %s::jsonb
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                module.model_dump_json(),
+                user_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding module")
 
 
 
