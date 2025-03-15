@@ -9,7 +9,7 @@ router = APIRouter(prefix="/task")
 
 @router.post("/{engagement_id}")
 def create_new_task(
-        sub_program_id: int,
+        engagement_id: int,
         task: NewTask,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -18,13 +18,13 @@ def create_new_task(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
-        add_new_task(db, task=task, sub_program_id=sub_program_id)
+        add_new_task(db, task=task, engagement_id=engagement_id)
         return {"detail": "Task added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.put("/sub_program/task/{task_id}", response_model=ResponseMessage)
+@router.put("/{task_id}", response_model=ResponseMessage)
 def update_task(
         task_id: int,
         task: Task,
@@ -39,7 +39,7 @@ def update_task(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/sub_program/task/{task_id}", response_model=ResponseMessage)
+@router.delete("/{task_id}", response_model=ResponseMessage)
 def delete_task(
         task_id: int,
         db=Depends(get_db_connection),

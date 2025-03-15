@@ -5,7 +5,7 @@ from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.review_comment.schemas import *
 from utils import get_reference
 
-def add_new_review_comment(connection: Connection, review_comment: NewReviewComment, sub_program_id: int):
+def add_new_review_comment(connection: Connection, review_comment: NewReviewComment, engagement_id: int):
     query: str = """
                     INSERT INTO public.review_comment (
                         sub_program,
@@ -23,11 +23,11 @@ def add_new_review_comment(connection: Connection, review_comment: NewReviewComm
                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);  
                  """
     try:
-        reference: str = get_reference(connection=connection, resource="review_comment", id=sub_program_id)
+        reference: str = get_reference(connection=connection, resource="review_comment", id=engagement_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
-                sub_program_id,
+                engagement_id,
                 reference,
                 review_comment.title,
                 "",

@@ -4,8 +4,6 @@ from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
-from Management.settings.business_process.routes import router as business_process_router
-from Management.settings.risk_rating.routes import router as risk_rating_router
 from Management.settings.engagement_types.routes import router as engagement_types_router
 from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.companies.profile.control_weakness_rating.routes import router as control_weakness
@@ -21,6 +19,9 @@ from Management.companies.profile.engagement_type.routes import router as engage
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.work_program.routes import router as work_program_router
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
+from AuditNew.Internal.engagements.issue.routes import router as issue_
+from AuditNew.Internal.engagements.task.routes import router as task_
+from AuditNew.Internal.engagements.review_comment.routes import router as review_comment_
 from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
@@ -109,9 +110,6 @@ app.include_router(finalization_router, tags=["Engagement Finalization"])
 app.include_router(reporting_router, tags=["Engagement Reporting"])
 app.include_router(work_program_router, tags=["Engagement Work Program"])
 app.include_router(roles_router, tags=["Roles"])
-app.include_router(business_process_router, tags=["Business Process"])
-app.include_router(risk_rating_router, tags=["Risk Rating"])
-app.include_router(engagement_types_router, tags=["Engagement Types"])
 app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
 app.include_router(control_weakness, tags=["Control Weakness Rating"])
 app.include_router(issue_implementation, tags=["Issue Implementation"])
@@ -123,6 +121,9 @@ app.include_router(control_type_, tags=["Control Type"])
 app.include_router(risk_rating_, tags=["Risk rating"])
 app.include_router(business_process_, tags=["Engagement Business Processes"])
 app.include_router(impact_category_, tags=["Impact Category Rating"])
+app.include_router(issue_, tags=["Issue"])
+app.include_router(task_, tags=["Task"])
+app.include_router(review_comment_, tags=["Review Comment"])
 
 
 # app.include_router(modules_router, tags=["Modules"])

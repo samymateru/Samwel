@@ -5,7 +5,7 @@ from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.task.schemas import *
 from utils import get_reference
 
-def add_new_task(connection: Connection, task: NewTask, sub_program_id: int):
+def add_new_task(connection: Connection, task: NewTask, engagement_id: int):
     query: str = """
                     INSERT INTO public.task (
                         sub_program,
@@ -23,11 +23,11 @@ def add_new_task(connection: Connection, task: NewTask, sub_program_id: int):
                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                  """
     try:
-        reference: str = get_reference(connection=connection, resource="task", id=sub_program_id)
+        reference: str = get_reference(connection=connection, resource="task", id=engagement_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query, (
-                sub_program_id,
+                engagement_id,
                 reference,
                 task.title,
                 "",

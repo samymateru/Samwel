@@ -7,9 +7,9 @@ from AuditNew.Internal.engagements.issue.databases import *
 
 router = APIRouter(prefix="/issue")
 
-@router.post("/{engagement_id}", response_model=ResponseMessage)
 
-def create_new_issue(
+@router.post("/{engagement_id}", response_model=ResponseMessage)
+def create_new_issue_(
         engagement_id: int,
         issue: Issue,
         db=Depends(get_db_connection),
@@ -23,7 +23,7 @@ def create_new_issue(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/sub_program/issue/{issue_id}", response_model=ResponseMessage)
+@router.put("/{issue_id}", response_model=ResponseMessage)
 def update_issue(
         issue_id: int,
         issue: Issue,
@@ -38,7 +38,7 @@ def update_issue(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/sub_program/issue/{issue_id}", response_model=ResponseMessage)
+@router.delete("/{issue_id}", response_model=ResponseMessage)
 def delete_issue(
         issue_id: int,
         db=Depends(get_db_connection),
@@ -47,7 +47,6 @@ def delete_issue(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        remove_work_program(connection=db, id=issue_id, table="issue", resource="Issue")
         return {"detail": "Issue deleted successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
