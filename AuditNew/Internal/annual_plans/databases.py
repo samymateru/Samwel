@@ -5,7 +5,7 @@ from typing import List, Tuple, Dict
 from AuditNew.Internal.annual_plans.schemas import *
 from datetime import datetime
 
-def create_new_annual_plan(connection: Connection, audit_plan: AnnualPlan, company_module_id: int):
+def add_new_annual_plan(connection: Connection, audit_plan: AnnualPlan, company_module_id: int):
     query = """
                 INSERT INTO public.annual_plans (company_module, name, year, status, start, "end", attachment, created_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)

@@ -12,7 +12,7 @@ from schema import CurrentUser, ResponseMessage
 router = APIRouter(prefix="/annual_plans")
 
 @router.get("/{company_module_id}", response_model=List[AnnualPlan])
-def get_annual_plans(
+def fetch_annual_plans(
         company_module_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
@@ -46,7 +46,7 @@ def create_new_annual_plan(
             end=end,
             attachment=attachment.filename
         )
-        create_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
+        add_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
         return {"detail": "Annual plan successfully created"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
