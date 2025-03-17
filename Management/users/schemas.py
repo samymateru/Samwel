@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field, EmailStr
 from datetime import datetime
 from typing import Optional, List, Dict
 
-from pygments.lexer import default
 
 class Role(BaseModel):
     id: int

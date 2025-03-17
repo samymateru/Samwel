@@ -5,11 +5,11 @@ from fastapi import HTTPException
 from utils import generate_hash_password
 from Management.users.schemas import *
 
-def new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
+def new_user(connection: Connection, user_data: NewUser, company_id: int):
     query = """
                INSERT INTO public.users (company, name, telephone, email,
                type, module, role, password_hash, status, created_at) 
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
                """
     try:
         with connection.cursor() as cursor:
@@ -32,6 +32,7 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
                                    datetime.now()
                                ))
                 connection.commit()
+            return cursor.fetchone()[0]
     except ValueError as v:
         raise HTTPException(status_code=401, detail="user exists")
     except Exception as e:

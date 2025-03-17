@@ -29,8 +29,11 @@ class SubResourceTypes(str, Enum):
     BUSINESS_SUB_PROCESS = "business_sub_process",
 
 class Module(BaseModel):
-    id: int
+    id: Optional[int] = None
     name: str
+    purchase_date: Optional[datetime] = None
+    status: Optional[str] = None
+
 
 class Company(BaseModel):
     id: Optional[int]
@@ -52,6 +55,7 @@ class NewCompany(BaseModel):
     password: str
     entity_type: str
     status: Optional[str] = "setup"
+    modules: Optional[List[Module]]
 
 class Resource(BaseModel):
     resource: ResourceTypes

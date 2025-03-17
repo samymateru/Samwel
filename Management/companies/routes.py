@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from Management.users.databases import add_user_module
 from utils import get_db_connection
 from Management.companies.schemas import *
+from Management.users.schemas import Module
+from Management.company_modules.schemas import CompanyModule
+from Management.company_modules.databases import add_new_company_module
 from typing import Tuple, List, Dict
 from Management.companies import databases as company_database
-from Management.users import databases as user_database
+from Management.users.databases import new_user
 from schema import CurrentUser, ResponseMessage
 from utils import generate_hash_password, get_current_user
 from Management.companies import databases
@@ -33,7 +37,19 @@ def new_company(
             password = company.password,
             status = True,
         )
-        user_database.new_user(db, user_data, company_id)
+        user_id = new_user(db, user_data, company_id)
+        for module in company.modules:
+            company_module = CompanyModule(
+                name=module.name,
+                purchase_date=None,
+                status="active"
+            )
+            module_id = add_new_company_module(db, company_module=company_module, company_id=company_id)
+            user_module = Module(
+                id=module_id,
+                name=module.name
+            )
+            add_user_module(connection=db, module=user_module, user_id=user_id)
         risk_rating(db, company_id)
         engagement_types(db, company_id)
         issue_finding_source(db, company_id)
