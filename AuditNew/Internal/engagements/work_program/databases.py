@@ -1,3 +1,5 @@
+import json
+
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
@@ -41,9 +43,11 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                                 extended_procedure,
                                 extended_results,
                                 effectiveness,
-                                conclusion
+                                conclusion,
+                                reviewed_by,
+                                prepared_by
                                 ) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         reference = get_reference(connection=connection, resource="sub_program", id=program_id)
@@ -64,7 +68,19 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                 "",
                 "",
                 "",
-                ""
+                "",
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "",
+                    "data_issued": ""
+                }),
+                json.dumps({
+                    "id": 0,
+                    "name": "",
+                    "email": "",
+                    "data_issued": ""
+                })
             ))
         connection.commit()
     except Exception as e:

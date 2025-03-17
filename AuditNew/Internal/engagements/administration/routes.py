@@ -9,7 +9,7 @@ from typing import List
 router = APIRouter(prefix="/engagements")
 
 
-@router.get("/business_contacts/{engagement_id}", response_model=List[BusinessContact])
+@router.get("/business_contact/{engagement_id}", response_model=List[BusinessContact])
 def fetch_business_contacts(
         engagement_id: int,
         db=Depends(get_db_connection),

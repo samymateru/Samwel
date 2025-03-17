@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_type/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/issue_implementation/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/issue_implementation/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/issue_source/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/issue_source/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,22 +101,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00175" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740996004356</created>
-      <option name="number" value="00175" />
-      <option name="presentableId" value="LOCAL-00175" />
-      <option name="project" value="LOCAL" />
-      <updated>1740996004356</updated>
-    </task>
-    <task id="LOCAL-00176" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1740996307738</created>
-      <option name="number" value="00176" />
-      <option name="presentableId" value="LOCAL-00176" />
-      <option name="project" value="LOCAL" />
-      <updated>1740996307738</updated>
     </task>
     <task id="LOCAL-00177" summary="refactoring">
       <option name="closed" value="true" />
@@ -499,7 +478,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742192400980</updated>
     </task>
-    <option name="localTasksCounter" value="224" />
+    <task id="LOCAL-00224" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742193232790</created>
+      <option name="number" value="00224" />
+      <option name="presentableId" value="LOCAL-00224" />
+      <option name="project" value="LOCAL" />
+      <updated>1742193232790</updated>
+    </task>
+    <task id="LOCAL-00225" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742193393136</created>
+      <option name="number" value="00225" />
+      <option name="presentableId" value="LOCAL-00225" />
+      <option name="project" value="LOCAL" />
+      <updated>1742193393136</updated>
+    </task>
+    <option name="localTasksCounter" value="226" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
