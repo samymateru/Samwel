@@ -103,7 +103,8 @@ def users(
             "email": user_data[0].get("email"),
             "company_name": company.get("name"),
             "account_status": company.get("status"),
-            "role": user_data[0].get("role")
+            "role": user_data[0].get("role"),
+            "module": user_data[0].get("module")
         }
         return {"token": token, "token_type": "bearer", "status_code": 203, "detail": "login success", "content": user}
     else:
