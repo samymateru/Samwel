@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, Form
+from pathlib import Path
+
+from fastapi import FastAPI, Depends, Form, File, UploadFile
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -57,16 +59,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Directory where files will be stored
+UPLOAD_DIR = Path("/var/www/storage/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+@app.post("/")
+async def test(
 
-@app.get("/")
-def test(
+        file: UploadFile = File(...),
         db=Depends(get_db_connection),
 ):
-    root_cause_category(db, 1)
-    impact_category(db, 1)
-    risk_category(db, 1)
-    return "hello"
+    file_path = UPLOAD_DIR / file.filename
+
+    # Save the uploaded file
+    with file_path.open("wb") as buffer:
+        buffer.write(await file.read())
+
+    public_url = f"http://capstone.co.tz/files/{file.filename}"
+    return {"filename": file.filename, "url": public_url}
+
 
 @app.post("/login", tags=["Authentication"])
 def users(
