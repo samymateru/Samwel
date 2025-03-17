@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 
 from AuditNew.Internal.annual_plans.databases import *
@@ -8,6 +10,9 @@ from typing import List
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
 
+# Directory where files will be stored
+UPLOAD_DIR = Path("/var/www/storage/uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 router = APIRouter(prefix="/annual_plans")
 
@@ -26,7 +31,7 @@ def fetch_annual_plans(
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/{company_module_id}", response_model=ResponseMessage)
-def create_new_annual_plan(
+async def create_new_annual_plan(
         company_module_id: int,
         name: str = Form(...),
         year: str = Form(...),
@@ -39,12 +44,18 @@ def create_new_annual_plan(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        file_path = UPLOAD_DIR / attachment.filename
+
+        # Save the uploaded file
+        with file_path.open("wb") as buffer:
+            buffer.write(await attachment.read())
+        public_url = f"http://18.212.87.23/files/{attachment.filename}"
         audit_plan = AnnualPlan(
             name=name,
             year=year,
             start=start,
             end=end,
-            attachment=attachment.filename
+            attachment=public_url
         )
         add_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
         return {"detail": "Annual plan successfully created"}
