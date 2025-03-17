@@ -5,4 +5,4 @@ from typing import Optional
 class RiskRating(BaseModel):
     id: Optional[int] = None
     name: str
-    magnitude: str
+    magnitude: int
