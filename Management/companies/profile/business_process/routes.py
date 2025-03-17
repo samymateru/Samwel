@@ -49,7 +49,7 @@ def fetch_combined_business_process(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/business_subprocess/{business_process_id}", response_model=List[BusinessProcess])
+@router.get("/business_sub_process/{business_process_id}", response_model=List[BusinessProcess])
 def fetch_business_sub_process(
         business_process_id: int,
         db = Depends(get_db_connection),
