@@ -23,16 +23,15 @@ def fetch_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/{user_id}", response_model=User)
+@router.get("/profile", response_model=User)
 def fetch_user(
-        user_id: int,
         db = Depends(get_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_user(db, column="id", value=user_id)[0]
+        data = get_user(db, column="id", value=user.user_id)[0]
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
