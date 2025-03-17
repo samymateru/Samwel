@@ -22,7 +22,12 @@ def new_company(
             name = company.owner,
             telephone = company.telephone,
             module= [],
-            role=[],
+            role=[
+                Role(
+                    id=1,
+                    name="Owner"
+                )
+            ],
             email = company.email,
             type = "owner",
             password = company.password,

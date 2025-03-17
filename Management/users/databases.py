@@ -8,7 +8,7 @@ from Management.users.schemas import *
 def new_user(connection: Connection, user_data: NewUser, company_id: int) -> None:
     query = """
                INSERT INTO public.users (company, name, telephone, email,
-               type, role, module, password_hash, status, created_at) 
+               type, module, role, password_hash, status, created_at) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                """
     try:
@@ -26,7 +26,7 @@ def new_user(connection: Connection, user_data: NewUser, company_id: int) -> Non
                                    user_data.email,
                                    user_data.type,
                                    '[]',
-                                   '[]',
+                                   json.dumps(user_data.model_dump().get("role")),
                                    generate_hash_password(user_data.password),
                                    user_data.status,
                                    datetime.now()
