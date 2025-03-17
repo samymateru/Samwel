@@ -74,7 +74,6 @@ async def test(
     # Save the uploaded file
     with file_path.open("wb") as buffer:
         buffer.write(await file.read())
-
     public_url = f"http://18.212.87.23/files/{file.filename}"
     return {"filename": file.filename, "url": public_url}
 
