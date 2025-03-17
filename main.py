@@ -75,7 +75,7 @@ async def test(
     with file_path.open("wb") as buffer:
         buffer.write(await file.read())
 
-    public_url = f"http://capstone.co.tz/files/{file.filename}"
+    public_url = f"http://capstone/files/{file.filename}"
     return {"filename": file.filename, "url": public_url}
 
 
