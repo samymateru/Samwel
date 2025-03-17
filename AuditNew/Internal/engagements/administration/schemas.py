@@ -6,7 +6,7 @@ class Section(BaseModel):
     value: str
 
 class EngagementProfile(BaseModel):
-    id: None
+    id: Optional[int] = None
     audit_background: Optional[Section]
     audit_objectives: Optional[Section]
     key_legislations: Optional[Section]
