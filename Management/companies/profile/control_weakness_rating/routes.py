@@ -7,9 +7,8 @@ from typing import List
 
 router = APIRouter(prefix="/profile/control_weakness_rating")
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_issue_implementation(
-        company_id: int,
         control_weakness_rating: ControlWeaknessRating,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -17,22 +16,21 @@ def create_issue_implementation(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_control_weakness_rating(db, control_weakness_rating=control_weakness_rating, company_id=company_id)
+        new_control_weakness_rating(db, control_weakness_rating=control_weakness_rating, company_id=user.company_id)
         return {"detail": "Control weakness rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/company/{company_id}", response_model=List[ControlWeaknessRating])
+@router.get("/", response_model=List[ControlWeaknessRating])
 def fetch_company_control_weakness_rating(
-        company_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_control_weakness_rating(db, company_id=company_id)
+        data = get_company_control_weakness_rating(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

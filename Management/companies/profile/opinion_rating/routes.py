@@ -6,9 +6,8 @@ from typing import List
 
 router = APIRouter(prefix="/profile/opinion_rating")
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_opinion_rating(
-        company_id: int,
         opinion_rating: OpinionRating,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -19,21 +18,20 @@ def create_opinion_rating(
         new_opinion_rating(
             db,
             opinion_rating=opinion_rating,
-            company_id=company_id)
+            company_id=user.company_id)
         return {"detail": "Opinion rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/company/{company_id}", response_model=List[OpinionRating])
+@router.get("/", response_model=List[OpinionRating])
 def fetch_company_opinion_rating(
-        company_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_opinion_rating(db, company_id=company_id)
+        data = get_company_opinion_rating(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

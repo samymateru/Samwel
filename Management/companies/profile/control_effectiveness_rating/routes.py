@@ -6,9 +6,8 @@ from typing import List
 
 router = APIRouter(prefix="/profile/control_effectiveness_rating")
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_control_effectiveness_rating(
-        company_id: int,
         control_effectiveness_rating: ControlEffectivenessRating,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -16,22 +15,21 @@ def create_control_effectiveness_rating(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_control_effectiveness_rating(db, control_effectiveness_rating=control_effectiveness_rating, company_id=company_id)
+        new_control_effectiveness_rating(db, control_effectiveness_rating=control_effectiveness_rating, company_id=user.company_id)
         return {"detail": "Control effectiveness rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/company/{company_id}", response_model=List[ControlEffectivenessRating])
+@router.get("/", response_model=List[ControlEffectivenessRating])
 def fetch_company_control_effectiveness_rating(
-        company_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_control_effectiveness_rating(db, company_id=company_id)
+        data = get_company_control_effectiveness_rating(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
