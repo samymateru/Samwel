@@ -5,7 +5,7 @@ from Management.companies.profile.engagement_type.schemas import *
 
 def new_engagement_type(connection: Connection, engagement_type: EngagementType, company_id: int):
     query: str = """
-                    INSERT INTO public.engagement_type (company, name) VALUES(%s, %s)
+                    INSERT INTO public.engagement_types (company, name) VALUES(%s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -21,7 +21,7 @@ def new_engagement_type(connection: Connection, engagement_type: EngagementType,
 
 def delete_engagement_type(connection: Connection, engagement_type_id: int):
     query: str = """
-                    DELETE FROM public.engagement_type
+                    DELETE FROM public.engagement_types
                     WHERE id = %s
                  """
     try:
@@ -37,7 +37,7 @@ def delete_engagement_type(connection: Connection, engagement_type_id: int):
 
 def edit_engagement_type(connection: Connection, engagement_type: EngagementType, engagement_type_id: int):
     query: str = """
-                    UPDATE public.engagement_type
+                    UPDATE public.engagement_types
                     SET
                     name = %s
                     WHERE id = %s 
@@ -56,7 +56,7 @@ def edit_engagement_type(connection: Connection, engagement_type: EngagementType
 
 def get_company_engagement_type(connection: Connection, company_id: int):
     query: str = """
-                   SELECT * from public.engagement_type WHERE company = %s
+                   SELECT * from public.engagement_types WHERE company = %s
                  """
     try:
         with connection.cursor() as cursor:
@@ -71,7 +71,7 @@ def get_company_engagement_type(connection: Connection, company_id: int):
 
 def get_engagement_type(connection: Connection, engagement_type_id):
     query: str = """
-                    SELECT * from public.engagement_type WHERE id = %s
+                    SELECT * from public.engagement_types WHERE id = %s
                   """
     try:
         with connection.cursor() as cursor:
