@@ -6,9 +6,8 @@ from typing import List
 
 router = APIRouter(prefix="/profile/risk_rating")
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_risk_rating(
-        company_id: int,
         risk_rating: RiskRating,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -19,21 +18,20 @@ def create_risk_rating(
         new_risk_rating(
             db,
             risk_rating=risk_rating,
-            company_id=company_id)
+            company_id=user.company_id)
         return {"detail": "Risk rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/company/{company_id}", response_model=List[RiskRating])
+@router.get("/", response_model=List[RiskRating])
 def fetch_company_risk_rating(
-        company_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_risk_rating(db, company_id=company_id)
+        data = get_company_risk_rating(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

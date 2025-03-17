@@ -6,9 +6,8 @@ from typing import List
 
 router = APIRouter(prefix="/profile/engagement_type")
 
-@router.post("/{company_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 def create_engagement_type(
-        company_id: int,
         engagement_type: EngagementType,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -16,22 +15,21 @@ def create_engagement_type(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_engagement_type(db, engagement_type=engagement_type, company_id=company_id)
+        new_engagement_type(db, engagement_type=engagement_type, company_id=user.company_id)
         return {"detail": "Engagement type added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/company/{company_id}", response_model=List[EngagementType])
+@router.get("/", response_model=List[EngagementType])
 def fetch_company_engagement_type(
-        company_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_engagement_type(db, company_id=company_id)
+        data = get_company_engagement_type(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
