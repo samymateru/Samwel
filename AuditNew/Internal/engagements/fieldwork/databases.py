@@ -6,20 +6,20 @@ from AuditNew.Internal.engagements.schemas import UpdateEngagement, NewEngagemen
 import json
 
 def get_summary_procedures(connection: Connection, column: str = None, value: int | str = None):
-    query: str = f"""                 
+    query: str = f""" 
                     SELECT 
-                        sub_program.reference,
-                        sub_program.title,
-                        sub_program.prepared_by,
-                        sub_program.reviewed_by,
-                        sub_program.effectiveness,
-                        COUNT(issue.id) AS issue_count  -- Count the number of issues per sub_program
+                    sub_program.reference,
+                    sub_program.title,
+                    sub_program.prepared_by,
+                    sub_program.reviewed_by,
+                    sub_program.effectiveness,
+                    COUNT(issue.id) AS issue_count 
                     FROM main_program 
                     JOIN sub_program ON main_program.id = sub_program.program
-                    LEFT JOIN issue ON sub_program.id = issue.sub_program
+                    LEFT JOIN issue ON sub_program.reference = issue.ref
                     WHERE main_program.{column} = %s
                     GROUP BY sub_program.reference, sub_program.title, sub_program.prepared_by, 
-                    sub_program.reviewed_by, sub_program.effectiveness;
+                    sub_program.reviewed_by, sub_program.effectiveness;                
                  """
     try:
         with connection.cursor() as cursor:
@@ -45,7 +45,7 @@ def get_summary_review_notes(connection: Connection, column: str = None, value: 
                     review_comment.decision
                     FROM main_program 
                     JOIN sub_program ON main_program.id = sub_program.program
-                    JOIN review_comment ON review_comment.sub_program = sub_program.id
+                    JOIN review_comment ON review_comment.ref = sub_program.reference
                     WHERE main_program.{column} = %s;
                  """
     try:
