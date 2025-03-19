@@ -1,15 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, BackgroundTasks
 from Management.users.databases import add_user_module
 from utils import get_db_connection
 from Management.companies.schemas import *
-from Management.users.schemas import Module
 from Management.company_modules.schemas import CompanyModule
 from Management.company_modules.databases import add_new_company_module
-from typing import Tuple, List, Dict
 from Management.companies import databases as company_database
 from Management.users.databases import new_user
 from schema import CurrentUser, ResponseMessage
-from utils import generate_hash_password, get_current_user
+from utils import get_current_user
 from Management.companies import databases
 from Management.users.schemas import *
 from seedings import *
@@ -18,7 +16,8 @@ router = APIRouter(prefix="/companies")
 @router.post("/", response_model=ResponseMessage)
 def new_company(
         company: NewCompany,
-        db = Depends(get_db_connection)
+        tasks: BackgroundTasks,
+        db = Depends(get_db_connection),
     ):
     try:
         company_id: int = company_database.create_new_company(db, company)
@@ -50,20 +49,20 @@ def new_company(
                 name=module.name
             )
             add_user_module(connection=db, module=user_module, user_id=user_id)
-        risk_rating(db, company_id)
-        engagement_types(db, company_id)
-        issue_finding_source(db, company_id)
-        control_effectiveness_rating(db, company_id)
-        control_weakness_rating(db, company_id)
-        audit_opinion_rating(db, company_id)
-        risk_maturity_rating(db, company_id)
-        issue_implementation_status(db, company_id)
-        control_type(db, company_id)
-        roles(db, company_id)
-        business_process(db, company_id)
-        impact_category(db, company_id)
-        root_cause_category(db, company_id)
-        risk_category(db, company_id)
+        tasks.add_task(risk_rating, connection=db, company=company_id)
+        tasks.add_task(engagement_types, connection=db, company=company_id)
+        tasks.add_task(issue_finding_source, connection=db, company=company_id)
+        tasks.add_task(control_effectiveness_rating, connection=db, company=company_id)
+        tasks.add_task(control_weakness_rating, connection=db, company=company_id)
+        tasks.add_task(audit_opinion_rating, connection=db, company=company_id)
+        tasks.add_task(risk_maturity_rating, connection=db, company=company_id)
+        tasks.add_task(issue_implementation_status, connection=db, company=company_id)
+        tasks.add_task(control_type, connection=db, company=company_id)
+        tasks.add_task(roles, connection=db, company=company_id)
+        tasks.add_task(business_process, connection=db, company=company_id)
+        tasks.add_task(impact_category, connection=db, company=company_id)
+        tasks.add_task(root_cause_category, connection=db, company=company_id)
+        tasks.add_task(risk_category, connection=db, company=company_id)
         return {"detail": "company successfully created", "status_code":201}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

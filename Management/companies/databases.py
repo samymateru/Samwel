@@ -20,7 +20,7 @@ def create_new_company(connection: Connection, company_data: NewCompany):
             # Check if the company already exists
             cursor.execute(query_check, (company_data.email,))
             if cursor.fetchone():
-                raise HTTPException(status_code=409, detail="Company already exists")
+               raise HTTPException(status_code=409, detail="Company already exists")
 
             # Insert new company and return the ID
             cursor.execute(query_insert, (

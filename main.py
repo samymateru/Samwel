@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from fastapi import FastAPI, Depends, Form, File, UploadFile
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
@@ -29,24 +28,27 @@ from AuditNew.Internal.engagements.planning.routes import router as planning_rou
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
-from utils import verify_password, get_db_connection, create_jwt_token
+from utils import verify_password, get_db_connection, create_jwt_token, check_permission
 from Management.users.databases import get_user
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
-
+from rabbitmq import rabbitmq
 from Management.templates.databases import *
+import threading
 
-
-from seedings import impact_category,risk_category,root_cause_category
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from utils import connection_pool
     if connection_pool:
+        #rabbitmq.connect(queue_name="task")
+        #consumer_thread = threading.Thread(target=rabbitmq.consume_messages, args=("task",), daemon=True)
+        #consumer_thread.start()
         print("Database connection pool initialized.")
     yield
     from utils import connection_pool
     connection_pool.closeall()
+    rabbitmq.close()
     print("Database connection pool closed")
 
 app = FastAPI(lifespan=lifespan)
@@ -59,24 +61,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Directory where files will be stored
-UPLOAD_DIR = Path("/var/www/storage/uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
-@app.post("/")
+@app.get("/")
 async def test(
-
-        file: UploadFile = File(...),
         db=Depends(get_db_connection),
+        per = Depends(check_permission(resource="user-roles", action= "vie"))
 ):
-    file_path = UPLOAD_DIR / file.filename
-
-    # Save the uploaded file
-    with file_path.open("wb") as buffer:
-        buffer.write(await file.read())
-    public_url = f"http://18.212.87.23/files/{file.filename}"
-    return {"filename": file.filename, "url": public_url}
-
+    print(per)
 
 @app.post("/login", tags=["Authentication"])
 def users(

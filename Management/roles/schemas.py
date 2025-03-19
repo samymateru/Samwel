@@ -13,3 +13,13 @@ class NewRole(BaseModel):
 class Role(BaseModel):
     id: int
     roles: NewRole
+
+class Permission(BaseModel):
+    user_roles: List[str]
+    subscription: List[str]
+
+
+class Roles(BaseModel):
+    id: Optional[int] = None
+    name: str
+    permissions: Permission

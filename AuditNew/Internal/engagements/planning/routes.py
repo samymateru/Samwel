@@ -100,7 +100,7 @@ def create_new_summary_of_audit_program(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_summary_audit_program(db, summary=summary, engagement_id=engagement_id)
+        add_summary_audit_program(db, summary=summary, engagement_id=engagement_id)   
         return {"detail": "Audit program added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

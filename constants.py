@@ -55,3 +55,21 @@ values = [
         },
 
 ]
+
+
+data_roles = {
+    "name": "name",
+    "permission": [
+        {"name": [""]}
+    ]
+}
+
+
+roles_ = {
+    "name": "Owner",
+    "permission": [
+        {"user-roles": ["create", "view", "delete", "update", "assign", "approve"]},
+        {"account-profile": ["create", "view", "delete", "update", "assign", "approve"]},
+        {"subscription": ["create", "view", "delete", "update", "assign", "approve"]}
+    ]
+}

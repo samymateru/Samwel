@@ -5,13 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/x.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rabbitmq.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/s3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ses.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +50,7 @@
     <setting file="file://$PROJECT_DIR$/AuditNew/engagement_profile/routes.py" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -62,10 +68,13 @@
     "Python.database.executor": "Run",
     "Python.databases.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.rabitmq.executor": "Run",
     "Python.roles.executor": "Run",
     "Python.routes.executor": "Run",
+    "Python.s3.executor": "Run",
     "Python.schemas.executor": "Run",
     "Python.seedings.executor": "Run",
+    "Python.ses.executor": "Run",
     "Python.test.executor": "Run",
     "Python.utils.executor": "Run",
     "Python.x.executor": "Run",
@@ -74,7 +83,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
-    "settings.editor.selected.configurable": "reference.settings.ide.settings.notifications"
+    "settings.editor.selected.configurable": "settings.sync"
   }
 }]]></component>
   <component name="QodanaReportsService">
