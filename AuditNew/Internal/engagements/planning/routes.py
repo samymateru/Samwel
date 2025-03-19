@@ -125,10 +125,10 @@ def create_new_planning_procedure(
 def fetch_planning_procedures(
         engagement_id: int,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = get_planning_procedures(db, column="engagement", value=engagement_id)
         return data
@@ -140,10 +140,10 @@ def update_planning_procedure(
         procedure_id: int,
         std_template: StandardTemplate,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         edit_planning_procedure(db, std_template=std_template, procedure_id=procedure_id)
     except HTTPException as e:

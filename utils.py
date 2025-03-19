@@ -158,7 +158,7 @@ def check_permission(resource: str, action: str):
                 rows = cursor.fetchall()
                 column_names = [desc[0] for desc in cursor.description]
                 data = [dict(zip(column_names, row_)) for row_ in rows]
-                print(data)
+                print(data[0].get("roles"))
         except Exception as e:
             connection.rollback()
             raise HTTPException(status_code=400, detail=f"Error occur while fetching roles{e}")
