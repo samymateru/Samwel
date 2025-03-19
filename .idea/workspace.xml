@@ -5,19 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/rabbitmq.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/s3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ses.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/roles/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,29 +51,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.database.executor": "Run",
-    "Python.databases.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.rabitmq.executor": "Run",
-    "Python.roles.executor": "Run",
-    "Python.routes.executor": "Run",
-    "Python.s3.executor": "Run",
-    "Python.schemas.executor": "Run",
-    "Python.seedings.executor": "Run",
-    "Python.ses.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.utils.executor": "Run",
-    "Python.x.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
-    "settings.editor.selected.configurable": "settings.sync"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
+    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
+    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.s3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
+    &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ses.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.x.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;
   }
-}]]></component>
+}</component>
   <component name="QodanaReportsService">
     <option name="descriptions">
       <ReportDescription localRun="true" path="C:\Users\Samuel\AppData\Local\Temp\qodana_output\qodana.sarif.json" reportGuid="ee390e1c-873c-4a95-9a07-ba957332cdf3" reportId="CornerStone-Client/qodana/2025-03-11" />
@@ -115,14 +103,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00190" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1741085062015</created>
-      <option name="number" value="00190" />
-      <option name="presentableId" value="LOCAL-00190" />
-      <option name="project" value="LOCAL" />
-      <updated>1741085062015</updated>
     </task>
     <task id="LOCAL-00191" summary="refactoring">
       <option name="closed" value="true" />
@@ -508,7 +488,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742208711161</updated>
     </task>
-    <option name="localTasksCounter" value="239" />
+    <task id="LOCAL-00239" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742365778966</created>
+      <option name="number" value="00239" />
+      <option name="presentableId" value="LOCAL-00239" />
+      <option name="project" value="LOCAL" />
+      <updated>1742365778966</updated>
+    </task>
+    <option name="localTasksCounter" value="240" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

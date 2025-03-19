@@ -64,7 +64,7 @@ app.add_middleware(
 @app.get("/")
 async def test(
         db=Depends(get_db_connection),
-        per = Depends(check_permission(resource="user-roles", action= "vie"))
+        per = Depends(check_permission(resource="user-roles", action= "view"))
 ):
     print(per)
 
