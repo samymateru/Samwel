@@ -37,7 +37,7 @@ def create_new_impact_sub_category(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/impact_category", response_model=List[NewImpactCategory])
+@router.get("/impact_category")
 def fetch_combined_impact_category(
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -46,6 +46,7 @@ def fetch_combined_impact_category(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = get_combined_impact_category(connection=db, column="company", value=user.company_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
