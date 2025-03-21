@@ -18,7 +18,7 @@ def create_new_issue_(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_new_issue(db, issue=issue, engagement_id=engagement_id)
+        add_new_issue(db, issue=issue, engagement_id=user.company_id)
         return {"detail": "Issue created successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

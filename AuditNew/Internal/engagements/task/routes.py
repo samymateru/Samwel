@@ -10,7 +10,7 @@ router = APIRouter(prefix="/task")
 @router.post("/{engagement_id}")
 def create_new_task(
         engagement_id: int,
-        task: NewTask,
+        task: Task,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
