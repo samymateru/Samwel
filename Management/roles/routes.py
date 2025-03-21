@@ -22,14 +22,14 @@ def fetch_roles(
 
 @router.post("/", response_model=ResponseMessage)
 def add_roles(
-        role: NewRole,
+        role: Role,
         db = Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_role(db, company_id=user.company_id, data=role)
+        add_role(db, company_id=10, role=role)
         return {"detail": "Role added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

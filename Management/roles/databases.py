@@ -20,12 +20,12 @@ def get_roles(connection: Connection, column: str = None, value: str = None):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying roles {e}")
 
-def add_role(connection: Connection, data: NewRole, company_id: int):
+def add_role(connection: Connection, role: Role, company_id: int):
     query = "INSERT INTO public.roles (company, roles) VALUES(%s, %s)"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (company_id, data.model_dump_json()))
+            cursor.execute(query, (company_id, role.model_dump_json()))
         connection.commit()
     except Exception as e:
         connection.rollback()

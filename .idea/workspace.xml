@@ -6,7 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/roles/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/x.py" beforeDir="false" afterPath="$PROJECT_DIR$/x.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,12 +60,24 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.9_Types_of_Hash_Cracker.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Changing_Wall_Paper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Clock.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Current_City_Weather.executor&quot;: &quot;Run&quot;,
+    &quot;Python.OS_interaction.executor&quot;: &quot;Run&quot;,
+    &quot;Python.advice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bandwidth_py3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.chrome-automation.executor&quot;: &quot;Run&quot;,
     &quot;Python.database.executor&quot;: &quot;Run&quot;,
     &quot;Python.databases.executor&quot;: &quot;Run&quot;,
+    &quot;Python.finder.executor&quot;: &quot;Run&quot;,
+    &quot;Python.game.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
     &quot;Python.roles.executor&quot;: &quot;Run&quot;,
     &quot;Python.routes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
     &quot;Python.s3.executor&quot;: &quot;Run&quot;,
     &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
     &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
@@ -89,6 +107,36 @@
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\features" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="bandwidth_py3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="CornerStone" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop/py/Amazing-Python-Scripts-main/Bandwidth-Monitor" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/Desktop/py/Amazing-Python-Scripts-main/Bandwidth-Monitor/bandwidth_py3.py" />
+      <option name="PARAMETERS" value="500 Mib" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.bandwidth_py3" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -104,14 +152,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00193" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1741087909017</created>
-      <option name="number" value="00193" />
-      <option name="presentableId" value="LOCAL-00193" />
-      <option name="project" value="LOCAL" />
-      <updated>1741087909017</updated>
     </task>
     <task id="LOCAL-00194" summary="refactoring">
       <option name="closed" value="true" />
@@ -497,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742368041796</updated>
     </task>
-    <option name="localTasksCounter" value="242" />
+    <task id="LOCAL-00242" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742368910873</created>
+      <option name="number" value="00242" />
+      <option name="presentableId" value="LOCAL-00242" />
+      <option name="project" value="LOCAL" />
+      <updated>1742368910873</updated>
+    </task>
+    <option name="localTasksCounter" value="243" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -557,6 +605,11 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Management/settings/business_process/databases.py</url>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/Desktop/py/Amazing-Python-Scripts-main/QR Code generator GUI/generator.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -148,17 +148,25 @@ def has_permission(roles: List[Dict], resource: str, action: str):
 
 def check_permission(resource: str, action: str):
     def dependency(user: CurrentUser = Depends(get_current_user), connection: Connection = Depends(get_db_connection)):
-        query: str = """
-                        SELECT role from public.users WHERE id = %s
-                     """
+        query_user_roles: str = """
+                                SELECT role from public.users WHERE id = %s
+                                """
+        query_roles = """
+                         SELECT * FROM public.roles WHERE id = %s
+                      """
         try:
             with connection.cursor() as cursor:
                 cursor: Cursor
-                cursor.execute(query, (user.user_id,))
+                cursor.execute(query_user_roles, (user.user_id,))
                 rows = cursor.fetchall()
                 column_names = [desc[0] for desc in cursor.description]
                 data = [dict(zip(column_names, row_)) for row_ in rows]
-                print(data[0].get("roles"))
+                for role in data[0].get("role"):
+                    cursor.execute(query_roles, (81,))
+                    rows = cursor.fetchall()
+                    column_names = [desc[0] for desc in cursor.description]
+                    data = [dict(zip(column_names, row_)) for row_ in rows]
+                    print(data)
         except Exception as e:
             connection.rollback()
             raise HTTPException(status_code=400, detail=f"Error occur while fetching roles{e}")
