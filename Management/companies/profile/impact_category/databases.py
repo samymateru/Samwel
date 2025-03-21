@@ -6,12 +6,11 @@ from collections import defaultdict
 def get_combined_impact_category(connection: Connection, column: str = None, value: str | int = None):
     query = """
             SELECT 
-            public.business_process.process_name,
-            public.business_process.id,
-            public.business_process.code,
-            public.business_sub_process.name
-            FROM public.business_process INNER JOIN public.business_sub_process
-            ON public.business_process.id = public.business_sub_process.business_process
+            public.impact_category.name,
+            public.impact_category.id,
+            public.impact_sub_category.sub_name
+            FROM public.impact_category INNER JOIN public.impact_sub_category
+            ON public.impact_category.id = public.impact_sub_category.impact_category
             """
     if column and value:
         query += f"WHERE  {column} = %s"
@@ -25,14 +24,14 @@ def get_combined_impact_category(connection: Connection, column: str = None, val
             sub_process_dict = defaultdict(list)
 
             for item in data:
-                key = (item["process_name"], item["code"], item["id"])
-                sub_process_dict[key].append(item["name"])
+                key = (item["name"], item["id"])
+                sub_process_dict[key].append(item["sub_name"])
 
             sub_process_list = [
-                {"process_name": name, "code": code, "id": id, "sub_process_name": sub_processes}
-                for (name, code, id), sub_processes in sub_process_dict.items()
+                {"impact_category": name, "id": id, "impact_sub_category": sub_processes}
+                for (name, id), sub_processes in sub_process_dict.items()
             ]
             return sub_process_list
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching business process: {e}")
+        raise HTTPException(status_code=400, detail=f"Error fetching combined impact categories {e}")

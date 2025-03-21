@@ -22,6 +22,8 @@ from AuditNew.Internal.engagements.work_program.routes import router as work_pro
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
 from AuditNew.Internal.engagements.issue.routes import router as issue_
 from AuditNew.Internal.engagements.task.routes import router as task_
+from Management.companies.profile.root_cause_category.routes import router as root_cause
+from Management.companies.profile.risk_category.routes import router as risk_category_
 from AuditNew.Internal.engagements.review_comment.routes import router as review_comment_
 from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
@@ -122,6 +124,8 @@ app.include_router(control_type_, tags=["Control Type"])
 app.include_router(risk_rating_, tags=["Risk rating"])
 app.include_router(business_process_, tags=["Engagement Business Processes"])
 app.include_router(impact_category_, tags=["Impact Category Rating"])
+app.include_router(root_cause, tags=["Root Cause Category"])
+app.include_router(risk_category_, tags=["Risk Category Rating"])
 app.include_router(issue_, tags=["Issue"])
 app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])

@@ -898,27 +898,27 @@ def root_cause_category(connection: Connection, company: int):
     data = [
         {
             "name": "People",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
         {
             "name": "Governance",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
         {
             "name": "Technology/Systems",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
         {
             "name": "Process",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
         {
             "name": "Financial",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
         {
             "name": "External Factors",
-            "sub": []
+            "sub": ["test1", "test2"]
         },
     ]
     with connection.cursor() as cursor:

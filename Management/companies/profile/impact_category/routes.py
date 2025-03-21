@@ -8,7 +8,7 @@ from Management.companies.profile.impact_category.databases import *
 
 router = APIRouter(prefix="/profile")
 
-@router.post("/impact_category/{company_id}", response_model=ResponseMessage)
+@router.post("/impact_category", response_model=ResponseMessage)
 def create_new_impact_category(
         company_id: int,
         impact_category: NewImpactCategory,
@@ -37,16 +37,15 @@ def create_new_impact_sub_category(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/impact_category/{company_id}", response_model=List[NewImpactCategory])
-def fetch_impact_category(
-        company_id: int,
+@router.get("/impact_category", response_model=List[NewImpactCategory])
+def fetch_combined_impact_category(
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        pass
+        data = get_combined_impact_category(connection=db, column="company", value=user.company_id)
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

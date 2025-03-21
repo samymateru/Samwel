@@ -30,8 +30,8 @@ def get_combined_business_process(connection: Connection, column: str = None, va
                 sub_process_dict[key].append(item["name"])
 
             sub_process_list = [
-                {"process_name": name, "code": code, "id": id, "sub_process_name": sub_processes}
-                for (name, code, id), sub_processes in sub_process_dict.items()
+                {"process_name": name, "id": id, "sub_process_name": sub_processes}
+                for (name, id), sub_processes in sub_process_dict.items()
             ]
             return sub_process_list
     except Exception as e:
