@@ -6,14 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/impact_category/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/impact_category/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/risk_category/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/risk_category/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
     </list>
@@ -61,41 +54,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.9_Types_of_Hash_Cracker.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Changing_Wall_Paper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Clock.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Current_City_Weather.executor&quot;: &quot;Run&quot;,
-    &quot;Python.OS_interaction.executor&quot;: &quot;Run&quot;,
-    &quot;Python.advice.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bandwidth_py3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.chrome-automation.executor&quot;: &quot;Run&quot;,
-    &quot;Python.database.executor&quot;: &quot;Run&quot;,
-    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
-    &quot;Python.finder.executor&quot;: &quot;Run&quot;,
-    &quot;Python.game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
-    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
-    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
-    &quot;Python.s3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ses.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
-    &quot;Python.x.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.9_Types_of_Hash_Cracker.executor": "Run",
+    "Python.Changing_Wall_Paper.executor": "Run",
+    "Python.Clock.executor": "Run",
+    "Python.Current_City_Weather.executor": "Run",
+    "Python.OS_interaction.executor": "Run",
+    "Python.advice.executor": "Run",
+    "Python.bandwidth_py3.executor": "Run",
+    "Python.blending_Image.executor": "Run",
+    "Python.chrome-automation.executor": "Run",
+    "Python.database.executor": "Run",
+    "Python.databases.executor": "Run",
+    "Python.finder.executor": "Run",
+    "Python.game.executor": "Run",
+    "Python.login.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.rabitmq.executor": "Run",
+    "Python.roles.executor": "Run",
+    "Python.routes.executor": "Run",
+    "Python.run-payload.executor": "Run",
+    "Python.s3.executor": "Run",
+    "Python.schemas.executor": "Run",
+    "Python.seedings.executor": "Run",
+    "Python.ses.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.utils.executor": "Run",
+    "Python.x.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="QodanaReportsService">
     <option name="descriptions">
       <ReportDescription localRun="true" path="C:\Users\Samuel\AppData\Local\Temp\qodana_output\qodana.sarif.json" reportGuid="ee390e1c-873c-4a95-9a07-ba957332cdf3" reportId="CornerStone-Client/qodana/2025-03-11" />
@@ -155,22 +149,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00195" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1741089720487</created>
-      <option name="number" value="00195" />
-      <option name="presentableId" value="LOCAL-00195" />
-      <option name="project" value="LOCAL" />
-      <updated>1741089720487</updated>
-    </task>
-    <task id="LOCAL-00196" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1741091733883</created>
-      <option name="number" value="00196" />
-      <option name="presentableId" value="LOCAL-00196" />
-      <option name="project" value="LOCAL" />
-      <updated>1741091733883</updated>
     </task>
     <task id="LOCAL-00197" summary="refactoring">
       <option name="closed" value="true" />
@@ -548,7 +526,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742534339722</updated>
     </task>
-    <option name="localTasksCounter" value="244" />
+    <task id="LOCAL-00244" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742538911854</created>
+      <option name="number" value="00244" />
+      <option name="presentableId" value="LOCAL-00244" />
+      <option name="project" value="LOCAL" />
+      <updated>1742538911854</updated>
+    </task>
+    <task id="LOCAL-00245" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1742539269785</created>
+      <option name="number" value="00245" />
+      <option name="presentableId" value="LOCAL-00245" />
+      <option name="project" value="LOCAL" />
+      <updated>1742539269786</updated>
+    </task>
+    <option name="localTasksCounter" value="246" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

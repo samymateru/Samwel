@@ -896,31 +896,64 @@ def business_process(connection: Connection, company: int):
 
 def root_cause_category(connection: Connection, company: int):
     data = [
-        {
-            "name": "People",
-            "sub": ["test1", "test2"]
-        },
-        {
-            "name": "Governance",
-            "sub": ["test1", "test2"]
-        },
-        {
-            "name": "Technology/Systems",
-            "sub": ["test1", "test2"]
-        },
-        {
-            "name": "Process",
-            "sub": ["test1", "test2"]
-        },
-        {
-            "name": "Financial",
-            "sub": ["test1", "test2"]
-        },
-        {
-            "name": "External Factors",
-            "sub": ["test1", "test2"]
-        },
-    ]
+    {
+        "name": "People",
+        "sub": [
+            "Lack of Training & Knowledge gap",
+            "Inadequate Supervision & Oversight by management/leaders",
+            "Carelessness or Negligence",
+            "Misinterpretation of Policies & Procedures"
+        ]
+    },
+    {
+        "name": "Governance",
+        "sub": [
+            "Unclear Roles & Responsibilities",
+            "Inadequate organization structures",
+            "Poor Communication & Coordination (Top-down)",
+            "Weak Governance & Decision-Making",
+            "Absence of identified policy/frameworks"
+        ]
+    },
+    {
+        "name": "Technology / Systems",
+        "sub": [
+            "Outdated or Inadequate Systems",
+            "System Configuration & Integration Issues",
+            "IT Security & Data Integrity Issues",
+            "Insufficient Automation & Digitalization"
+        ]
+    },
+    {
+        "name": "Process",
+        "sub": [
+            "Incomplete or Undefined Processes",
+            "Ineffective Controls & Monitoring",
+            "Lack of Standard Operating Procedures (SOPs)",
+            "Process Bottlenecks & Inefficiencies"
+        ]
+    },
+    {
+        "name": "Financial",
+        "sub": [
+            "Budgeting & Forecasting Errors",
+            "Cash Flow Management Issues",
+            "Cost Overruns & Uncontrolled Expenses",
+            "Unclear applicable Financial Reporting Errors",
+            "Resource Constraints & Capacity Issues"
+        ]
+    },
+    {
+        "name": "External factors",
+        "sub": [
+            "Lack of Awareness of Regulations & Policies",
+            "Failure to Adapt to Regulatory Changes",
+            "Natural calamities",
+            "Pandemic outbreak",
+            "Market changes"
+        ]
+    }
+]
     with connection.cursor() as cursor:
         process_ids = {}
 
@@ -949,39 +982,77 @@ def root_cause_category(connection: Connection, company: int):
 
 def risk_category(connection: Connection, company: int):
     data = [
-        {
-            "name": "Operational",
-            "sub": []
-        },
-        {
-            "name": "Credit",
-            "sub": []
-        },
-        {
-            "name": "Strategic",
-            "sub": []
-        },
-        {
-            "name": "Liquidity",
-            "sub": []
-        },
-        {
-            "name": "Compliance/ Regulatory",
-            "sub": []
-        },
-        {
-            "name": "Market",
-            "sub": []
-        },
-        {
-            "name": "Environmental (ESG)",
-            "sub": []
-        },
-        {
-            "name": "Others",
-            "sub": []
-        },
-    ]
+    {
+        "name": "Operational Risk",
+        "sub": [
+            "Process & Control Failures",
+            "Human Resource Issues",
+            "Technology & IT Risk",
+            "Supply Chain & Vendor Risk"
+        ]
+    },
+    {
+        "name": "Compliance / Regulatory Risk",
+        "sub": [
+            "Legal & Regulatory Violations",
+            "Tax Compliance Risk",
+            "Data Privacy & Protection Risk",
+            "Environmental, Social, and Governance (ESG) Risk",
+            "Other industry specific regulation"
+        ]
+    },
+    {
+        "name": "Strategic Risk",
+        "sub": [
+            "Inappropriate Business Model",
+            "Market Positioning Risk",
+            "Mergers & Acquisitions Risk",
+            "Competitive Risk",
+            "Innovation & Technological Obsolescence Risk"
+        ]
+    },
+    {
+        "name": "Technology Risk",
+        "sub": [
+            "Data Breach & Cyber Threats",
+            "System Downtime & Disruptions",
+            "IT Governance & Security Compliance Risk",
+            "Emerging Technology Risk",
+            "Change management issues",
+            "IT operations issues",
+            "Access management",
+            "IT security"
+        ]
+    },
+    {
+        "name": "Credit Risk",
+        "sub": [
+            "Default Risk",
+            "Counterparty Risk",
+            "Concentration Risk",
+            "Country & Sovereign Risk"
+        ]
+    },
+    {
+        "name": "Liquidity Risk",
+        "sub": [
+            "Funding Liquidity Risk",
+            "Market Liquidity Risk",
+            "Asset Liquidity Risk",
+            "Cash Flow Mismatch Risk"
+        ]
+    },
+    {
+        "name": "Market Risk",
+        "sub": [
+            "Interest Rate Risk",
+            "Foreign Exchange Risk",
+            "Commodity Price Risk",
+            "Equity Price Risk"
+        ]
+    }
+]
+
     with connection.cursor() as cursor:
         process_ids = {}
 
@@ -1010,27 +1081,56 @@ def risk_category(connection: Connection, company: int):
 
 def impact_category(connection: Connection, company: id):
     data = [
-        {
-            "name": "Financial",
-            "sub": []
-        },
-        {
-            "name": "Operational",
-            "sub": []
-        },
-        {
-            "name": "Governance",
-            "sub": []
-        },
-        {
-            "name": "Regulatory",
-            "sub": []
-        },
-        {
-            "name": "Reputation",
-            "sub": []
-        }
-    ]
+    {
+        "name": "Financial Impact",
+        "sub": [
+            "Monetary Loss (Direct financial loss due to fraud, errors, or mismanagement)",
+            "Revenue Leakage (Loss of potential income due to process inefficiencies or compliance failures)",
+            "Cost Overruns (Uncontrolled expenses beyond budget allocations)",
+            "Financial Misstatement (Errors in financial reporting affecting decision-making)",
+            "Liquidity Constraints (Cash flow issues impacting operations)"
+        ]
+    },
+    {
+        "name": "Compliance & Regulatory Impact",
+        "sub": [
+            "Legal Violations (Non-compliance with laws leading to penalties)",
+            "Regulatory Fines & Sanctions (Government or industry-imposed fines)",
+            "Tax Penalties (Failure to adhere to tax regulations)",
+            "Licensing & Accreditation Issues (Loss of business licenses or certifications)",
+            "ESG & Sustainability Issues"
+        ]
+    },
+    {
+        "name": "Operational Impact",
+        "sub": [
+            "Process Inefficiencies (Delays, redundancies, or workflow gaps)",
+            "Disruptions in Business Continuity (Unplanned downtime or system failures)",
+            "Resource Misallocation (Poor use of human or financial resources)",
+            "Poor Service Delivery (Reduced productivity and performance)",
+            "Supply Chain Interruptions (Delays due to vendor issues or logistical failures)"
+        ]
+    },
+    {
+        "name": "Reputational Impact",
+        "sub": [
+            "Public Trust & Brand Image Damage (Negative media coverage or public perception)",
+            "Customer Dissatisfaction (Loss of clients due to service failures)",
+            "Investor & Stakeholder Confidence (Reduced market value or shareholder trust)",
+            "Ethical Violations & Social Responsibility Issues (Moral concerns affecting corporate standing)"
+        ]
+    },
+    {
+        "name": "Strategic & Governance Impact",
+        "sub": [
+            "Poor Decision-Making (Incorrect data leading to flawed strategies)",
+            "Business Model Risks (Failure to adapt to market changes)",
+            "Weak Corporate Governance (Lack of oversight and accountability)",
+            "Loss of Competitive Advantage (Falling behind industry trends or innovations)"
+        ]
+    }
+]
+
     with connection.cursor() as cursor:
         process_ids = {}
 

@@ -1,11 +1,9 @@
-from pathlib import Path
-from fastapi import FastAPI, Depends, Form, File, UploadFile
+from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
-from Management.settings.engagement_types.routes import router as engagement_types_router
 from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.companies.profile.control_weakness_rating.routes import router as control_weakness
 from Management.companies.profile.issue_implementation.routes import router as issue_implementation
