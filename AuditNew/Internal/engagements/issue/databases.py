@@ -117,7 +117,7 @@ def add_new_issue(connection: Connection, issue: Issue, engagement_id: int):
                 issue.recommendation,
                 issue.management_action_plan,
                 issue.estimated_implementation_date,
-                issue.implementation_contacts
+                json.dumps(issue.model_dump().get("implementation_contacts"))
             ))
         connection.commit()
     except Exception as e:
