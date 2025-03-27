@@ -67,6 +67,66 @@ def update_profile(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.put("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
+def update_engagement_process(
+        engagement_process_id: int,
+        engagement_process: EngagementProcess,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_engagement_process(db, engagement_process=engagement_process, engagement_process_id=engagement_process_id)
+        return {"detail": "Engagement process updated successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/context/policies/{policy_id}", response_model=ResponseMessage)
+def update_policies(
+        policy_id: int,
+        policy: Policy,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_policies(db, policy=policy, policy_id=policy_id)
+        return {"detail": "Policy updated successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.put("/context/regulations/{regulation_id}", response_model=ResponseMessage)
+def update_regulations(
+        regulation_id: int,
+        regulation: Regulations,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_regulations(db, regulation=regulation, regulation_id=regulation_id)
+        return {"detail": "Regulation updated successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/context/staff/{staff_id}", response_model=ResponseMessage)
+def update_staff(
+        staff_id: int,
+        staff: Staff,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_staff(db, staff=staff, staff_id=staff_id)
+        return {"detail": "Staff updated successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/context/policies/{engagement_id}", response_model=List[Policy])
 def fetch_engagement_policies(
@@ -117,6 +177,20 @@ def delete_policy(
     try:
         remove_policy(connection=db, policy_id=policy_id)
         return {"detail": "Policy deleted successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
+def delete_engagement_process(
+        engagement_process_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_engagement_process(connection=db, engagement_process_id=engagement_process_id)
+        return {"detail": "Engagement process deleted successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

@@ -299,6 +299,17 @@ def remove_policy(connection: Connection, policy_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error removing policy {e}")
 
+def remove_engagement_process(connection: Connection, engagement_process_id: int):
+    query: str = "DELETE FROM public.engagement_process WHERE id = %s"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (engagement_process_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error removing engagement process {e}")
+
 
 def remove_staff(connection: Connection, staff_id: int):
     query: str = "DELETE FROM public.staff WHERE id = %s"
@@ -341,3 +352,105 @@ def edit_business_contact(connection: Connection, business_contact: BusinessCont
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating business contact {e}")
+
+def edit_engagement_process(connection: Connection, engagement_process: EngagementProcess, engagement_process_id: int):
+    query: str = """
+                  UPDATE public.engagement_process
+                  SET 
+                  process = %s,
+                  sub_process = %s,
+                  description = %s,
+                  business_unit = %s
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                engagement_process.process,
+                engagement_process.sub_process,
+                engagement_process.description,
+                engagement_process.business_unit,
+                engagement_process_id
+                ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating engagement process {e}")
+
+def edit_regulations(connection: Connection, regulation: Regulations, regulation_id: int):
+    query: str = """
+                  UPDATE public.regulations
+                  SET 
+                  name = %s,
+                  issue_date = %s,
+                  key_areas = %s,
+                  attachment = %s
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                regulation.name,
+                regulation.issue_date,
+                regulation.key_areas,
+                regulation.attachment,
+                regulation_id
+                ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating regulation {e}")
+
+def edit_policies(connection: Connection, policy: Policy, policy_id: int):
+    query: str = """
+                  UPDATE public.policies
+                  SET 
+                  name = %s,
+                  version = %s,
+                  key_areas = %s,
+                  attachment = %s
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                policy.name,
+                policy.version,
+                policy.key_areas,
+                policy.attachment,
+                policy_id
+                ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating policy {e}")
+
+def edit_staff(connection: Connection, staff: Staff, staff_id: int):
+    query: str = """
+                  UPDATE public.staff
+                  SET 
+                  name = %s,
+                  role = %s::jsonb,
+                  start_date = %s,
+                  end_date = %s,
+                  tasks = %s
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                staff.name,
+                staff.role,
+                staff.start_date,
+                staff.end_date,
+                staff.tasks,
+                staff_id
+                ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating staffing {e}")
