@@ -26,14 +26,14 @@ def fetch_business_contacts(
 @router.put("/business_contact/{engagement_id}", response_model=ResponseMessage)
 def update_business_contact(
         engagement_id: int,
-        business_contact: List[BusinessContact],
+        business_contacts: List[BusinessContact],
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        edit_business_contact(db, business_contact=business_contact, engagement_id=engagement_id)
+        edit_business_contact(db, business_contacts=business_contacts, engagement_id=engagement_id)
         return {"detail": "Business contact updated successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
