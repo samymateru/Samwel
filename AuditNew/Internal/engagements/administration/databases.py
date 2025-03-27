@@ -333,7 +333,7 @@ def remove_regulation(connection: Connection, regulation_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error removing regulation {e}")
 
-def edit_business_contact(connection: Connection, business_contact: BusinessContact, engagement_id: int):
+def edit_business_contact(connection: Connection, business_contacts: List[BusinessContact], engagement_id: int):
     query: str = """
                   UPDATE public.business_contact
                   SET 
@@ -343,11 +343,12 @@ def edit_business_contact(connection: Connection, business_contact: BusinessCont
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (
-                json.dumps(business_contact.model_dump().get("user")),
-                engagement_id,
-                business_contact.type
-                ,))
+            for business_contact in business_contacts:
+                cursor.execute(query, (
+                    json.dumps(business_contact.model_dump().get("user")),
+                    engagement_id,
+                    business_contact.type
+                    ))
         connection.commit()
     except Exception as e:
         connection.rollback()

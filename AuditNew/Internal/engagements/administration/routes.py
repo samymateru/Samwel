@@ -26,7 +26,7 @@ def fetch_business_contacts(
 @router.put("/business_contact/{engagement_id}", response_model=ResponseMessage)
 def update_business_contact(
         engagement_id: int,
-        business_contact: BusinessContact,
+        business_contact: List[BusinessContact],
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
