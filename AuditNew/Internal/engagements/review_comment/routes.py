@@ -10,7 +10,7 @@ router = APIRouter(prefix="/review_comment")
 @router.post("/{engagement_id}", response_model=ResponseMessage)
 def create_new_review_comment(
         engagement_id: int,
-        review_comment: NewReviewComment,
+        review_comment: ReviewComment,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):

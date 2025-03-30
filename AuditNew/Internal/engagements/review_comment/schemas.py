@@ -2,13 +2,9 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-
-
 class User(BaseModel):
-    id: int
     name: str
     email: str
-    date_issue: str
 
 class NewReviewComment(BaseModel):
     title: str
@@ -16,7 +12,7 @@ class NewReviewComment(BaseModel):
 class ReviewComment(BaseModel):
     id: Optional[int] = None
     title: Optional[str]
-    reference: Optional[str]
+    reference: Optional[str] = None
     description: Optional[str]
     date_raised: Optional[datetime]
     raised_by: Optional[User]

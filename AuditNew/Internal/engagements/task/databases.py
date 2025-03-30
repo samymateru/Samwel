@@ -8,9 +8,9 @@ from utils import get_reference
 def add_new_task(connection: Connection, task: Task, engagement_id: int):
     query: str = """
                     INSERT INTO public.task (
-                        sub_program,
-                        title,
+                        engagement,
                         reference,
+                        title,
                         description,
                         date_raised,
                         raised_by,
@@ -30,30 +30,15 @@ def add_new_task(connection: Connection, task: Task, engagement_id: int):
                 engagement_id,
                 reference,
                 task.title,
-                "",
-                datetime.now(),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                "",
-                "",
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                datetime.now(),
-                ""
+                task.reference,
+                task.date_raised,
+                task.raised_by.model_dump_json(),
+                task.action_owner.model_dump_json(),
+                task.resolution_summary,
+                task.resolution_details,
+                task.resolved_by.model_dump_json(),
+                task.date_resolved,
+                task.decision
             ))
         connection.commit()
     except Exception as e:
@@ -80,11 +65,11 @@ def edit_task(connection: Connection, task: Task, task_id: int):
         task.title,
         task.description,
         task.date_raised,
-        task.raised_by,
-        task.action_owner,
+        task.raised_by.model_dump_json(),
+        task.action_owner.model_dump_json(),
         task.resolution_summary,
         task.resolution_details,
-        task.resolved_by,
+        task.resolved_by.model_dump_json(),
         task.date_resolved,
         task.decision,
         task_id

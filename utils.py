@@ -102,10 +102,10 @@ def get_next_reference(connection: Connection, resource: str, engagement: int):
 def get_reference(connection: Connection, resource: str, id: int):
     if resource == "review_comment":
         start: str = "RC"
-        relation: str = "sub_program"
+        relation: str = "engagement"
     elif resource == "task":
         start = "TSK"
-        relation: str = "sub_program"
+        relation: str = "engagement"
     else:
         start = "PROC"
         relation: str = "program"
@@ -120,12 +120,12 @@ def get_reference(connection: Connection, resource: str, id: int):
             cursor: Cursor
             cursor.execute(query, (id,))
             result = cursor.fetchone()
+            print(result)
 
             if result is None:
                 return f"{start}-0001"
 
             last_number = int(result[0].split("-")[1])
-            print(last_number)
             new_ref = f"{start}-{last_number + 1:04d}"
             return new_ref
 

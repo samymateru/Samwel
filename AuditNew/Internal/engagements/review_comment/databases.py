@@ -5,10 +5,10 @@ from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.review_comment.schemas import *
 from utils import get_reference
 
-def add_new_review_comment(connection: Connection, review_comment: NewReviewComment, engagement_id: int):
+def add_new_review_comment(connection: Connection, review_comment: ReviewComment, engagement_id: int):
     query: str = """
                     INSERT INTO public.review_comment (
-                        sub_program,
+                        engagement,
                         reference,
                         title,
                         description,
@@ -30,30 +30,15 @@ def add_new_review_comment(connection: Connection, review_comment: NewReviewComm
                 engagement_id,
                 reference,
                 review_comment.title,
-                "",
-                datetime.now(),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                "",
-                "",
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "example@gmail.com",
-                    "date_issue": str(datetime.now())
-                }),
-                datetime.now(),
-                ""
+                review_comment.description,
+                review_comment.date_raised,
+                review_comment.raised_by.model_dump_json(),
+                review_comment.action_owner.model_dump_json(),
+                review_comment.resolution_summary,
+                review_comment.resolution_details,
+                review_comment.resolved_by.model_dump_json(),
+                review_comment.date_resolved,
+                review_comment.decision
             ))
         connection.commit()
     except Exception as e:
@@ -67,11 +52,11 @@ def edit_review_comment(connection: Connection, review_comment: ReviewComment, r
         title = %s,
         description = %s,
         date_raised = %s,
-        raised_by = %s,
-        action_owner = %s,
+        raised_by = %s::jsonb,
+        action_owner = %s::jsonb,
         resolution_summary = %s,
         resolution_details = %s,
-        resolved_by = %s,
+        resolved_by = %s::jsonb,
         date_resolved = %s,
         decision = %s
     WHERE id = %s;
@@ -80,11 +65,11 @@ def edit_review_comment(connection: Connection, review_comment: ReviewComment, r
         review_comment.title,
         review_comment.description,
         review_comment.date_raised,
-        review_comment.raised_by,
-        review_comment.action_owner,
+        review_comment.raised_by.model_dump_json(),
+        review_comment.action_owner.model_dump_json(),
         review_comment.resolution_summary,
         review_comment.resolution_details,
-        review_comment.resolved_by,
+        review_comment.resolved_by.model_dump_json(),
         review_comment.date_resolved,
         review_comment.decision,
         review_comment_id
