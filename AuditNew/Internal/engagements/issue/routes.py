@@ -47,6 +47,7 @@ def delete_issue(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        remove_issue(connection=db, issue_id=issue_id)
         return {"detail": "Issue deleted successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

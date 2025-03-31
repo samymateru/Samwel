@@ -9,7 +9,7 @@ from schema import ResponseMessage
 
 router = APIRouter(prefix="/engagements")
 
-@router.post("/main_program/{engagement_id}")
+@router.post("/main_program/{engagement_id}", response_model=ResponseMessage)
 def create_new_main_program(
         engagement_id: int,
         program: MainProgram,
@@ -21,6 +21,7 @@ def create_new_main_program(
     try:
 
         add_new_main_program(db, program=program, engagement_id=engagement_id)
+        return ResponseMessage(detail="Main program added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -68,7 +69,7 @@ def delete_main_program(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.post("/sub_program/{program_id}")
+@router.post("/sub_program/{program_id}", response_model=ResponseMessage)
 def create_new_sub_program(
         program_id: int,
         sub_program: NewSubProgram,
@@ -79,6 +80,7 @@ def create_new_sub_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_new_sub_program(db, sub_program=sub_program, program_id=program_id)
+        return {"detail": "Sub program added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

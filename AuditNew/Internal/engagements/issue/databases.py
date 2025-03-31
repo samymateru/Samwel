@@ -31,7 +31,7 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         recommendation = %s,
         management_action_plan = %s,
         estimated_implementation_date = %s,
-        implementation_contacts = %s
+        implementation_contacts = %s::jsonb
     WHERE id = %s;
     """
     values = (
@@ -54,7 +54,7 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         issue.recommendation,
         issue.management_action_plan,
         issue.estimated_implementation_date,
-        issue.implementation_contacts,
+        json.dumps(issue.model_dump().get("implementation_contacts")),
         issue_id
     )
     try:
@@ -123,3 +123,17 @@ def add_new_issue(connection: Connection, issue: Issue, engagement_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating issue {e}")
+
+def remove_issue(connection: Connection, issue_id: int):
+    query: str = """
+                  DELETE FROM public.issue WHERE id = %s
+        
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (issue_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")

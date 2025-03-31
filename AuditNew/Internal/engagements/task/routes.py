@@ -12,10 +12,10 @@ def create_new_task(
         engagement_id: int,
         task: Task,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-       # raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
         add_new_task(db, task=task, engagement_id=engagement_id)
@@ -48,7 +48,7 @@ def delete_task(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
-        return {"detail": "Task deleted successfully"}
+        remove_task(connection=db, task_id=task_id)
+        return ResponseMessage(detail="Task deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

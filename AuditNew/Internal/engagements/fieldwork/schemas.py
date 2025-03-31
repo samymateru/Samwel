@@ -6,10 +6,8 @@ class Section(BaseModel):
     value: str
 
 class User(BaseModel):
-    id: int
     name: str
     email: str
-    date_issue: str
 
 class SummaryProcedures(BaseModel):
     id: Optional[int]
@@ -24,13 +22,12 @@ class SummaryProcedures(BaseModel):
     decision: str
 
 class SummaryReviewNotes(BaseModel):
-    id: Optional[int]
     reference: str
-    title: Section
+    title: Optional[str]
     date_raised: datetime
     raised_by: User
-    resolution_summary: Section
-    resolution_details: Section
+    resolution_summary: Optional[str]
+    resolution_details: Optional[str]
     resolved_by: User
     date_resolved: datetime
     decision: str

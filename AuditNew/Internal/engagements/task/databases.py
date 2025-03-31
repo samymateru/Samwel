@@ -82,3 +82,16 @@ def edit_task(connection: Connection, task: Task, task_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating task {e}")
+
+def remove_task(connection: Connection, task_id: int):
+    query: str = """
+                  DELETE FROM public.task WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (task_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting task {e}")

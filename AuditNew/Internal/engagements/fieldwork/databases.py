@@ -32,7 +32,7 @@ def get_summary_procedures(connection: Connection, column: str = None, value: in
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of procedures {e}")
 
-def get_summary_review_notes(connection: Connection, column: str = None, value: int | str = None):
+def get_summary_review_notes(connection: Connection, engagement_id: int):
     query: str = f"""
                     SELECT 
                     review_comment.reference,
@@ -40,18 +40,17 @@ def get_summary_review_notes(connection: Connection, column: str = None, value: 
                     review_comment.date_raised,
                     review_comment.raised_by,
                     review_comment.resolution_summary,
+                    review_comment.resolution_details,
                     review_comment.resolved_by,
                     review_comment.date_resolved,
                     review_comment.decision
-                    FROM main_program 
-                    JOIN sub_program ON main_program.id = sub_program.program
-                    JOIN review_comment ON review_comment.ref = sub_program.reference
-                    WHERE main_program.{column} = %s;
+                    FROM review_comment 
+                    WHERE engagement = %s;
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (value,))
+            cursor.execute(query, (engagement_id,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

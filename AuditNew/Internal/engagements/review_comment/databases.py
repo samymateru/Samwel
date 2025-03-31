@@ -82,3 +82,17 @@ def edit_review_comment(connection: Connection, review_comment: ReviewComment, r
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating review note {e}")
+
+def remove_review_comment(connection: Connection, review_comment_id: int):
+    query: str = """
+                  DELETE FROM public.review_comment WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query,(review_comment_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting review comment {e}")
+

@@ -46,6 +46,7 @@ def delete_review_comment(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        return {"detail": "Review comment deleted successfully"}
+        remove_review_comment(connection=db, review_comment_id=review_comment_id)
+        return ResponseMessage(detail="Review comment deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
