@@ -19,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 connection_pool = pool.SimpleConnectionPool(
             minconn=1,  # Minimum number of connections
-            maxconn=10,  # Maximum number of connections
+            maxconn=100,  # Maximum number of connections
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
             host=os.getenv("DB_HOST"),
@@ -120,8 +120,6 @@ def get_reference(connection: Connection, resource: str, id: int):
             cursor: Cursor
             cursor.execute(query, (id,))
             result = cursor.fetchone()
-            print(result)
-
             if result is None:
                 return f"{start}-0001"
 

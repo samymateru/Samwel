@@ -26,6 +26,8 @@ from AuditNew.Internal.engagements.review_comment.routes import router as review
 from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
+from AuditNew.Internal.engagements.risk.routes import router as risk_
+from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
 from utils import verify_password, get_db_connection, create_jwt_token, check_permission
@@ -52,7 +54,7 @@ async def lifespan(app: FastAPI):
     print("Database connection pool closed")
 
 app = FastAPI(lifespan=lifespan)
-from seedings import *
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Replace with specific domains in production
@@ -127,17 +129,8 @@ app.include_router(risk_category_, tags=["Risk Category Rating"])
 app.include_router(issue_, tags=["Issue"])
 app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
-
-
-# app.include_router(modules_router, tags=["Modules"])
-# app.include_router(templates_router, tags=["Templates"])
-# app.include_router(audit_logs_router)
-# app.include_router(engagement_profile_router)
-# app.include_router(permission_router)
-# app.include_router(features_router)
-# app.include_router(feature_record_router)
-# app.include_router(staff_assignment_router)
-# app.include_router(planning_details_router)
+app.include_router(risk_, tags=["Engagement Risk"])
+app.include_router(control_, tags=["Engagement Control"])
 
 if __name__ == "__main__":
     import uvicorn

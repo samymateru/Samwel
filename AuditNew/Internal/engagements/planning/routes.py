@@ -135,7 +135,7 @@ def fetch_planning_procedures(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/planning_procedures/{procedure_id}")
+@router.put("/planning_procedures/{procedure_id}", response_model=ResponseMessage)
 def update_planning_procedure(
         procedure_id: int,
         std_template: StandardTemplate,
@@ -146,6 +146,7 @@ def update_planning_procedure(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         edit_planning_procedure(db, std_template=std_template, procedure_id=procedure_id)
+        return ResponseMessage(detail="Planning procedure updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

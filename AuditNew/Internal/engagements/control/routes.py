@@ -3,52 +3,50 @@ from utils import  get_db_connection
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
-from AuditNew.Internal.engagements.task.databases import *
+from AuditNew.Internal.engagements.control.databases import *
 
-router = APIRouter(prefix="/task")
+router = APIRouter(prefix="/control")
 
-@router.post("/{engagement_id}")
-def create_new_task(
+@router.post("/{engagement_id}", response_model=ResponseMessage)
+def create_new_control(
         engagement_id: int,
-        task: Task,
+        control: Control,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
-        add_new_task(db, task=task, engagement_id=engagement_id)
-        return {"detail": "Task added successfully"}
+        add_new_control(db, control=control, engagement_id=engagement_id)
+        return ResponseMessage(detail="Control added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-
-@router.put("/{task_id}", response_model=ResponseMessage)
-def update_task(
-        task_id: int,
-        task: Task,
+@router.put("/{control_id}", response_model=ResponseMessage)
+def update_control(
+        control_id: int,
+        control: Control,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        edit_task(db, task=task, task_id=task_id)
-        return {"detail": "Task successfully updated"}
+        edit_control(db, control=control, control_id=control_id)
+        return ResponseMessage(detail="Control successfully updated")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/{task_id}", response_model=ResponseMessage)
-def delete_task(
-        task_id: int,
+@router.delete("/{control_id}", response_model=ResponseMessage)
+def delete_control(
+        control_id: int,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        remove_task(connection=db, task_id=task_id)
-        return ResponseMessage(detail="Task deleted successfully")
+        remove_control(connection=db, control_id=control_id)
+        return ResponseMessage(detail="Control deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
