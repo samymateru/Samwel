@@ -50,7 +50,6 @@ def edit_role(connection: Connection, role: Category, company_id: int, name: str
                 raise HTTPException(status_code=203, detail="No roles")
             roles = result[0]
             for role_ in roles:
-                print(role_["name"])
                 if role_["name"] == name:
                     role_["name"] = role.name  # Update the role name
                     role_["permissions"] = role.permissions.model_dump()  # Update permissions
