@@ -11,7 +11,10 @@ class Permissions(BaseModel):
     reporting: List[str]
     work_program: List[str]
 
-class Role(BaseModel):
-    id: Optional[int] = None
+class Category(BaseModel):
     name: str
     permissions: Permissions
+
+class Role(BaseModel):
+    id: Optional[int] = None
+    roles: List[Category]

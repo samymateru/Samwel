@@ -152,554 +152,154 @@ def control_type(connection: Connection, company: int):
     connection.commit()
 
 def roles(connection: Connection, company: int):
-    values = [
+    value = [
         {
             "name": "Owner",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Admin",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Chief Executive Officer",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Chief Financial Officer",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Chief Information Officer",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Chief Operation Officer",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
-            "name":"Chief Information Security Officer",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "name": "Chief Information Security Officer",
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Head of Audit",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Senior Audit Manager",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
         },
         {
             "name": "Risk Manager",
-            "creator": "Owner",
-            "categories": [
-                {
-                    "name": "eAudit_Setting",
-                    "permissions": {
-                        "user_roles": ["view", "edit", "delete", "assign", "approve"],
-                        "profile": ["view", "edit", "delete", "assign", "approve"],
-                        "subscription": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "planning",
-                    "permissions": {
-                        "audit_plan": ["view", "edit", "delete", "assign", "approve"],
-                        "audit_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "fieldwork",
-                    "permissions": {
-                        "fieldwork_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "reporting",
-                    "permissions": {
-                        "send_audit_findings": ["view", "edit", "delete", "assign", "approve"],
-                        "reporting_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "finalization",
-                    "permissions": {
-                        "procedures": ["view", "edit", "delete", "assign", "approve"],
-                        "archive_audit_files": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "audit_procedures",
-                    "permissions": {
-                        "manage_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                },
-                {
-                    "name": "follow_up",
-                    "permissions": {
-                        "reopen": ["view", "edit", "delete", "assign", "approve"],
-                        "follow_up_procedures": ["view", "edit", "delete", "assign", "approve"],
-                    }
-                }
-            ]
-        }
-   ]
-    with connection.cursor() as cursor:
-        role_values = [(json.dumps({"name": role["name"], "creator": role["creator"], "categories": role["categories"]}), company) for role in values]
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
 
-        cursor.executemany(
-            "INSERT INTO public.roles (roles, company) VALUES (%s::jsonb, %s);",
-            role_values
+        }
+    ]
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO public.roles (roles, company) VALUES (%s, %s);",(
+                json.dumps(value),
+                company
+            )
         )
     connection.commit()
 
