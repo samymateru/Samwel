@@ -68,7 +68,7 @@ async def test(
         db=Depends(get_db_connection),
         per = Depends(check_permission(resource="user-roles", action= "view"))
 ):
-    print(per)
+    pass
 
 @app.post("/login", tags=["Authentication"])
 def users(
