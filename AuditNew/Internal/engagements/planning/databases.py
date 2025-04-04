@@ -62,6 +62,10 @@ def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
         raise HTTPException(status_code=400, detail=f"Error adding engagement PRCM {e}")
 
 def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgram, engagement_id: int):
+    program_id_ = 0
+    procedure_id = 0
+    risk_id_ = 0
+    control_id_ = 0
     query: str = """
                    INSERT INTO public.summary_audit_program (
                         engagement,
@@ -70,8 +74,12 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                         risk_rating,
                         control,
                         procedure,
-                        program
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s)
+                        program,
+                        procedure_id,
+                        program_id,
+                        risk_id,
+                        control_id
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
@@ -86,7 +94,6 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
             program_rows = cursor.fetchall()
             program_column_names = [desc[0] for desc in cursor.description]
             program_data = [dict(zip(program_column_names, row_)) for row_ in program_rows]
-            print(program_data)
             if program_data.__len__() != 0: # the program exists check for the procedure
                 cursor.execute(check_sub_program, (program_data[0].get("id"), summary.procedure))
                 procedure_rows = cursor.fetchall()
@@ -98,13 +105,17 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                         name=summary.risk,
                         rating=summary.risk_rating
                     )
-                    add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                    risk_id = add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
                     control = Control(
                         name=summary.control,
                         objective=summary.control_objective,
                         type=summary.control_type
                     )
-                    add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    control_id = add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    program_id_ = program_data[0].get("id")
+                    procedure_id = sub_program_id
+                    risk_id_ = risk_id
+                    control_id_ = control_id
 
                 else: # procedure does not exist attach procedure the ris and control
                     program_id = program_data[0].get("id")
@@ -117,13 +128,17 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                         name=summary.risk,
                         rating=summary.risk_rating
                     )
-                    add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                    risk_id = add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
                     control = Control(
                         name=summary.control,
                         objective=summary.control_objective,
                         type=summary.control_type
                     )
-                    add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    control_id = add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    program_id_ = program_id
+                    procedure_id = sub_program_id
+                    risk_id_ = risk_id
+                    control_id_ = control_id
 
             else: # program does not exist
                 program = MainProgram(
@@ -138,13 +153,17 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                     name=summary.risk,
                     rating=summary.risk_rating
                 )
-                add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                risk_id = add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
                 control = Control(
                     name=summary.control,
                     objective=summary.control_objective,
                     type=summary.control_type
                 )
-                add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                control_id = add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                program_id_ = program_id
+                procedure_id = sub_program_id
+                risk_id_ = risk_id
+                control_id_ = control_id
 
             cursor.execute(query, (
                 engagement_id,
@@ -154,6 +173,10 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                 summary.control,
                 summary.procedure,
                 summary.program,
+                program_id_,
+                procedure_id,
+                risk_id_,
+                control_id_
             ))
         connection.commit()
     except Exception as e:
@@ -395,7 +418,17 @@ def edit_summary_audit_finding(connection: Connection, summary: SummaryAuditProg
                  """
     try:
         with connection.cursor() as cursor:
+            query_prog_id: str = """
+                                  SELECT prog_id FROM public.summary_audit_program WHERE id = %s
+                                 """
             cursor: Cursor
+            cursor.execute(query_prog_id, (summary_audit_program_id,))
+            summary_data = cursor.fetchall()[0][0]
+            risk = Risk(
+                name=summary.risk,
+                rating=summary.risk_rating
+            )
+            edit_risk(connection=connection)
             cursor.execute(query, (
                 summary.process,
                 summary.risk,

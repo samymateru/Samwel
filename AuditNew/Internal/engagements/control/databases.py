@@ -5,7 +5,7 @@ from AuditNew.Internal.engagements.control.schemas import *
 
 def add_new_control(connection: Connection, control: Control, sub_program_id: int):
     query: str = """
-                    INSERT INTO public.control (sub_program, name, objective, type) VALUES (%s, %s, %s, %s)
+                    INSERT INTO public.control (sub_program, name, objective, type) VALUES (%s, %s, %s, %s) RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
@@ -16,7 +16,8 @@ def add_new_control(connection: Connection, control: Control, sub_program_id: in
                 control.objective,
                 control.type
             ))
-        connection.commit()
+            connection.commit()
+            return cursor.fetchone()[0]
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating control {e}")

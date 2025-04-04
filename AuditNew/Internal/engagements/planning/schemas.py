@@ -66,3 +66,11 @@ class NewPlanningProcedure(BaseModel):
     title: str
 
 
+class SummaryAuditProgramResponse(BaseModel):
+    id: Optional[int] = None
+    process: Optional[str]
+    risk: Optional[str]
+    risk_rating: Optional[str]
+    control: Optional[str]
+    procedure: Optional[str]
+    program: Optional[str]

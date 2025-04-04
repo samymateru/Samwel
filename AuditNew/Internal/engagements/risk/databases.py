@@ -5,7 +5,7 @@ from AuditNew.Internal.engagements.risk.schemas import *
 
 def add_new_risk(connection: Connection, risk: Risk, sub_program_id: int):
     query: str = """
-                    INSERT INTO public.risk (sub_program, name, rating) VALUES (%s, %s, %s)
+                    INSERT INTO public.risk (sub_program, name, rating) VALUES (%s, %s, %s) RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
@@ -15,7 +15,8 @@ def add_new_risk(connection: Connection, risk: Risk, sub_program_id: int):
                 risk.name,
                 risk.rating
             ))
-        connection.commit()
+            connection.commit()
+            return cursor.fetchone()[0]
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating risk {e}")

@@ -52,7 +52,7 @@ def delete_prcm(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/summary_audit_program/{engagement_id}", response_model=List[SummaryAuditProgram])
+@router.get("/summary_audit_program/{engagement_id}", response_model=List[SummaryAuditProgramResponse])
 def fetch_summary_of_audit_program(
         engagement_id: int,
         db=Depends(get_db_connection),
@@ -122,10 +122,10 @@ def create_new_summary_of_audit_program(
         engagement_id: int,
         summary: SummaryAuditProgram,
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         add_summary_audit_program(db, summary=summary, engagement_id=engagement_id)   
         return {"detail": "Audit program added successfully"}
@@ -137,10 +137,10 @@ def updating_summary_audit_finding(
         summary_audit_program_id: int,
         summary: SummaryAuditProgram,
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         edit_summary_audit_finding(connection=db, summary=summary, summary_audit_program_id=summary_audit_program_id)
         return {"detail": "Audit program updated successfully"}
