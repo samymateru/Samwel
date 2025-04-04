@@ -145,32 +145,7 @@ def get_main_program(connection: Connection, column: str = None, value: int | st
 
 def get_sub_program(connection: Connection, program_id: int):
     query: str = f"""
-                    SELECT 
-                    sub_program.id,
-                    sub_program.reference,
-                    sub_program.title,
-                    sub_program.brief_description,
-                    sub_program.audit_objective,
-                    sub_program.test_description,
-                    sub_program.test_type,
-                    sub_program.sampling_approach,
-                    sub_program.results_of_test,
-                    sub_program.observation,
-                    sub_program.extended_testing,
-                    sub_program.extended_procedure,
-                    sub_program.extended_results,
-                    sub_program.effectiveness,
-                    sub_program.conclusion,
-                    risk.name as risk_name,
-                    risk.rating as risk_rating,
-                    control.name as control_name,
-                    control.objective as control_objective,
-                    control.type as control_type
-                    FROM
-                    sub_program 
-                    LEFT JOIN risk ON risk.sub_program = sub_program.id
-                    LEFT JOIN control ON control.sub_program = sub_program.id
-                    WHERE program = %s
+                    SELECT * FROM public.sub_program WHERE program = %s
                  """
     try:
         with connection.cursor() as cursor:

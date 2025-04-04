@@ -84,7 +84,7 @@ def create_new_sub_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/sub_program/{program_id}", response_model=List[SubProgramResponse])
+@router.get("/sub_program/{program_id}", response_model=List[SubProgram])
 def fetch_sub_program(
         program_id: int,
         db=Depends(get_db_connection),
