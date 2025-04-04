@@ -173,8 +173,8 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                 summary.control,
                 summary.procedure,
                 summary.program,
-                program_id_,
                 procedure_id,
+                program_id_,
                 risk_id_,
                 control_id_
             ))
