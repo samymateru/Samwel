@@ -4,6 +4,12 @@ from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.planning.schemas import *
 from psycopg2.extensions import cursor as Cursor
 from utils import get_next_reference
+from AuditNew.Internal.engagements.work_program.databases import *
+from AuditNew.Internal.engagements.risk.databases import *
+from AuditNew.Internal.engagements.control.databases import *
+
+def safe_json_dump(obj):
+    return obj.model_dump_json() if obj is not None else '{}'
 
 def add_engagement_letter(connection: Connection, letter: EngagementLetter, engagement_id: int):
     query: str = """
@@ -59,7 +65,6 @@ def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement PRCM {e}")
 
-
 def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgram, engagement_id: int):
     query: str = """
                    INSERT INTO public.summary_audit_program (
@@ -74,13 +79,83 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                  """
     try:
         with connection.cursor() as cursor:
+            check_program_query:str = """
+                                         SELECT name, id FROM public.main_program WHERE name = %s AND engagement = %s;
+                                        """
+            check_sub_program:str = """
+                                        SELECT title, id from public.sub_program WHERE program = %s AND title = %s;
+                                    """
             cursor: Cursor
+            cursor.execute(check_program_query, (summary.program, engagement_id))
+            program_rows = cursor.fetchall()
+            program_column_names = [desc[0] for desc in cursor.description]
+            program_data = [dict(zip(program_column_names, row_)) for row_ in program_rows]
+            print(program_data)
+            if program_data.__len__() != 0: # the program exists check for the procedure
+                cursor.execute(check_sub_program, (program_data[0].get("id"), summary.procedure))
+                procedure_rows = cursor.fetchall()
+                procedure_column_names = [desc[0] for desc in cursor.description]
+                procedure_data = [dict(zip(procedure_column_names, row_)) for row_ in procedure_rows]
+                if procedure_data.__len__() != 0:# procedure exists attach risk
+                    sub_program_id = procedure_data[0].get("id")
+                    risk = Risk(
+                        name=summary.risk,
+                        rating=summary.risk_rating
+                    )
+                    add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                    control = Control(
+                        name=summary.control,
+                        objective=summary.control_objective,
+                        type=summary.control_type
+                    )
+                    add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+
+                else: # procedure does not exist attach procedure the ris and control
+                    program_id = program_data[0].get("id")
+                    sub_program = NewSubProgram(
+                        title=summary.procedure
+                    )
+                    sub_program_id = add_new_sub_program(connection=connection, sub_program=sub_program,
+                                                         program_id=program_id)
+                    risk = Risk(
+                        name=summary.risk,
+                        rating=summary.risk_rating
+                    )
+                    add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                    control = Control(
+                        name=summary.control,
+                        objective=summary.control_objective,
+                        type=summary.control_type
+                    )
+                    add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+
+            else: # program does not exist
+                program = MainProgram(
+                    name=summary.program
+                )
+                program_id = add_new_main_program(connection=connection, program=program, engagement_id=engagement_id)
+                sub_program = NewSubProgram(
+                    title=summary.procedure
+                )
+                sub_program_id = add_new_sub_program(connection=connection, sub_program=sub_program, program_id=program_id)
+                risk = Risk(
+                    name=summary.risk,
+                    rating=summary.risk_rating
+                )
+                add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
+                control = Control(
+                    name=summary.control,
+                    objective=summary.control_objective,
+                    type=summary.control_type
+                )
+                add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+
             cursor.execute(query, (
                 engagement_id,
-                summary.process.model_dump_json(),
-                summary.risk.model_dump_json(),
+                summary.process,
+                summary.risk,
                 summary.risk_rating,
-                summary.control.model_dump_json(),
+                summary.control,
                 summary.procedure,
                 summary.program,
             ))
@@ -88,9 +163,6 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding summary of audit program {e}")
-
-def safe_json_dump(obj):
-    return obj.model_dump_json() if obj is not None else '{}'
 
 def add_planning_procedure(connection: Connection, procedure: NewPlanningProcedure, engagement_id: int):
     data = {
@@ -257,3 +329,8 @@ def edit_planning_procedure(connection: Connection, std_template: StandardTempla
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating planning procedure {e}")
 
+def edit_prcm(connection: Connection, prcm: PRCM, prcm_id: int):
+    pass
+
+def remove_prcm(connection: Connection, prcm_id: int):
+    pass

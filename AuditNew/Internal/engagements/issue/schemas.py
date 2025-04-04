@@ -2,6 +2,9 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict
 from datetime import datetime
 
+class User(BaseModel):
+    name: str
+    email: str
 
 class Issue(BaseModel):
     id: Optional[int] = None
@@ -24,7 +27,9 @@ class Issue(BaseModel):
     recommendation: Optional[str]
     management_action_plan: Optional[str]
     estimated_implementation_date: Optional[datetime]
-    implementation_contacts: Optional[List[Dict]]
+    implementation_contacts: Optional[List[User]]
+    business_owner: Optional[List[User]]
+    auditors: Optional[List[User]]
 
 class NewIssue(BaseModel):
     title: str

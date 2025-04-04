@@ -12,7 +12,7 @@ def safe_json_dump(obj):
 
 def add_new_main_program(connection: Connection, program: MainProgram, engagement_id: int):
     query: str = """
-                     INSERT INTO public.main_program (engagement, name) VALUES (%s, %s)
+                     INSERT INTO public.main_program (engagement, name) VALUES (%s, %s) RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
@@ -21,7 +21,8 @@ def add_new_main_program(connection: Connection, program: MainProgram, engagemen
                 engagement_id,
                 program.name
             ))
-        connection.commit()
+            connection.commit()
+            return cursor.fetchone()[0]
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating main program {e}")
@@ -48,6 +49,7 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                                 prepared_by
                                 ) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    RETURNING id;
                  """
     try:
         reference = get_reference(connection=connection, resource="sub_program", id=program_id)
@@ -82,7 +84,8 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                     "data_issued": ""
                 })
             ))
-        connection.commit()
+            connection.commit()
+            return cursor.fetchone()[0]
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating sub program {e}")

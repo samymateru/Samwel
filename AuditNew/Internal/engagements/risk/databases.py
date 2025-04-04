@@ -3,17 +3,16 @@ from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.risk.schemas import *
 
-def add_new_risk(connection: Connection, risk: Risk, engagement_id: int):
+def add_new_risk(connection: Connection, risk: Risk, sub_program_id: int):
     query: str = """
-                    INSERT INTO public.risk (engagement, name, ref, rating) VALUES (%s, %s, %s, %s)
+                    INSERT INTO public.risk (sub_program, name, rating) VALUES (%s, %s, %s)
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
-                engagement_id,
+                sub_program_id,
                 risk.name,
-                risk.ref,
                 risk.rating
             ))
         connection.commit()

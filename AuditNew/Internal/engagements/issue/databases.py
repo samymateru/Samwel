@@ -31,7 +31,9 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         recommendation = %s,
         management_action_plan = %s,
         estimated_implementation_date = %s,
-        implementation_contacts = %s::jsonb
+        implementation_contacts = %s::jsonb,
+        business_owner = %s::jsonb,
+        auditors = %s::jsonb
     WHERE id = %s;
     """
     values = (
@@ -55,6 +57,8 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         issue.management_action_plan,
         issue.estimated_implementation_date,
         json.dumps(issue.model_dump().get("implementation_contacts")),
+        json.dumps(issue.model_dump().get("business_owner")),
+        json.dumps(issue.model_dump().get("auditors")),
         issue_id
     )
     try:
@@ -89,8 +93,10 @@ def add_new_issue(connection: Connection, issue: Issue, engagement_id: int):
                             recommendation,
                             management_action_plan,
                             estimated_implementation_date,
-                            implementation_contacts
-                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            implementation_contacts,
+                            business_owner,
+                            auditors
+                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 
                  """
     try:
@@ -117,7 +123,9 @@ def add_new_issue(connection: Connection, issue: Issue, engagement_id: int):
                 issue.recommendation,
                 issue.management_action_plan,
                 issue.estimated_implementation_date,
-                json.dumps(issue.model_dump().get("implementation_contacts"))
+                json.dumps(issue.model_dump().get("implementation_contacts")),
+                json.dumps(issue.model_dump().get("business_owner")),
+                json.dumps(issue.model_dump().get("auditors"))
             ))
         connection.commit()
     except Exception as e:

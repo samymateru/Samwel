@@ -34,10 +34,12 @@ class PRCM(BaseModel):
 
 class SummaryAuditProgram(BaseModel):
     id: Optional[int] = None
-    process: Optional[Section]
-    risk: Optional[Section]
+    process: Optional[str]
+    risk: Optional[str]
     risk_rating: Optional[str]
-    control: Optional[Section]
+    control: Optional[str]
+    control_objective: Optional[str]
+    control_type: Optional[str]
     procedure: Optional[str]
     program: Optional[str]
 

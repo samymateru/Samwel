@@ -8,7 +8,6 @@ from schema import ResponseMessage
 
 router = APIRouter(prefix="/engagements")
 
-
 @router.get("/PRCM/{engagement_id}", response_model=List[PRCM])
 def fetch_prcm(
         engagement_id: int,
@@ -22,6 +21,36 @@ def fetch_prcm(
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/PRCM/{prcm_id}", response_model=ResponseMessage)
+def update_prcm(
+        prcm_id: int,
+        prcm: PRCM,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_prcm(connection=db, prcm=prcm, prcm_id=prcm_id)
+        return ResponseMessage(detail="PRCM updated successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/PRCM/{prcm_id}", response_model=ResponseMessage)
+def delete_prcm(
+        prcm_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_prcm(connection=db, prcm_id=prcm_id)
+        return ResponseMessage(detail="PRCM deleted successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 @router.get("/summary_audit_program/{engagement_id}", response_model=List[SummaryAuditProgram])
 def fetch_summary_of_audit_program(
@@ -87,8 +116,6 @@ def create_new_prcm(
         return {"detail": "PRCM added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
 
 @router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
 def create_new_summary_of_audit_program(
