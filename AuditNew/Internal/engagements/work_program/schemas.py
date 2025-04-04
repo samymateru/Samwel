@@ -38,6 +38,30 @@ class NewSubProgram(BaseModel):
     title: str
 
 
+class SubProgramResponse(BaseModel):
+    id: Optional[int] = None
+    reference: Optional[str] = None
+    title: Optional[str]
+    brief_description: Optional[str]
+    audit_objective: Optional[str]
+    test_description: Optional[str]
+    test_type: Optional[str]
+    sampling_approach: Optional[str]
+    results_of_test: Optional[str]
+    observation: Optional[str]
+    extended_testing: Optional[bool]
+    extended_procedure: Optional[str]
+    extended_results: Optional[str]
+    effectiveness: Optional[str]
+    conclusion: Optional[str]
+    risk_name: Optional[str]
+    risk_rating: Optional[str]
+    control_name: Optional[str]
+    control_objective: Optional[str]
+    control_type: Optional[str]
+
+
+
 
 
 

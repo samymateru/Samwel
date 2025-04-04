@@ -84,7 +84,7 @@ def create_new_sub_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/sub_program/{program_id}", response_model=List[SubProgram])
+@router.get("/sub_program/{program_id}", response_model=List[SubProgramResponse])
 def fetch_sub_program(
         program_id: int,
         db=Depends(get_db_connection),
@@ -93,7 +93,7 @@ def fetch_sub_program(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_sub_program(db, column="program", value=program_id)
+        data = get_sub_program(db, program_id=program_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

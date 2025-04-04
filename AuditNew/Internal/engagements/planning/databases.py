@@ -1,8 +1,4 @@
-import json
-from fastapi import HTTPException
-from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.planning.schemas import *
-from psycopg2.extensions import cursor as Cursor
 from utils import get_next_reference
 from AuditNew.Internal.engagements.work_program.databases import *
 from AuditNew.Internal.engagements.risk.databases import *
@@ -52,11 +48,11 @@ def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
             cursor: Cursor
             cursor.execute(query, (
                 engagement_id,
-                prcm.process.model_dump_json(),
-                prcm.risk.model_dump_json(),
+                prcm.process,
+                prcm.risk,
                 prcm.risk_rating,
-                prcm.control.model_dump_json(),
-                prcm.control_objective.model_dump_json(),
+                prcm.control,
+                prcm.control_objective,
                 prcm.control_type,
                 prcm.residue_risk
             ))
@@ -330,7 +326,86 @@ def edit_planning_procedure(connection: Connection, std_template: StandardTempla
         raise HTTPException(status_code=400, detail=f"Error updating planning procedure {e}")
 
 def edit_prcm(connection: Connection, prcm: PRCM, prcm_id: int):
-    pass
+    query: str = """
+                  UPDATE public."PRCM"
+                    SET
+                    process = %s,
+                    risk = %s,
+                    risk_rating = %s,
+                    control = %s,
+                    control_objective = %s,
+                    control_type = %s,
+                    residue_risk = %s
+                  WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                prcm.process,
+                prcm.risk,
+                prcm.risk_rating,
+                prcm.control,
+                prcm.control_objective,
+                prcm.control_type,
+                prcm.residue_risk,
+                prcm_id))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating prcm {e}")
 
 def remove_prcm(connection: Connection, prcm_id: int):
-    pass
+    query: str = """
+                  DELETE FROM public."PRCM" WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (prcm_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting prcm {e}")
+
+def remove_summary_audit_program(connection: Connection, summary_audit_program_id: int):
+    query: str = """
+                  DELETE FROM public.summary_audit_program id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (summary_audit_program_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting summary of audit program {e}")
+
+def edit_summary_audit_finding(connection: Connection, summary: SummaryAuditProgram, summary_audit_program_id: int):
+    query: str = """
+                   UPDATE public.summary_audit_program 
+                   SET
+                   process = %s,
+                   risk = %s,
+                   risk_rating = %s,
+                   control = %s,
+                   procedure = %s,
+                   program = %s
+                   WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (
+                summary.process,
+                summary.risk,
+                summary.risk_rating,
+                summary.control,
+                summary.procedure,
+                summary.program,
+                summary_audit_program_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating summary of audit program {e}")

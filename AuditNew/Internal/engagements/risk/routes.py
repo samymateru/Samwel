@@ -7,9 +7,9 @@ from AuditNew.Internal.engagements.risk.databases import *
 
 router = APIRouter(prefix="/risk")
 
-@router.post("/{engagement_id}")
+@router.post("/{sub_program_id}")
 def create_new_risk(
-        engagement_id: int,
+        sub_program_id: int,
         risk: Risk,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -17,8 +17,7 @@ def create_new_risk(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
-        add_new_risk(db, risk=risk, engagement_id=engagement_id)
+        add_new_risk(db, risk=risk, sub_program_id=sub_program_id)
         return {"detail": "Risk added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

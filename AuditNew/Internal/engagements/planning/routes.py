@@ -132,6 +132,36 @@ def create_new_summary_of_audit_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.put("/summary_audit_program/{summary_audit_program_id}")
+def updating_summary_audit_finding(
+        summary_audit_program_id: int,
+        summary: SummaryAuditProgram,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        edit_summary_audit_finding(connection=db, summary=summary, summary_audit_program_id=summary_audit_program_id)
+        return {"detail": "Audit program updated successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.delete("/summary_audit_program/{summary_audit_program_id}", response_model=ResponseMessage)
+def delete_summary_of_audit_program(
+        summary_audit_program_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        remove_summary_audit_program(connection=db, summary_audit_program_id=summary_audit_program_id)
+        return ResponseMessage(detail="Summary of audit program deleted successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 @router.post("/planning_procedures/{engagement_id}", response_model=ResponseMessage)
 def create_new_planning_procedure(
         engagement_id: int,

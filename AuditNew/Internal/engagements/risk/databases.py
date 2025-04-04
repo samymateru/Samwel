@@ -22,11 +22,34 @@ def add_new_risk(connection: Connection, risk: Risk, sub_program_id: int):
 
 def edit_risk(connection: Connection, risk: Risk, risk_id: int):
     query: str = """
-                    UPDATE public.issue
+                    UPDATE public.risk
                     SET 
                     name = %s,
+                    rating = %s
                     WHERE id = %s;         
                   """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query,(
+                risk.name,
+                risk.rating,
+                risk_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating risk {e}")
 
 def remove_risk(connection: Connection, risk_id: int):
-    pass
+    query: str = """
+                  DELETE FROM public.risk WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query,(risk_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting risk {e}")

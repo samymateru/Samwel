@@ -22,7 +22,37 @@ def add_new_control(connection: Connection, control: Control, sub_program_id: in
         raise HTTPException(status_code=400, detail=f"Error creating control {e}")
 
 def edit_control(connection: Connection, control: Control, control_id: int):
-    pass
+    query: str = """
+                    UPDATE public.control
+                    SET 
+                    name = %s,
+                    objective = %s,
+                    type = %s
+                    WHERE id = %s;         
+                  """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query,(
+                control.name,
+                control.objective,
+                control.type,
+                control_id
+            ))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating control {e}")
 
 def remove_control(connection: Connection, control_id: int):
-    pass
+    query: str = """
+                  DELETE FROM public.control WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query,(control_id,))
+        connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting control {e}")

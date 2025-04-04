@@ -24,11 +24,11 @@ class User(BaseModel):
 
 class PRCM(BaseModel):
     id: Optional[int] = None
-    process: Optional[Section]
-    risk: Optional[Section]
+    process: Optional[str]
+    risk: Optional[str]
     risk_rating: Optional[str]
-    control: Optional[Section]
-    control_objective: Optional[Section]
+    control: Optional[str]
+    control_objective: Optional[str]
     control_type: Optional[str]
     residue_risk: Optional[str]
 
