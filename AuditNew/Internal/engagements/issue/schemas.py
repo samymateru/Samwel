@@ -27,9 +27,22 @@ class Issue(BaseModel):
     recommendation: Optional[str]
     management_action_plan: Optional[str]
     estimated_implementation_date: Optional[datetime]
-    implementation_contacts: Optional[List[User]]
-    business_owner: Optional[List[User]]
-    auditors: Optional[List[User]]
+
+class IssueContacts(BaseModel):
+    LOD1_implementer: Optional[List[User]]
+    LOD1_owner: Optional[List[User]]
+    LOD2_risk_manager: Optional[List[User]]
+    LOD2_compliance_officer: Optional[List[User]]
+    LOD3_audit_manager: Optional[List[User]]
+    observers: Optional[List[User]]
+
+class IssueStatus(BaseModel):
+    implementer_status: Optional[str]
+    owner_status: Optional[str]
+    owner_comments: Optional[str]
+    risk_manager_status: Optional[str]
+    compliance_officer_status: Optional[str]
+
 
 class NewIssue(BaseModel):
     title: str

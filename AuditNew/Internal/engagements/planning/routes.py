@@ -1,6 +1,6 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, Query
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.planning.schemas import *
 from AuditNew.Internal.engagements.planning.databases import *
@@ -122,12 +122,13 @@ def create_new_summary_of_audit_program(
         engagement_id: int,
         summary: SummaryAuditProgram,
         db=Depends(get_db_connection),
+        prcm_id: int = Query(None),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_summary_audit_program(db, summary=summary, engagement_id=engagement_id)   
+        add_summary_audit_program(db, summary=summary, engagement_id=engagement_id, prcm_id=prcm_id)
         return {"detail": "Audit program added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

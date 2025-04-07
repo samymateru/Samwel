@@ -85,5 +85,4 @@ def get_annual_plans(connection: Connection,  column: str = None, value: str | i
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
         connection.rollback()
-        print(f"error occur while trying to get annual plans {e}")
-        raise HTTPException(status_code=400, detail="Error querying annual plans")
+        raise HTTPException(status_code=400, detail=f"Error querying annual plans {e}")

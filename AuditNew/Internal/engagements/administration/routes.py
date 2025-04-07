@@ -1,6 +1,6 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from utils import  get_db_connection
 from AuditNew.Internal.engagements.administration.databases import *
 from schema import ResponseMessage

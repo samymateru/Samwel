@@ -31,6 +31,7 @@ class PRCM(BaseModel):
     control_objective: Optional[str]
     control_type: Optional[str]
     residue_risk: Optional[str]
+    summary_audit_program: Optional[int] = None
 
 class SummaryAuditProgram(BaseModel):
     id: Optional[int] = None

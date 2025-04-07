@@ -61,7 +61,7 @@ def add_engagement_prcm(connection: Connection, prcm: PRCM, engagement_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement PRCM {e}")
 
-def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgram, engagement_id: int):
+def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgram, engagement_id: int, prcm_id: int):
     program_id_ = 0
     procedure_id = 0
     risk_id_ = 0
@@ -69,6 +69,7 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
     query: str = """
                    INSERT INTO public.summary_audit_program (
                         engagement,
+                        prcm,
                         process,
                         risk,
                         risk_rating,
@@ -79,7 +80,7 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                         program_id,
                         risk_id,
                         control_id
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
@@ -167,6 +168,7 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
 
             cursor.execute(query, (
                 engagement_id,
+                prcm_id,
                 summary.process,
                 summary.risk,
                 summary.risk_rating,
@@ -178,6 +180,11 @@ def add_summary_audit_program(connection: Connection, summary: SummaryAuditProgr
                 risk_id_,
                 control_id_
             ))
+            summary_audit_program_id = cursor.fetchone()[0]
+            cursor.execute("""UPDATE public."PRCM" SET summary_audit_program = %s WHERE id = %s""", (
+                summary_audit_program_id,
+                prcm_id
+                ))
         connection.commit()
     except Exception as e:
         connection.rollback()
