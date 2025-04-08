@@ -8,17 +8,17 @@ from AuditNew.Internal.engagements.issue.databases import *
 router = APIRouter(prefix="/issue")
 
 
-@router.post("/{engagement_id}", response_model=ResponseMessage)
+@router.post("/{sub_program_id}", response_model=ResponseMessage)
 def create_new_issue_(
-        engagement_id: int,
+        sub_program_id: int,
         issue: Issue,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_new_issue(db, issue=issue, engagement_id=engagement_id)
+        add_new_issue(db, issue=issue, sub_program_id=sub_program_id)
         return {"detail": "Issue created successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

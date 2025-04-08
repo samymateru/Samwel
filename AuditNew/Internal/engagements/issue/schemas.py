@@ -8,7 +8,6 @@ class User(BaseModel):
 
 class Issue(BaseModel):
     id: Optional[int] = None
-    ref: Optional[str]
     title: Optional[str]
     criteria: Optional[str]
     finding: Optional[str]
