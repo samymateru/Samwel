@@ -7,7 +7,7 @@ from Management.roles.schemas import *
 
 router = APIRouter(prefix="/roles")
 
-@router.get("/", response_model=Role)
+@router.get("/", response_model=List[Role])
 def fetch_roles(
         db = Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)

@@ -37,11 +37,11 @@ class IssueContacts(BaseModel):
     observers: Optional[List[User]]
 
 class IssueStatus(BaseModel):
-    implementer_status: Optional[str]
-    owner_status: Optional[str]
-    owner_comments: Optional[str]
-    risk_manager_status: Optional[str]
-    compliance_officer_status: Optional[str]
+    implementer_status: Optional[str] = None
+    owner_status: Optional[str] = None
+    owner_comments: Optional[str] = None
+    risk_manager_status: Optional[str] = None
+    compliance_officer_status: Optional[str] = None
 
 
 class NewIssue(BaseModel):

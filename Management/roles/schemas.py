@@ -17,4 +17,4 @@ class Category(BaseModel):
 
 class Role(BaseModel):
     id: Optional[int] = None
-    roles: List[Category]
+    roles: Category
