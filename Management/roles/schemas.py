@@ -16,5 +16,4 @@ class Category(BaseModel):
     permissions: Permissions
 
 class Role(BaseModel):
-    id: Optional[int] = None
-    roles: Category
+    roles: List[Category]
