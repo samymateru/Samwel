@@ -15,7 +15,7 @@ def get_summary_procedures(connection: Connection, column: str = None, value: in
                     sub_program.effectiveness,
                     COUNT(issue.id) AS issue_count 
                     FROM main_program 
-                    JOIN sub_program ON main_program.id = sub_program.program
+                    LEFT JOIN sub_program ON main_program.id = sub_program.program
                     LEFT JOIN issue ON sub_program.reference = issue.ref
                     WHERE main_program.{column} = %s
                     GROUP BY sub_program.reference, sub_program.title, sub_program.prepared_by, 

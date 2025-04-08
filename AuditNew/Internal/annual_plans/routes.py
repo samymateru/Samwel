@@ -18,12 +18,12 @@ def fetch_annual_plans(
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = get_annual_plans(db, column="company_module", value=company_module_id)
         return data
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/{company_module_id}", response_model=ResponseMessage)
 async def create_new_annual_plan(
@@ -70,12 +70,12 @@ def update_annual_plan(
         attachment=attachment.filename
     )
     if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+        raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
         edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
         return {"detail": "annual plan successfully updated"}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.delete("/{annual_plan_id}", response_model=ResponseMessage)
 def delete_annual_plan(
@@ -84,9 +84,9 @@ def delete_annual_plan(
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+        raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
         remove_annual_plan(db, annual_plan_id=annual_plan_id)
         return {"detail": "successfully delete the annual plan"}
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)

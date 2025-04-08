@@ -133,3 +133,6 @@ def remove_issue(connection: Connection, issue_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
+
+def send_issue(connection: Connection, contacts: IssueContacts, issue_id: int):
+    pass
