@@ -1,10 +1,11 @@
+import json
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.task.schemas import *
 from utils import get_reference
 
-def add_new_task(connection: Connection, task: Task, engagement_id: int):
+def raise_task(connection: Connection, task: NewTask, engagement_id: int):
     query: str = """
                     INSERT INTO public.task (
                         engagement,
@@ -13,13 +14,8 @@ def add_new_task(connection: Connection, task: Task, engagement_id: int):
                         description,
                         date_raised,
                         raised_by,
-                        action_owner,
-                        resolution_summary,
-                        resolution_details,
-                        resolved_by,
-                        date_resolved,
-                        decision
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        action_owner
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s);
                  """
     try:
         reference: str = get_reference(connection=connection, resource="task", id=engagement_id)
@@ -32,12 +28,7 @@ def add_new_task(connection: Connection, task: Task, engagement_id: int):
                 task.reference,
                 task.date_raised,
                 task.raised_by.model_dump_json(),
-                task.action_owner.model_dump_json(),
-                task.resolution_summary,
-                task.resolution_details,
-                task.resolved_by.model_dump_json(),
-                task.date_resolved,
-                task.decision
+                json.dumps(task.model_dump().get("action_owner"))
             ))
         connection.commit()
     except Exception as e:

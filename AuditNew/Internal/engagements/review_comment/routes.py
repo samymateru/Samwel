@@ -7,33 +7,49 @@ from AuditNew.Internal.engagements.review_comment.databases import *
 
 router = APIRouter(prefix="/review_comment")
 
-@router.post("/{engagement_id}", response_model=ResponseMessage)
-def create_new_review_comment(
+@router.post("/raise/{engagement_id}", response_model=ResponseMessage)
+def raise_review_comment(
         engagement_id: int,
-        review_comment: ReviewComment,
+        review_comment: NewReviewComment,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_new_review_comment(db, review_comment=review_comment, engagement_id=engagement_id)
-        return {"detail": "Review comment added successfully"}
+
+        raise_review_comment(db, review_comment=review_comment, engagement_id=engagement_id)
+        return ResponseMessage(detail="Review comment raised successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/{review_comment_id}", response_model=ResponseMessage)
-def update_review_comment(
+@router.put("/raise/{review_comment_id}", response_model=ResponseMessage)
+def update_raised_review_comment(
         review_comment_id: int,
-        review_comment: ReviewComment,
+        review_comment: NewReviewComment,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        edit_review_comment(db, review_comment=review_comment, review_comment_id=review_comment_id)
-        return {"detail": "Review comment successfully updated"}
+
+        return ResponseMessage(detail="Raised review comment updated successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/resolve/{review_comment_id}", response_model=ResponseMessage)
+def resolve_review_comment(
+        review_comment_id: int,
+        review_comment: ResolveReviewComment,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+
+        return ResponseMessage(detail="Review comment resolved successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

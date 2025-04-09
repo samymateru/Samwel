@@ -57,3 +57,29 @@ def get_summary_review_notes(connection: Connection, engagement_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of review notes {e}")
+
+def get_summary_task(connection: Connection, engagement_id: int):
+    query: str = f"""
+                    SELECT 
+                    task.reference,
+                    task.title,
+                    task.date_raised,
+                    task.raised_by,
+                    task.resolution_summary,
+                    task.resolution_details,
+                    task.resolved_by,
+                    task.date_resolved,
+                    task.decision
+                    FROM task 
+                    WHERE engagement = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (engagement_id,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching summary of task {e}")

@@ -7,10 +7,10 @@ from AuditNew.Internal.engagements.task.databases import *
 
 router = APIRouter(prefix="/task")
 
-@router.post("/{engagement_id}")
-def create_new_task(
+@router.post("/raise/{engagement_id}", response_model=ResponseMessage)
+def raise_new_task(
         engagement_id: int,
-        task: Task,
+        task: NewTask,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -18,24 +18,38 @@ def create_new_task(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
-        add_new_task(db, task=task, engagement_id=engagement_id)
-        return {"detail": "Task added successfully"}
+        raise_task(db, task=task, engagement_id=engagement_id)
+        return ResponseMessage(detail="Task raised successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-
-@router.put("/{task_id}", response_model=ResponseMessage)
-def update_task(
+@router.put("/raise/{task_id}", response_model=ResponseMessage)
+def update_raised_task(
         task_id: int,
-        task: Task,
+        task: NewTask,
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        edit_task(db, task=task, task_id=task_id)
-        return {"detail": "Task successfully updated"}
+
+        return ResponseMessage(detail="Raised task updated successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/resolve/{task_id}", response_model=ResponseMessage)
+def resolve_task(
+        task_id: int,
+        task: ResolveTask,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+
+        return ResponseMessage(detail="Task resolved successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
