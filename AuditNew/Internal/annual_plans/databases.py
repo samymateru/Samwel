@@ -70,16 +70,12 @@ def remove_annual_plan(connection: Connection, annual_plan_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting annual plan {e}")
 
-def get_annual_plans(connection: Connection,  column: str = None, value: str | int  = None, row: str = None) -> List[Dict]:
-    query = "SELECT * FROM public.annual_plans "
-    if row:
-        query = f"SELECT {row} FROM public.annual_plans "
-    if column and value:
-        query += f"WHERE  {column} = %s"
+def get_annual_plans(connection: Connection,  company_module_id: int) -> List[Dict]:
+    query = "SELECT * FROM public.annual_plans WHERE company_module = %s"
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (value,))
+            cursor.execute(query, (company_module_id,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

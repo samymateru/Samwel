@@ -20,7 +20,7 @@ def fetch_annual_plans(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_annual_plans(db, column="company_module", value=company_module_id)
+        data = get_annual_plans(db, company_module_id=company_module_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
