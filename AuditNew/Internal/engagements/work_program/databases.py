@@ -12,14 +12,15 @@ def safe_json_dump(obj):
 
 def add_new_main_program(connection: Connection, program: MainProgram, engagement_id: int):
     query: str = """
-                     INSERT INTO public.main_program (engagement, name) VALUES (%s, %s) RETURNING id;
+                     INSERT INTO public.main_program (engagement, name, status) VALUES (%s, %s, %s) RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query,(
                 engagement_id,
-                program.name
+                program.name,
+                "Not Started"
             ))
             connection.commit()
             return cursor.fetchone()[0]
@@ -71,18 +72,8 @@ def add_new_sub_program(connection: Connection, sub_program: NewSubProgram, prog
                 "",
                 "",
                 "",
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "",
-                    "data_issued": ""
-                }),
-                json.dumps({
-                    "id": 0,
-                    "name": "",
-                    "email": "",
-                    "data_issued": ""
-                })
+                None,
+                None
             ))
             connection.commit()
             return cursor.fetchone()[0]

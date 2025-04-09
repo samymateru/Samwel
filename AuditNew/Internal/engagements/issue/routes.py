@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from utils import  get_db_connection
 from utils import get_current_user
 from schema import CurrentUser
@@ -12,13 +12,14 @@ router = APIRouter(prefix="/issue")
 def create_new_issue_(
         sub_program_id: int,
         issue: Issue,
+        engagement_id: int = Query(),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        add_new_issue(db, issue=issue, sub_program_id=sub_program_id)
+        add_new_issue(db, issue=issue, sub_program_id=sub_program_id, engagement_id=engagement_id)
         return {"detail": "Issue created successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

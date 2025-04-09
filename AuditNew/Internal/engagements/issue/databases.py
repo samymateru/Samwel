@@ -13,7 +13,6 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
     UPDATE public.issue
     SET 
         title = %s,
-        ref = %s,
         criteria = %s,
         finding = %s,
         risk_rating = %s,
@@ -35,7 +34,6 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
     """
     values = (
         issue.title,
-        issue.ref,
         issue.criteria,
         issue.finding,
         issue.risk_rating,
@@ -64,10 +62,11 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
 
-def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int):
+def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, engagement_id: int):
     query: str = """
                     INSERT INTO public.issue (
                             sub_program,
+                            engagement,
                             title,
                             criteria,
                             finding,
@@ -86,7 +85,7 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int):
                             recommendation,
                             management_action_plan,
                             estimated_implementation_date
-                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 
                  """
     try:
@@ -94,6 +93,7 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int):
             cursor: Cursor
             cursor.execute(query,(
                 sub_program_id,
+                engagement_id,
                 issue.title,
                 issue.criteria,
                 issue.finding,

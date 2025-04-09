@@ -4,10 +4,8 @@ from typing import List, Optional
 
 
 class User(BaseModel):
-    id: int
     name: str
     email: str
-    date_issue: str
 
 class MainProgram(BaseModel):
     id: Optional[int] = None
@@ -28,6 +26,8 @@ class SubProgram(BaseModel):
     extended_procedure: Optional[str]
     extended_results: Optional[str]
     effectiveness: Optional[str]
+    reviewed_by: Optional[User] = None
+    prepared_by: Optional[User] = None
     conclusion: Optional[str]
 
 class SubProgramEvidence(BaseModel):
