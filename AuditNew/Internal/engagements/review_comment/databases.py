@@ -58,13 +58,17 @@ def resolve_review_comment_(connection: Connection, review_comment: ResolveRevie
                    WHERE id = %s;
                  """
     try:
-        reference: str = get_reference(connection=connection, resource="review_comment", id=engagement_id)
         with connection.cursor() as cursor:
             cursor: Cursor
             cursor.execute(query, (
-
+                review_comment.resolution_summary,
+                review_comment.resolution_details,
+                review_comment.resolved_by.model_dump_json(),
+                review_comment.decision,
+                review_comment_id
             ))
         connection.commit()
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error raising review comment {e}")
+        raise HTTPException(status_code=400, detail=f"Error resolving review comment {e}")
+

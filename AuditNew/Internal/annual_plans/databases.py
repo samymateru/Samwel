@@ -30,7 +30,7 @@ def add_new_annual_plan(connection: Connection, audit_plan: AnnualPlan, company_
 
 def edit_annual_plan(connection: Connection, annual_plan: AnnualPlan, annual_plan_id: int):
     query: str = """
-                   UPDATE public.annual_plan SET 
+                   UPDATE public.annual_plans SET 
                    name = %s,
                    year = %s,
                    start = %s,

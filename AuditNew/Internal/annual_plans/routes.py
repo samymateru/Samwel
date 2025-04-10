@@ -60,7 +60,7 @@ def update_annual_plan(
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
         db = Depends(get_db_connection),
-        current_user: CurrentUser = Depends(get_current_user)
+        #current_user: CurrentUser = Depends(get_current_user)
     ):
     annual_plan = AnnualPlan(
         name=name,
@@ -69,8 +69,8 @@ def update_annual_plan(
         end=end,
         attachment=attachment.filename
     )
-    if current_user.status_code != 200:
-        raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    #if current_user.status_code != 200:
+        #raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
         edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
         return {"detail": "annual plan successfully updated"}

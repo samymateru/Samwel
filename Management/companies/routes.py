@@ -70,10 +70,10 @@ def new_company(
 @router.get("/", response_model=Company)
 def get_company(
         db = Depends(get_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = databases.get_companies(db, company_id=user.company_id)[0]
         return data

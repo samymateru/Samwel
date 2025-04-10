@@ -42,12 +42,12 @@ def resolve_task(
         task_id: int,
         task: ResolveTask,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
+        resolve_task_(connection=db, task=task, task_id=task_id)
         return ResponseMessage(detail="Task resolved successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
