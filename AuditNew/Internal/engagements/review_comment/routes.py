@@ -12,10 +12,10 @@ def raise_review_comment(
         engagement_id: int,
         review_comment: NewReviewComment,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
         raise_review_comment_(db, review_comment=review_comment, engagement_id=engagement_id)
@@ -43,10 +43,10 @@ def resolve_review_comment(
         review_comment_id: int,
         review_comment: ResolveReviewComment,
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
         return ResponseMessage(detail="Review comment resolved successfully")

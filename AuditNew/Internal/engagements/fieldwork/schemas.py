@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Any, Optional
+from typing import List, Optional
 
 class Section(BaseModel):
     value: str
@@ -10,17 +10,9 @@ class User(BaseModel):
     email: Optional[str]
     date_issued: Optional[datetime]
 
-class SummaryProcedures(BaseModel):
-    id: Optional[int]
-    reference: Optional[str]
-    title: Optional[Section]
-    date_raised: Optional[datetime]
-    raised_by: Optional[User]
-    resolution_summary: Optional[Section]
-    resolution_details: Optional[Section]
-    resolved_by: Optional[User]
-    date_resolved: Optional[datetime]
-    decision: Optional[str]
+class ActionOwner(BaseModel):
+    name: Optional[str]
+    email: Optional[str]
 
 class SummaryReviewNotes(BaseModel):
     reference: Optional[str]
@@ -28,6 +20,7 @@ class SummaryReviewNotes(BaseModel):
     description: Optional[str]
     date_raised: Optional[datetime]
     raised_by: Optional[User]
+    action_owner: Optional[List[ActionOwner]]
     resolution_summary: Optional[str]
     resolution_details: Optional[str]
     resolved_by: Optional[User]
@@ -40,24 +33,12 @@ class SummaryTask(BaseModel):
     description: Optional[str]
     date_raised: Optional[datetime]
     raised_by: Optional[User]
+    action_owner: Optional[List[ActionOwner]]
     resolution_summary: Optional[str]
     resolution_details: Optional[str]
     resolved_by: Optional[User]
     date_resolved: Optional[datetime]
     decision: Optional[str]
-
-class Task(BaseModel):
-    id: Optional[int] = None
-    title: str
-    description: Section
-    date_raised: datetime
-    raised_by: User
-    action_owner: User
-    resolution_summary: Section
-    resolution_details: Section
-    resolved_by: User
-    date_resolved: datetime
-    decision: str
 
 class SummaryAuditProcedure(BaseModel):
     reference: Optional[str]

@@ -12,10 +12,10 @@ def raise_new_task(
         engagement_id: int,
         task: NewTask,
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         raise_task(db, task=task, engagement_id=engagement_id)
         return ResponseMessage(detail="Task raised successfully")
@@ -42,10 +42,10 @@ def resolve_task(
         task_id: int,
         task: ResolveTask,
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
         return ResponseMessage(detail="Task resolved successfully")
