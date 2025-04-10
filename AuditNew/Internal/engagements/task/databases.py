@@ -36,7 +36,7 @@ def raise_task(connection: Connection, task: NewTask, engagement_id: int):
 
 def remove_task(connection: Connection, task_id: int):
     query: str = """
-                  DELETE FROM public.task WHERE id = %s
+                  DELETE FROM public.task WHERE id = %s RETURNING id;
                  """
     try:
         with connection.cursor() as cursor:
