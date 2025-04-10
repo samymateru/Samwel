@@ -12,10 +12,9 @@ def raise_task(connection: Connection, task: NewTask, engagement_id: int):
                         reference,
                         title,
                         description,
-                        date_raised,
                         raised_by,
                         action_owner
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s);
+                        ) VALUES (%s, %s, %s, %s, %s, %s);
                  """
     try:
         reference: str = get_reference(connection=connection, resource="task", id=engagement_id)
@@ -26,7 +25,6 @@ def raise_task(connection: Connection, task: NewTask, engagement_id: int):
                 reference,
                 task.title,
                 task.description,
-                task.date_raised,
                 task.raised_by.model_dump_json(),
                 json.dumps(task.model_dump().get("action_owner"))
             ))

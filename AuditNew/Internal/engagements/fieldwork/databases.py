@@ -39,13 +39,11 @@ def get_summary_review_notes(connection: Connection, engagement_id: int):
                     review_comment.reference,
                     review_comment.title,
                     review_comment.description,
-                    review_comment.date_raised,
                     review_comment.raised_by,
                     review_comment.action_owner,
                     review_comment.resolution_summary,
                     review_comment.resolution_details,
                     review_comment.resolved_by,
-                    review_comment.date_resolved,
                     review_comment.decision
                     FROM review_comment 
                     WHERE engagement = %s;
@@ -67,13 +65,11 @@ def get_summary_task(connection: Connection, engagement_id: int):
                     task.reference,
                     task.title,
                     task.description,
-                    task.date_raised,
                     task.raised_by,
                     task.action_owner,
                     task.resolution_summary,
                     task.resolution_details,
                     task.resolved_by,
-                    task.date_resolved,
                     task.decision
                     FROM task 
                     WHERE engagement = %s;
