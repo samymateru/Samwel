@@ -11,26 +11,38 @@ class User(BaseModel):
 
 class SummaryProcedures(BaseModel):
     id: Optional[int]
-    reference: str
-    title: Section
-    date_raised: datetime
-    raised_by: User
-    resolution_summary: Section
-    resolution_details: Section
-    resolved_by: User
-    date_resolved: datetime
-    decision: str
+    reference: Optional[str]
+    title: Optional[Section]
+    date_raised: Optional[datetime]
+    raised_by: Optional[User]
+    resolution_summary: Optional[Section]
+    resolution_details: Optional[Section]
+    resolved_by: Optional[User]
+    date_resolved: Optional[datetime]
+    decision: Optional[str]
 
 class SummaryReviewNotes(BaseModel):
-    reference: str
+    reference: Optional[str]
     title: Optional[str]
-    date_raised: datetime
-    raised_by: User
+    description: Optional[str]
+    date_raised: Optional[datetime]
+    raised_by: Optional[User]
     resolution_summary: Optional[str]
     resolution_details: Optional[str]
-    resolved_by: User
-    date_resolved: datetime
-    decision: str
+    resolved_by: Optional[User]
+    date_resolved: Optional[datetime]
+    decision: Optional[str]
+
+class SummaryTask(BaseModel):
+    reference: Optional[str]
+    title: Optional[str]
+    date_raised: Optional[datetime]
+    raised_by: Optional[User]
+    resolution_summary: Optional[str]
+    resolution_details: Optional[str]
+    resolved_by: Optional[User]
+    date_resolved: Optional[datetime]
+    decision: Optional[str]
 
 class Task(BaseModel):
     id: Optional[int] = None
@@ -59,9 +71,10 @@ class Note(BaseModel):
     decision: str
 
 class SummaryAuditProcedure(BaseModel):
-    reference: str
-    title: str
-    prepared_by: User
-    reviewed_by: User
-    effectiveness: str
-    issue_count: int
+    reference: Optional[str]
+    program: Optional[str]
+    title: Optional[str]
+    prepared_by: Optional[User]
+    reviewed_by: Optional[User]
+    effectiveness: Optional[str]
+    issue_count: Optional[int]

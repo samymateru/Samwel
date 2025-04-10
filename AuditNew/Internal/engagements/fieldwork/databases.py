@@ -5,9 +5,10 @@ from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.schemas import UpdateEngagement, NewEngagement
 import json
 
-def get_summary_procedures(connection: Connection, column: str = None, value: int | str = None):
+def get_summary_procedures(connection: Connection, engagement_id: int):
     query: str = f""" 
-                    SELECT 
+                    SELECT
+                    main_program.name as program, 
                     sub_program.reference,
                     sub_program.title,
                     sub_program.prepared_by,
@@ -17,14 +18,14 @@ def get_summary_procedures(connection: Connection, column: str = None, value: in
                     FROM main_program 
                     LEFT JOIN sub_program ON main_program.id = sub_program.program
                     LEFT JOIN issue ON sub_program.id = issue.sub_program
-                    WHERE main_program.{column} = %s
+                    WHERE main_program.engagement = %s
                     GROUP BY sub_program.reference, sub_program.title, sub_program.prepared_by, 
-                    sub_program.reviewed_by, sub_program.effectiveness;                
+                    sub_program.reviewed_by, sub_program.effectiveness, main_program.name;                
                  """
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (value,))
+            cursor.execute(query, (engagement_id,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

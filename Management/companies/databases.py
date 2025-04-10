@@ -56,16 +56,13 @@ def delete_company(connection: Connection, company_id: List[int]):
         connection.rollback()
         raise HTTPException(status_code=400, detail="Error deleting module")
 
-def get_companies(connection: Connection, column: str = None, value: str | int = None, row: str = None) -> List[Dict]:
-    query = "SELECT * FROM public.companies "
-    if row:
-        query = f"SELECT {row} FROM public.companies "
-    if column and value:
-        query += f"WHERE  {column} = %s"
+def get_companies(connection: Connection, company_id: int) -> List[Dict]:
+    query = "SELECT * FROM public.companies WHERE id = %"
+
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
-            cursor.execute(query, (value,))
+            cursor.execute(query, (company_id,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]

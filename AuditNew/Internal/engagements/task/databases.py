@@ -25,7 +25,7 @@ def raise_task(connection: Connection, task: NewTask, engagement_id: int):
                 engagement_id,
                 reference,
                 task.title,
-                task.reference,
+                task.description,
                 task.date_raised,
                 task.raised_by.model_dump_json(),
                 json.dumps(task.model_dump().get("action_owner"))
