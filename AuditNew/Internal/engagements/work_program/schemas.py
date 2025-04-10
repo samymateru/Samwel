@@ -4,8 +4,9 @@ from typing import List, Optional
 
 
 class User(BaseModel):
-    name: str
-    email: str
+    name: Optional[str]
+    email: Optional[str]
+    date_issued: Optional[datetime]
 
 class MainProgram(BaseModel):
     id: Optional[int] = None

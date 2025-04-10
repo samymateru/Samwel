@@ -18,7 +18,7 @@ def raise_review_comment(
         #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
 
-        raise_review_comment(db, review_comment=review_comment, engagement_id=engagement_id)
+        raise_review_comment_(db, review_comment=review_comment, engagement_id=engagement_id)
         return ResponseMessage(detail="Review comment raised successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
