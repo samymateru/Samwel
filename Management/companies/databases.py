@@ -57,7 +57,7 @@ def delete_company(connection: Connection, company_id: List[int]):
         raise HTTPException(status_code=400, detail="Error deleting module")
 
 def get_companies(connection: Connection, company_id: int) -> List[Dict]:
-    query = "SELECT * FROM public.companies WHERE id = %"
+    query = """SELECT * FROM public.companies WHERE id = %s"""
 
     try:
         with connection.cursor() as cursor:

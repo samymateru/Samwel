@@ -36,6 +36,7 @@ class SummaryReviewNotes(BaseModel):
 class SummaryTask(BaseModel):
     reference: Optional[str]
     title: Optional[str]
+    description: Optional[str]
     date_raised: Optional[datetime]
     raised_by: Optional[User]
     resolution_summary: Optional[str]
@@ -45,19 +46,6 @@ class SummaryTask(BaseModel):
     decision: Optional[str]
 
 class Task(BaseModel):
-    id: Optional[int] = None
-    title: str
-    description: Section
-    date_raised: datetime
-    raised_by: User
-    action_owner: User
-    resolution_summary: Section
-    resolution_details: Section
-    resolved_by: User
-    date_resolved: datetime
-    decision: str
-
-class Note(BaseModel):
     id: Optional[int] = None
     title: str
     description: Section

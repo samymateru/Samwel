@@ -38,6 +38,7 @@ def get_summary_review_notes(connection: Connection, engagement_id: int):
                     SELECT 
                     review_comment.reference,
                     review_comment.title,
+                    review_comment.description,
                     review_comment.date_raised,
                     review_comment.raised_by,
                     review_comment.resolution_summary,
@@ -64,6 +65,7 @@ def get_summary_task(connection: Connection, engagement_id: int):
                     SELECT 
                     task.reference,
                     task.title,
+                    task.description,
                     task.date_raised,
                     task.raised_by,
                     task.resolution_summary,

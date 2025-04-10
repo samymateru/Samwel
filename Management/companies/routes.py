@@ -75,7 +75,7 @@ def get_company(
     #if user.status_code != 200:
         #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = databases.get_companies(db, column="id", value=0)[0]
+        data = databases.get_companies(db, company_id=user.company_id)[0]
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

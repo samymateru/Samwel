@@ -86,7 +86,7 @@ def users(
             "type": user_data[0].get("type"),
             "status": user_data[0].get("status")
         }
-        company = get_companies(db, column="id", value=user_data[0].get("company_id"))[0]
+        company = get_companies(db, company_id=user_data[0].get("company"))[0]
         token: str = create_jwt_token(user)
         user: dict = {
             "id": user_data[0].get("id"),
