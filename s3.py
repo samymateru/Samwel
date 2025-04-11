@@ -1,6 +1,9 @@
+from tempfile import NamedTemporaryFile
 import boto3
 from dotenv import load_dotenv
 import os
+import shutil
+from fastapi import UploadFile
 
 
 # AWS Credentials (Recommended: Use environment variables or IAM roles)
@@ -29,3 +32,11 @@ def upload_file(file_path, s3_key):
     except Exception as e:
         print(f"Error uploading file: {e}")
         return None
+
+
+def save_temporary(file: UploadFile):
+    suffix = os.path.splitext(file.filename)[1]
+    with NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        temp_file_path = tmp.name
+        

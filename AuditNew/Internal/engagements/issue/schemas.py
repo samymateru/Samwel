@@ -1,10 +1,21 @@
 from pydantic import BaseModel
+from enum import Enum
 from typing import Optional, List, Dict
 from datetime import datetime
 
 class User(BaseModel):
-    name: str
-    email: str
+    name: Optional[str]
+    email: Optional[str]
+    date_issued: Optional[datetime]
+
+class IssueStatus(str, Enum):
+    NOT_STARTED = "Not started"
+    OPEN = "Open"
+    IN_PROGRESS_IMPLEMENTER = "In progress -> implementer"
+    IN_PROGRESS_OWNER = "In progress -> owner"
+    CLOSED_NOT_VERIFIED = "Close unverified"
+    CLOSED_VERIFIED = "Closed verified"
+
 
 class Issue(BaseModel):
     id: Optional[int] = None
@@ -25,22 +36,24 @@ class Issue(BaseModel):
     recurring_status: Optional[bool]
     recommendation: Optional[str]
     management_action_plan: Optional[str]
+    regulatory: Optional[bool]
     estimated_implementation_date: Optional[datetime]
-
-class IssueContacts(BaseModel):
+    prepared_by: Optional[User] = None
+    reviewed_by: Optional[User] = None
+    status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
     LOD1_implementer: Optional[List[User]]
     LOD1_owner: Optional[List[User]]
-    LOD2_risk_manager: Optional[List[User]]
-    LOD2_compliance_officer: Optional[List[User]]
+    LOD2_risk_manager: Optional[List[User]] = None
+    LOD2_compliance_officer: Optional[List[User]] = None
     LOD3_audit_manager: Optional[List[User]]
-    observers: Optional[List[User]]
 
-class IssueStatus(BaseModel):
-    implementer_status: Optional[str] = None
-    owner_status: Optional[str] = None
-    owner_comments: Optional[str] = None
-    risk_manager_status: Optional[str] = None
-    compliance_officer_status: Optional[str] = None
+class IssueStatusDecline(BaseModel):
+    notes: Optional[str]
+
+class IssueStatusAccept(BaseModel):
+    notes: Optional[str] = None
+    attachment: Optional[List[str]] = None
+    reply: Optional[str] = None
 
 
 class NewIssue(BaseModel):

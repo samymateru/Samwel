@@ -1,9 +1,11 @@
 import json
-from typing import Dict, List
+from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.issue.schemas import *
+#from psycopg2 import IntegrityError, errors
+#import psycopg2
 
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
@@ -84,8 +86,20 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                             recurring_status,
                             recommendation,
                             management_action_plan,
-                            estimated_implementation_date
-                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                            estimated_implementation_date,
+                            regulatory,
+                            status,
+                            LOD1_implementer,
+                            LOD1_owner,
+                            LOD2_risk_manager,
+                            LOD2_compliance_officer,
+                            LOD3_audit_manager
+                            ) VALUES (
+                             %s, %s, %s, %s, %s, %s, %s,
+                             %s, %s, %s, %s, %s, %s, %s, 
+                             %s, %s, %s, %s, %s, %s,
+                             %s, %s, %s, %s, %s, %s, %s
+                            );
 
                  """
     try:
@@ -111,9 +125,22 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 issue.recurring_status,
                 issue.recommendation,
                 issue.management_action_plan,
-                issue.estimated_implementation_date
+                issue.estimated_implementation_date,
+                issue.regulatory,
+                issue.status,
+                json.dumps(jsonable_encoder(issue.model_dump().get("LOD1_implementer"))),
+                json.dumps(jsonable_encoder(issue.model_dump().get("LOD1_owner"))),
+                json.dumps(jsonable_encoder(issue.model_dump().get("LOD2_risk_manager"))),
+                json.dumps(jsonable_encoder(issue.model_dump().get("LOD2_compliance_officer"))),
+                json.dumps(jsonable_encoder(issue.model_dump().get("LOD3_audit_manager")))
             ))
         connection.commit()
+    # except psycopg2.IntegrityError as e:
+    #     connection.rollback()
+    #     if isinstance(e.__cause__, psycopg2.errors.ForeignKeyViolation):
+    #         print("Foreign key violation: Parent record does not exist.")
+    #     else:
+    #         print("Some other integrity error:", e)
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating issue {e}")
@@ -131,6 +158,3 @@ def remove_issue(connection: Connection, issue_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
-
-def send_issue(connection: Connection, contacts: IssueContacts, issue_id: int):
-    pass

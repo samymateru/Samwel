@@ -52,18 +52,3 @@ def delete_issue(
         return {"detail": "Issue deleted successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.put("/send/{issue_id}", response_model=ResponseMessage)
-def send_issue_for_survey(
-        issue_id: int,
-        contacts: IssueContacts,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        send_issue(connection=db, contacts=contacts, issue_id=issue_id)
-        return ResponseMessage(detail="Issue sent successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
