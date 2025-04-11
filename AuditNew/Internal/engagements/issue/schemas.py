@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 from enum import Enum
 from typing import Optional, List, Dict
 from datetime import datetime
@@ -9,15 +9,11 @@ class User(BaseModel):
     date_issued: Optional[datetime]
 
 class IssueActors(str, Enum):
-    IMPLEMENTER = "implementer"
-    OWNER = "owner"
-    RISK_MANAGER = "risk_manager"
-    COMPLIANCE_OFFICER = "compliance_officer"
-    AUDIT_MANAGER = "audit_manager"
-
-class IssueResponseType(str, Enum):
-    ACCEPT = "accept"
-    DECLINE = "decline"
+    IMPLEMENTER = "lod1_implementer"
+    OWNER = "lod1_owner"
+    RISK_MANAGER = "lod2_risk_manager"
+    COMPLIANCE_OFFICER = "lod2_compliance_officer"
+    AUDIT_MANAGER = "lod3_audit_manager"
 
 class IssueStatus(str, Enum):
     NOT_STARTED = "Not started"
@@ -26,7 +22,6 @@ class IssueStatus(str, Enum):
     IN_PROGRESS_OWNER = "In progress -> owner"
     CLOSED_NOT_VERIFIED = "Close unverified"
     CLOSED_VERIFIED = "Closed verified"
-
 
 class Issue(BaseModel):
     id: Optional[int] = None
@@ -58,27 +53,27 @@ class Issue(BaseModel):
     LOD2_compliance_officer: Optional[List[User]] = None
     LOD3_audit_manager: Optional[List[User]]
 
-class IssueStatusDecline(BaseModel):
-    notes: Optional[str]
-
-class IssueStatusAccept(BaseModel):
-    notes: Optional[str] = None
-    attachment: Optional[List[str]] = None
-    reply: Optional[str] = None
-
-
-class NewIssue(BaseModel):
-    title: str
-
 class IssueSendImplementation(BaseModel):
     id: List[int]
 
-class IssueResponse(BaseModel):
+class IssueDeclineResponse(BaseModel):
     actor: IssueActors
-    type: IssueResponseType
+    decline_notes: Optional[str]
+
+class IssueAcceptResponse(BaseModel):
+    actor: IssueActors
     accept_notes: Optional[str] = None
     accept_attachment: Optional[List[str]] = None
-    decline_notes: Optional[str]
+    feedback: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_fields(self):
+        if self.actor == IssueActors.AUDIT_MANAGER and self.feedback is None:
+                raise ValueError("provide feedback please")
+        if self.actor == IssueActors.IMPLEMENTER:
+            raise ValueError("implementer doesnt respond")
+        return self
+
 
 class MailedIssue(BaseModel):
     title: Optional[str]
