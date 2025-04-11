@@ -20,8 +20,11 @@ class IssueStatus(str, Enum):
     OPEN = "Open"
     IN_PROGRESS_IMPLEMENTER = "In progress -> implementer"
     IN_PROGRESS_OWNER = "In progress -> owner"
-    CLOSED_NOT_VERIFIED = "Close unverified"
-    CLOSED_VERIFIED = "Closed verified"
+    CLOSED_NOT_VERIFIED = "Closed -> not verified"
+    CLOSED_VERIFIED_BY_RISK = "Closed -> verified by risk"
+    CLOSED_RISK_NA = "Closed -> risk N/A"
+    CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
+    CLOSED_VERIFIED_BY_AUDIT = "Closed -> verified by audit"
 
 class Issue(BaseModel):
     id: Optional[int] = None
@@ -64,12 +67,20 @@ class IssueAcceptResponse(BaseModel):
     actor: IssueActors
     accept_notes: Optional[str] = None
     accept_attachment: Optional[List[str]] = None
-    feedback: Optional[str] = None
+    lod2_feedback: Optional[IssueStatus] = None
 
     @model_validator(mode="after")
     def validate_fields(self):
-        if self.actor == IssueActors.AUDIT_MANAGER and self.feedback is None:
-                raise ValueError("provide feedback please")
+        valid_statuses = {
+            IssueStatus.CLOSED_RISK_NA,
+            IssueStatus.CLOSED_RISK_ACCEPTED,
+            IssueStatus.CLOSED_VERIFIED_BY_RISK
+        }
+        if (self.actor == IssueActors.RISK_MANAGER or self.actor == IssueActors.COMPLIANCE_OFFICER) and self.lod2_feedback is None:
+            raise ValueError("provide lod2 feedback please")
+        if self.actor == IssueActors.RISK_MANAGER or self.actor == IssueActors.COMPLIANCE_OFFICER:
+            if self.lod2_feedback not in valid_statuses:
+                raise ValueError("Provide valid lod2 status")
         if self.actor == IssueActors.IMPLEMENTER:
             raise ValueError("implementer doesnt respond")
         return self

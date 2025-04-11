@@ -177,6 +177,7 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
         raise HTTPException(status_code=400, detail=f"Error send issues to implementor {e}")
 
 def send_issues_to_owner(connection: Connection, issue_id: int):
+
     try:
         with connection.cursor() as cursor:
             issue_ids = IssueSendImplementation(
@@ -214,13 +215,13 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                     issue_status = IssueStatus.CLOSED_NOT_VERIFIED
                 case issue.actor.RISK_MANAGER:
                     issue_actor = IssueActors.AUDIT_MANAGER
-                    issue_status = IssueStatus.CLOSED_VERIFIED
+                    issue_status = issue.lod2_feedback.value
                 case issue.actor.COMPLIANCE_OFFICER:
                     issue_actor = IssueActors.AUDIT_MANAGER
-                    issue_status = IssueStatus.CLOSED_VERIFIED
+                    issue_status = issue.lod2_feedback.value
                 case issue.actor.AUDIT_MANAGER:
                     issue_actor = IssueActors.AUDIT_MANAGER
-                    issue_status = IssueStatus.NOT_STARTED
+                    issue_status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT
                 case _:
                     pass
             issue_ids = IssueSendImplementation(
@@ -246,12 +247,6 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                     issue_ids=issue_ids,
                     status=issue_status
                 )
-
-                print(data)
-
-
-
-
 
     except Exception as e:
         connection.rollback()
