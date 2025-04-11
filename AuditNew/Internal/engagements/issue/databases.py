@@ -250,10 +250,56 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
 
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error sending issue to owner {e}")
+        raise HTTPException(status_code=400, detail=f"Error sending accept response {e}")
 
 def send_decline_response(connection: Connection, issue: IssueDeclineResponse, issue_id: int):
-    pass
+    query: str = """
+                  SELECT regulatory FROM public.issue WHERE id = %s
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (issue_id,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            match issue.actor:
+                case issue.actor.AUDIT_MANAGER:
+                    issue_actor = IssueActors.COMPLIANCE_OFFICER if data[0].get("regulatory") else IssueActors.RISK_MANAGER
+                    issue_status = IssueStatus.CLOSED_NOT_VERIFIED
+                case issue.actor.RISK_MANAGER:
+                    issue_actor = IssueActors.OWNER
+                    issue_status = IssueStatus.IN_PROGRESS_IMPLEMENTER
+                case issue.actor.COMPLIANCE_OFFICER:
+                    issue_actor = IssueActors.OWNER
+                    issue_status = IssueStatus.IN_PROGRESS_IMPLEMENTER
+                case issue.actor.OWNER:
+                    issue_actor = IssueActors.IMPLEMENTER
+                    issue_status = IssueStatus.OPEN
+                case issue.actor.IMPLEMENTER:
+                    issue_actor = IssueActors.IMPLEMENTER
+                    issue_status = IssueStatus.OPEN
+
+            issue_ids = IssueSendImplementation(
+                id=[issue_id]
+            )
+            if issue.actor is not IssueActors.IMPLEMENTER:
+                data = get_issue_and_issue_actors(
+                    cursor=cursor,
+                    issue_ids=issue_ids,
+                    issue_actors=issue_actor
+                )
+
+                update_issue_status(
+                    cursor=cursor,
+                    connection=connection,
+                    issue_ids=issue_ids,
+                    status=issue_status
+                )
+
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error sending decline response {e}")
+
 
 def get_issue_and_issue_actors(cursor: Cursor, issue_ids: IssueSendImplementation, issue_actors: str):
     placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))

@@ -119,7 +119,7 @@ def issue_decline_response(
     #if user.status_code != 200:
        # raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
+        send_decline_response(connection=db, issue=issue, issue_id=issue_id)
         return ResponseMessage(detail=f"Successfully send decline response to {issue.actor}")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
