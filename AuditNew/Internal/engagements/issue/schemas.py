@@ -8,6 +8,17 @@ class User(BaseModel):
     email: Optional[str]
     date_issued: Optional[datetime]
 
+class IssueActors(str, Enum):
+    IMPLEMENTER = "implementer"
+    OWNER = "owner"
+    RISK_MANAGER = "risk_manager"
+    COMPLIANCE_OFFICER = "compliance_officer"
+    AUDIT_MANAGER = "audit_manager"
+
+class IssueResponseType(str, Enum):
+    ACCEPT = "accept"
+    DECLINE = "decline"
+
 class IssueStatus(str, Enum):
     NOT_STARTED = "Not started"
     OPEN = "Open"
@@ -58,3 +69,20 @@ class IssueStatusAccept(BaseModel):
 
 class NewIssue(BaseModel):
     title: str
+
+class IssueSendImplementation(BaseModel):
+    id: List[int]
+
+class IssueResponse(BaseModel):
+    actor: IssueActors
+    type: IssueResponseType
+    accept_notes: Optional[str] = None
+    accept_attachment: Optional[List[str]] = None
+    decline_notes: Optional[str]
+
+class MailedIssue(BaseModel):
+    title: Optional[str]
+    criteria: Optional[str]
+    finding: Optional[str]
+    risk_rating: Optional[str]
+    implementors: List[str]

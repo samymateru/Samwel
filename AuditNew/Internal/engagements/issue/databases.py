@@ -148,7 +148,6 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
 def remove_issue(connection: Connection, issue_id: int):
     query: str = """
                   DELETE FROM public.issue WHERE id = %s
-        
                  """
     try:
         with connection.cursor() as cursor:
@@ -158,3 +157,50 @@ def remove_issue(connection: Connection, issue_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
+
+def send_issues(connection: Connection, issue_ids: IssueSendImplementation):
+    try:
+        with connection.cursor() as cursor:
+            data = issue_implementors(cursor=cursor, issue_ids=issue_ids)
+            update_issue_status(cursor=cursor, connection=connection, issue_ids=issue_ids, status=IssueStatus.OPEN)
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
+
+def issue_implementors(cursor: Cursor, issue_ids: IssueSendImplementation):
+    placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
+    query_implementers: str= f"SELECT * FROM public.issue WHERE id IN ({placeholders})"
+    cursor.execute(query_implementers, issue_ids.id)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    data = [dict(zip(column_names, row_)) for row_ in rows]
+    issue_list = []
+    for issue in data:
+        implementors = []
+        for implementor in issue.get("lod1_implementer"):
+            implementors.append(implementor.get("email"))
+        mailed_issue = MailedIssue(
+            title=issue.get("title"),
+            criteria=issue.get("criteria"),
+            finding=issue.get("finding"),
+            risk_rating=issue.get("risk_rating"),
+            implementors=implementors
+        )
+        issue_list.append(mailed_issue)
+    return issue_list
+
+def send_issue_to_owner(cursor: Cursor, connection: Connection, issue_id: int):
+    query: str = """
+                  UPDATE public.issue
+                 """
+
+def update_issue_status(cursor: Cursor, connection: Connection, issue_ids: IssueSendImplementation, status: str):
+    placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
+    query = f"""
+        UPDATE public.issue
+        SET status = %s
+        WHERE id IN ({placeholders})
+    """
+    params = [status] + issue_ids.id
+    cursor.execute(query, params)
+    connection.commit()

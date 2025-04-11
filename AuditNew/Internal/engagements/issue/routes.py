@@ -52,3 +52,57 @@ def delete_issue(
         return {"detail": "Issue deleted successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/send_implementor/", response_model=ResponseMessage)
+def send_issue_for_implementation(
+        issue_ids: IssueSendImplementation,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        send_issues(connection=db, issue_ids=issue_ids)
+        return ResponseMessage(detail="Successfully send the issue")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/save_implementation", response_model=ResponseMessage)
+def save_issue_implementation(
+        issue_id: List[int],
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        return ResponseMessage(detail="Successfully save the issue")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/send_owner/{issue_id}", response_model=ResponseMessage)
+def submit_issue_to_owner(
+        issue_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        return ResponseMessage(detail="Successfully save the issue")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/response/{issue_id}", response_model=ResponseMessage)
+def issue_response(
+        issue_id: int,
+        issue: IssueResponse,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+
+
+
+
