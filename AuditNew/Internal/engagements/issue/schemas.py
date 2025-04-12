@@ -93,10 +93,18 @@ class IssueAcceptResponse(BaseModel):
 
 
 class MailedIssue(BaseModel):
+    id: Optional[str]
     title: Optional[str]
     criteria: Optional[str]
     finding: Optional[str]
     risk_rating: Optional[str]
+    status: Optional[str]
+    regulatory: Optional[bool]
+    lod1_implementer: Optional[List[User]]
+    lod1_owner: Optional[List[User]]
+    lod2_risk_manager: Optional[List[User]]
+    lod2_compliance_officer: Optional[List[User]]
+    lod3_audit_manager: Optional[List[User]]
     implementors: List[str]
 
 class IssueImplementationDetails(BaseModel):

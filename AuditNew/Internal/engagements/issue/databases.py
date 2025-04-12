@@ -176,7 +176,7 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
 
 def save_issue_implementation_(connection: Connection, issue_details: IssueImplementationDetails, issue_id: int):
     query_status: str = """
-                         SELECT status FROM public.issue WHERE id = %s;
+                         SELECT * FROM public.issue WHERE id = %s;
                         """
     query_update: str = """
                          UPDATE public.issue
@@ -187,8 +187,10 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
     try:
         with connection.cursor() as cursor:
             cursor.execute(query_status, (issue_id,))
-            issue_status = cursor.fetchone()[0]
-            if issue_status == IssueStatus.NOT_STARTED:
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            issue_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if issue_data[0].get("status") == IssueStatus.NOT_STARTED:
                 update_issue_details(
                     connection=connection,
                     cursor=cursor,
@@ -197,7 +199,7 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
                 )
                 cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
                 connection.commit()
-            if issue_status == IssueStatus.IN_PROGRESS_IMPLEMENTER:
+            if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER:
                 update_issue_details(
                     connection=connection,
                     cursor=cursor,
@@ -209,7 +211,6 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
         raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
 
 def send_issues_to_owner(connection: Connection, issue_id: int):
-
     try:
         with connection.cursor() as cursor:
             issue_ids = IssueSendImplementation(
@@ -378,10 +379,18 @@ def get_issue_and_issue_actors(
             for implementor in issue.get(issue_actors):
                 implementors.append(implementor.get("email"))
             mailed_issue = MailedIssue(
+                id=issue.get("id"),
                 title=issue.get("title"),
                 criteria=issue.get("criteria"),
                 finding=issue.get("finding"),
                 risk_rating=issue.get("risk_rating"),
+                regulatory=issue.get("regulatory"),
+                status=issue.get("status"),
+                lod1_implementer=issue.get(IssueActors.IMPLEMENTER.value),
+                lod1_owner=issue.get(IssueActors.OWNER.value),
+                lod2_risk_manager=issue.get(IssueActors.RISK_MANAGER.value),
+                lod2_compliance_officer=issue.get(IssueActors.COMPLIANCE_OFFICER.value),
+                lod3_audit_manager=issue.get(IssueActors.AUDIT_MANAGER.value),
                 implementors=implementors
             )
             issue_list.append(mailed_issue)
