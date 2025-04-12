@@ -1,6 +1,6 @@
 from pydantic import BaseModel, model_validator
 from enum import Enum
-from typing import Optional, List, Dict
+from typing import Optional, List
 from datetime import datetime
 
 class User(BaseModel):
@@ -62,6 +62,12 @@ class IssueSendImplementation(BaseModel):
 class IssueDeclineResponse(BaseModel):
     actor: IssueActors
     decline_notes: Optional[str]
+
+    @model_validator(mode="after")
+    def validate_fields(self):
+        if self.actor == IssueActors.IMPLEMENTER:
+            raise ValueError("implementer doesnt decline")
+        return self
 
 class IssueAcceptResponse(BaseModel):
     actor: IssueActors
