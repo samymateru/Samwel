@@ -98,3 +98,11 @@ class MailedIssue(BaseModel):
     finding: Optional[str]
     risk_rating: Optional[str]
     implementors: List[str]
+
+class IssueImplementationDetails(BaseModel):
+    id: Optional[int] = None
+    notes: Optional[str] = None
+    attachment: Optional[List[str]] = None
+    issued_by: Optional[User]
+    type: Optional[str]
+

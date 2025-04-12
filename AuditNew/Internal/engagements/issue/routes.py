@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query, Form, UploadFile, File
 from utils import  get_db_connection
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
 from AuditNew.Internal.engagements.issue.databases import *
+from datetime import datetime
 
 router = APIRouter(prefix="/issue")
 
@@ -67,15 +68,30 @@ def send_issue_for_implementation(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/save_implementation", response_model=ResponseMessage)
+@router.put("/save_implementation/{issue_id}", response_model=ResponseMessage)
 def save_issue_implementation(
-        issue_id: List[int],
+        issue_id: int,
+        implementer_name: str = Form(...),
+        implementer_email: str = Form(...),
+        notes: str = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    issue_details = IssueImplementationDetails(
+        notes=notes,
+        attachment=[attachment.filename],
+        issued_by=User(
+            name=implementer_name,
+            email=implementer_email,
+            date_issued=datetime.now()
+        ),
+        type="save"
+    )
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id)
         return ResponseMessage(detail="Successfully save the issue")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -123,5 +139,19 @@ def issue_decline_response(
         return ResponseMessage(detail=f"Successfully send decline response to {issue.actor}")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/", response_model=List[Issue])
+def fetch_issue_based_on_actor(
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = get_issue_from_actor(connection=db, user_email=user.user_email)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 

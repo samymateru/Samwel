@@ -174,6 +174,40 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error send issues to implementor {e}")
 
+def save_issue_implementation_(connection: Connection, issue_details: IssueImplementationDetails, issue_id: int):
+    query_status: str = """
+                         SELECT status FROM public.issue WHERE id = %s;
+                        """
+    query_update: str = """
+                         UPDATE public.issue
+                         SET
+                         status = %s
+                         WHERE id = %s;
+                        """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query_status, (issue_id,))
+            issue_status = cursor.fetchone()[0]
+            if issue_status == IssueStatus.NOT_STARTED:
+                update_issue_details(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_details=issue_details,
+                    issue_id=issue_id
+                )
+                cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
+                connection.commit()
+            if issue_status == IssueStatus.IN_PROGRESS_IMPLEMENTER:
+                update_issue_details(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_details=issue_details,
+                    issue_id=issue_id
+                )
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
+
 def send_issues_to_owner(connection: Connection, issue_id: int):
 
     try:
@@ -371,4 +405,56 @@ def update_issue_status(cursor: Cursor, connection: Connection, issue_ids: Issue
         params = [next_status] + issue_ids.id
         cursor.execute(query, params)
         connection.commit()
+
+def get_issue_from_actor(connection: Connection, user_email: str):
+    conditions = []
+    params = []
+    jsonb_columns = [
+        IssueActors.IMPLEMENTER.value,
+        IssueActors.OWNER.value,
+        IssueActors.RISK_MANAGER.value,
+        IssueActors.COMPLIANCE_OFFICER.value,
+        IssueActors.AUDIT_MANAGER.value
+    ]
+    for col in jsonb_columns:
+        conditions.append(f"""
+            EXISTS (
+                SELECT 1 FROM jsonb_array_elements({col}) AS elem
+                WHERE elem->>%s = %s
+            )
+        """)
+        params.extend(["email", user_email])  # add key and value for each condition
+
+    # Join all conditions with OR
+    where_clause = " OR ".join(conditions)
+
+    query = f"SELECT * FROM public.issue WHERE {where_clause};"
+    try:
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, params)
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching issue by actors {e}")
+
+def update_issue_details(connection: Connection, cursor: Cursor, issue_id: int, issue_details: IssueImplementationDetails):
+    query: str = """
+                  INSERT INTO public.implementation_details (issue, notes, attachments, issued_by, type)
+                  VALUES (%s, %s, %s, %s, %s);
+                 """
+    cursor.execute(query, (
+        issue_id,
+        issue_details.notes,
+        json.dumps(issue_details.model_dump().get("attachment")),
+        issue_details.issued_by.model_dump_json(),
+        issue_details.type
+    ))
+    connection.commit()
+
+
+
+
 

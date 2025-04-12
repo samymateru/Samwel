@@ -82,6 +82,7 @@ def users(
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),
+            "user_email": user_data[0].get("email"),
             "company_id": user_data[0].get("company"),
             "type": user_data[0].get("type"),
             "status": user_data[0].get("status")

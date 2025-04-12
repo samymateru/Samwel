@@ -3,6 +3,7 @@ from typing import Optional
 
 class CurrentUser(BaseModel):
     user_id: Optional[int] = None
+    user_email: Optional[str] = None
     company_id: Optional[int] = None
     role_id: Optional[int] = None
     type: Optional[str] = None
