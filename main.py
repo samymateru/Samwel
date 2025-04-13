@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
@@ -30,13 +32,20 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
-from utils import verify_password, get_db_connection, create_jwt_token, check_permission
+from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async
 from Management.users.databases import get_user
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
 from rabbitmq import rabbitmq
 from Management.templates.databases import *
-import threading
+from dotenv import load_dotenv
+import sys
+import asyncio
+
+load_dotenv()
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 @asynccontextmanager
@@ -46,12 +55,19 @@ async def lifespan(app: FastAPI):
         #rabbitmq.connect(queue_name="task")
         #consumer_thread = threading.Thread(target=rabbitmq.consume_messages, args=("task",), daemon=True)
         #consumer_thread.start()
-        print("Database connection pool initialized.")
+        print("Database connection sync pool initialized.")
+
+    await connection_pool_async.open()
+    if connection_pool_async:
+        print("Database connection async pool initialized.")
     yield
     from utils import connection_pool
     connection_pool.closeall()
+    await connection_pool_async.close()
     rabbitmq.close()
-    print("Database connection pool closed")
+    print("Database connection sync pool closed")
+    print("Database connection async pool closed")
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -62,13 +78,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-from seedings import roles
-@app.get("/")
+
+from utils import test_async
+@app.get("/", response_model=str)
 async def test(
+        db_async= Depends(get_async_db_connection),
         db=Depends(get_db_connection),
-        per = Depends(check_permission(resource="user-roles", action= "view"))
+        #per = Depends(check_permission(resource="user-roles", action= "view"))
 ):
-    pass
+    await test_async(conn=db_async)
+
+    return "sam"
+
 
 @app.post("/login", tags=["Authentication"])
 def users(

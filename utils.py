@@ -1,5 +1,5 @@
-import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
+from contextlib import asynccontextmanager
 import bcrypt
 import jwt
 from datetime import datetime, timedelta
@@ -8,6 +8,8 @@ from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
+from psycopg_pool import AsyncConnectionPool
+
 from schema import TokenError, CurrentUser
 import secrets
 import string
@@ -27,6 +29,33 @@ connection_pool = pool.SimpleConnectionPool(
             database=os.getenv("DB_NAME")
         )
 
+connection_pool_async = AsyncConnectionPool(
+    conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+    min_size=1,
+    max_size=10,
+    open=False  # prevent auto-opening (this removes the warning)
+)
+
+connection_pool_async_: Optional[AsyncConnectionPool] = None
+
+@asynccontextmanager
+async def get_db_connection_async():
+    global connection_pool_async_
+    if not connection_pool_async_:
+        connection_pool_async_ = AsyncConnectionPool(
+            conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+            min_size=1,
+            max_size=10,
+            open=False,  # IMPORTANT: prevent auto-opening
+        )
+        await connection_pool_async.open()  # Manually open it
+
+    async with connection_pool_async.connection() as conn:
+        yield conn
+
+async def get_async_db_connection():
+    async with get_db_connection_async() as conn:
+        yield conn
 
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -182,6 +211,14 @@ def check_permission(resource: str, action: str):
         return True
     return dependency
 
+from psycopg import  AsyncConnection
+
+
+async def test_async(conn: AsyncConnection):
+    async with conn.cursor() as cur:
+        await cur.execute("select * from companies")
+        data = await  cur.fetchone()
+        print(data)
 
 
 
