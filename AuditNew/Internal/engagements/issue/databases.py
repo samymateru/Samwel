@@ -158,24 +158,39 @@ def remove_issue(connection: Connection, issue_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
 
-def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImplementation):
+def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImplementation, user_email: str):
     try:
         with connection.cursor() as cursor:
-            data = get_issue_and_issue_actors(
-                connection=connection,
-                cursor=cursor,
-                issue_ids=issue_ids,
-                issue_actors=IssueActors.IMPLEMENTER,
-                status={IssueStatus.NOT_STARTED},
-                next_status=IssueStatus.OPEN
-            )
-            print(data)
+            placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
+            query_issue: str = f"SELECT engagement FROM public.issue WHERE id IN ({placeholders})"
+            cursor.execute(query_issue, issue_ids.id)
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            issue_data = [dict(zip(column_names, row_)) for row_ in rows]
+            for issue in issue_data:
+                allowed_to_send_list = []
+                cursor.execute("SELECT leads FROM public.engagements WHERE id = %s;", (issue.get("engagement"),))
+                rows = cursor.fetchall()
+                column_names = [desc[0] for desc in cursor.description]
+                leads = [dict(zip(column_names, row_)) for row_ in rows]
+                for lead in leads[0].get("leads"):
+                    allowed_to_send_list.append(lead.get("email"))
+                if user_email in allowed_to_send_list:
+                    data = get_issue_and_issue_actors(
+                        connection=connection,
+                        cursor=cursor,
+                        issue_ids=issue_ids,
+                        issue_actors=IssueActors.IMPLEMENTER,
+                        status={IssueStatus.NOT_STARTED},
+                        next_status=IssueStatus.OPEN
+                    )
+
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error send issues to implementor {e}")
 
-def save_issue_implementation_(connection: Connection, issue_details: IssueImplementationDetails, issue_id: int):
-    query_status: str = """
+def save_issue_implementation_(connection: Connection, issue_details: IssueImplementationDetails, issue_id: int, user_email: str):
+    query_issue: str = """
                          SELECT * FROM public.issue WHERE id = %s;
                         """
     query_update: str = """
@@ -186,52 +201,66 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
                         """
     try:
         with connection.cursor() as cursor:
-            cursor.execute(query_status, (issue_id,))
+            cursor.execute(query_issue, (issue_id,))
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if issue_data[0].get("status") == IssueStatus.NOT_STARTED:
-                update_issue_details(
-                    connection=connection,
-                    cursor=cursor,
-                    issue_details=issue_details,
-                    issue_id=issue_id
-                )
-                cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
-                connection.commit()
-            if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER:
-                update_issue_details(
-                    connection=connection,
-                    cursor=cursor,
-                    issue_details=issue_details,
-                    issue_id=issue_id
-                )
+            allowed_to_save_list = []
+            for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
+                allowed_to_save_list.append(implementer.get("email"))
+            if user_email in allowed_to_save_list:
+                if issue_data[0].get("status") == IssueStatus.OPEN:
+                    update_issue_details(
+                        connection=connection,
+                        cursor=cursor,
+                        issue_details=issue_details,
+                        issue_id=issue_id
+                    )
+                    cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
+                    connection.commit()
+                if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER:
+                    update_issue_details(
+                        connection=connection,
+                        cursor=cursor,
+                        issue_details=issue_details,
+                        issue_id=issue_id
+                    )
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
 
-def send_issues_to_owner(connection: Connection, issue_id: int):
+def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str):
+    query_issue: str = """
+                         SELECT * FROM public.issue WHERE id = %s;
+                        """
     try:
         with connection.cursor() as cursor:
-            issue_ids = IssueSendImplementation(
-                id = [issue_id]
-            )
-            data = get_issue_and_issue_actors(
-                connection=connection,
-                cursor=cursor,
-                issue_ids=issue_ids,
-                issue_actors=IssueActors.OWNER,
-                status={IssueStatus.IN_PROGRESS_IMPLEMENTER},
-                next_status=IssueStatus.IN_PROGRESS_OWNER
-            )
-            print(data)
+            cursor.execute(query_issue, (issue_id,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            issue_data = [dict(zip(column_names, row_)) for row_ in rows]
+            allowed_to_save_list = []
+            for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
+                allowed_to_save_list.append(implementer.get("email"))
+            if user_email in allowed_to_save_list:
+                issue_ids = IssueSendImplementation(
+                    id = [issue_id]
+                )
+                data = get_issue_and_issue_actors(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_ids=issue_ids,
+                    issue_actors=IssueActors.OWNER,
+                    status={IssueStatus.IN_PROGRESS_IMPLEMENTER},
+                    next_status=IssueStatus.IN_PROGRESS_OWNER
+                )
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending issue to owner {e}")
 
-def send_accept_response(connection: Connection, issue: IssueAcceptResponse, issue_id: int):
+def send_accept_response(connection: Connection, issue: IssueAcceptResponse, issue_id: int, user_email: str):
     query: str = """
-                  SELECT regulatory, status FROM public.issue WHERE id = %s
+                  SELECT * FROM public.issue WHERE id = %s
                  """
     try:
         with connection.cursor() as cursor:
@@ -239,58 +268,61 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
-            issue_ids = IssueSendImplementation(
-                id=[issue_id]
-            )
-            match issue.actor:
-                case issue.actor.OWNER:
-                    issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=issue_actor,
-                        status={IssueStatus.IN_PROGRESS_OWNER},
-                        next_status=IssueStatus.CLOSED_NOT_VERIFIED
-                    )
-                case issue.actor.RISK_MANAGER:
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=IssueActors.AUDIT_MANAGER,
-                        status={IssueStatus.CLOSED_NOT_VERIFIED},
-                        next_status=str(issue.lod2_feedback.value)
-                    )
-                case issue.actor.COMPLIANCE_OFFICER:
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=IssueActors.AUDIT_MANAGER,
-                        status={IssueStatus.CLOSED_NOT_VERIFIED},
-                        next_status=str(issue.lod2_feedback.value)
-                    )
-                case issue.actor.AUDIT_MANAGER:
-                    data = []
-                    update_issue_status(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        status=issue_data[0].get("status"),
-                        next_status=IssueStatus.CLOSED_VERIFIED_BY_AUDIT
-                    )
-                case _:
-                    pass
-            print(data)
+            allowed_actors_list = []
+            for actor in issue_data[0].get(issue.actor.value):
+                allowed_actors_list.append(actor.get("email"))
+            if user_email in allowed_actors_list:
+                issue_ids = IssueSendImplementation(
+                    id=[issue_id]
+                )
+                match issue.actor:
+                    case issue.actor.OWNER:
+                        issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=issue_actor,
+                            status={IssueStatus.IN_PROGRESS_OWNER},
+                            next_status=IssueStatus.CLOSED_NOT_VERIFIED
+                        )
+                    case issue.actor.RISK_MANAGER:
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=IssueActors.AUDIT_MANAGER,
+                            status={IssueStatus.CLOSED_NOT_VERIFIED},
+                            next_status=str(issue.lod2_feedback.value)
+                        )
+                    case issue.actor.COMPLIANCE_OFFICER:
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=IssueActors.AUDIT_MANAGER,
+                            status={IssueStatus.CLOSED_NOT_VERIFIED},
+                            next_status=str(issue.lod2_feedback.value)
+                        )
+                    case issue.actor.AUDIT_MANAGER:
+                        data = []
+                        update_issue_status(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            status=issue_data[0].get("status"),
+                            next_status=IssueStatus.CLOSED_VERIFIED_BY_AUDIT
+                        )
+                    case _:
+                        pass
 
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending accept response {e}")
 
-def send_decline_response(connection: Connection, issue: IssueDeclineResponse, issue_id: int):
+def send_decline_response(connection: Connection, issue: IssueDeclineResponse, issue_id: int, user_email: str):
     query: str = """
-                  SELECT regulatory, status FROM public.issue WHERE id = %s
+                  SELECT * FROM public.issue WHERE id = %s
                  """
     try:
         with connection.cursor() as cursor:
@@ -298,60 +330,63 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
-            issue_ids = IssueSendImplementation(
-                id=[issue_id]
-            )
-            match issue.actor:
-                case issue.actor.AUDIT_MANAGER:
-                    issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=issue_actor,
-                        status={
-                            IssueStatus.CLOSED_RISK_NA,
-                            IssueStatus.CLOSED_RISK_ACCEPTED,
-                            IssueStatus.CLOSED_VERIFIED_BY_RISK
-                        },
-                        next_status=IssueStatus.CLOSED_NOT_VERIFIED
-                    )
+            allowed_actors_list = []
+            for actor in issue_data[0].get(issue.actor.value):
+                allowed_actors_list.append(actor.get("email"))
+            if user_email in allowed_actors_list:
+                issue_ids = IssueSendImplementation(
+                    id=[issue_id]
+                )
+                match issue.actor:
+                    case issue.actor.AUDIT_MANAGER:
+                        issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=issue_actor,
+                            status={
+                                IssueStatus.CLOSED_RISK_NA,
+                                IssueStatus.CLOSED_RISK_ACCEPTED,
+                                IssueStatus.CLOSED_VERIFIED_BY_RISK
+                            },
+                            next_status=IssueStatus.CLOSED_NOT_VERIFIED
+                        )
 
-                case issue.actor.RISK_MANAGER:
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=IssueActors.OWNER,
-                        status={IssueStatus.CLOSED_NOT_VERIFIED},
-                        next_status=IssueStatus.IN_PROGRESS_OWNER
-                    )
-                case issue.actor.COMPLIANCE_OFFICER:
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=IssueActors.OWNER,
-                        status={IssueStatus.CLOSED_NOT_VERIFIED},
-                        next_status=IssueStatus.IN_PROGRESS_OWNER
-                    )
-                case issue.actor.OWNER:
-                    data = get_issue_and_issue_actors(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_ids=issue_ids,
-                        issue_actors=IssueActors.IMPLEMENTER,
-                        status={IssueStatus.IN_PROGRESS_OWNER},
-                        next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
-                    )
-                case issue.actor.IMPLEMENTER:
-                    pass
-            print(data)
+                    case issue.actor.RISK_MANAGER:
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=IssueActors.OWNER,
+                            status={IssueStatus.CLOSED_NOT_VERIFIED},
+                            next_status=IssueStatus.IN_PROGRESS_OWNER
+                        )
+                    case issue.actor.COMPLIANCE_OFFICER:
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=IssueActors.OWNER,
+                            status={IssueStatus.CLOSED_NOT_VERIFIED},
+                            next_status=IssueStatus.IN_PROGRESS_OWNER
+                        )
+                    case issue.actor.OWNER:
+                        data = get_issue_and_issue_actors(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_ids=issue_ids,
+                            issue_actors=IssueActors.IMPLEMENTER,
+                            status={IssueStatus.IN_PROGRESS_OWNER},
+                            next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
+                        )
+                    case issue.actor.IMPLEMENTER:
+                        pass
+                print(data)
 
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending decline response {e}")
-
 
 def get_issue_and_issue_actors(
         connection: Connection,
@@ -385,6 +420,7 @@ def get_issue_and_issue_actors(
                 finding=issue.get("finding"),
                 risk_rating=issue.get("risk_rating"),
                 regulatory=issue.get("regulatory"),
+                engagement=issue.get("engagement"),
                 status=issue.get("status"),
                 lod1_implementer=issue.get(IssueActors.IMPLEMENTER.value),
                 lod1_owner=issue.get(IssueActors.OWNER.value),
@@ -462,7 +498,6 @@ def update_issue_details(connection: Connection, cursor: Cursor, issue_id: int, 
         issue_details.type
     ))
     connection.commit()
-
 
 
 

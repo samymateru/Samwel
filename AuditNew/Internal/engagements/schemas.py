@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import List,Optional
 from enum import Enum
 
 class EngagementStatus(str, Enum):
@@ -30,8 +30,9 @@ class Risk(BaseModel):
     magnitude: int
 
 class Lead(BaseModel):
-    name: str
-    user_id: int
+    name: Optional[str]
+    email: Optional[str] = None
+    user_id: Optional[int]
     role: List[Role]
 
 class Engagement(BaseModel):

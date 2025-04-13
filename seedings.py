@@ -182,6 +182,20 @@ def roles(connection: Connection, company: int):
 
         },
         {
+            "name": "Client",
+            "permissions": {
+                "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
+                "engagements": ["create", "read", "update", "delete", "assign", "approve"],
+                "administration": ["create", "read", "update", "delete", "assign", "approve"],
+                "planning": ["create", "read", "update", "delete", "assign", "approve"],
+                "fieldwork": ["create", "read", "update", "delete", "assign", "approve"],
+                "finalization": ["create", "read", "update", "delete", "assign", "approve"],
+                "reporting": ["create", "read", "update", "delete", "assign", "approve"],
+                "work_program": ["create", "read", "update", "delete", "assign", "approve"]
+            }
+
+        },
+        {
             "name": "Chief Executive Officer",
             "permissions": {
                 "annual_audit_plan": ["create", "read", "update", "delete", "assign", "approve"],
