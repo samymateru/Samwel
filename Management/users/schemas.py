@@ -4,6 +4,7 @@ from typing import Optional, List, Dict
 
 
 class Role(BaseModel):
+    id: Optional[int] = None
     name: str
 
 class Module(BaseModel):

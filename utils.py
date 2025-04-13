@@ -75,16 +75,16 @@ def create_jwt_token(data: dict, expiration_days: int = 3) -> str:
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenError | Any:
     if not token:
-        return CurrentUser(status_code=404, description="auth token not provided")
+        return CurrentUser(status_code=401, description="auth token not provided")
     try:
         decoded_token = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         decoded_token["status_code"] = 200
         decoded_token["description"] = "success"
         return CurrentUser(**decoded_token)
     except jwt.ExpiredSignatureError:
-        return CurrentUser(status_code=404, description="token expired")
+        return CurrentUser(status_code=401, description="token expired")
     except jwt.InvalidTokenError:
-        return CurrentUser(status_code=404, description="invalid token")
+        return CurrentUser(status_code=401, description="invalid token")
 
 def get_db_connection():
     connection = connection_pool.getconn()
@@ -207,13 +207,13 @@ def check_permission(resource: str, action: str):
         }
         ]
         if not has_permission(role, resource, action):
-            raise HTTPException(status_code=403, detail="Permission Denied")
+            raise HTTPException(status_code=401, detail="Permission Denied")
         return True
     return dependency
 
+
+
 from psycopg import  AsyncConnection
-
-
 async def test_async(conn: AsyncConnection):
     async with conn.cursor() as cur:
         await cur.execute("select * from companies")
