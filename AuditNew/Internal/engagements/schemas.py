@@ -31,7 +31,7 @@ class Risk(BaseModel):
 
 class Lead(BaseModel):
     name: Optional[str]
-    email: Optional[str] = None
+    email: Optional[str]
     user_id: Optional[int]
     role: List[Role]
 
