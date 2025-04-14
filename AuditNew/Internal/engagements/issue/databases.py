@@ -161,6 +161,15 @@ def remove_issue(connection: Connection, issue_id: int):
 
 def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImplementation, user_email: str):
     try:
+        issue_details = IssueImplementationDetails(
+            notes="Issue sent to implementer",
+            issued_by=User(
+                name="",
+                email=user_email,
+                date_issued=datetime.now()
+            ),
+            type="send"
+        )
         with connection.cursor() as cursor:
             placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
             query_issue: str = f"SELECT engagement FROM public.issue WHERE id IN ({placeholders})"
@@ -183,7 +192,8 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
                         issue_ids=issue_ids,
                         issue_actors=IssueActors.IMPLEMENTER,
                         status={IssueStatus.NOT_STARTED},
-                        next_status=IssueStatus.OPEN
+                        next_status=IssueStatus.OPEN,
+                        issue_details=issue_details
                     )
 
     except Exception as e:
@@ -262,12 +272,7 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
                     issue_ids=issue_ids,
                     issue_actors=IssueActors.OWNER,
                     status={IssueStatus.IN_PROGRESS_IMPLEMENTER},
-                    next_status=IssueStatus.IN_PROGRESS_OWNER
-                )
-                update_issue_details(
-                    connection=connection,
-                    cursor=cursor,
-                    issue_id=issue_id,
+                    next_status=IssueStatus.IN_PROGRESS_OWNER,
                     issue_details=issue_details
                 )
     except Exception as e:
@@ -278,6 +283,16 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
     query: str = """
                   SELECT * FROM public.issue WHERE id = %s
                  """
+    issue_details = IssueImplementationDetails(
+        notes=issue.accept_notes,
+        attachment=issue.accept_attachment,
+        issued_by=User(
+            name="",
+            email=user_email,
+            date_issued=datetime.now()
+        ),
+        type="accept"
+    )
     try:
         with connection.cursor() as cursor:
             cursor.execute(query, (issue_id,))
@@ -300,7 +315,8 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                             issue_ids=issue_ids,
                             issue_actors=issue_actor,
                             status={IssueStatus.IN_PROGRESS_OWNER},
-                            next_status=IssueStatus.CLOSED_NOT_VERIFIED
+                            next_status=IssueStatus.CLOSED_NOT_VERIFIED,
+                            issue_details=issue_details
                         )
                     case issue.actor.RISK_MANAGER:
                         data = get_issue_and_issue_actors(
@@ -309,7 +325,8 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                             issue_ids=issue_ids,
                             issue_actors=IssueActors.AUDIT_MANAGER,
                             status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=str(issue.lod2_feedback.value)
+                            next_status=str(issue.lod2_feedback.value),
+                            issue_details=issue_details
                         )
                     case issue.actor.COMPLIANCE_OFFICER:
                         data = get_issue_and_issue_actors(
@@ -318,7 +335,8 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                             issue_ids=issue_ids,
                             issue_actors=IssueActors.AUDIT_MANAGER,
                             status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=str(issue.lod2_feedback.value)
+                            next_status=str(issue.lod2_feedback.value),
+                            issue_details=issue_details
                         )
                     case issue.actor.AUDIT_MANAGER:
                         data = []
@@ -341,6 +359,15 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                   SELECT * FROM public.issue WHERE id = %s
                  """
     try:
+        issue_details = IssueImplementationDetails(
+            notes=issue.decline_notes,
+            issued_by=User(
+                name="",
+                email=user_email,
+                date_issued=datetime.now()
+            ),
+            type="decline"
+        )
         with connection.cursor() as cursor:
             cursor.execute(query, (issue_id,))
             rows = cursor.fetchall()
@@ -366,7 +393,8 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                                 IssueStatus.CLOSED_RISK_ACCEPTED,
                                 IssueStatus.CLOSED_VERIFIED_BY_RISK
                             },
-                            next_status=IssueStatus.CLOSED_NOT_VERIFIED
+                            next_status=IssueStatus.CLOSED_NOT_VERIFIED,
+                            issue_details=issue_details
                         )
 
                     case issue.actor.RISK_MANAGER:
@@ -376,7 +404,8 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                             issue_ids=issue_ids,
                             issue_actors=IssueActors.OWNER,
                             status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=IssueStatus.IN_PROGRESS_OWNER
+                            next_status=IssueStatus.IN_PROGRESS_OWNER,
+                            issue_details=issue_details
                         )
                     case issue.actor.COMPLIANCE_OFFICER:
                         data = get_issue_and_issue_actors(
@@ -385,7 +414,8 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                             issue_ids=issue_ids,
                             issue_actors=IssueActors.OWNER,
                             status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=IssueStatus.IN_PROGRESS_OWNER
+                            next_status=IssueStatus.IN_PROGRESS_OWNER,
+                            issue_details=issue_details
                         )
                     case issue.actor.OWNER:
                         data = get_issue_and_issue_actors(
@@ -394,9 +424,10 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                             issue_ids=issue_ids,
                             issue_actors=IssueActors.IMPLEMENTER,
                             status={IssueStatus.IN_PROGRESS_OWNER},
-                            next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
+                            next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER,
+                            issue_details=issue_details
                         )
-                    case issue.actor.IMPLEMENTER:
+                    case _:
                         pass
                 print(data)
 
@@ -410,7 +441,8 @@ def get_issue_and_issue_actors(
         issue_ids: IssueSendImplementation,
         issue_actors: str,
         status: set[IssueStatus],
-        next_status: str
+        next_status: str,
+        issue_details: IssueImplementationDetails
 ):
     placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
     query_implementers: str= f"SELECT * FROM public.issue WHERE id IN ({placeholders})"
@@ -445,6 +477,13 @@ def get_issue_and_issue_actors(
                 lod3_audit_manager=issue.get(IssueActors.AUDIT_MANAGER.value),
                 implementors=implementors
             )
+            if issue_details.type != "submit":
+                update_issue_details(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_id=issue_ids.id[0],
+                    issue_details=issue_details
+                )
             issue_list.append(mailed_issue)
             cursor.execute(query_update, (next_status, issue.get("id")))
 

@@ -74,12 +74,6 @@ class IssueDeclineResponse(BaseModel):
     actor: ResponseActors
     decline_notes: Optional[str]
 
-    @model_validator(mode="after")
-    def validate_fields(self):
-        if self.actor == IssueActors.IMPLEMENTER:
-            raise ValueError("implementer doesnt decline")
-        return self
-
 class IssueAcceptResponse(BaseModel):
     actor: ResponseActors
     accept_notes: Optional[str] = None
@@ -121,7 +115,7 @@ class IssueImplementationDetails(BaseModel):
     id: Optional[int] = None
     notes: Optional[str] = None
     attachment: Optional[List[str]] = None
-    issued_by: Optional[User]
+    issued_by: Optional[User] = None
     type: Optional[str]
 
 

@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File
+from pydantic_core import ValidationError
+
 from utils import  get_db_connection
 from utils import get_current_user
 from schema import CurrentUser
@@ -72,22 +74,33 @@ def send_issue_for_implementation(
 def save_issue_implementation(
         issue_id: int,
         implementer_name: str = Form(...),
-        implementer_email: str = Form(...),
         notes: str = Form(...),
-        attachment: UploadFile = File(...),
+        attachment: Optional[UploadFile] = File(None),
         db=Depends(get_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
-    issue_details = IssueImplementationDetails(
-        notes=notes,
-        attachment=[attachment.filename],
-        issued_by=User(
-            name=implementer_name,
-            email=implementer_email,
-            date_issued=datetime.now()
-        ),
-        type="save"
-    )
+    if attachment is None:
+        issue_details = IssueImplementationDetails(
+            notes=notes,
+            issued_by=User(
+                name=implementer_name,
+                email=user.user_email,
+                date_issued=datetime.now()
+            ),
+            type="save"
+        )
+    else:
+        issue_details = IssueImplementationDetails(
+            notes=notes,
+            attachment=attachment.filename,
+            issued_by=User(
+                name=implementer_name,
+                email=user.user_email,
+                date_issued=datetime.now()
+            ),
+            type="save"
+        )
+
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
@@ -114,26 +127,33 @@ def submit_issue_to_owner(
 def issue_accept_response(
         issue_id: int,
         accept_actor: ResponseActors = Form(...),
-        accept_notes: Optional[str] = Form(default=None),
+        accept_notes: Optional[str] = Form(None),
         accept_attachment: Optional[UploadFile] = File(None),
         lod2_feedback: Optional[LOD2Feedback] = Form(None),
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        # issue = IssueAcceptResponse(
-        #     actor=accept_actor,
-        #     accept_notes=accept_notes,
-        #     accept_attachment=[accept_attachment.filename],
-        #     lod2_feedback=lod2_feedback
-        # )
-        print(accept_notes)
-        print(accept_attachment)
-        #print(issue.model_dump())
-        #send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email="johndoe@example.com")
+        if accept_attachment is None:
+            issue = IssueAcceptResponse(
+                actor=accept_actor,
+                accept_notes=accept_notes,
+                lod2_feedback=lod2_feedback
+            )
+        else:
+            issue = IssueAcceptResponse(
+                actor=accept_actor,
+                accept_notes=accept_notes,
+                accept_attachment=[accept_attachment.filename],
+                lod2_feedback=lod2_feedback
+            )
+        send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
         return ResponseMessage(detail=f"Successfully send accept response ")
+    except ValidationError as v:
+        raise HTTPException(status_code=422, detail=v.errors()[0].get("msg"))
+
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
