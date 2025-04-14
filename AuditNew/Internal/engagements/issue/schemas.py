@@ -26,6 +26,17 @@ class IssueStatus(str, Enum):
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
     CLOSED_VERIFIED_BY_AUDIT = "Closed -> verified by audit"
 
+class ResponseActors(str, Enum):
+    OWNER = "lod1_owner"
+    RISK_MANAGER = "lod2_risk_manager"
+    COMPLIANCE_OFFICER = "lod2_compliance_officer"
+    AUDIT_MANAGER = "lod3_audit_manager"
+
+class LOD2Feedback(str, Enum):
+    CLOSED_VERIFIED_BY_RISK = "Closed -> verified by risk"
+    CLOSED_RISK_NA = "Closed -> risk N/A"
+    CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
+
 class Issue(BaseModel):
     id: Optional[int] = None
     title: Optional[str]
@@ -50,17 +61,17 @@ class Issue(BaseModel):
     prepared_by: Optional[User] = None
     reviewed_by: Optional[User] = None
     status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
-    LOD1_implementer: Optional[List[User]]
-    LOD1_owner: Optional[List[User]]
-    LOD2_risk_manager: Optional[List[User]] = None
-    LOD2_compliance_officer: Optional[List[User]] = None
-    LOD3_audit_manager: Optional[List[User]]
+    lod1_implementer: Optional[List[User]]
+    lod1_owner: Optional[List[User]] = None
+    lod2_risk_manager: Optional[List[User]] = None
+    lod2_compliance_officer: Optional[List[User]] = None
+    lod3_audit_manager: Optional[List[User]]
 
 class IssueSendImplementation(BaseModel):
     id: List[int]
 
 class IssueDeclineResponse(BaseModel):
-    actor: IssueActors
+    actor: ResponseActors
     decline_notes: Optional[str]
 
     @model_validator(mode="after")
@@ -70,10 +81,10 @@ class IssueDeclineResponse(BaseModel):
         return self
 
 class IssueAcceptResponse(BaseModel):
-    actor: IssueActors
+    actor: ResponseActors
     accept_notes: Optional[str] = None
     accept_attachment: Optional[List[str]] = None
-    lod2_feedback: Optional[IssueStatus] = None
+    lod2_feedback: Optional[LOD2Feedback] = None
 
     @model_validator(mode="after")
     def validate_fields(self):
@@ -87,8 +98,6 @@ class IssueAcceptResponse(BaseModel):
         if self.actor == IssueActors.RISK_MANAGER or self.actor == IssueActors.COMPLIANCE_OFFICER:
             if self.lod2_feedback not in valid_statuses:
                 raise ValueError("Provide valid lod2 status")
-        if self.actor == IssueActors.IMPLEMENTER:
-            raise ValueError("implementer doesnt respond")
         return self
 
 
@@ -114,4 +123,5 @@ class IssueImplementationDetails(BaseModel):
     attachment: Optional[List[str]] = None
     issued_by: Optional[User]
     type: Optional[str]
+
 

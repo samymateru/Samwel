@@ -88,9 +88,7 @@ async def test(
 ):
     await test_async(conn=db_async)
 
-    return "sam"
-
-
+    return ("sam")
 @app.post("/login", tags=["Authentication"])
 def users(
           email: str = Form(...),

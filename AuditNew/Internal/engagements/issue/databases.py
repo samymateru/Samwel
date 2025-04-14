@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.issue.schemas import *
+from datetime import datetime
 #from psycopg2 import IntegrityError, errors
 #import psycopg2
 
@@ -234,6 +235,15 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
                          SELECT * FROM public.issue WHERE id = %s;
                         """
     try:
+        issue_details = IssueImplementationDetails(
+            notes="Issue sent to the owner",
+            issued_by=User(
+                name="",
+                email=user_email,
+                date_issued=datetime.now()
+            ),
+            type="send"
+        )
         with connection.cursor() as cursor:
             cursor.execute(query_issue, (issue_id,))
             rows = cursor.fetchall()
@@ -253,6 +263,12 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
                     issue_actors=IssueActors.OWNER,
                     status={IssueStatus.IN_PROGRESS_IMPLEMENTER},
                     next_status=IssueStatus.IN_PROGRESS_OWNER
+                )
+                update_issue_details(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_id=issue_id,
+                    issue_details=issue_details
                 )
     except Exception as e:
         connection.rollback()
@@ -431,6 +447,7 @@ def get_issue_and_issue_actors(
             )
             issue_list.append(mailed_issue)
             cursor.execute(query_update, (next_status, issue.get("id")))
+
     connection.commit()
     return issue_list
 

@@ -113,15 +113,27 @@ def submit_issue_to_owner(
 @router.put("/accept_response/{issue_id}", response_model=ResponseMessage)
 def issue_accept_response(
         issue_id: int,
-        issue: IssueAcceptResponse,
+        accept_actor: ResponseActors = Form(...),
+        accept_notes: Optional[str] = Form(default=None),
+        accept_attachment: Optional[UploadFile] = File(None),
+        lod2_feedback: Optional[LOD2Feedback] = Form(None),
         db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
-        return ResponseMessage(detail=f"Successfully send accept response to {issue.actor}")
+        # issue = IssueAcceptResponse(
+        #     actor=accept_actor,
+        #     accept_notes=accept_notes,
+        #     accept_attachment=[accept_attachment.filename],
+        #     lod2_feedback=lod2_feedback
+        # )
+        print(accept_notes)
+        print(accept_attachment)
+        #print(issue.model_dump())
+        #send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email="johndoe@example.com")
+        return ResponseMessage(detail=f"Successfully send accept response ")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
