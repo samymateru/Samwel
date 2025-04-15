@@ -129,11 +129,11 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 issue.estimated_implementation_date,
                 issue.regulatory,
                 issue.status,
-                json.dumps(jsonable_encoder(issue.model_dump().get("LOD1_implementer"))),
-                json.dumps(jsonable_encoder(issue.model_dump().get("LOD1_owner"))),
-                json.dumps(jsonable_encoder(issue.model_dump().get("LOD2_risk_manager"))),
-                json.dumps(jsonable_encoder(issue.model_dump().get("LOD2_compliance_officer"))),
-                json.dumps(jsonable_encoder(issue.model_dump().get("LOD3_audit_manager")))
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.IMPLEMENTER.value))),
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.OWNER.value))),
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.RISK_MANAGER.value))),
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.COMPLIANCE_OFFICER.value))),
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value)))
             ))
         connection.commit()
     # except psycopg2.IntegrityError as e:
@@ -563,6 +563,9 @@ def update_issue_details(connection: Connection, cursor: Cursor, issue_id: int, 
     ))
     connection.commit()
 
+
+def get_issue_updates(connection: Connection, issue_id: int):
+    pass
 
 
 
