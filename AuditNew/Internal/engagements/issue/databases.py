@@ -488,17 +488,17 @@ def get_issue_and_issue_actors(
                 lod3_audit_manager=issue.get(IssueActors.AUDIT_MANAGER.value),
                 implementors=implementors
             )
-            if issue_details.type != "submit":
-                update_issue_details(
-                    connection=connection,
-                    cursor=cursor,
-                    issue_id=issue_ids.id[0],
-                    issue_details=issue_details
-                )
+            update_issue_details(
+                connection=connection,
+                cursor=cursor,
+                issue_id=issue_ids.id[0],
+                issue_details=issue_details
+            )
             issue_list.append(mailed_issue)
             cursor.execute(query_update, (next_status, issue.get("id")))
-
-    connection.commit()
+            connection.commit()
+        else:
+            raise HTTPException(status_code=403, detail="Issue cant be updated right now")
     return issue_list
 
 def update_issue_status(cursor: Cursor, connection: Connection, issue_ids: IssueSendImplementation, status: str, next_status: str):
@@ -517,6 +517,8 @@ def update_issue_status(cursor: Cursor, connection: Connection, issue_ids: Issue
         params = [next_status] + issue_ids.id
         cursor.execute(query, params)
         connection.commit()
+    else:
+        raise HTTPException(status_code=403, detail="Issue cant be updated right now")
 
 def get_issue_from_actor(connection: Connection, user_email: str):
     conditions = []
