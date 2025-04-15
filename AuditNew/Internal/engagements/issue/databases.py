@@ -538,7 +538,6 @@ def get_issue_from_actor(connection: Connection, user_email: str):
     where_clause = " OR ".join(conditions)
 
     query = f"SELECT * FROM public.issue WHERE  {where_clause};"
-    print(query)
 
     try:
         with connection.cursor() as cursor:
