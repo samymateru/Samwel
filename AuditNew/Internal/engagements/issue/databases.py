@@ -520,7 +520,13 @@ def get_issue_from_actor(connection: Connection, user_email: str):
     for col in jsonb_columns:
         conditions.append(f"""
             EXISTS (
-                SELECT 1 FROM jsonb_array_elements({col}) AS elem
+                SELECT 1
+                FROM jsonb_array_elements(
+                    CASE
+                        WHEN {col} IS NOT NULL AND jsonb_typeof({col}) = 'array' THEN {col}
+                        ELSE '[]'::jsonb
+                    END
+                ) AS elem
                 WHERE elem->>%s = %s
             )
         """)
@@ -530,9 +536,9 @@ def get_issue_from_actor(connection: Connection, user_email: str):
     where_clause = " OR ".join(conditions)
 
     query = f"SELECT * FROM public.issue WHERE {where_clause};"
+
     try:
         with connection.cursor() as cursor:
-            cursor: Cursor
             cursor.execute(query, params)
             rows = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
