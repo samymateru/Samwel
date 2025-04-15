@@ -578,7 +578,18 @@ def update_issue_details(connection: Connection, cursor: Cursor, issue_id: int, 
 
 
 def get_issue_updates(connection: Connection, issue_id: int):
-    pass
+    query: str = """
+                  SELECT * FROM public.implementation_details WHERE issue = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (issue_id,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
 
 
 

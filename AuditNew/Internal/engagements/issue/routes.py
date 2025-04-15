@@ -186,7 +186,7 @@ def fetch_issue_based_on_actor(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/updates/{issue_id}")
+@router.get("/updates/{issue_id}", response_model=List[IssueImplementationDetails])
 def fetch_issue_updates(
         issue_id: int,
         db=Depends(get_db_connection),
