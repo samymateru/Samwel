@@ -459,8 +459,10 @@ def get_issue_and_issue_actors(
     for issue in data:
         implementors = []
         if issue.get("status") in status:
-            for implementor in issue.get(issue_actors):
-                implementors.append(implementor.get("email"))
+            for implementor in issue.get(issue_actors) or []:
+                email = implementor.get("email")
+                if email:
+                    implementors.append(email)
             mailed_issue = MailedIssue(
                 id=issue.get("id"),
                 title=issue.get("title"),
