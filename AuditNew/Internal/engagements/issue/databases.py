@@ -195,6 +195,8 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
                         next_status=IssueStatus.OPEN,
                         issue_details=issue_details
                     )
+                else:
+                    raise HTTPException(status_code=403, detail="Your not team lead")
 
     except Exception as e:
         connection.rollback()
@@ -236,6 +238,8 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
                         issue_details=issue_details,
                         issue_id=issue_id
                     )
+            else:
+                raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
@@ -275,6 +279,8 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
                     next_status=IssueStatus.IN_PROGRESS_OWNER,
                     issue_details=issue_details
                 )
+            else:
+                raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending issue to owner {e}")
@@ -349,6 +355,8 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                         )
                     case _:
                         pass
+            else:
+                raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
     except Exception as e:
         connection.rollback()
@@ -429,7 +437,8 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                         )
                     case _:
                         pass
-                print(data)
+            else:
+                raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
     except Exception as e:
         connection.rollback()
