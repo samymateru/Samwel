@@ -125,22 +125,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00253" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1743329181927</created>
-      <option name="number" value="00253" />
-      <option name="presentableId" value="LOCAL-00253" />
-      <option name="project" value="LOCAL" />
-      <updated>1743329181927</updated>
-    </task>
-    <task id="LOCAL-00254" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1743411854978</created>
-      <option name="number" value="00254" />
-      <option name="presentableId" value="LOCAL-00254" />
-      <option name="project" value="LOCAL" />
-      <updated>1743411854978</updated>
-    </task>
     <task id="LOCAL-00255" summary="refactoring">
       <option name="closed" value="true" />
       <created>1743577783492</created>
@@ -517,7 +501,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744810613018</updated>
     </task>
-    <option name="localTasksCounter" value="302" />
+    <task id="LOCAL-00302" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1744810744986</created>
+      <option name="number" value="00302" />
+      <option name="presentableId" value="LOCAL-00302" />
+      <option name="project" value="LOCAL" />
+      <updated>1744810744986</updated>
+    </task>
+    <task id="LOCAL-00303" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1744811055594</created>
+      <option name="number" value="00303" />
+      <option name="presentableId" value="LOCAL-00303" />
+      <option name="project" value="LOCAL" />
+      <updated>1744811055594</updated>
+    </task>
+    <option name="localTasksCounter" value="304" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
