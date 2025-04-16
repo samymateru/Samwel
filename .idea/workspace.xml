@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="refactoring" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -128,30 +124,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00250" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1743063972469</created>
-      <option name="number" value="00250" />
-      <option name="presentableId" value="LOCAL-00250" />
-      <option name="project" value="LOCAL" />
-      <updated>1743063972470</updated>
-    </task>
-    <task id="LOCAL-00251" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1743065005199</created>
-      <option name="number" value="00251" />
-      <option name="presentableId" value="LOCAL-00251" />
-      <option name="project" value="LOCAL" />
-      <updated>1743065005199</updated>
-    </task>
-    <task id="LOCAL-00252" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1743065180550</created>
-      <option name="number" value="00252" />
-      <option name="presentableId" value="LOCAL-00252" />
-      <option name="project" value="LOCAL" />
-      <updated>1743065180550</updated>
     </task>
     <task id="LOCAL-00253" summary="refactoring">
       <option name="closed" value="true" />
@@ -521,7 +493,31 @@
       <option name="project" value="LOCAL" />
       <updated>1744807534630</updated>
     </task>
-    <option name="localTasksCounter" value="299" />
+    <task id="LOCAL-00299" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1744810222129</created>
+      <option name="number" value="00299" />
+      <option name="presentableId" value="LOCAL-00299" />
+      <option name="project" value="LOCAL" />
+      <updated>1744810222129</updated>
+    </task>
+    <task id="LOCAL-00300" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1744810358424</created>
+      <option name="number" value="00300" />
+      <option name="presentableId" value="LOCAL-00300" />
+      <option name="project" value="LOCAL" />
+      <updated>1744810358425</updated>
+    </task>
+    <task id="LOCAL-00301" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1744810613018</created>
+      <option name="number" value="00301" />
+      <option name="presentableId" value="LOCAL-00301" />
+      <option name="project" value="LOCAL" />
+      <updated>1744810613018</updated>
+    </task>
+    <option name="localTasksCounter" value="302" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
