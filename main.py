@@ -81,7 +81,7 @@ app.add_middleware(
 )
 
 from utils import test_async
-@app.get("/test")
+@app.get("/")
 async def test(
         db_async= Depends(get_async_db_connection),
         db=Depends(get_db_connection),
