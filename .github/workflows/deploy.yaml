@@ -8,7 +8,7 @@ jobs:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.2.1
         with:
-          host: "18.212.87.23"
+          host: "api.eauditrisk.com"
           username: "ubuntu"
           key: ${{ secrets.KEY }}
           script: |
