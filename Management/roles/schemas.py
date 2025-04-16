@@ -1,15 +1,24 @@
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List
+from enum import Enum
+
+class Actions(str, Enum):
+    CREATE = "create"
+    READ = "read"
+    UPDATE = "update"
+    DELETE = "delete"
+    ASSIGN = "assign"
+    APPROVE = "approve"
 
 class Permissions(BaseModel):
-    annual_audit_plan: List[str]
-    engagements: List[str]
-    administration: List[str]
-    planning: List[str]
-    fieldwork: List[str]
-    finalization: List[str]
-    reporting: List[str]
-    work_program: List[str]
+    annual_audit_plan: List[Actions]
+    engagements: List[Actions]
+    administration: List[Actions]
+    planning: List[Actions]
+    fieldwork: List[Actions]
+    finalization: List[Actions]
+    reporting: List[Actions]
+    work_program: List[Actions]
 
 class Category(BaseModel):
     name: str
@@ -17,3 +26,5 @@ class Category(BaseModel):
 
 class Role(BaseModel):
     roles: List[Category]
+
+

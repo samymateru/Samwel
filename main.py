@@ -32,7 +32,8 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
-from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async
+from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async, \
+    check_permission
 from Management.users.databases import get_user
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
@@ -80,15 +81,14 @@ app.add_middleware(
 )
 
 from utils import test_async
-@app.get("/", response_model=str)
+@app.get("/")
 async def test(
         db_async= Depends(get_async_db_connection),
         db=Depends(get_db_connection),
-        #per = Depends(check_permission(resource="user-roles", action= "view"))
+        per = Depends(check_permission(module="planning", action= "c"))
 ):
-    await test_async(conn=db_async)
+    return per
 
-    return ("sam")
 @app.post("/login", tags=["Authentication"])
 def users(
           email: str = Form(...),

@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
 from psycopg_pool import AsyncConnectionPool
 
-from schema import TokenError, CurrentUser
+from schema import UserData, CurrentUser
 import secrets
 import string
 from psycopg2.extensions import connection as Connection
@@ -73,7 +73,7 @@ def create_jwt_token(data: dict, expiration_days: int = 3) -> str:
     token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
     return token
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenError | Any:
+def get_current_user(token: str = Depends(oauth2_scheme)):
     if not token:
         return CurrentUser(status_code=401, description="auth token not provided")
     try:
@@ -114,8 +114,6 @@ def get_next_reference(connection: Connection, resource: str, engagement: int):
 
             if result is None:
                 return "REF-0001"
-
-            print(result[0])
 
             #Extract number, increment, and format
             last_number = int(result[0].split("-")[1])
@@ -160,57 +158,68 @@ def get_reference(connection: Connection, resource: str, id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
-def has_permission(roles: List[Dict], resource: str, action: str):
-    for role in roles:
-        permissions = role.get("permissions")
-        if permissions is None:
-            raise HTTPException(status_code=402, detail="Bad role format ")
-        actions = permissions.get(resource)
-        if actions is None:
-            raise HTTPException(status_code=402, detail="Bad role format  permissions are not added")
-        if action in actions:
-            return True
-        else:
-            return False
+def get_user_data(token: str = Depends(oauth2_scheme)):
+    if not token:
+        return CurrentUser(status_code=401, description="auth token not provided")
+    query: str = """
+                  SELECT * FROM public.users WHERE id = %s;
+                 """
+    query_roles: str = """
+                  SELECT * FROM public.roles WHERE company = %s;
+                 """
+    try:
+        decoded_token = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        connection: Connection = next(get_db_connection())
+        with connection.cursor() as cursor:
+            cursor: Cursor
+            cursor.execute(query, (decoded_token.get("user_id"),))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = [dict(zip(column_names, row_)) for row_ in rows][0]
 
-def check_permission(resource: str, action: str):
-    def dependency(user: CurrentUser = Depends(get_current_user), connection: Connection = Depends(get_db_connection)):
-        query_user_roles: str = """
-                                SELECT role from public.users WHERE id = %s
-                                """
-        query_roles = """
-                         SELECT * FROM public.roles WHERE id = %s
-                      """
-        try:
-            with connection.cursor() as cursor:
-                cursor: Cursor
-                cursor.execute(query_user_roles, (user.user_id,))
-                rows = cursor.fetchall()
-                column_names = [desc[0] for desc in cursor.description]
-                data = [dict(zip(column_names, row_)) for row_ in rows]
-                for role in data[0].get("role"):
-                    cursor.execute(query_roles, (81,))
-                    rows = cursor.fetchall()
-                    column_names = [desc[0] for desc in cursor.description]
-                    data = [dict(zip(column_names, row_)) for row_ in rows]
-                    print(data)
-        except Exception as e:
-            connection.rollback()
-            raise HTTPException(status_code=400, detail=f"Error occur while fetching roles{e}")
-        role = [{
-            "name": "Owner",
-            "permissions": {
-                "user-roles": ["create", "view", "delete", "update", "assign", "approve"],
-                "account-profile": ["create", "view", "delete", "update", "assign", "approve"],
-                "subscription": ["create", "delete", "update", "assign", "approve"]
-            }
-        }
-        ]
-        if not has_permission(role, resource, action):
-            raise HTTPException(status_code=401, detail="Permission Denied")
-        return True
-    return dependency
+            cursor.execute(query_roles, (decoded_token.get("company_id"),))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            roles_data = [dict(zip(column_names, row_)) for row_ in rows]
 
+            user = UserData(
+                id=user_data.get("id"),
+                name=user_data.get("name"),
+                email=user_data.get("email"),
+                telephone=user_data.get("telephone"),
+                status=user_data.get("status"),
+                company_roles=roles_data[0].get("roles"),
+                user_role=user_data.get("role"),
+                module=user_data.get("module"),
+                type=user_data.get("type")
+            )
+
+            return user
+    except jwt.ExpiredSignatureError:
+        return CurrentUser(status_code=401, description="token expired")
+    except jwt.InvalidTokenError:
+        return CurrentUser(status_code=401, description="invalid token")
+
+
+def authorize(user_roles: list, module: str, required_permission: str) -> bool:
+    for role in user_roles:
+        permissions = role.get("permissions", {})
+        if module in permissions:
+            if required_permission in permissions[module]:
+                return True
+    return False
+
+def check_permission(module: str, action: str):
+    def inner(user: UserData = Depends(get_user_data)):
+        roles = []
+        for company_role in user.company_roles:
+            for role in user.user_role:
+                if role.get("name") == company_role.get("name"):
+                    roles.append(company_role)
+
+        if not authorize(roles, module, action):
+            raise HTTPException(status_code=403, detail="Unauthorized")
+    return inner
 
 
 from psycopg import  AsyncConnection
