@@ -197,6 +197,8 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
                     )
                 else:
                     raise HTTPException(status_code=403, detail="Your not team lead")
+    except HTTPException as h:
+        raise HTTPException(status_code=h.status_code, detail=h.detail)
 
     except Exception as e:
         connection.rollback()
