@@ -74,6 +74,8 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                             criteria,
                             finding,
                             risk_rating,
+                            source,
+                            sdi_name,
                             process,
                             sub_process,
                             root_cause_description,
@@ -90,15 +92,16 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                             estimated_implementation_date,
                             regulatory,
                             status,
+                            reportable,
                             LOD1_implementer,
                             LOD1_owner,
                             LOD2_risk_manager,
                             LOD2_compliance_officer,
                             LOD3_audit_manager
                             ) VALUES (
+                             %s, %s, %s, %s, %s, %s, %s, %s,
+                             %s, %s, %s, %s, %s, %s, %s, %s,
                              %s, %s, %s, %s, %s, %s, %s,
-                             %s, %s, %s, %s, %s, %s, %s, 
-                             %s, %s, %s, %s, %s, %s,
                              %s, %s, %s, %s, %s, %s, %s
                             );
 
@@ -113,6 +116,8 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 issue.criteria,
                 issue.finding,
                 issue.risk_rating,
+                issue.source,
+                issue.SDI_name,
                 issue.process,
                 issue.sub_process,
                 issue.root_cause_description,
@@ -129,6 +134,7 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 issue.estimated_implementation_date,
                 issue.regulatory,
                 issue.status,
+                issue.reportable,
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.IMPLEMENTER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.OWNER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.RISK_MANAGER.value))),

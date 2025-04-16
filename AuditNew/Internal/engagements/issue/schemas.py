@@ -44,6 +44,8 @@ class Issue(BaseModel):
     finding: Optional[str]
     risk_rating: Optional[str]
     process: Optional[str]
+    source: Optional[str]
+    SDI_name: Optional[str]
     sub_process: Optional[str]
     root_cause_description: Optional[str]
     root_cause: Optional[str]
@@ -61,6 +63,7 @@ class Issue(BaseModel):
     prepared_by: Optional[User] = None
     reviewed_by: Optional[User] = None
     status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
+    reportable: Optional[bool]
     lod1_implementer: List[User]
     lod1_owner: List[User]
     lod2_risk_manager: Optional[List[User]] = None
