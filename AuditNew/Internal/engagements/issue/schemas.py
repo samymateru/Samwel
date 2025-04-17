@@ -63,7 +63,7 @@ class Issue(BaseModel):
     prepared_by: Optional[User] = None
     reviewed_by: Optional[User] = None
     status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
-    reportable: Optional[bool]
+    reportable: Optional[bool] = None
     lod1_implementer: List[User]
     lod1_owner: List[User]
     lod2_risk_manager: Optional[List[User]] = None
