@@ -116,7 +116,7 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 issue.finding,
                 issue.risk_rating,
                 issue.source,
-                issue.SDI_name,
+                issue.sdi_name,
                 issue.process,
                 issue.sub_process,
                 issue.root_cause_description,

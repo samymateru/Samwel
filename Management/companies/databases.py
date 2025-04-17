@@ -1,14 +1,12 @@
-import json
-from typing import Tuple, List, Dict
+from typing import Dict
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from psycopg2.extras import RealDictCursor
-from datetime import datetime
 from Management.companies.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
-from Management.modules import  databases as module_databases
-from collections import defaultdict
+from psycopg import AsyncConnection
+from psycopg import sql
 
 def create_new_company(connection: Connection, company_data: NewCompany):
     query_insert = """
@@ -45,6 +43,7 @@ def create_new_company(connection: Connection, company_data: NewCompany):
 def get_companies(connection: Connection, company_id: int) -> List[Dict]:
     query = """SELECT * FROM public.companies WHERE id = %s"""
 
+
     try:
         with connection.cursor() as cursor:
             cursor: Cursor
@@ -57,5 +56,21 @@ def get_companies(connection: Connection, company_id: int) -> List[Dict]:
         connection.rollback()
         print(f"Error querying companies {e}")
         raise HTTPException(status_code=400, detail="Error querying companies")
+
+
+async def get_companies_async(connection: AsyncConnection, company_id: int):
+    query = sql.SQL("""SELECT * FROM public.companies WHERE id = %s""")
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            return data
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail="Error querying companies")
+
 
 

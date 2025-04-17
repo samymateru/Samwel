@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, BackgroundTasks
 from Management.users.databases import add_user_module
-from utils import get_db_connection
+from utils import get_db_connection, get_async_db_connection
 from Management.companies.schemas import *
 from Management.company_modules.schemas import CompanyModule
 from Management.company_modules.databases import add_new_company_module
@@ -68,15 +68,15 @@ def new_company(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/", response_model=Company)
-def get_company(
-        db = Depends(get_db_connection),
+async def get_company(
+        db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = databases.get_companies(db, company_id=user.company_id)[0]
-        return data
+        data = await databases.get_companies_async(db, company_id=user.company_id)
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
