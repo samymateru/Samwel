@@ -4,6 +4,7 @@ from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
 from AuditNew.Internal.engagements.risk.databases import *
+from typing import List
 
 router = APIRouter(prefix="/risk")
 
@@ -48,5 +49,19 @@ def delete_risk(
     try:
         remove_risk(connection=db, risk_id=risk_id)
         return ResponseMessage(detail="Risk deleted successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/{sub_program_id}", response_model=List[Risk])
+def fetch_risk(
+        sub_program_id: int,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        get_risk(connection=db, sub_program_id=sub_program_id)
+        return ResponseMessage(detail="Risk fetched successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

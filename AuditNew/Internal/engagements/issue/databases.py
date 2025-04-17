@@ -597,5 +597,49 @@ def get_issue_updates(connection: Connection, issue_id: int):
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
 
+def mark_issue_prepared(connection: Connection, prepare: User, issue_id: int):
+    query: str = """
+                  UPDATE public.issue
+                  SET 
+                  prepared_by = %s::jsonb
+                  WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (prepare.model_dump_json(), issue_id))
+            connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error mark issue prepared {e}")
+
+def mark_issue_reviewed(connection: Connection, review: User, issue_id: int):
+    query: str = """
+                  UPDATE public.issue
+                  SET 
+                  reviewed_by = %s::jsonb
+                  WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (review.model_dump_json(), issue_id))
+            connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error mark issue reviewed {e}")
+
+def mark_issue_reportable(connection: Connection, reportable: bool, issue_id: int):
+    query: str = """
+                  UPDATE public.issue
+                  SET 
+                  reportable = %s
+                  WHERE id = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (reportable, issue_id))
+            connection.commit()
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error mark issue reportable {e}")
 
 

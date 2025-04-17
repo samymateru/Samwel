@@ -200,5 +200,46 @@ def fetch_issue_updates(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.put("/prepared/{issue_id}", response_model=ResponseMessage)
+def prepare_issue(
+        issue_id: int,
+        prepare: User,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        mark_issue_prepared(connection=db, prepare=prepare, issue_id=issue_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/reviewed/{issue_id}", response_model=ResponseMessage)
+def review_issue(
+        issue_id: int,
+        review: User,
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        mark_issue_reviewed(connection=db, review=review, issue_id=issue_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/reportable/{issue_id}", response_model=ResponseMessage)
+def report_issue(
+        issue_id: int,
+        reportable: bool = Query(None),
+        db=Depends(get_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        mark_issue_reportable(connection=db, reportable=reportable, issue_id=issue_id)
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 

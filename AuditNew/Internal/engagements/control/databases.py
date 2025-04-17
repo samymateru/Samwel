@@ -57,3 +57,17 @@ def remove_control(connection: Connection, control_id: int):
     except Exception as e:
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting control {e}")
+
+def get_control(connection: Connection, sub_program_id: int):
+    query: str = """
+                  SELECT * FROM public.control WHERE sub_program = %s;
+                 """
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (sub_program_id,))
+            rows = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching controls {e}")
