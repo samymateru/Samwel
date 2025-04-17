@@ -175,12 +175,12 @@ def issue_decline_response(
 @router.get("/", response_model=List[Issue])
 def fetch_issue_based_on_actor(
         db=Depends(get_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_issue_from_actor(connection=db, user_email="mbaga@gmail.com")
+        data = get_issue_from_actor(connection=db, user_email=user.user_email)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
