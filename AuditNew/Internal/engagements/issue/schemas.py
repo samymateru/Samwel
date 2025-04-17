@@ -45,7 +45,7 @@ class Issue(BaseModel):
     risk_rating: Optional[str]
     process: Optional[str]
     source: Optional[str]
-    SDI_name: Optional[str]
+    sdi_name: Optional[str]
     sub_process: Optional[str]
     root_cause_description: Optional[str]
     root_cause: Optional[str]
