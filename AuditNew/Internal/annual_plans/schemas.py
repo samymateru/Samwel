@@ -20,7 +20,6 @@ class AnnualPlan(BaseModel):
     attachment: str
     created_at: Optional[datetime] = datetime.now()
 
-
 class NewAnnualPlan(BaseModel):
     name: str
     year: Optional[str] = datetime.now().year
