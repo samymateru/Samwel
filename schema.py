@@ -1,10 +1,15 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict
+from enum import Enum
+
+class Endpoints(BaseModel):
+    pass
 
 class CurrentUser(BaseModel):
     user_id: Optional[int] = None
     user_email: Optional[str] = None
     company_id: Optional[int] = None
+    company_name: Optional[str] = None
     role_id: Optional[int] = None
     type: Optional[str] = None
     status_code: Optional[int] = None

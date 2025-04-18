@@ -1,26 +1,27 @@
-from pathlib import Path
-
-from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
-
+from fastapi import APIRouter, Depends, Form, UploadFile, File, BackgroundTasks
 from AuditNew.Internal.annual_plans.databases import *
-from utils import get_db_connection
+from utils import get_db_connection, get_async_db_connection
 from AuditNew.Internal.annual_plans.schemas import *
 from typing import List
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
+import uuid
+import tempfile
+import shutil
+from s3 import upload_file
 
 router = APIRouter(prefix="/annual_plans")
 
 @router.get("/{company_module_id}", response_model=List[AnnualPlan])
-def fetch_annual_plans(
+async def fetch_annual_plans(
         company_module_id: int,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_annual_plans(db, company_module_id=company_module_id)
+        data = await get_annual_plans(connection=db, company_module_id=company_module_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -33,20 +34,29 @@ async def create_new_annual_plan(
         start: datetime = Form(...),
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks(),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            shutil.copyfileobj(attachment.file, tmp)
+            temp_path = tmp.name
+
+        key: str = f"annual_plans/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
+        public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+
+        background_tasks.add_task(upload_file, temp_path, key)
         audit_plan = AnnualPlan(
             name=name,
             year=year,
             start=start,
             end=end,
-            attachment=""
+            attachment=public_url
         )
-        add_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
+        await add_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
         return {"detail": "Annual plan successfully created"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

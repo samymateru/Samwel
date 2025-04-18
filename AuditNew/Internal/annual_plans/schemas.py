@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import  Enum
 from typing import Optional, List
+from utils import get_unique_key
 
 class AnnualPlansStatus(str, Enum):
     NOT_STARTED = "Not Started"
@@ -10,7 +11,7 @@ class AnnualPlansStatus(str, Enum):
 
 
 class AnnualPlan(BaseModel):
-    id: Optional[int] = None
+    id: str = Field(default_factory=get_unique_key)
     name: str
     year: Optional[str] = datetime.now().year
     status: AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED

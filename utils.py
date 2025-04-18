@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Optional
 from contextlib import asynccontextmanager
 import bcrypt
 import jwt
@@ -9,7 +9,7 @@ import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException
 from psycopg_pool import AsyncConnectionPool
-
+import uuid
 from schema import UserData, CurrentUser
 import secrets
 import string
@@ -220,6 +220,11 @@ def check_permission(module: str, action: str):
         if not authorize(roles, module, action):
             raise HTTPException(status_code=403, detail="Unauthorized")
     return inner
+
+def get_unique_key():
+    uuid_str = str(uuid.uuid4()).split("-")
+    key = uuid_str[0] + uuid_str[1]
+    return key
 
 
 from psycopg import  AsyncConnection

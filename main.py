@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import FastAPI, Depends, Form
+from fastapi import FastAPI, Depends, Form, BackgroundTasks
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -80,14 +80,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from utils import test_async
-@app.get("/test")
+from fastapi import UploadFile, File
+import os
+from s3 import upload_file
+import shutil
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.post("/test")
 async def test(
-        db_async= Depends(get_async_db_connection),
-        db=Depends(get_db_connection),
-        per = Depends(check_permission(module="planning", action= "c"))
+        file: UploadFile = File(...),
+        background_tasks: BackgroundTasks = BackgroundTasks()
+        #db_async= Depends(get_async_db_connection),
+        #per = Depends(check_permission(module="planning", action= "c"))
 ):
-    return per
+    print(file.filename)
+    file_location = os.path.join(UPLOAD_DIR, file.filename)
+
+    with open(file_location, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    return ""
 
 @app.post("/login", tags=["Authentication"])
 def users(
@@ -98,15 +111,17 @@ def users(
     if len(user_data) == 0:
         return HTTPException(status_code=405, detail="User doesn't exists")
     password_hash: bytes = user_data[0]["password_hash"].encode()
+    company = get_companies(db, company_id=user_data[0].get("company"))[0]
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),
             "user_email": user_data[0].get("email"),
             "company_id": user_data[0].get("company"),
+            "company_name": company.get("name"),
             "type": user_data[0].get("type"),
             "status": user_data[0].get("status")
         }
-        company = get_companies(db, company_id=user_data[0].get("company"))[0]
+
         token: str = create_jwt_token(user)
         user: dict = {
             "id": user_data[0].get("id"),

@@ -1,14 +1,10 @@
 from tempfile import NamedTemporaryFile
 import boto3
-from dotenv import load_dotenv
 import os
-import shutil
-from fastapi import UploadFile
+from dotenv import load_dotenv
 
+load_dotenv()
 
-# AWS Credentials (Recommended: Use environment variables or IAM roles)
-AWS_ACCESS_KEY = os.getenv("ACCESS_KEY_ID")
-AWS_SECRET_KEY = os.getenv("Tn1wR1QjucjAcVMk3MjJEcs/I1VgARmJ5C23JNGF")
 BUCKET_NAME = "egarc"
 REGION = "us-east-1"  # Change to your bucket's region
 
@@ -25,18 +21,11 @@ def upload_file(file_path, s3_key):
             Bucket=BUCKET_NAME,
             Key=s3_key
         )
-        public_url = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{s3_key}"
-        print(f"File uploaded successfully! Public URL: {public_url}")
-        return public_url
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
     except Exception as e:
         print(f"Error uploading file: {e}")
         return None
 
-
-def save_temporary(file: UploadFile):
-    suffix = os.path.splitext(file.filename)[1]
-    with NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        shutil.copyfileobj(file.file, tmp)
-        temp_file_path = tmp.name
         
