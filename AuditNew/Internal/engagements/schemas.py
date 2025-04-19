@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List,Optional
 from enum import Enum
+from utils import get_unique_key
 
 class EngagementStatus(str, Enum):
     NOT_STARTED = "Not started"
@@ -36,18 +37,7 @@ class Lead(BaseModel):
     role: List[Role]
 
 class Engagement(BaseModel):
-    engagement_id: int
-    annual_plan_id: int
-    engagement_name: str
-    engagement_code: str
-    engagement_risk: Risk
-    engagement_type: str
-    engagement_lead: List[Lead]
-    engagement_status: str
-    engagement_phase: str
-    quarter: str
-
-class NewEngagement(BaseModel):
+    id: Optional[str] = None
     engagementName: str
     engagementType: str
     engagementRisk: Risk

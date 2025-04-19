@@ -15,6 +15,8 @@ import secrets
 import string
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
+from psycopg import AsyncConnection, sql
+
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -99,34 +101,33 @@ def generated_password() -> str:
     return password
 
 
-def get_next_reference(connection: Connection, resource: str, engagement: int):
-    query = f"""
-        SELECT reference FROM public.{resource}
+async def get_next_reference(connection: AsyncConnection, resource: str, engagement_id: str):
+    query = sql.SQL(
+        """
+        SELECT reference FROM public.{}
         WHERE engagement = %s
         ORDER BY reference DESC
         LIMIT 1
-    """
+    """).format(resource)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (engagement,))
-            result = cursor.fetchone()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            result = await cursor.fetchone()
 
             if result is None:
                 return "REF-0001"
 
             #Extract number, increment, and format
             last_number = int(result[0].split("-")[1])
-            print(last_number)
             new_ref = f"REF-{last_number + 1:04d}"
             return new_ref
 
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
 
-def get_reference(connection: Connection, resource: str, id: int):
+async def get_reference(connection: AsyncConnection, resource: str, id: str):
     if resource == "review_comment":
         start: str = "RC"
         relation: str = "engagement"
@@ -136,26 +137,25 @@ def get_reference(connection: Connection, resource: str, id: int):
     else:
         start = "PROC"
         relation: str = "program"
-    query = f"""
-        SELECT reference FROM public.{resource}
-        WHERE {relation} = %s
+    query = sql.SQL(
+        """
+        SELECT reference FROM public.{}
+        WHERE {} = %s
         ORDER BY reference DESC
         LIMIT 1
-    """
+        """).format(resource, relation)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (id,))
-            result = cursor.fetchone()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (id,))
+            result = await cursor.fetchone()
             if result is None:
                 return f"{start}-0001"
 
             last_number = int(result[0].split("-")[1])
             new_ref = f"{start}-{last_number + 1:04d}"
             return new_ref
-
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
 def get_user_data(token: str = Depends(oauth2_scheme)):
@@ -226,13 +226,6 @@ def get_unique_key():
     key = uuid_str[0] + uuid_str[1]
     return key
 
-
-from psycopg import  AsyncConnection
-async def test_async(conn: AsyncConnection):
-    async with conn.cursor() as cur:
-        await cur.execute("select * from companies")
-        data = await  cur.fetchone()
-        print(data)
 
 
 

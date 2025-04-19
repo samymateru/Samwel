@@ -1,18 +1,18 @@
 import json
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException
-from psycopg2.extensions import connection as Connection
-from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.issue.schemas import *
 from datetime import datetime
-#from psycopg2 import IntegrityError, errors
-#import psycopg2
+from psycopg import AsyncConnection, AsyncCursor, sql
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
+from utils import get_unique_key
 
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
-def edit_issue(connection: Connection, issue: Issue, issue_id: int):
-    query = """
+async def edit_issue(connection: AsyncConnection, issue: Issue, issue_id: str):
+    query = sql.SQL(
+    """
     UPDATE public.issue
     SET 
         title = %s,
@@ -34,81 +34,84 @@ def edit_issue(connection: Connection, issue: Issue, issue_id: int):
         management_action_plan = %s,
         estimated_implementation_date = %s
     WHERE id = %s;
-    """
-    values = (
-        issue.title,
-        issue.criteria,
-        issue.finding,
-        issue.risk_rating,
-        issue.process,
-        issue.sub_process,
-        issue.root_cause_description,
-        issue.root_cause,
-        issue.sub_root_cause,
-        issue.risk_category,
-        issue.sub_risk_category,
-        issue.impact_description,
-        issue.impact_category,
-        issue.impact_sub_category,
-        issue.recurring_status,
-        issue.recommendation,
-        issue.management_action_plan,
-        issue.estimated_implementation_date,
-        issue_id
-    )
+    """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, values)
-        connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                            issue.title,
+                            issue.criteria,
+                            issue.finding,
+                            issue.risk_rating,
+                            issue.process,
+                            issue.sub_process,
+                            issue.root_cause_description,
+                            issue.root_cause,
+                            issue.sub_root_cause,
+                            issue.risk_category,
+                            issue.sub_risk_category,
+                            issue.impact_description,
+                            issue.impact_category,
+                            issue.impact_sub_category,
+                            issue.recurring_status,
+                            issue.recommendation,
+                            issue.management_action_plan,
+                            issue.estimated_implementation_date,
+                            issue_id
+                    ))
+        await connection.commit()
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="Issue already exist")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
 
-def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, engagement_id: int):
-    query: str = """
-                    INSERT INTO public.issue (
-                            sub_program,
-                            engagement,
-                            title,
-                            criteria,
-                            finding,
-                            risk_rating,
-                            source,
-                            sdi_name,
-                            process,
-                            sub_process,
-                            root_cause_description,
-                            root_cause,
-                            sub_root_cause,
-                            risk_category,
-                            sub_risk_category,
-                            impact_description,
-                            impact_category,
-                            impact_sub_category,
-                            recurring_status,
-                            recommendation,
-                            management_action_plan,
-                            estimated_implementation_date,
-                            regulatory,
-                            status,
-                            LOD1_implementer,
-                            LOD1_owner,
-                            LOD2_risk_manager,
-                            LOD2_compliance_officer,
-                            LOD3_audit_manager
-                            ) VALUES (
-                             %s, %s, %s, %s, %s, %s, %s,
-                             %s, %s, %s, %s, %s, %s, %s, %s,
-                             %s, %s, %s, %s, %s, %s, %s,
-                             %s, %s, %s, %s, %s, %s, %s
-                            );
-
-                 """
+async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_id: str, engagement_id: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.issue (
+                id,
+                sub_program,
+                engagement,
+                title,
+                criteria,
+                finding,
+                risk_rating,
+                source,
+                sdi_name,
+                process,
+                sub_process,
+                root_cause_description,
+                root_cause,
+                sub_root_cause,
+                risk_category,
+                sub_risk_category,
+                impact_description,
+                impact_category,
+                impact_sub_category,
+                recurring_status,
+                recommendation,
+                management_action_plan,
+                estimated_implementation_date,
+                regulatory,
+                status,
+                LOD1_implementer,
+                LOD1_owner,
+                LOD2_risk_manager,
+                LOD2_compliance_officer,
+                LOD3_audit_manager
+                )
+        VALUES (
+         %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s
+        );
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query,(
+        async with connection.cursor() as cursor:
+            await cursor.execute(query,(
+                get_unique_key(),
                 sub_program_id,
                 engagement_id,
                 issue.title,
@@ -139,31 +142,28 @@ def add_new_issue(connection: Connection, issue: Issue, sub_program_id: int, eng
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.COMPLIANCE_OFFICER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value)))
             ))
-        connection.commit()
-    # except psycopg2.IntegrityError as e:
-    #     connection.rollback()
-    #     if isinstance(e.__cause__, psycopg2.errors.ForeignKeyViolation):
-    #         print("Foreign key violation: Parent record does not exist.")
-    #     else:
-    #         print("Some other integrity error:", e)
+        await connection.commit()
+    except ForeignKeyViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=40, detail="Sub program id is invalid")
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="Issue already exist")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating issue {e}")
 
-def remove_issue(connection: Connection, issue_id: int):
-    query: str = """
-                  DELETE FROM public.issue WHERE id = %s
-                 """
+async def remove_issue(connection: AsyncConnection, issue_id: str):
+    query = sql.SQL("DELETE FROM public.issue WHERE id = %s")
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (issue_id,))
-        connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (issue_id,))
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting issue {e}")
 
-def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImplementation, user_email: str):
+async def send_issues_to_implementor(connection: AsyncConnection, issue_ids: IssueSendImplementation, user_email: str):
     try:
         issue_details = IssueImplementationDetails(
             notes="Issue sent to implementer",
@@ -174,23 +174,23 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
             ),
             type="send"
         )
-        with connection.cursor() as cursor:
+        async with connection.cursor() as cursor:
             placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
-            query_issue: str = f"SELECT engagement FROM public.issue WHERE id IN ({placeholders})"
-            cursor.execute(query_issue, issue_ids.id)
-            rows = cursor.fetchall()
+            query_issue = sql.SQL("SELECT engagement FROM public.issue WHERE id IN ({})").format(placeholders)
+            await cursor.execute(query_issue, issue_ids.id)
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             for issue in issue_data:
                 allowed_to_send_list = []
-                cursor.execute("SELECT leads FROM public.engagements WHERE id = %s;", (issue.get("engagement"),))
-                rows = cursor.fetchall()
+                await cursor.execute("SELECT leads FROM public.engagements WHERE id = %s;", (issue.get("engagement"),))
+                rows = await cursor.fetchall()
                 column_names = [desc[0] for desc in cursor.description]
                 leads = [dict(zip(column_names, row_)) for row_ in rows]
                 for lead in leads[0].get("leads"):
                     allowed_to_send_list.append(lead.get("email"))
                 if user_email in allowed_to_send_list:
-                    data = get_issue_and_issue_actors(
+                    data = await get_issue_and_issue_actors(
                         connection=connection,
                         cursor=cursor,
                         issue_ids=issue_ids,
@@ -205,23 +205,22 @@ def send_issues_to_implementor(connection: Connection, issue_ids: IssueSendImple
         raise HTTPException(status_code=h.status_code, detail=h.detail)
 
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error send issues to implementor {e}")
 
-def save_issue_implementation_(connection: Connection, issue_details: IssueImplementationDetails, issue_id: int, user_email: str):
-    query_issue: str = """
-                         SELECT * FROM public.issue WHERE id = %s;
-                        """
-    query_update: str = """
-                         UPDATE public.issue
-                         SET
-                         status = %s
-                         WHERE id = %s;
-                        """
+async def save_issue_implementation_(connection: AsyncConnection, issue_details: IssueImplementationDetails, issue_id: str, user_email: str):
+    query_issue = sql.SQL("SELECT * FROM public.issue WHERE id = %s;")
+    query_update = sql.SQL(
+        """
+         UPDATE public.issue
+         SET
+         status = %s
+         WHERE id = %s;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query_issue, (issue_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_issue, (issue_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_to_save_list = []
@@ -229,16 +228,16 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
                 allowed_to_save_list.append(implementer.get("email"))
             if user_email in allowed_to_save_list:
                 if issue_data[0].get("status") == IssueStatus.OPEN:
-                    update_issue_details(
+                    await update_issue_details(
                         connection=connection,
                         cursor=cursor,
                         issue_details=issue_details,
                         issue_id=issue_id
                     )
-                    cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
-                    connection.commit()
+                    await cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
+                    await connection.commit()
                 if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER:
-                    update_issue_details(
+                    await update_issue_details(
                         connection=connection,
                         cursor=cursor,
                         issue_details=issue_details,
@@ -247,13 +246,11 @@ def save_issue_implementation_(connection: Connection, issue_details: IssueImple
             else:
                 raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
 
-def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str):
-    query_issue: str = """
-                         SELECT * FROM public.issue WHERE id = %s;
-                        """
+async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_email: str):
+    query_issue = sql.SQL("SELECT * FROM public.issue WHERE id = %s;")
     try:
         issue_details = IssueImplementationDetails(
             notes="Issue sent to the owner",
@@ -264,9 +261,9 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
             ),
             type="send"
         )
-        with connection.cursor() as cursor:
-            cursor.execute(query_issue, (issue_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_issue, (issue_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_to_save_list = []
@@ -276,7 +273,7 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
                 issue_ids = IssueSendImplementation(
                     id = [issue_id]
                 )
-                data = get_issue_and_issue_actors(
+                data = await get_issue_and_issue_actors(
                     connection=connection,
                     cursor=cursor,
                     issue_ids=issue_ids,
@@ -288,13 +285,11 @@ def send_issues_to_owner(connection: Connection, issue_id: int, user_email: str)
             else:
                 raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending issue to owner {e}")
 
-def send_accept_response(connection: Connection, issue: IssueAcceptResponse, issue_id: int, user_email: str):
-    query: str = """
-                  SELECT * FROM public.issue WHERE id = %s
-                 """
+async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptResponse, issue_id: str, user_email: str):
+    query = sql.SQL("SELECT * FROM public.issue WHERE id = %s")
     issue_details = IssueImplementationDetails(
         notes=issue.accept_notes,
         attachment=issue.accept_attachment,
@@ -306,9 +301,9 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
         type="accept"
     )
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, (issue_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (issue_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_actors_list = []
@@ -321,7 +316,7 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                 match issue.actor:
                     case issue.actor.OWNER:
                         issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -331,7 +326,7 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                             issue_details=issue_details
                         )
                     case issue.actor.RISK_MANAGER:
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -341,7 +336,7 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                             issue_details=issue_details
                         )
                     case issue.actor.COMPLIANCE_OFFICER:
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -352,7 +347,7 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                         )
                     case issue.actor.AUDIT_MANAGER:
                         data = []
-                        update_issue_status(
+                        await update_issue_status(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -365,13 +360,11 @@ def send_accept_response(connection: Connection, issue: IssueAcceptResponse, iss
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending accept response {e}")
 
-def send_decline_response(connection: Connection, issue: IssueDeclineResponse, issue_id: int, user_email: str):
-    query: str = """
-                  SELECT * FROM public.issue WHERE id = %s
-                 """
+async def send_decline_response(connection: AsyncConnection, issue: IssueDeclineResponse, issue_id: str, user_email: str):
+    query = sql.SQL("SELECT * FROM public.issue WHERE id = %s")
     try:
         issue_details = IssueImplementationDetails(
             notes=issue.decline_notes,
@@ -382,9 +375,9 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
             ),
             type="decline"
         )
-        with connection.cursor() as cursor:
-            cursor.execute(query, (issue_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (issue_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_actors_list = []
@@ -397,7 +390,7 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                 match issue.actor:
                     case issue.actor.AUDIT_MANAGER:
                         issue_actor = IssueActors.COMPLIANCE_OFFICER if issue_data[0].get("regulatory") else IssueActors.RISK_MANAGER
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -412,7 +405,7 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                         )
 
                     case issue.actor.RISK_MANAGER:
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -422,7 +415,7 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                             issue_details=issue_details
                         )
                     case issue.actor.COMPLIANCE_OFFICER:
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -432,7 +425,7 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                             issue_details=issue_details
                         )
                     case issue.actor.OWNER:
-                        data = get_issue_and_issue_actors(
+                        data = await get_issue_and_issue_actors(
                             connection=connection,
                             cursor=cursor,
                             issue_ids=issue_ids,
@@ -447,12 +440,12 @@ def send_decline_response(connection: Connection, issue: IssueDeclineResponse, i
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending decline response {e}")
 
-def get_issue_and_issue_actors(
-        connection: Connection,
-        cursor: Cursor,
+async def get_issue_and_issue_actors(
+        connection: AsyncConnection,
+        cursor: AsyncCursor,
         issue_ids: IssueSendImplementation,
         issue_actors: str,
         status: set[IssueStatus],
@@ -460,14 +453,15 @@ def get_issue_and_issue_actors(
         issue_details: IssueImplementationDetails
 ):
     placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
-    query_implementers: str= f"SELECT * FROM public.issue WHERE id IN ({placeholders})"
-    query_update: str = f"""
+    query_implementers = sql.SQL("SELECT * FROM public.issue WHERE id IN ({})").format(placeholders)
+    query_update = sql.SQL(
+        """
         UPDATE public.issue
         SET status = %s
         WHERE id = %s;
-    """
-    cursor.execute(query_implementers, issue_ids.id)
-    rows = cursor.fetchall()
+        """)
+    await cursor.execute(query_implementers, issue_ids.id)
+    rows = await cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
     data = [dict(zip(column_names, row_)) for row_ in rows]
     issue_list = []
@@ -494,39 +488,40 @@ def get_issue_and_issue_actors(
                 lod3_audit_manager=issue.get(IssueActors.AUDIT_MANAGER.value),
                 implementors=implementors
             )
-            update_issue_details(
+            await update_issue_details(
                 connection=connection,
                 cursor=cursor,
                 issue_id=issue_ids.id[0],
                 issue_details=issue_details
             )
             issue_list.append(mailed_issue)
-            cursor.execute(query_update, (next_status, issue.get("id")))
-            connection.commit()
+            await cursor.execute(query_update, (next_status, issue.get("id")))
+            await connection.commit()
         else:
             raise HTTPException(status_code=403, detail="Issue cant be updated right now")
     return issue_list
 
-def update_issue_status(cursor: Cursor, connection: Connection, issue_ids: IssueSendImplementation, status: str, next_status: str):
+async def update_issue_status(cursor: AsyncCursor, connection: AsyncConnection, issue_ids: IssueSendImplementation, status: str, next_status: str):
     status_ = {
         IssueStatus.CLOSED_RISK_NA,
         IssueStatus.CLOSED_RISK_ACCEPTED,
         IssueStatus.CLOSED_VERIFIED_BY_RISK
     }
     placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
-    query = f"""
+    query = sql.SQL(
+        """
         UPDATE public.issue
         SET status = %s
-        WHERE id IN ({placeholders})
-    """
+        WHERE id IN ({})
+        """).format(placeholders)
     if status in status_:
         params = [next_status] + issue_ids.id
-        cursor.execute(query, params)
-        connection.commit()
+        await cursor.execute(query, params)
+        await connection.commit()
     else:
         raise HTTPException(status_code=403, detail="Issue cant be updated right now")
 
-def get_issue_from_actor(connection: Connection, user_email: str):
+async def get_issue_from_actor(connection: AsyncConnection, user_email: str):
     conditions = []
     params = []
     jsonb_columns = [
@@ -556,90 +551,92 @@ def get_issue_from_actor(connection: Connection, user_email: str):
     # Join all conditions with OR
     where_clause = " OR ".join(conditions)
 
-    query = f"SELECT * FROM public.issue WHERE  {where_clause};"
+    query = sql.SQL("SELECT * FROM public.issue WHERE  {};").format(where_clause)
 
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, params)
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, params)
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue by actors {e}")
 
-def update_issue_details(connection: Connection, cursor: Cursor, issue_id: int, issue_details: IssueImplementationDetails):
-    query: str = """
-                  INSERT INTO public.implementation_details (issue, notes, attachments, issued_by, type)
-                  VALUES (%s, %s, %s, %s, %s);
-                 """
-    cursor.execute(query, (
+async def update_issue_details(connection: AsyncConnection, cursor: AsyncCursor, issue_id: str, issue_details: IssueImplementationDetails):
+    query = sql.SQL(
+        """
+          INSERT INTO public.implementation_details (id, issue, notes, attachments, issued_by, type)
+          VALUES (%s, %s, %s, %s, %s, %s);
+        """)
+    await cursor.execute(query, (
+        get_unique_key(),
         issue_id,
         issue_details.notes,
         json.dumps(issue_details.model_dump().get("attachment")),
         issue_details.issued_by.model_dump_json(),
         issue_details.type
     ))
-    connection.commit()
+    await connection.commit()
 
-
-def get_issue_updates(connection: Connection, issue_id: int):
-    query: str = """
-                  SELECT * FROM public.implementation_details WHERE issue = %s;
-                 """
+async def get_issue_updates(connection: AsyncConnection, issue_id: str):
+    query = sql.SQL("SELECT * FROM public.implementation_details WHERE issue = %s;")
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, (issue_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (issue_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
 
-def mark_issue_prepared(connection: Connection, prepare: User, issue_id: int):
-    query: str = """
-                  UPDATE public.issue
-                  SET 
-                  prepared_by = %s::jsonb
-                  WHERE id = %s;
-                 """
+async def mark_issue_prepared(connection: AsyncConnection, prepare: User, issue_id: str):
+    query = sql.SQL(
+        """
+          UPDATE public.issue
+          SET 
+          prepared_by = %s::jsonb
+          WHERE id = %s;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, (prepare.model_dump_json(), issue_id))
-            connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (prepare.model_dump_json(), issue_id))
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error mark issue prepared {e}")
 
-def mark_issue_reviewed(connection: Connection, review: User, issue_id: int):
-    query: str = """
-                  UPDATE public.issue
-                  SET 
-                  reviewed_by = %s::jsonb
-                  WHERE id = %s;
-                 """
+async def mark_issue_reviewed(connection: AsyncConnection, review: User, issue_id: str):
+    query = sql.SQL(
+        """
+          UPDATE public.issue
+          SET 
+          reviewed_by = %s::jsonb
+          WHERE id = %s;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, (review.model_dump_json(), issue_id))
-            connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (review.model_dump_json(), issue_id))
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error mark issue reviewed {e}")
 
-def mark_issue_reportable(connection: Connection, reportable: bool, issue_id: int):
-    query: str = """
-                  UPDATE public.issue
-                  SET 
-                  reportable = %s
-                  WHERE id = %s;
-                 """
+async def mark_issue_reportable(connection: AsyncConnection, reportable: bool, issue_id: str):
+    query = sql.SQL(
+        """
+          UPDATE public.issue
+          SET 
+          reportable = %s
+          WHERE id = %s;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(query, (reportable, issue_id))
-            connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (reportable, issue_id))
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error mark issue reportable {e}")
 
 

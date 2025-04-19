@@ -1,5 +1,19 @@
-import uuid
-def unique_key():
-    uuid_str = str(uuid.uuid4()).split("-")
-    key = uuid_str[0] + uuid_str[1]
-    return key
+from psycopg2.extensions import connection as Connection
+from typing import List
+from utils  import get_db_connection
+
+tb = [
+    "engagements"
+]
+
+
+def update(connection: Connection, tables: List[str]):
+    with connection.cursor() as cursor:
+        for table in tables:
+            cursor.execute(f"ALTER TABLE {table} ALTER COLUMN id DROP DEFAULT;")
+            cursor.execute(f"ALTER TABLE {table} ALTER COLUMN id TYPE VARCHAR;")
+            connection.commit()
+
+con = next(get_db_connection())
+
+update(connection=con, tables=tb)

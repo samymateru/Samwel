@@ -2,8 +2,9 @@ from fastapi import HTTPException
 from psycopg2.extensions import cursor as Cursor
 from psycopg2.extensions import connection as Connection
 from Management.companies.profile.opinion_rating.schemas import *
+from psycopg import AsyncConnection, sql
 
-def new_opinion_rating(connection: Connection, opinion_rating: OpinionRating, company_id: int):
+def new_opinion_rating(connection: Connection, opinion_rating: OpinionRating, company_id: str):
     query: str = """
                     INSERT INTO public.opinion_rating (company, name) VALUES(%s, %s)
                  """
@@ -54,32 +55,14 @@ def edit_opinion_rating(connection: Connection, opinion_rating: OpinionRating, o
         connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating opinion rating {e}")
 
-def get_company_opinion_rating(connection: Connection, company_id: int):
-    query: str = """
-                   SELECT * from public.opinion_rating WHERE company = %s
-                 """
+async def get_company_opinion_rating(connection: AsyncConnection, company_id: str):
+    query = sql.SQL("SELECT * from public.opinion_rating WHERE company = %s")
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (company_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching company opinion rating {e}")
-
-def get_opinion_rating(connection: Connection, opinion_rating_id):
-    query: str = """
-                   SELECT * from public.opinion_rating WHERE id = %s
-                 """
-    try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (opinion_rating_id,))
-            rows = cursor.fetchone()
-            column_names = [desc[0] for desc in cursor.description]
-            return [dict(zip(column_names, row_)) for row_ in rows]
-    except Exception as e:
-        connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching opinion rating{e}")

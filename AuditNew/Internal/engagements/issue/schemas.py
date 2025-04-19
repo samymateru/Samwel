@@ -38,7 +38,7 @@ class LOD2Feedback(str, Enum):
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
 
 class Issue(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     title: Optional[str]
     criteria: Optional[str]
     finding: Optional[str]
@@ -71,7 +71,7 @@ class Issue(BaseModel):
     lod3_audit_manager: List[User]
 
 class IssueSendImplementation(BaseModel):
-    id: List[int]
+    id: List[str]
 
 class IssueDeclineResponse(BaseModel):
     actor: ResponseActors
@@ -99,14 +99,14 @@ class IssueAcceptResponse(BaseModel):
 
 
 class MailedIssue(BaseModel):
-    id: Optional[int]
+    id: Optional[str]
     title: Optional[str]
     criteria: Optional[str]
     finding: Optional[str]
     risk_rating: Optional[str]
     status: Optional[str]
     regulatory: Optional[bool]
-    engagement: Optional[int]
+    engagement: Optional[str]
     lod1_implementer: Optional[List[User]]
     lod1_owner: Optional[List[User]]
     lod2_risk_manager: Optional[List[User]]
@@ -115,7 +115,7 @@ class MailedIssue(BaseModel):
     implementors: List[str]
 
 class IssueImplementationDetails(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     notes: Optional[str] = None
     attachment: Optional[List[str]] = None
     issued_by: Optional[User] = None

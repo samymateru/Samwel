@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class ImpactCategory(BaseModel):
@@ -14,3 +14,7 @@ class NewImpactCategory(BaseModel):
 class NewImpactSubCategory(BaseModel):
     id: Optional[int] = None
     name: str
+
+class CombinedImpactCategory(BaseModel):
+    process_name: str
+    sub_process_name: List[str]

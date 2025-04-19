@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class ControlEffectivenessRating(BaseModel):
-    id: Optional[int]
-    name: str
+    company: Optional[str]
+    values: Optional[List[str]]

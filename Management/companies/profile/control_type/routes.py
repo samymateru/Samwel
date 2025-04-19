@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user
+from utils import get_db_connection, get_current_user, get_async_db_connection
 from Management.companies.profile.control_type.databases import *
 from typing import List
 
@@ -21,30 +21,18 @@ def create_control_type(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/", response_model=List[ControlType])
-def fetch_company_control_type(
-        db=Depends(get_db_connection),
+@router.get("/", response_model=ControlType)
+async def fetch_company_control_type(
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_control_type(db, company_id=user.company_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.get("/{control_type_id}", response_model=ControlType)
-def fetch_control_weakness_rating(
-        control_type_id: int,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = get_control_type(db, control_type_id=control_type_id)
-        return data
+        data = await get_company_control_type(db, company_id=user.company_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Control type not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

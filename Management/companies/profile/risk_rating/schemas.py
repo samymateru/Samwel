@@ -1,8 +1,11 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
+class Rating(BaseModel):
+    name: Optional[str]
+    magnitude: Optional[int]
 
 class RiskRating(BaseModel):
-    id: Optional[int] = None
-    name: str
-    magnitude: int
+    company: Optional[str]
+    values: Optional[List[Rating]]
+

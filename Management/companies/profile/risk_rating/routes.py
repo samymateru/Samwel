@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from Management.companies.profile.risk_rating.databases import *
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user
+from utils import get_db_connection, get_current_user, get_async_db_connection
 from typing import List
 
 router = APIRouter(prefix="/profile/risk_rating")
@@ -23,30 +23,18 @@ def create_risk_rating(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/", response_model=List[RiskRating])
-def fetch_company_risk_rating(
-        db=Depends(get_db_connection),
+@router.get("/", response_model=RiskRating)
+async def fetch_company_risk_rating(
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_risk_rating(db, company_id=user.company_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.get("/{risk_rating_id}")
-def fetch_risk_rating(
-        risk_rating_id: int,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = get_risk_rating(db, risk_rating_id=risk_rating_id)
-        return data
+        data = await get_company_risk_rating(db, company_id=user.company_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Risk rating not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

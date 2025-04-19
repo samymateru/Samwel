@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class OpinionRating(BaseModel):
-    id: Optional[int] = None
-    name: str
+    company: Optional[str]
+    values: Optional[List[str]]

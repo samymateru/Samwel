@@ -1,9 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
-from schema import CurrentUser
-from utils import get_current_user, get_db_connection
-from typing import List
+from fastapi import APIRouter, Depends
+from utils import get_current_user, get_db_connection, get_async_db_connection
 from schema import *
-from Management.companies.profile.impact_category.schemas import *
 from Management.companies.profile.impact_category.databases import *
 
 router = APIRouter(prefix="/profile")
@@ -37,15 +34,15 @@ def create_new_impact_sub_category(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/impact_category")
-def fetch_combined_impact_category(
-        db = Depends(get_db_connection),
+@router.get("/impact_category", response_model=List[CombinedImpactCategory])
+async def fetch_combined_impact_category(
+        db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_combined_impact_category(connection=db, column="company", value=user.company_id)
+        data = await get_combined_impact_category(connection=db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schema import ResponseMessage, CurrentUser
-from utils import get_db_connection, get_current_user
+from utils import get_db_connection, get_current_user, get_async_db_connection
 from Management.companies.profile.issue_source.databases import *
 from Management.companies.profile.issue_source.schemas import *
 
@@ -25,30 +25,18 @@ def create_issue_source(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/")
-def fetch_company_issue_source(
-        db=Depends(get_db_connection),
+@router.get("/", response_model=IssueSource)
+async def fetch_company_issue_source(
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_issue_source(db, company_id=user.company_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.get("/{issue_source_id}")
-def fetch_issue_source(
-        issue_source_id: int,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = get_issue_source(db, issue_source_id=issue_source_id)
-        return data
+        data = await get_company_issue_source(connection=db, company_id=user.company_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Issue source not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

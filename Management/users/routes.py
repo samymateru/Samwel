@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from AuditNew.Internal.engagements.databases import update_engagement
-from utils import  get_db_connection
+from utils import get_db_connection, get_async_db_connection
 from Management.users.databases import *
 from Management.users.schemas import *
 from utils import get_current_user
@@ -11,42 +10,45 @@ from Management.roles.databases import *
 router = APIRouter(prefix="/users")
 
 @router.get("/", response_model=List[User])
-def fetch_users(
-        db = Depends(get_db_connection),
+async def fetch_users(
+        db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_user(db, column="company", value=user.company_id)
+        data = await get_users(db, company_id=user.company_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/profile", response_model=User)
-def fetch_user(
-        db = Depends(get_db_connection),
+@router.get("/{user_id}", response_model=User)
+async def fetch_user(
+        user_id: str,
+        db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_user(db, column="id", value=user.user_id)[0]
-        return data
+        data = await get_user(connection=db, user_id=user_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="User not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/", response_model=ResponseMessage)
-def create_new_user(
-        user_data: NewUser,
-        db = Depends(get_db_connection),
+async def create_new_user(
+        user_: NewUser,
+        db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_user(connection=db, user_data=user_data,  company_id=user.company_id)
-        return {"detail": "User successfully created"}
+        await new_user(connection=db, user_=user_,  company_id=user.company_id)
+        return ResponseMessage(detail="User successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

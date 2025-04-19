@@ -1,28 +1,38 @@
-from typing import Tuple, List, Dict
+from typing import Dict
 from fastapi import HTTPException
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from Management.company_modules.schemas import *
-from datetime import datetime
+from psycopg import AsyncConnection, sql
+from utils import get_unique_key
 
-def add_new_company_module(connection: Connection, company_module: CompanyModule, company_id: int):
-    query = """
-            INSERT INTO public.company_modules (company, name, purchase_date, status)
-            VALUES (%s, %s, %s, %s) RETURNING id;
-            """
+async def add_new_company_module(connection: AsyncConnection, company_module: CompanyModule, company_id: int):
+    query = sql.SQL(
+        """
+        INSERT INTO public.company_modules (id, company, name, purchase_date, status)
+        VALUES (%s, %s, %s, %s, %s) RETURNING id;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query,(
+        async with connection.cursor() as cursor:
+            await cursor.execute(query,(
+                get_unique_key(),
                 company_id,
                 company_module.name,
                 company_module.purchase_date,
                 company_module.status
             ))
-            connection.commit()
-            return cursor.fetchone()[0]
+            module_id = await cursor.fetchone()
+            await connection.commit()
+            return module_id[0]
+    except ForeignKeyViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail="Invalid company id")
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="Company module already exist")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating company module {e}")
 
 def delete_company_module(connection: Connection, company_module_id: List[int]) -> None:

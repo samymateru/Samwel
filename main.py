@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import FastAPI, Depends, Form, BackgroundTasks
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
@@ -8,7 +6,6 @@ from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
 from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.companies.profile.control_weakness_rating.routes import router as control_weakness
-from Management.companies.profile.issue_implementation.routes import router as issue_implementation
 from Management.companies.profile.issue_source.routes import router as issue_source
 from Management.companies.profile.opinion_rating.routes import router as opinion_rating
 from Management.companies.profile.control_effectiveness_rating.routes import router as control_effectiveness
@@ -34,7 +31,7 @@ from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
 from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async, \
     check_permission
-from Management.users.databases import get_user
+from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
 from rabbitmq import rabbitmq
@@ -103,21 +100,21 @@ async def test(
     return ""
 
 @app.post("/login", tags=["Authentication"])
-def users(
+async def login(
           email: str = Form(...),
           password: str = Form(...),
-          db: Connection = Depends(get_db_connection)):
-    user_data: List[Dict] = get_user(db, column="email", value=email)
+          db=Depends(get_async_db_connection)):
+    user_data  = await get_user_by_email(connection=db, email=email)
     if len(user_data) == 0:
         return HTTPException(status_code=405, detail="User doesn't exists")
     password_hash: bytes = user_data[0]["password_hash"].encode()
-    company = get_companies(db, company_id=user_data[0].get("company"))[0]
+    company = await get_companies(db, company_id=user_data[0].get("company"))
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),
             "user_email": user_data[0].get("email"),
             "company_id": user_data[0].get("company"),
-            "company_name": company.get("name"),
+            "company_name": company[0].get("name"),
             "type": user_data[0].get("type"),
             "status": user_data[0].get("status")
         }
@@ -127,8 +124,8 @@ def users(
             "id": user_data[0].get("id"),
             "name": user_data[0].get("name"),
             "email": user_data[0].get("email"),
-            "company_name": company.get("name"),
-            "account_status": company.get("status"),
+            "company_name": company[0].get("name"),
+            "account_status": company[0].get("status"),
             "role": user_data[0].get("role"),
             "module": user_data[0].get("module")
         }
@@ -150,7 +147,6 @@ app.include_router(work_program_router, tags=["Engagement Work Program"])
 app.include_router(roles_router, tags=["Roles"])
 app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
 app.include_router(control_weakness, tags=["Control Weakness Rating"])
-app.include_router(issue_implementation, tags=["Issue Implementation"])
 app.include_router(issue_source, tags=["Issue Source"])
 app.include_router(opinion_rating, tags=["Opinion Rating"])
 app.include_router(engagement_type, tags=["Engagement Types"])

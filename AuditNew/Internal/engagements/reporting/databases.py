@@ -1,16 +1,16 @@
 from fastapi import HTTPException
-from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.reporting.schemas import *
 from AuditNew.Internal.engagements.planning.schemas import StandardTemplate
-from psycopg2.extensions import cursor as Cursor
 import json
-from utils import get_next_reference
+from utils import get_next_reference, get_unique_key
+from psycopg import AsyncConnection, sql
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
-def add_reporting_procedure(connection: Connection, report: NewReportingProcedure, engagement_id: int):
+async def add_reporting_procedure(connection: AsyncConnection, report: NewReportingProcedure, engagement_id: str):
     data = {
         "title": f"{report.title}",
         "tests": {
@@ -38,28 +38,32 @@ def add_reporting_procedure(connection: Connection, report: NewReportingProcedur
             "name": ""
         }
     }
-    query: str = """
-                   INSERT INTO public.reporting_procedure (
-                        engagement,
-                        reference,
-                        title,
-                        tests,
-                        results,
-                        observation,
-                        attachments,
-                        conclusion,
-                        type,
-                        prepared_by,
-                        reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                 """
+    query = sql.SQL(
+        """
+           INSERT INTO public.reporting_procedure (
+                id,
+                engagement,
+                reference,
+                title,
+                tests,
+                results,
+                observation,
+                attachments,
+                conclusion,
+                type,
+                prepared_by,
+                reviewed_by
+           ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            ref = get_next_reference(connection=connection, resource="reporting_procedure", engagement=engagement_id)
-            cursor.execute(query, (
+        async with connection.cursor() as cursor:
+            ref = await get_next_reference(connection=connection, resource="reporting_procedure", engagement_id=engagement_id)
+            await cursor.execute(query, (
+                get_unique_key(),
                 engagement_id,
                 ref,
+                json.dumps(data["title"]),
                 json.dumps(data["tests"]),
                 json.dumps(data["results"]),
                 json.dumps(data["observation"]),
@@ -69,45 +73,46 @@ def add_reporting_procedure(connection: Connection, report: NewReportingProcedur
                 json.dumps(data["prepared_by"]),
                 json.dumps(data["reviewed_by"])
             ))
-        connection.commit()
+        await connection.commit()
+    except ForeignKeyViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail="Engagement id is invalid")
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="Report procedure already exist")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding reporting procedures {e}")
 
-def get_reporting_procedures(connection: Connection, column: str = None, value: int | str = None):
-    query: str = """
-                   SELECT * from public.reporting_procedure
-                 """
-    if column and value:
-        query += f"WHERE  {column} = %s"
+async def get_reporting_procedures(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL("SELECT * from public.reporting_procedure WHERE engagement = %s")
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (value,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reporting procedures {e}")
 
-def edit_reporting_procedure(connection: Connection, report: StandardTemplate, procedure_id: int):
-    query: str = """
-                    UPDATE public.reporting_procedure
-                    SET 
-                    title = %s,
-                    tests = %s::jsonb,
-                    results = %s::jsonb,
-                    observation = %s::jsonb,
-                    attachments = %s,
-                    conclusion = %s::jsonb,
-                    prepared_by = %s::jsonb,
-                    reviewed_by = %s::jsonb  WHERE id = %s; 
-                   """
+async def edit_reporting_procedure(connection: AsyncConnection, report: StandardTemplate, procedure_id: str):
+    query = sql.SQL(
+        """
+            UPDATE public.reporting_procedure
+            SET 
+            title = %s,
+            tests = %s::jsonb,
+            results = %s::jsonb,
+            observation = %s::jsonb,
+            attachments = %s,
+            conclusion = %s::jsonb,
+            prepared_by = %s::jsonb,
+            reviewed_by = %s::jsonb  WHERE id = %s; 
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
                 report.title,
                 safe_json_dump(report.tests),
                 safe_json_dump(report.results),
@@ -118,54 +123,54 @@ def edit_reporting_procedure(connection: Connection, report: StandardTemplate, p
                 safe_json_dump(report.reviewed_by),
                 procedure_id
             ))
-        connection.commit()
+        await connection.commit()
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="Report procedure already exist")
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating reporting procedure {e}")
 
-def get_summary_findings(connection: Connection, engagement_id: int):
-    query: str = """
-                 SELECT * FROM public.issue WHERE engagement = %s;
-                 """
+async def get_summary_findings(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL("SELECT * FROM public.issue WHERE engagement = %s;")
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (engagement_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue based on engagement {e}")
 
-def get_summary_audit_process(connection: Connection, engagement_id: int):
-    query: str = """
-                    SELECT 
-                    main_program.id,
-					main_program.name,
-					main_program.status,
-					main_program.process_rating,
-                    COUNT(issue.id) AS issue_count,
-					COUNT(CASE WHEN issue.risk_rating = 'Acceptable' THEN 1 END) AS acceptable,
-					COUNT(CASE WHEN issue.risk_rating = 'Improvement Required' THEN 1 END) AS improvement_required,
-					COUNT(CASE WHEN issue.risk_rating = 'Significant Improvement Required' THEN 1 END) AS significant_improvement_required,
-					COUNT(CASE WHEN issue.risk_rating = 'Unacceptable' THEN 1 END) AS Unacceptable,
-					COUNT(CASE WHEN issue.recurring_status = true THEN 1 END) AS recurring_issues
-                    FROM engagements 
-                    JOIN main_program ON main_program.engagement = engagements.id
-					LEFT JOIN sub_program ON sub_program.program = main_program.id
-                    LEFT JOIN issue ON sub_program.id = issue.sub_program
-					WHERE main_program.engagement = %s
-                    GROUP BY main_program.name, main_program.status, main_program.process_rating, main_program.id; 
-                 """
+async def get_summary_audit_process(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL(
+        """
+            SELECT 
+            main_program.id,
+            main_program.name,
+            main_program.status,
+            main_program.process_rating,
+            COUNT(issue.id) AS issue_count,
+            COUNT(CASE WHEN issue.risk_rating = 'Acceptable' THEN 1 END) AS acceptable,
+            COUNT(CASE WHEN issue.risk_rating = 'Improvement Required' THEN 1 END) AS improvement_required,
+            COUNT(CASE WHEN issue.risk_rating = 'Significant Improvement Required' THEN 1 END) AS significant_improvement_required,
+            COUNT(CASE WHEN issue.risk_rating = 'Unacceptable' THEN 1 END) AS Unacceptable,
+            COUNT(CASE WHEN issue.recurring_status = true THEN 1 END) AS recurring_issues
+            FROM engagements 
+            JOIN main_program ON main_program.engagement = engagements.id
+            LEFT JOIN sub_program ON sub_program.program = main_program.id
+            LEFT JOIN issue ON sub_program.id = issue.sub_program
+            WHERE main_program.engagement = %s
+            GROUP BY main_program.name, main_program.status, main_program.process_rating, main_program.id; 
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (engagement_id,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of audit process {e}")
 

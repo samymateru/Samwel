@@ -2,38 +2,33 @@ from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from fastapi import HTTPException
 from collections import defaultdict
+from psycopg import AsyncConnection, sql
 
 
-def get_combined_business_process(connection: Connection, column: str = None, value: str | int = None):
-    query = """
-            SELECT 
-            public.business_process.process_name,
-            public.business_process.id,
-            public.business_process.code,
-            public.business_sub_process.name
-            FROM public.business_process INNER JOIN public.business_sub_process
-            ON public.business_process.id = public.business_sub_process.business_process
-            """
-    if column and value:
-        query += f"WHERE  {column} = %s"
+async def get_combined_business_process(connection: AsyncConnection, company_id: str):
+    query = sql.SQL(
+        """
+            SELECT
+            bp.name AS process_name,
+            bp.code,
+            ARRAY_AGG(sub.value) AS sub_process_name
+            FROM
+            business_process bp
+            JOIN
+            business_sub_process bsp ON bsp.business_process = bp.id
+            JOIN
+            LATERAL unnest(bsp.values) AS sub(value) ON TRUE
+            WHERE
+            bp.company = %s
+            GROUP BY
+            bp.id;
+        """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (value,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            data = [dict(zip(column_names, row_)) for row_ in rows]
-            sub_process_dict = defaultdict(list)
-
-            for item in data:
-                key = (item["process_name"], item["code"], item["id"])
-                sub_process_dict[key].append(item["name"])
-
-            sub_process_list = [
-                {"process_name": name, "code": code, "id": id, "sub_process_name": sub_processes}
-                for (name, code, id), sub_processes in sub_process_dict.items()
-            ]
-            return sub_process_list
+            return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching business process: {e}")

@@ -1,157 +1,194 @@
 import json
 from fastapi import HTTPException
-from psycopg import Cursor
+from psycopg import AsyncConnection, sql
+import logging
+import uuid
 
-from psycopg2.extensions import connection as Connection
-from AuditNew.Internal.engagements.planning.databases import add_planning_procedure
+for handler in logging.root.handlers[:]:
+    logging.root.removeHandler(handler)
 
-def engagement_types(connection: Connection, company: int):
+def get_unique_key_():
+    uuid_str = str(uuid.uuid4()).split("-")
+    key = uuid_str[0] + uuid_str[1]
+    return key
+
+
+logging.basicConfig(
+    filename="app.log",                   # Log file path
+    filemode="a",                         # Append mode; use 'w' to overwrite each time
+    level=logging.INFO,                   # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
+
+
+async def engagement_types(company: str, connection: AsyncConnection):
     values = [
-        (company, "Internal Audit"),
-        (company, "Compliance Audit"),
-        (company, "Operational Audit"),
-        (company, "IT Audit"),
-        (company, "Forensic Audit"),
-        (company, "Financial Audit"),
-        (company, "Performance Audit"),
-        (company, "Environmental Audit"),
-        (company, "Tax Audit")
+        "Internal Audit",
+        "Compliance Audit",
+        "Operational Audit",
+        "IT Audit",
+        "Forensic Audit",
+        "Financial Audit",
+        "Performance Audit",
+        "Environmental Audit",
+        "Tax Audit",
     ]
-    query: str = f"""
-                 INSERT INTO public.engagement_types (company, name)
-                 VALUES(%s, %s)
-                 """
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    query = sql.SQL(
+        """
+        INSERT INTO public.engagement_types (id, company, values)
+        VALUES(%s, %s, %s)
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                get_unique_key_(),
+                company,
+                values
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def risk_rating(connection: Connection, company: int):
+async def risk_rating(connection: AsyncConnection, company: str):
     values = [
-        (company, "Very High Risk", 4),
-        (company, "High Risk", 3),
-        (company, "Medium Risk", 2),
-        (company, "Low Risk", 1),
+        {"name": "Very High Risk", "magnitude": 4},
+        {"name": "High Risk", "magnitude": 3},
+        {"name":"Medium Risk", "magnitude": 2},
+        {"name":"Low Risk", "magnitude": 1}
     ]
-    query: str = f"""
-                 INSERT INTO public.risk_rating (company, name, magnitude)
-                 VALUES(%s, %s, %s)
-                 """
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    query = sql.SQL(
+        """
+        INSERT INTO public.risk_rating (id, company, values)
+        VALUES(%s, %s, %s)
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, json.dumps(values)))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def issue_finding_source(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.issue_source (name, company)
-                 VALUES (%s, %s)
-                 """
+async def issue_finding_source(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.issue_source (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
     values = [
-        ("Internal Audit", company),
-        ("External Audit", company),
-        ("Self Disclosed", company),
-        ("Regulator Audit/Examination", company),
-        ("Other Assurance Reviews", company)
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    "Internal Audit",
+    "External Audit",
+    "Self Disclosed",
+    "Regulator Audit/Examination",
+    "Other Assurance Reviews"]
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def control_effectiveness_rating(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.control_effectiveness_rating (name, company)
-                 VALUES (%s, %s)
-                 """
+async def control_effectiveness_rating(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.control_effectiveness_rating (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
     values = [
-        ("Effective", company),
-        ("Partially Effective", company),
-        ("Ineffective", company),
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    "Effective",
+    "Partially Effective",
+    "Ineffective"]
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def control_weakness_rating(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.control_weakness_rating (name, company)
-                 VALUES (%s, %s)
-                 """
+async def control_weakness_rating(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.control_weakness_rating (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
     values = [
-        ("Acceptable", company),
-        ("Improvement Required", company),
-        ("Significant Improvement Required", company),
-        ("Unacceptable", company)
+        "Acceptable",
+        "Improvement Required",
+        "Significant Improvement Required",
+        "Unacceptable"
     ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def audit_opinion_rating(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.opinion_rating (name, company)
-                 VALUES (%s, %s)
-                 """
+async def audit_opinion_rating(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.opinion_rating (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
+    values =  [
+    "High Assurance",
+    "Reasonable Assurance",
+    "Limited Assurance",
+    "No Assurance"]
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
+
+async def risk_maturity_rating(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.risk_maturity_rating (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
+    values =  [
+    "Risk naive",
+    "Risk aware",
+    "Risk defined",
+    "Risk managed"]
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
+
+async def control_type(connection: AsyncConnection, company: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.control_type (id, company, values)
+        VALUES (%s, %s, %s)
+        """)
     values = [
-        ("High Assurance", company),
-        ("Reasonable Assurance", company),
-        ("Limited Assurance", company),
-        ("No Assurance", company)
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
+    "Preventive control",
+    "Detective control",
+    "Corrective control",
+    "Compensating control"]
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (get_unique_key_(), company, values))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def risk_maturity_rating(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.risk_maturity_rating (name, company)
-                 VALUES (%s, %s)
-                 """
-    values = [
-        ("Risk naive", company),
-        ("Risk aware", company),
-        ("Risk defined", company),
-        ("Risk managed", company),
-        ("Risk managed", company)
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
-
-def issue_implementation_status(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.issue_implementation (name, company)
-                 VALUES (%s, %s)
-                 """
-    values = [
-        ("Pending", company),
-        ("In progress", company),
-        ("Implemented", company),
-        ("Closed but not verified by (LOD 2)", company),
-        ("Closed and  verified by (LOD 2)", company),
-        ("Closed-Risk tolerated by management", company),
-        ("Closed-No Longer Applicable", company),
-        ("Closed not verified by Audit", company),
-        ("Closed and verified by Audit", company)
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
-
-def control_type(connection: Connection, company: int):
-    query: str = """
-                 INSERT INTO public.control_type (name, company)
-                 VALUES (%s, %s)
-                 """
-    values = [
-        ("Preventive control", company),
-        ("Detective control", company),
-        ("Corrective control", company),
-        ("Compensating control", company),
-    ]
-    with connection.cursor() as cursor:
-        cursor.executemany(query, values)
-    connection.commit()
-
-def roles(connection: Connection, company: int):
+async def roles(connection: AsyncConnection, company: str):
     value = [
         {
             "name": "Owner",
@@ -308,16 +345,21 @@ def roles(connection: Connection, company: int):
 
         }
     ]
-    with connection.cursor() as cursor:
-        cursor.execute(
-            "INSERT INTO public.roles (roles, company) VALUES (%s, %s);",(
-                json.dumps(value),
-                company
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(
+                "INSERT INTO public.roles (id, roles, company) VALUES (%s, %s, %s);",(
+                    get_unique_key_(),
+                    json.dumps(value),
+                    company
+                )
             )
-        )
-    connection.commit()
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def business_process(connection: Connection, company: int):
+async def business_process(connection: AsyncConnection, company: str):
     data = [
         {
             "name": "Finance",
@@ -482,33 +524,34 @@ def business_process(connection: Connection, company: int):
         }
 
     ]
-    with connection.cursor() as cursor:
-        process_ids = {}
+    try:
+        async with connection.cursor() as cursor:
+            process_ids = {}
+            query = sql.SQL(
+                """
+                INSERT INTO public.business_sub_process 
+                (id, business_process, values) 
+                VALUES (%s, %s, %s);
+                """)
 
-        # 1️⃣ Insert Business Processes & Get Their IDs
-        for process in data:
-            cursor.execute(
-                "INSERT INTO public.business_process (process_name, code, company) VALUES (%s, %s, %s) RETURNING id;",
-                (process["name"], process["code"], company)
-            )
-            process_id = cursor.fetchone()[0]
-            process_ids[process["name"]] = process_id  # Store process ID
+            for process in data:
+                await cursor.execute(
+                    "INSERT INTO public.business_process (id, name, code, company) VALUES (%s, %s, %s, %s) RETURNING id;",
+                    (get_unique_key_(), process["name"], process["code"], company)
+                )
+                process_id = await cursor.fetchone()
+                process_ids[process["name"]] = process_id[0]  # Store process ID
 
-        # 2️⃣ Insert Business Subprocesses (Batch Insert)
-        subprocess_values = []
-        for process in data:
-            process_id = process_ids[process["name"]]
-            for sub in process["sub"]:
-                subprocess_values.append((sub, process_id))
+            for process in data:
+                process_id = process_ids[process["name"]]
+                await cursor.execute(query, (get_unique_key_(), process_id, process["sub"]))
 
-        # Execute batch insert
-        cursor.executemany(
-            "INSERT INTO public.business_sub_process (name, business_process) VALUES (%s, %s);",
-            subprocess_values
-        )
-        connection.commit()
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def root_cause_category(connection: Connection, company: int):
+async def root_cause_category(connection: AsyncConnection, company: str):
     data = [
     {
         "name": "People",
@@ -568,33 +611,34 @@ def root_cause_category(connection: Connection, company: int):
         ]
     }
 ]
-    with connection.cursor() as cursor:
-        process_ids = {}
+    try:
+        async with connection.cursor() as cursor:
+            process_ids = {}
+            query = sql.SQL(
+                """
+                INSERT INTO public.root_cause_sub_category 
+                (id, root_cause_category, values) 
+                VALUES (%s, %s, %s);
+                """)
 
-        # 1️⃣ Insert Business Processes & Get Their IDs
-        for process in data:
-            cursor.execute(
-                "INSERT INTO public.root_cause_category (name, company) VALUES (%s, %s) RETURNING id;",
-                (process["name"], company)
-            )
-            process_id = cursor.fetchone()[0]
-            process_ids[process["name"]] = process_id  # Store process ID
+            # 1️⃣ Insert Business Processes & Get Their IDs
+            for process in data:
+                await cursor.execute(
+                    "INSERT INTO public.root_cause_category (id, name, company) VALUES (%s, %s, %s) RETURNING id;",
+                    (get_unique_key_(), process["name"], company)
+                )
+                process_id = await cursor.fetchone()
+                process_ids[process["name"]] = process_id[0]
 
-        # 2️⃣ Insert Business Subprocesses (Batch Insert)
-        subprocess_values = []
-        for process in data:
-            process_id = process_ids[process["name"]]
-            for sub in process["sub"]:
-                subprocess_values.append((sub, process_id))
+            for process in data:
+                process_id = process_ids[process["name"]]
+                await cursor.execute(query, (get_unique_key_(), process_id, process["sub"]))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-        # Execute batch insert
-        cursor.executemany(
-            "INSERT INTO public.root_cause_sub_category (sub_name, root_cause_category) VALUES (%s, %s);",
-            subprocess_values
-        )
-        connection.commit()
-
-def risk_category(connection: Connection, company: int):
+async def risk_category(connection: AsyncConnection, company: str):
     data = [
     {
         "name": "Operational Risk",
@@ -667,33 +711,35 @@ def risk_category(connection: Connection, company: int):
     }
 ]
 
-    with connection.cursor() as cursor:
-        process_ids = {}
+    try:
+        async with connection.cursor() as cursor:
+            process_ids = {}
+            query = sql.SQL(
+                """
+                INSERT INTO public.sub_risk_category 
+                (id, risk_category, values) 
+                VALUES (%s, %s, %s);
+                """)
 
-        # 1️⃣ Insert Business Processes & Get Their IDs
-        for process in data:
-            cursor.execute(
-                "INSERT INTO public.risk_category (name, company) VALUES (%s, %s) RETURNING id;",
-                (process["name"], company)
-            )
-            process_id = cursor.fetchone()[0]
-            process_ids[process["name"]] = process_id  # Store process ID
+            # 1️⃣ Insert Business Processes & Get Their IDs
+            for process in data:
+                await cursor.execute(
+                    "INSERT INTO public.risk_category (id, name, company) VALUES (%s, %s, %s) RETURNING id;",
+                    (get_unique_key_(), process["name"], company)
+                )
+                process_id = await cursor.fetchone()
+                process_ids[process["name"]] = process_id[0]  # Store process ID
 
-        # 2️⃣ Insert Business Subprocesses (Batch Insert)
-        subprocess_values = []
-        for process in data:
-            process_id = process_ids[process["name"]]
-            for sub in process["sub"]:
-                subprocess_values.append((sub, process_id))
+            for process in data:
+                process_id = process_ids[process["name"]]
+                await cursor.execute(query, (get_unique_key_(), process_id, process["sub"]))
 
-        # Execute batch insert
-        cursor.executemany(
-            "INSERT INTO public.sub_risk_category (sub_name, risk_category) VALUES (%s, %s);",
-            subprocess_values
-        )
-        connection.commit()
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-def impact_category(connection: Connection, company: id):
+async def impact_category(connection: AsyncConnection, company: str):
     data = [
     {
         "name": "Financial Impact",
@@ -745,33 +791,33 @@ def impact_category(connection: Connection, company: id):
     }
 ]
 
-    with connection.cursor() as cursor:
-        process_ids = {}
+    try:
+        async with connection.cursor() as cursor:
+            process_ids = {}
+            query = sql.SQL(
+                """
+                INSERT INTO public.impact_sub_category 
+                (id, impact_category, values) 
+                VALUES (%s, %s, %s);
+                """)
 
-        # 1️⃣ Insert Business Processes & Get Their IDs
-        for process in data:
-            cursor.execute(
-                "INSERT INTO public.impact_category (name, company) VALUES (%s, %s) RETURNING id;",
-                (process["name"], company)
-            )
-            process_id = cursor.fetchone()[0]
-            process_ids[process["name"]] = process_id  # Store process ID
+            for process in data:
+                await cursor.execute(
+                    "INSERT INTO public.impact_category (id, name, company) VALUES (%s, %s, %s) RETURNING id;",
+                    (get_unique_key_(), process["name"], company)
+                )
+                process_id = await cursor.fetchone()
+                process_ids[process["name"]] = process_id[0]
 
-        # 2️⃣ Insert Business Subprocesses (Batch Insert)
-        subprocess_values = []
-        for process in data:
-            process_id = process_ids[process["name"]]
-            for sub in process["sub"]:
-                subprocess_values.append((sub, process_id))
+            for process in data:
+                process_id = process_ids[process["name"]]
+                await cursor.execute(query, (get_unique_key_(), process_id, process["sub"]))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        logger.error(e)
 
-        # Execute batch insert
-        cursor.executemany(
-            "INSERT INTO public.impact_sub_category (sub_name, impact_category) VALUES (%s, %s);",
-            subprocess_values
-        )
-        connection.commit()
-
-def planning_procedures(connection: Connection, engagement: int):
+async def planning_procedures(connection: AsyncConnection, engagement: str):
     values = [
         {
             "title": "Pre-engagement meeting",
@@ -1207,26 +1253,30 @@ def planning_procedures(connection: Connection, engagement: int):
             }
         }
     ]
-    query: str = """
-                   INSERT INTO public.std_template (
-                        engagement,
-                        reference,
-                        title,
-                        tests,
-                        results,
-                        observation,
-                        attachments,
-                        conclusion,
-                        type,
-                        prepared_by,
-                        reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                 """
+    query = sql.SQL(
+        """
+        INSERT INTO public.std_template (
+            id,
+            engagement,
+            reference,
+            title,
+            tests,
+            results,
+            observation,
+            attachments,
+            conclusion,
+            type,
+            prepared_by,
+            reviewed_by
+        ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """)
     try:
-        with connection.cursor() as cursor:
+        async with connection.cursor() as cursor:
             ref = 1
             for value in values:
-                cursor.execute(query, (
+                await cursor.execute(query, (
+                    get_unique_key_(),
                     engagement,
                     f"REF-{ref:04d}",
                     value["title"],
@@ -1241,12 +1291,13 @@ def planning_procedures(connection: Connection, engagement: int):
                 ))
                 ref = ref + 1
 
-        connection.commit()
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error adding planning procedures {e}")
+        await connection.rollback()
+        logger.error(e)
+        raise HTTPException(status_code=400, detail="Error creating planning procedure")
 
-def reporting_procedures(connection: Connection, engagement: int):
+async def reporting_procedures(connection: AsyncConnection, engagement: str):
     values = [
         {
             "title": "Summary of audit findings",
@@ -1492,26 +1543,30 @@ def reporting_procedures(connection: Connection, engagement: int):
             }
         },
     ]
-    query: str = """
-                   INSERT INTO public.reporting_procedure (
-                        engagement,
-                        reference,
-                        title,
-                        tests,
-                        results,
-                        observation,
-                        attachments,
-                        conclusion,
-                        type,
-                        prepared_by,
-                        reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                 """
+    query = sql.SQL(
+        """
+        INSERT INTO public.reporting_procedure (
+            id,
+            engagement,
+            reference,
+            title,
+            tests,
+            results,
+            observation,
+            attachments,
+            conclusion,
+            type,
+            prepared_by,
+            reviewed_by
+        ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """)
     try:
-        with connection.cursor() as cursor:
+        async with connection.cursor() as cursor:
             ref = 1
             for value in values:
-                cursor.execute(query, (
+                await cursor.execute(query, (
+                    get_unique_key_(),
                     engagement,
                     f"REF-{ref:04d}",
                     value["title"],
@@ -1526,12 +1581,13 @@ def reporting_procedures(connection: Connection, engagement: int):
                 ))
                 ref = ref + 1
 
-        connection.commit()
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
+        logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding report procedures {e}")
 
-def finalization_procedures(connection: Connection, engagement: int):
+async def finalization_procedures(connection: AsyncConnection, engagement: int):
     values = [
         {
             "title": "Audit feedback process",
@@ -1642,26 +1698,30 @@ def finalization_procedures(connection: Connection, engagement: int):
             }
         },
     ]
-    query: str = """
-                   INSERT INTO public.finalization_procedure (
-                        engagement,
-                        reference,
-                        title,
-                        tests,
-                        results,
-                        observation,
-                        attachments,
-                        conclusion,
-                        type,
-                        prepared_by,
-                        reviewed_by
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                 """
+    query = sql.SQL(
+        """
+        INSERT INTO public.finalization_procedure (
+            id,
+            engagement,
+            reference,
+            title,
+            tests,
+            results,
+            observation,
+            attachments,
+            conclusion,
+            type,
+            prepared_by,
+            reviewed_by
+        ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """)
     try:
-        with connection.cursor() as cursor:
+        async with connection.cursor() as cursor:
             ref = 1
             for value in values:
-                cursor.execute(query, (
+                await cursor.execute(query, (
+                    get_unique_key_(),
                     engagement,
                     f"REF-{ref:04d}",
                     value["title"],
@@ -1676,28 +1736,33 @@ def finalization_procedures(connection: Connection, engagement: int):
                 ))
                 ref = ref + 1
 
-        connection.commit()
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
+        logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding finalization procedures {e}")
 
-def add_engagement_profile(connection: Connection, engagement: int):
-    query: str = """
-                   INSERT INTO public.profile (
-                        engagement,
-                        audit_background,
-                        audit_objectives,
-                        key_legislations,
-                        relevant_systems,
-                        key_changes,
-                        reliance,
-                        scope_exclusion,
-                        core_risk,
-                        estimated_dates
-                   ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                 """
+async def add_engagement_profile(connection: AsyncConnection, engagement: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.profile (
+            id,
+            engagement,
+            audit_background,
+            audit_objectives,
+            key_legislations,
+            relevant_systems,
+            key_changes,
+            reliance,
+            scope_exclusion,
+            core_risk,
+            estimated_dates
+        ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """)
     try:
         values = (
+            get_unique_key_(),
             engagement,
             json.dumps({
                 "value": ""
@@ -1725,10 +1790,11 @@ def add_engagement_profile(connection: Connection, engagement: int):
                 "value": ""
             })
         )
-        with connection.cursor() as cursor:
-            cursor.execute(query, values)
-        connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, values)
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
+        await connection.rollback()
+        logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")
 

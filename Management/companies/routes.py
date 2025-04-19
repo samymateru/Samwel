@@ -1,33 +1,32 @@
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from Management.users.databases import add_user_module
-from utils import get_db_connection, get_async_db_connection
-from Management.companies.schemas import *
+from utils import get_async_db_connection
 from Management.company_modules.schemas import CompanyModule
 from Management.company_modules.databases import add_new_company_module
-from Management.companies import databases as company_database
 from Management.users.databases import new_user
 from schema import CurrentUser, ResponseMessage
 from utils import get_current_user
-from Management.companies import databases
+from background import set_company_profile
+from Management.companies.databases import *
 from Management.users.schemas import *
-from seedings import *
+import asyncio
+
+
 router = APIRouter(prefix="/companies")
 
 @router.post("/", response_model=ResponseMessage)
-def new_company(
+async def create_new_entity(
         company: NewCompany,
-        tasks: BackgroundTasks,
-        db = Depends(get_db_connection),
+        db_async = Depends(get_async_db_connection),
     ):
     try:
-        company_id: int = company_database.create_new_company(db, company)
-        user_data = NewUser(
+        company_id = await create_new_company(connection=db_async, company=company)
+        user = NewUser(
             name = company.owner,
             telephone = company.telephone,
             module= [],
             role=[
                 Role(
-                    id=1,
                     name="Owner"
                 )
             ],
@@ -36,34 +35,21 @@ def new_company(
             password = company.password,
             status = True,
         )
-        user_id = new_user(db, user_data, company_id)
+        user_id = await new_user(connection=db_async, user_=user, company_id=company_id)
         for module in company.modules:
             company_module = CompanyModule(
                 name=module.name,
                 purchase_date=None,
                 status="active"
             )
-            module_id = add_new_company_module(db, company_module=company_module, company_id=company_id)
+            module_id = await add_new_company_module(db_async, company_module=company_module, company_id=company_id)
             user_module = Module(
                 id=module_id,
                 name=module.name
             )
-            add_user_module(connection=db, module=user_module, user_id=user_id)
-        tasks.add_task(risk_rating, connection=db, company=company_id)
-        tasks.add_task(engagement_types, connection=db, company=company_id)
-        tasks.add_task(issue_finding_source, connection=db, company=company_id)
-        tasks.add_task(control_effectiveness_rating, connection=db, company=company_id)
-        tasks.add_task(control_weakness_rating, connection=db, company=company_id)
-        tasks.add_task(audit_opinion_rating, connection=db, company=company_id)
-        tasks.add_task(risk_maturity_rating, connection=db, company=company_id)
-        tasks.add_task(issue_implementation_status, connection=db, company=company_id)
-        tasks.add_task(control_type, connection=db, company=company_id)
-        tasks.add_task(roles, connection=db, company=company_id)
-        tasks.add_task(business_process, connection=db, company=company_id)
-        tasks.add_task(impact_category, connection=db, company=company_id)
-        tasks.add_task(root_cause_category, connection=db, company=company_id)
-        tasks.add_task(risk_category, connection=db, company=company_id)
-        return {"detail": "company successfully created", "status_code":201}
+            await add_user_module(connection=db_async, module=user_module, user_id=user_id)
+        asyncio.create_task(set_company_profile(company_id=company_id))
+        return ResponseMessage(detail="company successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -75,7 +61,7 @@ async def get_company(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await databases.get_companies_async(db, company_id=user.company_id)
+        data = await get_companies(db, company_id=user.company_id)
         return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

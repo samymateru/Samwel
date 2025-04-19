@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Form, UploadFile, File, BackgroundTasks
 from AuditNew.Internal.annual_plans.databases import *
-from utils import get_db_connection, get_async_db_connection
+from utils import get_async_db_connection
 from AuditNew.Internal.annual_plans.schemas import *
 from typing import List
 from utils import get_current_user
@@ -62,14 +62,14 @@ async def create_new_annual_plan(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/{annual_plan_id}", response_model=ResponseMessage)
-def update_annual_plan(
-        annual_plan_id: int,
+async def update_annual_plan(
+        annual_plan_id: str,
         name: str = Form(...),
         year: str = Form(...),
         start: datetime = Form(...),
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     annual_plan = AnnualPlan(
@@ -82,21 +82,21 @@ def update_annual_plan(
     if current_user.status_code != 200:
         raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
+        await edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
         return {"detail": "annual plan successfully updated"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.delete("/{annual_plan_id}", response_model=ResponseMessage)
-def delete_annual_plan(
-        annual_plan_id: int,
-        db = Depends(get_db_connection),
+async def delete_annual_plan(
+        annual_plan_id: str,
+        db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        remove_annual_plan(db, annual_plan_id=annual_plan_id)
-        return {"detail": "successfully delete the annual plan"}
+        await remove_annual_plan(db, annual_plan_id=annual_plan_id)
+        return ResponseMessage(detail="successfully delete the annual plan")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

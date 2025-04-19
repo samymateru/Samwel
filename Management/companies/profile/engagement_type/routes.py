@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user
+from utils import get_db_connection, get_current_user, get_async_db_connection
 from Management.companies.profile.engagement_type.databases import *
 from typing import List
 
@@ -21,30 +21,18 @@ def create_engagement_type(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/", response_model=List[EngagementType])
-def fetch_company_engagement_type(
-        db=Depends(get_db_connection),
+@router.get("/", response_model=EngagementType)
+async def fetch_company_engagement_type(
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = get_company_engagement_type(db, company_id=user.company_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@router.get("/{engagement_type_id}", response_model=EngagementType)
-def fetch_control_weakness_rating(
-        engagement_type_id: int,
-        db=Depends(get_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = get_engagement_type(db, engagement_type_id=engagement_type_id)
-        return data
+        data = await get_company_engagement_type(db, company_id=user.company_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Engagement type not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

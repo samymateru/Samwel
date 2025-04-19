@@ -1,18 +1,18 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List
 
 
 class Role(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: str
 
 class Module(BaseModel):
-    id: int
+    id: str
     name: str
 
 class UserA(BaseModel):
-    id: int
+    id: str
     name: str
     email: str
 
@@ -21,11 +21,11 @@ class Task(BaseModel):
     date_assigned: datetime
 
 class User(BaseModel):
-    id: int
+    id: str
     name: str
     telephone: str
     type: str
-    email: EmailStr
+    email: str
     status: bool
     role: List[Role]
     module: List[Module]
@@ -34,7 +34,7 @@ class User(BaseModel):
 
 class NewUser(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     module: List[Module]
     role: List[Role]
     telephone: Optional[str] = Field(default="12345678")
@@ -46,7 +46,7 @@ class UpdateUser(BaseModel):
     name: Optional[str]
     telephone: Optional[str] = None
     type: Optional[str] = None
-    email: Optional[ EmailStr] = None
+    email: Optional[ str] = None
     password: Optional[str] = None
     status: Optional[bool] = None
 
