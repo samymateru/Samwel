@@ -1,8 +1,5 @@
 import json
 from fastapi import HTTPException
-from pandas.io.sql import SQLiteTable
-from psycopg2.extensions import connection as Connection
-from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.task.schemas import *
 from utils import get_reference, get_unique_key
 from psycopg import AsyncConnection, sql
