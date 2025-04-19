@@ -6,6 +6,5 @@ class Rating(BaseModel):
     magnitude: Optional[int]
 
 class RiskRating(BaseModel):
-    company: Optional[str]
     values: Optional[List[Rating]]
 
