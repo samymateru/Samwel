@@ -38,17 +38,18 @@ class Lead(BaseModel):
 
 class Engagement(BaseModel):
     id: Optional[str] = None
-    engagementName: str
-    engagementType: str
-    engagementRisk: Risk
-    engagementLead: List[Lead]
-    plannedQuarter: str
+    name: Optional[str]
+    type: Optional[str]
+    code: Optional[str]
+    risk: Optional[Risk]
+    leads: List[Lead]
+    quarter: Optional[str]
     department: Department
-    sub_department: List[str]
+    sub_departments: List[str]
     status: EngagementStatus = EngagementStatus.NOT_STARTED
     stage: EngagementStage = EngagementStage.NOT_STARTED
-    startDate: datetime = None
-    endDate: datetime = None
+    start_date: datetime = None
+    end_date: datetime = None
     created_at: datetime = datetime.now()
 
 class UpdateEngagement(BaseModel):

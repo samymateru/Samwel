@@ -43,10 +43,10 @@ async def create_new_engagement(
                 if int(code[1]) >= max_:
                     max_ = int(code[1])
         engagement_code: str = engagement.department.code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
-        engagement_id = await create_new_engagement(
+        engagement_id = await add_new_engagement(
             connection=db,
             engagement=engagement,
-            annual_id=annual_id,
+            plan_id=annual_id,
             code=engagement_code)
         asyncio.create_task(set_engagement_templates(engagement_id=engagement_id))
         return ResponseMessage(detail="Engagement successfully created")

@@ -6,7 +6,7 @@ from psycopg import AsyncConnection
 from psycopg import sql
 from utils import get_unique_key
 
-async def create_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str):
+async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str):
     query = sql.SQL(
         """
         INSERT INTO public.engagements (id, plan_id, code, name, risk, type, status, leads, stage, department,
@@ -20,17 +20,17 @@ async def create_new_engagement(connection: AsyncConnection, engagement: Engagem
                                get_unique_key(),
                                plan_id,
                                code,
-                               engagement.engagementName,
-                               json.dumps(engagement.engagementRisk.model_dump()),
-                               engagement.engagementType,
+                               engagement.name,
+                               json.dumps(engagement.risk.model_dump()),
+                               engagement.type,
                                engagement.status,
-                               json.dumps(engagement.model_dump().get("engagementLead")),
+                               json.dumps(engagement.model_dump().get("leads")),
                                engagement.stage,
                                json.dumps(engagement.department.model_dump()),
-                               json.dumps(engagement.sub_department),
-                               engagement.plannedQuarter,
-                               engagement.startDate,
-                               engagement.endDate,
+                               json.dumps(engagement.sub_departments),
+                               engagement.quarter,
+                               engagement.start_date,
+                               engagement.end_date,
                                engagement.created_at
                            ))
             id = await cursor.fetchone()
@@ -58,7 +58,7 @@ async def remove_engagements(connection: AsyncConnection, engagement_id: str):
 
 
 async def get_engagements(connection: AsyncConnection, annual_id: str):
-    query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id")
+    query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s")
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (annual_id,))
