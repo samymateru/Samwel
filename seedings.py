@@ -12,7 +12,6 @@ def get_unique_key_():
     key = uuid_str[0] + uuid_str[1]
     return key
 
-
 logging.basicConfig(
     filename="app.log",                   # Log file path
     filemode="a",                         # Append mode; use 'w' to overwrite each time
@@ -817,7 +816,7 @@ async def impact_category(connection: AsyncConnection, company: str):
         await connection.rollback()
         logger.error(e)
 
-async def planning_procedures(connection: AsyncConnection, engagement: str):
+async def planning_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
         {
             "title": "Pre-engagement meeting",
@@ -1277,7 +1276,7 @@ async def planning_procedures(connection: AsyncConnection, engagement: str):
             for value in values:
                 await cursor.execute(query, (
                     get_unique_key_(),
-                    engagement,
+                    engagement_id,
                     f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
@@ -1286,8 +1285,8 @@ async def planning_procedures(connection: AsyncConnection, engagement: str):
                     value["attachments"],
                     json.dumps(value["conclusion"]),
                     value["type"],
-                    json.dumps(value["prepared_by"]),
-                    json.dumps(value["reviewed_by"]),
+                    None,
+                    None
                 ))
                 ref = ref + 1
 
@@ -1297,7 +1296,7 @@ async def planning_procedures(connection: AsyncConnection, engagement: str):
         logger.error(e)
         raise HTTPException(status_code=400, detail="Error creating planning procedure")
 
-async def reporting_procedures(connection: AsyncConnection, engagement: str):
+async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
         {
             "title": "Summary of audit findings",
@@ -1567,7 +1566,7 @@ async def reporting_procedures(connection: AsyncConnection, engagement: str):
             for value in values:
                 await cursor.execute(query, (
                     get_unique_key_(),
-                    engagement,
+                    engagement_id,
                     f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
@@ -1576,8 +1575,8 @@ async def reporting_procedures(connection: AsyncConnection, engagement: str):
                     value["attachments"],
                     json.dumps(value["conclusion"]),
                     value["type"],
-                    json.dumps(value["prepared_by"]),
-                    json.dumps(value["reviewed_by"]),
+                    None,
+                    None
                 ))
                 ref = ref + 1
 
@@ -1587,7 +1586,7 @@ async def reporting_procedures(connection: AsyncConnection, engagement: str):
         logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding report procedures {e}")
 
-async def finalization_procedures(connection: AsyncConnection, engagement: int):
+async def finalization_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
         {
             "title": "Audit feedback process",
@@ -1722,7 +1721,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement: int):
             for value in values:
                 await cursor.execute(query, (
                     get_unique_key_(),
-                    engagement,
+                    engagement_id,
                     f"REF-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
@@ -1731,8 +1730,8 @@ async def finalization_procedures(connection: AsyncConnection, engagement: int):
                     value["attachments"],
                     json.dumps(value["conclusion"]),
                     value["type"],
-                    json.dumps(value["prepared_by"]),
-                    json.dumps(value["reviewed_by"]),
+                    None,
+                    None
                 ))
                 ref = ref + 1
 
@@ -1742,7 +1741,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement: int):
         logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding finalization procedures {e}")
 
-async def add_engagement_profile(connection: AsyncConnection, engagement: str):
+async def add_engagement_profile(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL(
         """
         INSERT INTO public.profile (
@@ -1763,7 +1762,7 @@ async def add_engagement_profile(connection: AsyncConnection, engagement: str):
     try:
         values = (
             get_unique_key_(),
-            engagement,
+            engagement_id,
             json.dumps({
                 "value": ""
             }),

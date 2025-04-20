@@ -1,4 +1,4 @@
-from psycopg.errors import ForeignKeyViolation, UniqueViolation
+from psycopg.errors import UniqueViolation
 from Management.companies.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
@@ -27,7 +27,7 @@ async def create_new_company(connection: AsyncConnection, company: NewCompany):
             company_id = await cursor.fetchone()
         await connection.commit()
         return company_id[0]
-    except UniqueViolation as e:
+    except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Company already already exist")
     except Exception as e:
@@ -46,24 +46,4 @@ async def get_companies(connection: AsyncConnection, company_id: str):
             return data
     except Exception as e:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail="Error querying companies")
-
-
-
-
-# def get_companies_(connection: Connection, company_id: int) -> List[Dict]:
-#     query = """SELECT * FROM public.companies WHERE id = %s"""
-#
-#
-#     try:
-#         with connection.cursor() as cursor:
-#             cursor: Cursor
-#             cursor.execute(query, (company_id,))
-#             rows = cursor.fetchall()
-#             column_names = [desc[0] for desc in cursor.description]
-#             data = [dict(zip(column_names, row_)) for row_ in rows]
-#             return data
-#     except Exception as e:
-#         connection.rollback()
-#         print(f"Error querying companies {e}")
-#         raise HTTPException(status_code=400, detail="Error querying companies")
+        raise HTTPException(status_code=400, detail=f"Error querying companies {e}")

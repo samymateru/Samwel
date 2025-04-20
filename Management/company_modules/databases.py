@@ -1,13 +1,10 @@
-from typing import Dict
 from fastapi import HTTPException
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
-from psycopg2.extensions import connection as Connection
-from psycopg2.extensions import cursor as Cursor
 from Management.company_modules.schemas import *
 from psycopg import AsyncConnection, sql
 from utils import get_unique_key
 
-async def add_new_company_module(connection: AsyncConnection, company_module: CompanyModule, company_id: int):
+async def add_new_company_module(connection: AsyncConnection, company_module: CompanyModule, company_id: str):
     query = sql.SQL(
         """
         INSERT INTO public.company_modules (id, company, name, purchase_date, status)
@@ -35,36 +32,28 @@ async def add_new_company_module(connection: AsyncConnection, company_module: Co
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating company module {e}")
 
-def delete_company_module(connection: Connection, company_module_id: List[int]) -> None:
-    query = """
+async def delete_company_module(connection: AsyncConnection, company_module_id: str):
+    query = sql.SQL("""
             DELETE FROM public.company_modules
             WHERE company_module_id = ANY(%s)
             RETURNING company_module_id;
-            """
+            """)
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (company_module_id,))
-        connection.commit()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_module_id,))
+        await connection.commit()
     except Exception as e:
-        connection.rollback()
-        print(f"Error deleting company module {e}")
-        raise HTTPException(status_code=400, detail="Error deleting company module")
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting company module {e}")
 
-def get_company_modules(connection: Connection, column: str = None, value: str | int = None, row: str = None) -> List[Dict]:
-    query = "SELECT * FROM public.company_modules "
-    if row:
-        query = f"SELECT {row} FROM public.company_modules "
-    if column and value:
-        query += f"WHERE  {column} = %s"
+async def get_company_modules(connection: AsyncConnection, company_id: str):
+    query = sql.SQL("SELECT * FROM public.company_modules WHERE company = %s")
     try:
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (value,))
-            rows = cursor.fetchall()
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_id,))
+            rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]
     except Exception as e:
-        connection.rollback()
-        print(f"Error querying company modules {e}")
-        raise HTTPException(status_code=400, detail="Error querying company modules")
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")

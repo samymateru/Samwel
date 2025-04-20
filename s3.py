@@ -1,4 +1,3 @@
-from tempfile import NamedTemporaryFile
 import boto3
 import os
 from dotenv import load_dotenv

@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends
-from AuditNew.Internal.engagements.administration.databases import add_new_business_contact
 from utils import get_async_db_connection
 from AuditNew.Internal.engagements.databases import *
 from typing import List
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
 from datetime import datetime
-from seedings import planning_procedures, finalization_procedures, reporting_procedures, add_engagement_profile
-
+import asyncio
+from background import set_engagement_templates
 
 router = APIRouter(prefix="/engagements")
 
@@ -32,26 +31,24 @@ async def create_new_engagement(
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
-    eng: str | int = await get_engagement_code(connection=db, annual_id=annual_id)
+
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     max_ = 0
     try:
-        for data in eng:
-            if engagement.department.code == data[0].split("-")[0]:
-                if int(data[0].split("-")[1]) >= max_:
-                    max_ = int(data[0].split("-")[1])
-        code: str = engagement.department.code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
-        id = await create_new_engagement(
+        code_list = await get_engagement_code(connection=db, annual_id=annual_id)
+        for data in code_list:
+            code = data[0].split("-")
+            if engagement.department.code == code[0]:
+                if int(code[1]) >= max_:
+                    max_ = int(code[1])
+        engagement_code: str = engagement.department.code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
+        engagement_id = await create_new_engagement(
             connection=db,
             engagement=engagement,
             annual_id=annual_id,
-            code=code)
-        await planning_procedures(connection=db, engagement=id)
-        await finalization_procedures(connection=db, engagement=id)
-        await reporting_procedures(connection=db, engagement=id)
-        await add_engagement_profile(connection=db, engagement=id)
-        await add_new_business_contact(connection=db, engagement_id=id)
+            code=engagement_code)
+        asyncio.create_task(set_engagement_templates(engagement_id=engagement_id))
         return ResponseMessage(detail="Engagement successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -54,18 +54,16 @@ async def create_new_user(
 
 
 @router.put("/")
-def update_user(
+async def update_user(
         user_update: UpdateUser,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
-    if current_user.type != "admin":
-        return HTTPException(status_code=101, detail="your not admin")
     try:
-        update_user(db, user_update)
-        return {"detail": "user successfully updated", "status_code": 502}
+        await edit_user(db, user_update)
+        return ResponseMessage(detail="user successfully updated")
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 

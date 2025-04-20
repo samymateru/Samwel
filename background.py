@@ -1,6 +1,6 @@
 from seedings import *
 from utils import get_async_db_connection
-
+from AuditNew.Internal.engagements.administration.databases import add_new_business_contact
 
 async def set_company_profile(company_id: str):
     async for connection in get_async_db_connection():
@@ -17,3 +17,12 @@ async def set_company_profile(company_id: str):
         await impact_category(connection=connection, company=company_id)
         await root_cause_category(connection=connection, company=company_id)
         await risk_category(connection=connection, company=company_id)
+
+async def set_engagement_templates(engagement_id: str):
+    async for connection in get_async_db_connection():
+        await planning_procedures(connection=connection, engagement_id=engagement_id)
+        await finalization_procedures(connection=connection, engagement_id=engagement_id)
+        await reporting_procedures(connection=connection, engagement_id=engagement_id)
+        await add_engagement_profile(connection=connection, engagement_id=engagement_id)
+        await add_new_business_contact(connection=connection, engagement_id=engagement_id)
+
