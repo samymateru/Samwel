@@ -19,11 +19,11 @@ class Section(BaseModel):
     value: str
 
 class User(BaseModel):
-    id: int
+    id: str
     name: str
 
 class PRCM(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     process: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]
@@ -31,10 +31,10 @@ class PRCM(BaseModel):
     control_objective: Optional[str]
     control_type: Optional[str]
     residue_risk: Optional[str]
-    summary_audit_program: Optional[int] = None
+    summary_audit_program: Optional[str] = None
 
 class SummaryAuditProgram(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     process: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]
@@ -45,13 +45,13 @@ class SummaryAuditProgram(BaseModel):
     program: Optional[str]
 
 class EngagementLetter(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
     date_attached: Optional[datetime]
     attachment: Optional[str]
 
 class StandardTemplate(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     reference: Optional[str] = None
     title: Optional[str]
     tests: Optional[Section]
@@ -68,7 +68,7 @@ class NewPlanningProcedure(BaseModel):
 
 
 class SummaryAuditProgramResponse(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     process: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]

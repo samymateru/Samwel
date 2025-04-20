@@ -175,6 +175,7 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
                 control_id_ = control_id
 
             await cursor.execute(query, (
+                get_unique_key(),
                 engagement_id,
                 prcm_id,
                 summary.process,

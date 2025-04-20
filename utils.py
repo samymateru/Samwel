@@ -137,13 +137,16 @@ async def get_reference(connection: AsyncConnection, resource: str, id: str):
     else:
         start = "PROC"
         relation: str = "program"
-    query = sql.SQL(
-        """
-        SELECT reference FROM public.{}
-        WHERE {} = %s
+
+    query = sql.SQL("""
+        SELECT reference FROM {table}
+        WHERE {column} = %s
         ORDER BY reference DESC
         LIMIT 1
-        """).format(resource, relation)
+    """).format(
+        table=sql.Identifier('public', resource),
+        column=sql.Identifier(relation)
+    )
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (id,))
