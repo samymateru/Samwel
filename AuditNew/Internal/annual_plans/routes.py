@@ -14,7 +14,7 @@ router = APIRouter(prefix="/annual_plans")
 
 @router.get("/{company_module_id}", response_model=List[AnnualPlan])
 async def fetch_annual_plans(
-        company_module_id: int,
+        company_module_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
 ):
@@ -28,7 +28,7 @@ async def fetch_annual_plans(
 
 @router.post("/{company_module_id}", response_model=ResponseMessage)
 async def create_new_annual_plan(
-        company_module_id: int,
+        company_module_id: str,
         name: str = Form(...),
         year: str = Form(...),
         start: datetime = Form(...),
@@ -45,7 +45,7 @@ async def create_new_annual_plan(
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
 
-        key: str = f"annual_plans/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
+        key: str = f"annual_plans/{"user.company_name"}/{uuid.uuid4()}-{attachment.filename}"
         public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
 
         background_tasks.add_task(upload_file, temp_path, key)
