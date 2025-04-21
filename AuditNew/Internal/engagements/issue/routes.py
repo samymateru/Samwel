@@ -203,10 +203,10 @@ async def prepare_issue(
         issue_id: str,
         prepare: User,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_prepared(connection=db, prepare=prepare, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked prepared successfully")
@@ -218,10 +218,10 @@ async def review_issue(
         issue_id: str,
         review: User,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_reviewed(connection=db, review=review, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked reviewed successfully")
@@ -233,10 +233,10 @@ async def report_issue(
         issue_id: str,
         reportable: bool = Query(None),
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_reportable(connection=db, reportable=reportable, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked reportable successfully")
