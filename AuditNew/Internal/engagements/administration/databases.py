@@ -475,7 +475,7 @@ async def edit_staff(connection: AsyncConnection, staff: Staff, staff_id: str):
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 staff.name,
-                staff.role,
+                staff.role.model_dump_json(),
                 staff.start_date,
                 staff.end_date,
                 staff.tasks,

@@ -6,7 +6,7 @@ class Section(BaseModel):
     value: str
 
 class EngagementProfile(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     audit_background: Optional[Section]
     audit_objectives: Optional[Section]
     key_legislations: Optional[Section]
@@ -18,32 +18,32 @@ class EngagementProfile(BaseModel):
     estimated_dates: Optional[Section]
 
 class Policy(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
     version: Optional[str]
     key_areas: Optional[str]
     attachment: Optional[str]
 
 class EngagementProcess(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     process: Optional[str]
     sub_process: Optional[List[str]]
     description: Optional[str]
     business_unit: Optional[str]
 
 class Regulations(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
     issue_date: Optional[datetime]
     key_areas: Optional[str]
     attachment: Optional[str]
 
 class Role(BaseModel):
-    id: int
+    id: str
     name: str
 
 class Staff(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
     role: Optional[Role]
     start_date: datetime = datetime.now()
@@ -51,11 +51,11 @@ class Staff(BaseModel):
     tasks: Optional[str]
 
 class User(BaseModel):
-    id: int
+    id: str
     name: str
     email: str
 
 class BusinessContact(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     user: List[User]
     type: Optional[str]
