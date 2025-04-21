@@ -129,7 +129,7 @@ async def login(
             "role": user_data[0].get("role"),
             "module": user_data[0].get("module")
         }
-        return {"token": token, "token_type": "Bearer", "detail": "login success", "content": user}
+        return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
     else:
         raise HTTPException(detail="Invalid password", status_code=400)
 
