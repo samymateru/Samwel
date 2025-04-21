@@ -23,7 +23,7 @@ class Department(BaseModel):
     code: str
 
 class Role(BaseModel):
-    id: int
+    id: str
     name: str
 
 class Risk(BaseModel):
@@ -33,7 +33,7 @@ class Risk(BaseModel):
 class Lead(BaseModel):
     name: Optional[str]
     email: Optional[str]
-    user_id: Optional[int]
+    user_id: Optional[str]
     role: List[Role]
 
 class Engagement(BaseModel):
@@ -42,14 +42,14 @@ class Engagement(BaseModel):
     type: Optional[str]
     code: Optional[str]
     risk: Optional[Risk]
-    leads: List[Lead]
-    quarter: Optional[str]
-    department: Department
-    sub_departments: List[str]
+    leads: Optional[List[Lead]]
+    quarter: Optional[str] = None
+    department: Optional[Department]
+    sub_departments: Optional[List[str]]
     status: EngagementStatus = EngagementStatus.NOT_STARTED
     stage: EngagementStage = EngagementStage.NOT_STARTED
-    start_date: datetime = None
-    end_date: datetime = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
     created_at: datetime = datetime.now()
 
 class UpdateEngagement(BaseModel):
@@ -66,4 +66,4 @@ class UpdateEngagement(BaseModel):
     updated_at: datetime = datetime.now()
 
 class DeleteEngagements(BaseModel):
-    engagement_id: List[int]
+    engagement_id: List[str]
