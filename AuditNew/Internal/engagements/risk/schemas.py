@@ -3,6 +3,6 @@ from typing import Optional
 
 
 class Risk(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
     rating: Optional[str]
