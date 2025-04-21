@@ -95,16 +95,16 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 estimated_implementation_date,
                 regulatory,
                 status,
-                LOD1_implementer,
-                LOD1_owner,
-                LOD2_risk_manager,
-                LOD2_compliance_officer,
-                LOD3_audit_manager
+                lod1_implementer,
+                lod1_owner,
+                lod2_risk_manager,
+                lod2_compliance_officer,
+                lod3_audit_manager
                 )
         VALUES (
-         %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s, 
          %s, %s, %s, %s, %s, %s, %s
         );
         """)
@@ -175,8 +175,8 @@ async def send_issues_to_implementor(connection: AsyncConnection, issue_ids: Iss
             type="send"
         )
         async with connection.cursor() as cursor:
-            placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
-            query_issue = sql.SQL("SELECT engagement FROM public.issue WHERE id IN ({})").format(placeholders)
+            placeholders = sql.SQL(', ').join(sql.Placeholder() * len(issue_ids.model_dump().get("id")))
+            query_issue = sql.SQL("SELECT engagement FROM public.issue WHERE id IN ({placeholders})").format(placeholders=placeholders)
             await cursor.execute(query_issue, issue_ids.id)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -452,8 +452,8 @@ async def get_issue_and_issue_actors(
         next_status: str,
         issue_details: IssueImplementationDetails
 ):
-    placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
-    query_implementers = sql.SQL("SELECT * FROM public.issue WHERE id IN ({})").format(placeholders)
+    placeholders = sql.SQL(', ').join(sql.Placeholder() * len(issue_ids.model_dump().get("id")))
+    query_implementers = sql.SQL("SELECT * FROM public.issue WHERE id IN ({placeholders})").format(placeholders=placeholders)
     query_update = sql.SQL(
         """
         UPDATE public.issue
@@ -507,13 +507,13 @@ async def update_issue_status(cursor: AsyncCursor, connection: AsyncConnection, 
         IssueStatus.CLOSED_RISK_ACCEPTED,
         IssueStatus.CLOSED_VERIFIED_BY_RISK
     }
-    placeholders = ','.join(['%s'] * len(issue_ids.model_dump().get("id")))
+    placeholders = sql.SQL(', ').join(sql.Placeholder() * len(issue_ids.model_dump().get("id")))
     query = sql.SQL(
         """
         UPDATE public.issue
         SET status = %s
-        WHERE id IN ({})
-        """).format(placeholders)
+        WHERE id IN ({placeholders})
+        """).format(placeholders=placeholders)
     if status in status_:
         params = [next_status] + issue_ids.id
         await cursor.execute(query, params)
@@ -551,7 +551,7 @@ async def get_issue_from_actor(connection: AsyncConnection, user_email: str):
     # Join all conditions with OR
     where_clause = " OR ".join(conditions)
 
-    query = sql.SQL("SELECT * FROM public.issue WHERE  {};").format(where_clause)
+    query = sql.SQL("SELECT * FROM public.issue WHERE  {where_clause};").format(where_clause=where_clause)
 
     try:
         async with connection.cursor() as cursor:
