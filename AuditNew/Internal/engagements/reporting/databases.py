@@ -12,7 +12,7 @@ def safe_json_dump(obj):
 
 async def add_reporting_procedure(connection: AsyncConnection, report: NewReportingProcedure, engagement_id: str):
     data = {
-        "title": f"{report.title}",
+        "title": report.title,
         "tests": {
             "value": ""
         },
@@ -63,15 +63,15 @@ async def add_reporting_procedure(connection: AsyncConnection, report: NewReport
                 get_unique_key(),
                 engagement_id,
                 ref,
-                json.dumps(data["title"]),
+                data["title"],
                 json.dumps(data["tests"]),
                 json.dumps(data["results"]),
                 json.dumps(data["observation"]),
                 data["attachments"],
                 json.dumps(data["conclusion"]),
                 data["type"],
-                json.dumps(data["prepared_by"]),
-                json.dumps(data["reviewed_by"])
+                None,
+                None
             ))
         await connection.commit()
     except ForeignKeyViolation:

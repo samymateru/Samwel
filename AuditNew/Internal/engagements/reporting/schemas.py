@@ -5,7 +5,7 @@ class NewReportingProcedure(BaseModel):
     title: str
 
 class ProgramSummary(BaseModel):
-    id: Optional[int]
+    id: Optional[str] = None
     name: str
     status: Optional[str]
     process_rating: Optional[str]
