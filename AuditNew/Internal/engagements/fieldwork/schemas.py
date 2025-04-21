@@ -15,6 +15,7 @@ class ActionOwner(BaseModel):
     email: Optional[str]
 
 class SummaryReviewNotes(BaseModel):
+    id: Optional[str] = None
     reference: Optional[str]
     title: Optional[str]
     description: Optional[str]
@@ -26,6 +27,7 @@ class SummaryReviewNotes(BaseModel):
     decision: Optional[str]
 
 class SummaryTask(BaseModel):
+    id: Optional[str] = None
     reference: Optional[str]
     title: Optional[str]
     description: Optional[str]

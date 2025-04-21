@@ -5,20 +5,25 @@ from psycopg import AsyncConnection, sql
 async def get_summary_procedures(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL(
         """ 
-        SELECT
-        main_program.name as program, 
+        SELECT 
+        main_program.name AS program, 
         sub_program.reference,
         sub_program.title,
         sub_program.prepared_by,
         sub_program.reviewed_by,
         sub_program.effectiveness,
         COUNT(issue.id) AS issue_count 
-        FROM main_program 
-        LEFT JOIN sub_program ON main_program.id = sub_program.program
+        FROM sub_program 
+        LEFT JOIN main_program ON main_program.id = sub_program.program
         LEFT JOIN issue ON sub_program.id = issue.sub_program
         WHERE main_program.engagement = %s
-        GROUP BY sub_program.reference, sub_program.title, sub_program.prepared_by, 
-        sub_program.reviewed_by, sub_program.effectiveness, main_program.name;                
+        GROUP BY 
+        main_program.name,
+        sub_program.reference, 
+        sub_program.title, 
+        sub_program.prepared_by, 
+        sub_program.reviewed_by, 
+        sub_program.effectiveness; 
         """)
     try:
         async with connection.cursor() as cursor:
@@ -34,6 +39,7 @@ async def get_summary_review_notes(connection: AsyncConnection, engagement_id: s
     query = sql.SQL(
         """
         SELECT 
+        review_comment.id,
         review_comment.reference,
         review_comment.title,
         review_comment.description,
@@ -60,6 +66,7 @@ async def get_summary_task(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL(
         """
         SELECT 
+        task.id,
         task.reference,
         task.title,
         task.description,
