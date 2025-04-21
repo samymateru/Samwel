@@ -247,8 +247,9 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
         """)
     try:
         async with connection.cursor() as cursor:
-            ref = await get_next_reference(connection=connection, resource="std_template", engagement=engagement_id)
+            ref = await get_next_reference(connection=connection, resource="std_template", engagement_id=engagement_id)
             await cursor.execute(query, (
+                get_unique_key(),
                 engagement_id,
                 ref,
                 data["title"],
@@ -258,8 +259,8 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
                 data["attachments"],
                 json.dumps(data["conclusion"]),
                 data["type"],
-                json.dumps(data["prepared_by"]),
-                json.dumps(data["reviewed_by"])
+                None,
+                None
             ))
         await connection.commit()
     except ForeignKeyViolation:

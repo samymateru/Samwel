@@ -104,11 +104,11 @@ def generated_password() -> str:
 async def get_next_reference(connection: AsyncConnection, resource: str, engagement_id: str):
     query = sql.SQL(
         """
-        SELECT reference FROM public.{}
+        SELECT reference FROM {resource}
         WHERE engagement = %s
         ORDER BY reference DESC
         LIMIT 1
-    """).format(resource)
+    """).format(resource=sql.Identifier('public', resource))
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (engagement_id,))
