@@ -15,7 +15,7 @@ def safe_json_dump(obj):
 
 async def add_finalization_procedure(connection: AsyncConnection, finalization: NewFinalizationProcedure, engagement_id: str):
     data = {
-        "title": f"{finalization.title}",
+        "title": finalization.title,
         "tests": {
             "value": ""
         },
@@ -73,8 +73,8 @@ async def add_finalization_procedure(connection: AsyncConnection, finalization: 
                 data["attachments"],
                 json.dumps(data["conclusion"]),
                 data["type"],
-                json.dumps(data["prepared_by"]),
-                json.dumps(data["reviewed_by"])
+                None,
+                None
             ))
         await connection.commit()
     except ForeignKeyViolation:
