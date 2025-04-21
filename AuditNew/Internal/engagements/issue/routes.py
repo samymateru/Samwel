@@ -75,14 +75,14 @@ async def save_issue_implementation(
         notes: str = Form(...),
         attachment: Optional[UploadFile] = File(None),
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
     if attachment is None:
         issue_details = IssueImplementationDetails(
             notes=notes,
             issued_by=User(
                 name=implementer_name,
-                email="",
+                email=user.user_email,
                 date_issued=datetime.now()
             ),
             type="save"
@@ -90,19 +90,19 @@ async def save_issue_implementation(
     else:
         issue_details = IssueImplementationDetails(
             notes=notes,
-            attachment=attachment.filename,
+            attachment=[attachment.filename],
             issued_by=User(
                 name=implementer_name,
-                email="",
+                email=user.user_email,
                 date_issued=datetime.now()
             ),
             type="save"
         )
 
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email="")
+        await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email=user.user_email)
         return ResponseMessage(detail="Successfully save the issue")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

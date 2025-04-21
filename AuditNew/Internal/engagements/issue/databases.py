@@ -354,6 +354,12 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                             status=issue_data[0].get("status"),
                             next_status=IssueStatus.CLOSED_VERIFIED_BY_AUDIT
                         )
+                        await update_issue_details(
+                            connection=connection,
+                            cursor=cursor,
+                            issue_id=issue_id,
+                            issue_details=issue_details
+                        )
                     case _:
                         pass
             else:
