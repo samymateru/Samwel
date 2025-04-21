@@ -97,9 +97,9 @@ async def fetch_sub_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/sub_program/{program_id}", response_model=ResponseMessage)
+@router.put("/sub_program/{sub_program_id}", response_model=ResponseMessage)
 async def update_sub_program(
-        program_id: str,
+        sub_program_id: str,
         sub_program: SubProgram,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -107,7 +107,7 @@ async def update_sub_program(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await edit_sub_program(db, sub_program=sub_program, program_id=program_id)
+        await edit_sub_program(db, sub_program=sub_program, sub_program_id=sub_program_id)
         return ResponseMessage(detail="Sub program successfully updated")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -164,7 +164,7 @@ async def remove_work_program(connection: AsyncConnection, id: str, table: str, 
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting {resource} {e}")
 
-async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram, program_id: str):
+async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram, sub_program_id: str):
     query = sql.SQL(
         """
         UPDATE public.sub_program
@@ -181,6 +181,8 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
         extended_procedure = %s,
         extended_results = %s,
         effectiveness = %s,
+        prepared_by = %s::jsonb,
+        reviewed_by = %s::jsonb,
         conclusion = %s WHERE id = %s; 
         """)
     try:
@@ -198,8 +200,10 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
                 sub_program.extended_procedure,
                 sub_program.extended_results,
                 sub_program.effectiveness,
+                sub_program.prepared_by.model_dump_json(),
+                sub_program.reviewed_by.model_dump_json(),
                 sub_program.conclusion,
-                program_id
+                sub_program_id
             ))
         await connection.commit()
     except UniqueViolation:
