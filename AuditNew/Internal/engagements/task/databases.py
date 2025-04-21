@@ -21,7 +21,7 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
         VALUES (%s, %s, %s, %s, %s, %s, %s);
         """)
     try:
-        reference: str = get_reference(connection=connection, resource="task", id=engagement_id)
+        reference = await get_reference(connection=connection, resource="task", id=engagement_id)
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 get_unique_key(),
@@ -35,7 +35,7 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
         await connection.commit()
     except ForeignKeyViolation:
         await connection.rollback()
-        raise HTTPException(status_code=409, detail="Engagement id is invalid")
+        raise HTTPException(status_code=400, detail="Engagement id is invalid")
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Task already exist")

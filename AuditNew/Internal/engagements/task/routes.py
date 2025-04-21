@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from utils import  get_db_connection_async
+from utils import  get_async_db_connection
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/task")
 async def raise_new_task(
         engagement_id: str,
         task: NewTask,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -26,7 +26,7 @@ async def raise_new_task(
 async def update_raised_task(
         task_id: str,
         task: NewTask,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -41,7 +41,7 @@ async def update_raised_task(
 async def resolve_task(
         task_id: str,
         task: ResolveTask,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -55,7 +55,7 @@ async def resolve_task(
 @router.delete("/{task_id}", response_model=ResponseMessage)
 async def delete_task(
         task_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
