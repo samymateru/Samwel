@@ -53,7 +53,7 @@ async def create_new_engagement(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/update_engagement/{engagement_id}", response_model=ResponseMessage)
+@router.put("/{engagement_id}", response_model=ResponseMessage)
 async def update_engagement(
         engagement_id: str,
         db = Depends(get_async_db_connection),
