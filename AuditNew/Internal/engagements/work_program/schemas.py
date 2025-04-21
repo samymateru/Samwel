@@ -9,11 +9,13 @@ class User(BaseModel):
     date_issued: Optional[datetime]
 
 class MainProgram(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     name: Optional[str]
+    status: Optional[str]
+    process_rating: Optional[str]
 
 class SubProgram(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     reference: Optional[str] = None
     title: Optional[str]
     brief_description: Optional[str]
@@ -32,7 +34,7 @@ class SubProgram(BaseModel):
     conclusion: Optional[str]
 
 class SubProgramEvidence(BaseModel):
-    id: Optional[int] = None
+    id: Optional[str] = None
     attachment: Optional[str]
 
 class NewSubProgram(BaseModel):

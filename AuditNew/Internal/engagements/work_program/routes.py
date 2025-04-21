@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, File
-from utils import  get_db_connection_async
+from utils import  get_async_db_connection
 from AuditNew.Internal.engagements.work_program.databases import *
 from AuditNew.Internal.engagements.work_program.schemas import *
 from utils import get_current_user
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/engagements")
 async def create_new_main_program(
         engagement_id: str,
         program: MainProgram,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -27,7 +27,7 @@ async def create_new_main_program(
 @router.get("/main_program/{engagement_id}", response_model=List[MainProgram])
 async def fetch_main_program(
         engagement_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -42,7 +42,7 @@ async def fetch_main_program(
 async def update_main_program(
         program_id: str,
         program: MainProgram,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -56,7 +56,7 @@ async def update_main_program(
 @router.delete("/main_program/{program_id}", response_model=ResponseMessage)
 async def delete_main_program(
         program_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -72,7 +72,7 @@ async def delete_main_program(
 async def create_new_sub_program(
         program_id: str,
         sub_program: NewSubProgram,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -86,7 +86,7 @@ async def create_new_sub_program(
 @router.get("/sub_program/{program_id}", response_model=List[SubProgram])
 async def fetch_sub_program(
         program_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -101,7 +101,7 @@ async def fetch_sub_program(
 async def update_sub_program(
         program_id: str,
         sub_program: SubProgram,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -115,7 +115,7 @@ async def update_sub_program(
 @router.delete("/sub_program/{sub_program_id}", response_model=ResponseMessage)
 async def delete_sub_program(
         sub_program_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -131,7 +131,7 @@ async def delete_sub_program(
 async def create_new_sub_program_evidence(
         sub_program_id: str,
         attachment: UploadFile = File(...),
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -149,7 +149,7 @@ async def create_new_sub_program_evidence(
 @router.get("/sub_program/evidence/{sub_program_id}", response_model=List[SubProgramEvidence])
 async def fetch_engagement_letter(
         sub_program_id: str,
-        db=Depends(get_db_connection_async),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

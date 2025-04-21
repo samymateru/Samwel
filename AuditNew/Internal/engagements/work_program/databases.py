@@ -155,7 +155,7 @@ async def get_sub_program(connection: AsyncConnection, program_id: str):
         raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
 
 async def remove_work_program(connection: AsyncConnection, id: str, table: str, resource: str):
-    query = sql.SQL("DELETE FROM public.{} WHERE id = %s").format(table)
+    query = sql.SQL("DELETE FROM {table} WHERE id = %s").format(table=sql.Identifier('public', table))
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (id,))
