@@ -33,7 +33,7 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
         VALUES (%s, %s, %s, %s, %s, %s, %s);
         """)
     try:
-        reference: str = get_reference(connection=connection, resource="review_comment", id=engagement_id)
+        reference: str = await get_reference(connection=connection, resource="review_comment", id=engagement_id)
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 get_unique_key(),
