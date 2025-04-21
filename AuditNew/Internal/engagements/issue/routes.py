@@ -166,7 +166,7 @@ async def issue_decline_response(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await send_decline_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
-        return ResponseMessage(detail=f"Successfully send decline response to {issue.actor}")
+        return ResponseMessage(detail=f"Successfully decline issue")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

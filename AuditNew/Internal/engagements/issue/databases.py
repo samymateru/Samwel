@@ -538,7 +538,7 @@ async def get_issue_from_actor(connection: AsyncConnection, user_email: str):
         IssueActors.AUDIT_MANAGER.value
     ]
     for col in jsonb_columns:
-        conditions.append(f"""
+        conditions.append(sql.SQL("""
             (
                 status != 'Not started' AND EXISTS (
                     SELECT 1
@@ -551,11 +551,11 @@ async def get_issue_from_actor(connection: AsyncConnection, user_email: str):
                     WHERE elem->>%s = %s
                 )
             )
-        """)
+        """).format(col=sql.Identifier(col)))
         params.extend(["email", user_email])  # add key and value for each condition
 
     # Join all conditions with OR
-    where_clause = " OR ".join(conditions)
+    where_clause = sql.SQL(" OR ").join(conditions)
 
     query = sql.SQL("SELECT * FROM public.issue WHERE  {where_clause};").format(where_clause=where_clause)
 
