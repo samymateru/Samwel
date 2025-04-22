@@ -4,8 +4,8 @@ from typing import Optional, List
 
 class ImpactCategory(BaseModel):
     id: int
-    impact_category: str
-    impact_sub_category: str
+    impact_category_name: str
+    impact_sub_category_name: str
 
 class NewImpactCategory(BaseModel):
     id: Optional[int] = None
@@ -16,5 +16,5 @@ class NewImpactSubCategory(BaseModel):
     name: str
 
 class CombinedImpactCategory(BaseModel):
-    process_name: str
-    sub_process_name: List[str]
+    impact_category: str
+    impact_sub_category: List[str]
