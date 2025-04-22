@@ -11,8 +11,6 @@ class User(BaseModel):
 class MainProgram(BaseModel):
     id: Optional[str] = None
     name: Optional[str]
-    status: Optional[str]
-    process_rating: Optional[str]
 
 class SubProgram(BaseModel):
     id: Optional[str] = None
