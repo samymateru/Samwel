@@ -15,6 +15,7 @@ class NewImpactSubCategory(BaseModel):
     id: Optional[int] = None
     name: str
 
+
 class CombinedImpactCategory(BaseModel):
     impact_category: str
     impact_sub_category: List[str]
