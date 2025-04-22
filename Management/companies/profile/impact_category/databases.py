@@ -6,8 +6,8 @@ async def get_combined_impact_category(connection: AsyncConnection, company_id: 
     query = sql.SQL(
         """
         SELECT
-            imp.name AS process_name,
-            ARRAY_AGG(sub.value) AS sub_process_name
+            imp.name AS impact_category,
+            ARRAY_AGG(sub.value) AS impact_sub_category
         FROM
             impact_category imp
         JOIN

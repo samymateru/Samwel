@@ -70,10 +70,10 @@ async def fetch_summary_of_findings(
 async def fetch_summary_of_audit_process(
         engagement_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_summary_audit_process(connection=db, engagement_id=engagement_id)
         return data

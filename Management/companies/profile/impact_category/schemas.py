@@ -4,8 +4,8 @@ from typing import Optional, List
 
 class ImpactCategory(BaseModel):
     id: int
-    impact_category_name: str
-    impact_sub_category_name: str
+    impact_category: str
+    impact_sub_category: str
 
 class NewImpactCategory(BaseModel):
     id: Optional[int] = None

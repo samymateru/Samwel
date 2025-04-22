@@ -9,8 +9,8 @@ async def get_combined_root_cause_category(connection: AsyncConnection, company_
     query = sql.SQL(
         """
             SELECT
-                rcc.name AS process_name,
-                ARRAY_AGG(sub.value) AS sub_process_name
+                rcc.name AS root_cause,
+                ARRAY_AGG(sub.value) AS sub_root_cause
             FROM
                 root_cause_category rcc
             JOIN

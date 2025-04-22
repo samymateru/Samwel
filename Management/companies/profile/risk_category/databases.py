@@ -6,8 +6,8 @@ async def get_combined_risk_category(connection: AsyncConnection, company_id: st
     query = sql.SQL(
         """
         SELECT
-        rsk.name AS process_name,
-        ARRAY_AGG(sub.value) AS sub_process_name
+        rsk.name AS risk_category,
+        ARRAY_AGG(sub.value) AS sub_risk_category
         FROM
             risk_category rsk
         JOIN

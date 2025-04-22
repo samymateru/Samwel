@@ -7,5 +7,5 @@ class RootCauseCategory(BaseModel):
     company: str
 
 class CombinedRootCauseCategory(BaseModel):
-    process_name: str
-    sub_process_name: List[str]
+    root_cause: str
+    sub_root_cause: List[str]
