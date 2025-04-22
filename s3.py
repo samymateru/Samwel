@@ -27,4 +27,15 @@ def upload_file(file_path, s3_key):
         print(f"Error uploading file: {e}")
         return None
 
+def delete_file(file_path: str):
+    try:
+        s3.delete_object(
+            Bucket=BUCKET_NAME,
+            Key=file_path
+        )
+
+    except Exception as e:
+        print(f"Error de file: {e}")
+        return None
+
         

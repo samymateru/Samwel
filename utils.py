@@ -16,6 +16,8 @@ import string
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from psycopg import AsyncConnection, sql
+from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
+from typing import List
 
 
 load_dotenv()
@@ -228,6 +230,58 @@ def get_unique_key():
     uuid_str = str(uuid.uuid4()).split("-")
     key = uuid_str[0] + uuid_str[1]
     return key
+
+async def is_data_exist(connection: AsyncConnection, table: str, column: str, id: str):
+    query = sql.SQL("SELECT {column} FROM {table} WHERE id = %s").format(
+        column=sql.Identifier(column),
+        table=sql.Identifier('public', table)
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (id,))
+            rows = await cursor.fetchone()
+            if rows is not None:
+                raise UniqueViolation()
+    except UniqueViolation:
+        raise UniqueViolation()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching data {e}")
+
+async def query_any_data(
+        connection: AsyncConnection,
+        table: str,
+        columns: List[str],
+        where_clause: str,
+        value: str
+):
+    query = sql.SQL(
+        """
+        SELECT {columns} FROM {table} WHERE {where_clause} = %s;
+        """
+    ).format(
+        table=sql.Identifier('public', table),
+        columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
+        where_clause=sql.Identifier(where_clause)
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (value,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except UndefinedColumn:
+        await connection.rollback()
+        print("Column doesnt exists")
+    except UndefinedFunction:
+        await connection.rollback()
+        print("There is data type mismatch")
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching data from table {table} {e}")
+
+def generate_attachment():
+    pass
 
 
 

@@ -30,7 +30,7 @@ from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
 from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async, \
-    check_permission
+    check_permission,  query_any_data
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
@@ -79,6 +79,7 @@ app.add_middleware(
 
 from fastapi import UploadFile, File
 import os
+from psycopg.errors import UniqueViolation
 from s3 import upload_file
 import shutil
 UPLOAD_DIR = "uploads"
@@ -87,17 +88,24 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 @app.post("/test")
 async def test(
         file: UploadFile = File(...),
-        background_tasks: BackgroundTasks = BackgroundTasks()
-        #db_async= Depends(get_async_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks(),
+        db_async= Depends(get_async_db_connection),
         #per = Depends(check_permission(module="planning", action= "c"))
 ):
-    print(file.filename)
-    file_location = os.path.join(UPLOAD_DIR, file.filename)
+    data = await query_any_data(
+        connection=db_async,
+        table="companies",
+        columns=["email","owner"],
+        where_clause="id",
+        value=10
+    )
+    print(data)
 
-    with open(file_location, "wb") as f:
-        shutil.copyfileobj(file.file, f)
-
-    return ""
+    # print(file.filename)
+    # file_location = os.path.join(UPLOAD_DIR, file.filename)
+    #
+    # with open(file_location, "wb") as f:
+    #     shutil.copyfileobj(file.file, f)
 
 @app.post("/login", tags=["Authentication"])
 async def login(

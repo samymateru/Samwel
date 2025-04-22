@@ -243,6 +243,7 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
                         issue_details=issue_details,
                         issue_id=issue_id
                     )
+                return True
             else:
                 raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
@@ -282,6 +283,7 @@ async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_
                     next_status=IssueStatus.IN_PROGRESS_OWNER,
                     issue_details=issue_details
                 )
+                return True
             else:
                 raise HTTPException(status_code=403, detail="Your not issue implementer")
     except Exception as e:
@@ -362,6 +364,7 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                         )
                     case _:
                         pass
+                return True
             else:
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
@@ -442,6 +445,7 @@ async def send_decline_response(connection: AsyncConnection, issue: IssueDecline
                         )
                     case _:
                         pass
+                return True
             else:
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 

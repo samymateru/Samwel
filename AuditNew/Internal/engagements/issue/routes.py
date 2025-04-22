@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends, Query, Form, UploadFile, File
+from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, BackgroundTasks
 from pydantic_core import ValidationError
+from s3 import upload_file
 from utils import  get_async_db_connection
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
 from AuditNew.Internal.engagements.issue.databases import *
 from datetime import datetime
+import tempfile
+import shutil
+import uuid
 
 router = APIRouter(prefix="/issue")
 
@@ -75,34 +79,43 @@ async def save_issue_implementation(
         notes: str = Form(...),
         attachment: Optional[UploadFile] = File(None),
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    if attachment is None:
-        issue_details = IssueImplementationDetails(
-            notes=notes,
-            issued_by=User(
-                name=implementer_name,
-                email=user.user_email,
-                date_issued=datetime.now()
-            ),
-            type="save"
-        )
-    else:
-        issue_details = IssueImplementationDetails(
-            notes=notes,
-            attachment=[attachment.filename],
-            issued_by=User(
-                name=implementer_name,
-                email=user.user_email,
-                date_issued=datetime.now()
-            ),
-            type="save"
-        )
-
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email=user.user_email)
+        key: str = f"issue/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
+        public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+        if attachment is None:
+            issue_details = IssueImplementationDetails(
+                notes=notes,
+                issued_by=User(
+                    name=implementer_name,
+                    email=user.user_email,
+                    date_issued=datetime.now()
+                ),
+                type="save"
+            )
+        else:
+            issue_details = IssueImplementationDetails(
+                notes=notes,
+                attachment=[public_url],
+                issued_by=User(
+                    name=implementer_name,
+                    email=user.user_email,
+                    date_issued=datetime.now()
+                ),
+                type="save"
+            )
+
+        is_success = await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email=user.user_email)
+        if is_success:
+            if attachment is not None:
+                with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                    shutil.copyfileobj(attachment.file, tmp)
+                    temp_path = tmp.name
+                background_tasks.add_task(upload_file, temp_path, key)
         return ResponseMessage(detail="Successfully save the issue")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -147,7 +160,10 @@ async def issue_accept_response(
                 accept_attachment=[accept_attachment.filename],
                 lod2_feedback=lod2_feedback
             )
-        await send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
+        is_success = await send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
+        if is_success:
+            if accept_attachment is not None:
+                pass
         return ResponseMessage(detail=f"Successfully send accept response ")
     except ValidationError as v:
         raise HTTPException(status_code=422, detail=v.errors()[0].get("msg"))
@@ -203,10 +219,10 @@ async def prepare_issue(
         issue_id: str,
         prepare: User,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_prepared(connection=db, prepare=prepare, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked prepared successfully")
@@ -218,10 +234,10 @@ async def review_issue(
         issue_id: str,
         review: User,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_reviewed(connection=db, review=review, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked reviewed successfully")
@@ -233,10 +249,10 @@ async def report_issue(
         issue_id: str,
         reportable: bool = Query(None),
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await mark_issue_reportable(connection=db, reportable=reportable, issue_id=issue_id)
         return ResponseMessage(detail="Issue marked reportable successfully")
