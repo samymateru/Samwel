@@ -118,6 +118,7 @@ async def save_issue_implementation(
                 background_tasks.add_task(upload_file, temp_path, key)
         return ResponseMessage(detail="Successfully save the issue")
     except HTTPException as e:
+
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/send_owner/{issue_id}", response_model=ResponseMessage)

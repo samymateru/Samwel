@@ -117,7 +117,7 @@ class MailedIssue(BaseModel):
 class IssueImplementationDetails(BaseModel):
     id: Optional[str] = None
     notes: Optional[str] = None
-    attachment: Optional[List[str]] = None
+    attachments: Optional[List[str]] = None
     issued_by: Optional[User] = None
     type: Optional[str]
 
