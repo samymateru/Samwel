@@ -181,6 +181,8 @@ async def send_issues_to_implementor(connection: AsyncConnection, issue_ids: Iss
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
             for issue in issue_data:
                 allowed_to_send_list = []
                 await cursor.execute("SELECT leads FROM public.engagements WHERE id = %s;", (issue.get("engagement"),))
@@ -224,6 +226,8 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_to_save_list = []
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
             for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
                 allowed_to_save_list.append(implementer.get("email"))
             if user_email in allowed_to_save_list:
@@ -268,6 +272,8 @@ async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_to_save_list = []
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
             for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
                 allowed_to_save_list.append(implementer.get("email"))
             if user_email in allowed_to_save_list:
@@ -309,6 +315,8 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_actors_list = []
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
             for actor in issue_data[0].get(issue.actor.value):
                 allowed_actors_list.append(actor.get("email"))
             if user_email in allowed_actors_list:
@@ -390,6 +398,8 @@ async def send_decline_response(connection: AsyncConnection, issue: IssueDecline
             column_names = [desc[0] for desc in cursor.description]
             issue_data = [dict(zip(column_names, row_)) for row_ in rows]
             allowed_actors_list = []
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
             for actor in issue_data[0].get(issue.actor.value):
                 allowed_actors_list.append(actor.get("email"))
             if user_email in allowed_actors_list:

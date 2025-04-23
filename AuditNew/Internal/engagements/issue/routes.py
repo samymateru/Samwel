@@ -79,37 +79,37 @@ async def save_issue_implementation(
         notes: str = Form(...),
         attachment: Optional[UploadFile] = File(None),
         db=Depends(get_async_db_connection),
-       # user: CurrentUser = Depends(get_current_user),
+        user: CurrentUser = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         if attachment is None:
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 issued_by=User(
                     name=implementer_name,
-                    email="user.user_email",
+                    email=user.user_email,
                     date_issued=datetime.now()
                 ),
                 type="save"
             )
         else:
-            key: str = f"issue/{"user.company_name"}/{uuid.uuid4()}-{attachment.filename}"
+            key: str = f"issue/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
             public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 attachment=[public_url],
                 issued_by=User(
                     name=implementer_name,
-                    email="user.user_email",
+                    email=user.user_email,
                     date_issued=datetime.now()
                 ),
                 type="save"
             )
 
-        is_success = await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email="")
+        is_success = await save_issue_implementation_(connection=db, issue_details=issue_details, issue_id=issue_id, user_email=user.user_email)
         if is_success:
             if attachment is not None:
                 with tempfile.NamedTemporaryFile(delete=False) as tmp:
