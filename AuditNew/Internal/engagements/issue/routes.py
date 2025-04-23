@@ -263,7 +263,7 @@ async def review_issue(
 @router.put("/reportable/{issue_id}", response_model=ResponseMessage)
 async def report_issue(
         issue_id: str,
-        reportable: bool = Query(None),
+        reportable: bool = Query(),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
