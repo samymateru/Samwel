@@ -300,7 +300,7 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
     query = sql.SQL("SELECT * FROM public.issue WHERE id = %s")
     issue_details = IssueImplementationDetails(
         notes=issue.accept_notes,
-        attachment=issue.accept_attachment,
+        attachments=issue.accept_attachment,
         issued_by=User(
             name="",
             email=user_email,

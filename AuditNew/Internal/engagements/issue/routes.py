@@ -86,6 +86,7 @@ async def save_issue_implementation(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        key: Optional[str] = None
         if attachment is None:
             issue_details = IssueImplementationDetails(
                 notes=notes,
@@ -101,7 +102,7 @@ async def save_issue_implementation(
             public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
             issue_details = IssueImplementationDetails(
                 notes=notes,
-                attachment=[public_url],
+                attachments=[public_url],
                 issued_by=User(
                     name=implementer_name,
                     email=user.user_email,
