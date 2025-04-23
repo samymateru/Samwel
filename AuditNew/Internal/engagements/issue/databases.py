@@ -583,6 +583,19 @@ async def get_issue_from_actor(connection: AsyncConnection, user_email: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue by actors {e}")
 
+async def get_single_issue(connection: AsyncConnection, issue_id: str):
+    query = sql.SQL("SELECT * FROM public.issue WHERE  id = %s")
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (issue_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching single issue {e}")
+
 async def update_issue_details(connection: AsyncConnection, cursor: AsyncCursor, issue_id: str, issue_details: IssueImplementationDetails):
     query = sql.SQL(
         """
