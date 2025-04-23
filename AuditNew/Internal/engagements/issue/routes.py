@@ -10,6 +10,7 @@ from datetime import datetime
 import tempfile
 import shutil
 import uuid
+import os
 
 router = APIRouter(prefix="/issue")
 
@@ -118,7 +119,8 @@ async def save_issue_implementation(
                 background_tasks.add_task(upload_file, temp_path, key)
         return ResponseMessage(detail="Successfully save the issue")
     except HTTPException as e:
-
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/send_owner/{issue_id}", response_model=ResponseMessage)

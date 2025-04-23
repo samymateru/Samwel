@@ -23,8 +23,7 @@ class Department(BaseModel):
     code: str
 
 class Role(BaseModel):
-    id: str
-    name: str
+    name: Optional[str]
 
 class Risk(BaseModel):
     name: str
