@@ -87,6 +87,7 @@ async def save_issue_implementation(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         key: Optional[str] = None
+        temp_path = ""
         if attachment is None:
             issue_details = IssueImplementationDetails(
                 notes=notes,
@@ -100,6 +101,7 @@ async def save_issue_implementation(
         else:
             key: str = f"issue/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
             public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+            print(public_url)
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 attachments=[public_url],

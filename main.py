@@ -97,7 +97,7 @@ async def test(
         table="companies",
         columns=["email","owner"],
         where_clause="id",
-        value=10
+        value=""
     )
     print(data)
 

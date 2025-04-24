@@ -1,0 +1,172 @@
+from fastapi import HTTPException
+from psycopg import AsyncConnection, sql
+
+
+async def query_annual_plans_summary(connection: AsyncConnection, company_module_id:str):
+    query = sql.SQL(
+        """
+        SELECT
+        COUNT(*) AS total,
+        COUNT(*) FILTER (WHERE status = 'Not Started') AS not_started,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Not Started') / COUNT(*), 2) AS not_started_percent,
+        COUNT(*) FILTER (WHERE status = 'In progress') AS in_progress,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'In progress') / COUNT(*), 2) AS in_progress_percent,
+        COUNT(*) FILTER (WHERE status = 'Completed') AS completed,
+        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Completed') / COUNT(*), 2) AS completed_percent
+        FROM annual_plans WHERE company_module = %s;
+        """
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_module_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if audit_plan_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Cant provide annual plans check the module id")
+            return audit_plan_data[0]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail="Error fetching summary of annual plans")
+
+async def query_all_issues(connection: AsyncConnection, company_module_id: str):
+    query = sql.SQL(
+        """
+        SELECT 
+        -- Total issue count
+        COUNT(*) AS total_issues,
+  
+        -- Recurring counts
+        jsonb_build_object(
+        'recurring', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE),
+        'non_recurring', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE)
+        ) AS recurring_summary,
+
+        -- Impact category counts
+        (
+        SELECT jsonb_object_agg(impact_category, count)
+        FROM (
+          SELECT issue.impact_category, COUNT(*) AS count
+          FROM issue
+          JOIN engagements ON issue.engagement = engagements.id
+          JOIN annual_plans ON engagements.plan_id = annual_plans.id
+          JOIN company_modules ON annual_plans.company_module = company_modules.id
+          WHERE company_modules.id = %s
+          GROUP BY issue.impact_category
+        ) AS impact
+        ) AS impact_summary,
+
+        -- Issue status
+        (
+        SELECT jsonb_object_agg(status, count)
+        FROM (
+          SELECT issue.status, COUNT(*) AS count
+          FROM issue
+          JOIN engagements ON issue.engagement = engagements.id
+          JOIN annual_plans ON engagements.plan_id = annual_plans.id
+          JOIN company_modules ON annual_plans.company_module = company_modules.id
+          WHERE company_modules.id = %s
+          GROUP BY issue.status
+        ) AS status
+        ) AS status_summary,
+  
+        -- Business processes
+        (
+        SELECT jsonb_object_agg(process, count)
+        FROM (
+          SELECT issue.process, COUNT(*) AS count
+          FROM issue
+          JOIN engagements ON issue.engagement = engagements.id
+          JOIN annual_plans ON engagements.plan_id = annual_plans.id
+          JOIN company_modules ON annual_plans.company_module = company_modules.id
+          WHERE company_modules.id = %s
+          GROUP BY issue.process
+        ) AS process
+        ) AS process_summary,
+
+        -- Root cause
+        (
+        SELECT jsonb_object_agg(root_cause, count)
+        FROM (
+          SELECT issue.root_cause, COUNT(*) AS count
+          FROM issue
+          JOIN engagements ON issue.engagement = engagements.id
+          JOIN annual_plans ON engagements.plan_id = annual_plans.id
+          JOIN company_modules ON annual_plans.company_module = company_modules.id
+          WHERE company_modules.id = %s
+          GROUP BY issue.root_cause    
+	    ) AS root_cause
+        ) AS root_cause_summary
+  
+        FROM issue
+        JOIN engagements ON issue.engagement = engagements.id
+        JOIN annual_plans ON engagements.plan_id = annual_plans.id
+        JOIN company_modules ON annual_plans.company_module = company_modules.id
+        WHERE company_modules.id = %s;
+        """
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_module_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if audit_plan_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Cant provide issue details check the module id")
+            return audit_plan_data[0]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
+
+async def query_planning_details(connection: AsyncConnection, plan_id: str):
+    query = sql.SQL(
+        """
+        SELECT
+        COUNT(*) AS total_engagements,
+
+        (
+        SELECT jsonb_object_agg(status, count)
+        FROM (
+          SELECT status, COUNT(*) AS count
+          FROM engagements
+          WHERE plan_id = %s
+          GROUP BY status
+        ) AS status_counts
+        ) AS status_summary
+
+        FROM engagements
+        WHERE plan_id = %s;
+        """
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (plan_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if audit_plan_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Cant provide planning details check the module id")
+            return audit_plan_data[0]
+
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
+
+async def querying_engagement_details(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL(
+        """
+        SELECT jsonb_build_object(
+  'prepared', COUNT(*) FILTER (WHERE sub_program.prepared_by IS  NULL),
+  'reviewed', COUNT(*) FILTER (WHERE sub_program.reviewed_by IS NULL),
+    'completed', COUNT(*) FILTER (
+      WHERE sub_program.prepared_by IS  NULL
+        AND sub_program.reviewed_by IS  NULL
+  )
+) AS reviewer_summary
+FROM sub_program
+JOIN main_program ON sub_program.program = main_program.id
+JOIN engagements ON main_program.engagement = engagements.id
+WHERE engagements.id = 'a92587cfffc1';
+        """
+    )
+    pass

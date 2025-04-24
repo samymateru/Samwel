@@ -14,6 +14,5 @@ def update(connection: Connection, tables: List[str]):
             cursor.execute(f"ALTER TABLE {table} ALTER COLUMN id TYPE VARCHAR;")
             connection.commit()
 
-con = next(get_db_connection())
-
-update(connection=con, tables=tb)
+import os
+os.path.exists(None)
