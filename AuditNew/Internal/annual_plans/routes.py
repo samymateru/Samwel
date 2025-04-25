@@ -45,7 +45,7 @@ async def create_new_annual_plan(
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
 
-        key: str = f"annual_plans/{"user.company_name"}/{uuid.uuid4()}-{attachment.filename}"
+        key: str = f"annual_plans/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
         public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
 
         background_tasks.add_task(upload_file, temp_path, key)
