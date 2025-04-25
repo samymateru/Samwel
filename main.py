@@ -39,12 +39,12 @@ from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
 import asyncio
+from rate_limiter import RateLimiterMiddleware
 
 load_dotenv()
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -76,6 +76,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 
 from fastapi import UploadFile, File
 import os
@@ -92,15 +93,10 @@ async def test(
         db_async= Depends(get_async_db_connection),
         #per = Depends(check_permission(module="planning", action= "c"))
 ):
-    data = await query_any_data(
-        connection=db_async,
-        table="companies",
-        columns=["email","owner"],
-        where_clause="id",
-        value=""
-    )
-    print(data)
-
+    try:
+        pass
+    except HTTPException as h:
+        raise HTTPException(status_code=h.status_code, detail=h.detail)
     # print(file.filename)
     # file_location = os.path.join(UPLOAD_DIR, file.filename)
     #
