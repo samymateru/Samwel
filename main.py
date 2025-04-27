@@ -77,6 +77,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 
 from fastapi import UploadFile, File
