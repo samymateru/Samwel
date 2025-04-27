@@ -1,18 +1,27 @@
-name: remote ssh command
-on: [push]
+name: EC2 Deployment
+
+on:
+  push:
+    branches:
+      - main  # Or any branch you want to trigger the action on
+
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest  # You can choose another runner if needed
+
     steps:
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v1.2.1
-        with:
-          host: "api.eauditrisk.com"
-          username: "ubuntu"
-          key: ${{ secrets.KEY }}
-          script: |
-            cd project/Backend
-            git pull
-            sudo systemctl stop backend.service
-            sudo systemctl start backend.service
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SSH key for EC2
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H api.eauditrisk.com >> ~/.ssh/known_hosts  # Add EC2 host to known hosts to avoid authenticity warnings
+
+    - name: SSH into EC2 and run commands
+      run: |
+        ssh -i ~/.ssh/id_rsa ubuntu@api.eauditrisk.com "echo 'Connected successfully'"
+      env:
+        EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
