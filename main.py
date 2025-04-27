@@ -89,7 +89,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.post("/test")
-async def test(
+async def tester(
         file: UploadFile = File(...),
         background_tasks: BackgroundTasks = BackgroundTasks(),
         db_async= Depends(get_async_db_connection),
