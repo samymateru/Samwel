@@ -16,7 +16,7 @@ jobs:
     - name: Set up SSH key for EC2
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H api.eauditrisk.com >> ~/.ssh/known_hosts  # Add EC2 host to known hosts to avoid authenticity warnings
 
@@ -24,4 +24,4 @@ jobs:
       run: |
         ssh -i ~/.ssh/id_rsa ubuntu@api.eauditrisk.com "echo 'Connected successfully'"
       env:
-        EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        EC2_SSH_PRIVATE_KEY: ${{ secrets.KEY }}
