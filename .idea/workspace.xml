@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding dashboards">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/x.py" beforeDir="false" afterPath="$PROJECT_DIR$/x.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,52 +54,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.2048.executor&quot;: &quot;Run&quot;,
-    &quot;Python.9_Types_of_Hash_Cracker.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Changing_Wall_Paper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Clock.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Connect-4.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Current_City_Weather.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Edge_Detection.executor&quot;: &quot;Run&quot;,
-    &quot;Python.OS_interaction.executor&quot;: &quot;Run&quot;,
-    &quot;Python.advice.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ai-storytelling-game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bandwidth_py3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.blending_Image.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bubble_sort.executor&quot;: &quot;Run&quot;,
-    &quot;Python.chrome-automation.executor&quot;: &quot;Run&quot;,
-    &quot;Python.database.executor&quot;: &quot;Run&quot;,
-    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
-    &quot;Python.eyes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.face_detect.executor&quot;: &quot;Run&quot;,
-    &quot;Python.finder.executor&quot;: &quot;Run&quot;,
-    &quot;Python.game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.maze.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
-    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
-    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
-    &quot;Python.s3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.script.executor&quot;: &quot;Run&quot;,
-    &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ses.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
-    &quot;Python.x.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.2048.executor": "Run",
+    "Python.9_Types_of_Hash_Cracker.executor": "Run",
+    "Python.Changing_Wall_Paper.executor": "Run",
+    "Python.Clock.executor": "Run",
+    "Python.Connect-4.executor": "Run",
+    "Python.Current_City_Weather.executor": "Run",
+    "Python.Edge_Detection.executor": "Run",
+    "Python.OS_interaction.executor": "Run",
+    "Python.advice.executor": "Run",
+    "Python.ai-storytelling-game.executor": "Run",
+    "Python.bandwidth_py3.executor": "Run",
+    "Python.blending_Image.executor": "Run",
+    "Python.bubble_sort.executor": "Run",
+    "Python.chrome-automation.executor": "Run",
+    "Python.database.executor": "Run",
+    "Python.databases.executor": "Run",
+    "Python.eyes.executor": "Run",
+    "Python.face_detect.executor": "Run",
+    "Python.finder.executor": "Run",
+    "Python.game.executor": "Run",
+    "Python.login.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.maze.executor": "Run",
+    "Python.rabitmq.executor": "Run",
+    "Python.roles.executor": "Run",
+    "Python.routes.executor": "Run",
+    "Python.run-payload.executor": "Run",
+    "Python.s3.executor": "Run",
+    "Python.schemas.executor": "Run",
+    "Python.script.executor": "Run",
+    "Python.seedings.executor": "Run",
+    "Python.ses.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.utils.executor": "Run",
+    "Python.x.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "deletionFromPopupRequiresConfirmation": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
@@ -121,14 +124,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00320" summary="refactoring">
-      <option name="closed" value="true" />
-      <created>1744974823722</created>
-      <option name="number" value="00320" />
-      <option name="presentableId" value="LOCAL-00320" />
-      <option name="project" value="LOCAL" />
-      <updated>1744974823722</updated>
     </task>
     <task id="LOCAL-00321" summary="refactoring">
       <option name="closed" value="true" />
@@ -514,7 +509,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745573026372</updated>
     </task>
-    <option name="localTasksCounter" value="369" />
+    <task id="LOCAL-00369" summary="adding dashboards">
+      <option name="closed" value="true" />
+      <created>1745577447069</created>
+      <option name="number" value="00369" />
+      <option name="presentableId" value="LOCAL-00369" />
+      <option name="project" value="LOCAL" />
+      <updated>1745577447069</updated>
+    </task>
+    <option name="localTasksCounter" value="370" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

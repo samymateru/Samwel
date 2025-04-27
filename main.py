@@ -76,6 +76,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 
 from fastapi import UploadFile, File
@@ -170,3 +171,4 @@ app.include_router(control_, tags=["Engagement Control"])
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
