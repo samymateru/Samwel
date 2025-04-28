@@ -1,6 +1,4 @@
-import tempfile
-
-from fastapi import FastAPI, Depends, Form, BackgroundTasks
+from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -31,8 +29,10 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
-from utils import verify_password, get_db_connection, create_jwt_token, get_async_db_connection, connection_pool_async, \
-    check_permission,  query_any_data
+
+from schema import CurrentUser, ResponseMessage
+from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
+    update_user_password
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
@@ -49,7 +49,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(api: FastAPI):
     from utils import connection_pool
     if connection_pool:
         #rabbitmq.connect(queue_name="task")
@@ -79,40 +79,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 
-from fastapi import UploadFile, File
-import os
-from psycopg.errors import UniqueViolation
-from s3 import upload_file
-import shutil
-UPLOAD_DIR = "uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 @app.post("/test")
-async def tester(
-        file: UploadFile = File(...),
-        background_tasks: BackgroundTasks = BackgroundTasks(),
-        db_async= Depends(get_async_db_connection),
-        #per = Depends(check_permission(module="planning", action= "c"))
-):
-    try:
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            shutil.copyfileobj(file.file, tmp)
-            temp_path = tmp.name
+async def tester():
+    pass
 
-        key: str = f"annual_plans/{file.filename}"
-        public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
-        background_tasks.add_task(upload_file, temp_path, key)
-        print(public_url)
-    except HTTPException as h:
-        raise HTTPException(status_code=h.status_code, detail=h.detail)
-    # print(file.filename)
-    # file_location = os.path.join(UPLOAD_DIR, file.filename)
-    #
-    # with open(file_location, "wb") as f:
-    #     shutil.copyfileobj(file.file, f)
 
 @app.post("/login", tags=["Authentication"])
 async def login(
@@ -148,6 +122,25 @@ async def login(
         return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
     else:
         raise HTTPException(detail="Invalid password", status_code=400)
+
+@app.put("/change_password", tags=["Authentication"])
+async def change_password(
+        old_password: str = Form(...),
+        new_password: str = Form(...),
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await update_user_password(
+            connection=db,
+            user_id=user.user_id,
+            old_password=old_password,
+            new_password=new_password)
+        return ResponseMessage(detail="Password updated successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 app.include_router(companies_router, tags=["Company"])
 app.include_router(company_modules_router, tags=["Company Modules"])

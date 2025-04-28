@@ -283,6 +283,39 @@ async def query_any_data(
 def generate_attachment():
     pass
 
+async def update_user_password(connection: AsyncConnection, user_id: str, old_password: str, new_password: str):
+    query = sql.SQL(
+        """
+           UPDATE public.users
+           SET 
+           password_hash = %s
+           WHERE id = %s;
+        """)
+    query_ = sql.SQL(
+        """
+        SELECT password_hash FROM public.users WHERE id = %s
+        """
+    )
+    try:
+
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_, (user_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            if data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="User doesnt exist")
+            if verify_password(stored_hash=data[0].get("password_hash"), password=old_password):
+                await cursor.execute(query, (
+                    generate_hash_password(new_password),
+                    user_id
+                ))
+                await connection.commit()
+            else:
+                raise HTTPException(status_code=400, detail="Invalid password")
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")
 
 
 
