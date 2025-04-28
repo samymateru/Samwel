@@ -8,6 +8,7 @@ class Endpoints(BaseModel):
 class CurrentUser(BaseModel):
     user_id: Optional[str] = None
     user_email: Optional[str] = None
+    user_name: Optional[str] = None
     company_id: Optional[str] = None
     company_name: Optional[str] = None
     role_id: Optional[str] = None

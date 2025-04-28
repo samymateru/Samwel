@@ -28,9 +28,10 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
             title,
             description,
             raised_by,
-            action_owner
+            action_owner,
+            status
             ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
         reference: str = await get_reference(connection=connection, resource="review_comment", id=engagement_id)
@@ -42,7 +43,8 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
                 review_comment.title,
                 review_comment.description,
                 review_comment.raised_by.model_dump_json(),
-                json.dumps(review_comment.model_dump().get("action_owner"))
+                json.dumps(review_comment.model_dump().get("action_owner")),
+                "Not started"
             ))
         await connection.commit()
     except ForeignKeyViolation:
@@ -63,7 +65,7 @@ async def resolve_review_comment_(connection: AsyncConnection, review_comment: R
            resolution_summary = %s,
            resolution_details = %s,
            resolved_by = %s::jsonb,
-           decision = %s
+           status = %s
            WHERE id = %s;
         """)
     try:
@@ -72,7 +74,7 @@ async def resolve_review_comment_(connection: AsyncConnection, review_comment: R
                 review_comment.resolution_summary,
                 review_comment.resolution_details,
                 review_comment.resolved_by.model_dump_json(),
-                review_comment.decision,
+                "Pending",
                 review_comment_id
             ))
         await connection.commit()
@@ -80,3 +82,23 @@ async def resolve_review_comment_(connection: AsyncConnection, review_comment: R
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error resolving review comment {e}")
 
+async def review_comment_decision_(connection: AsyncConnection, review_comment: ReviewCommentDecision, review_comment_id: str):
+    query = sql.SQL(
+        """
+           UPDATE public.review_comment
+           SET 
+           decision = %s,
+           status = %s
+           WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                review_comment.decision,
+                review_comment.status.value,
+                review_comment_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")

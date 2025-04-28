@@ -128,6 +128,7 @@ async def login(
         user: dict = {
             "user_id": user_data[0].get("id"),
             "user_email": user_data[0].get("email"),
+            "user_name": user_data[0].get("name"),
             "company_id": user_data[0].get("company"),
             "company_name": company[0].get("name"),
             "type": user_data[0].get("type"),

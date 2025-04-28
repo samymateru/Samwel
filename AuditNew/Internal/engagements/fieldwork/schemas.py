@@ -25,6 +25,7 @@ class SummaryReviewNotes(BaseModel):
     resolution_details: Optional[str]
     resolved_by: Optional[User]
     decision: Optional[str]
+    status: Optional[str]
 
 class SummaryTask(BaseModel):
     id: Optional[str] = None
@@ -37,6 +38,7 @@ class SummaryTask(BaseModel):
     resolution_details: Optional[str]
     resolved_by: Optional[User]
     decision: Optional[str]
+    status: Optional[str]
 
 class SummaryAuditProcedure(BaseModel):
     reference: Optional[str]

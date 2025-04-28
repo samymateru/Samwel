@@ -65,3 +65,18 @@ async def delete_review_comment(
         return ResponseMessage(detail="Review comment deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/resolve/decision/{review_comment_id}", response_model=ResponseMessage)
+async def review_comment_decision(
+        review_comment_id: str,
+        review_comment: ReviewCommentDecision,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await review_comment_decision_(connection=db, review_comment=review_comment, review_comment_id=review_comment_id)
+        return ResponseMessage(detail="Review comment decided successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)

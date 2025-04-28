@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Form, UploadFile, File, BackgroundTasks
 from AuditNew.Internal.annual_plans.databases import *
 from utils import get_async_db_connection
@@ -10,8 +12,11 @@ import tempfile
 import shutil
 from s3 import upload_file
 
-router = APIRouter(prefix="/annual_plans")
 
+
+load_dotenv()
+
+router = APIRouter(prefix="/annual_plans")
 @router.get("/{company_module_id}", response_model=List[AnnualPlan])
 async def fetch_annual_plans(
         company_module_id: str,
@@ -46,7 +51,7 @@ async def create_new_annual_plan(
             temp_path = tmp.name
 
         key: str = f"annual_plans/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
-        public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+        public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
 
         background_tasks.add_task(upload_file, temp_path, key)
         audit_plan = AnnualPlan(
