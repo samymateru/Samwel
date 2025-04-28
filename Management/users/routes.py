@@ -47,7 +47,13 @@ async def create_new_user(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await new_user(connection=db, user_=user_,  company_id=user.company_id)
+        user_id = await new_user(connection=db, user_=user_,  company_id=user.company_id)
+        for module in user_.module:
+            user_module = Module(
+                id=module.id,
+                name=module.name
+            )
+            await add_user_module(connection=db, user_id=user_id, module=user_module)
         return ResponseMessage(detail="User successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

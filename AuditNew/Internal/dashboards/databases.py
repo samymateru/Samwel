@@ -156,17 +156,29 @@ async def querying_engagement_details(connection: AsyncConnection, engagement_id
     query = sql.SQL(
         """
         SELECT jsonb_build_object(
-  'prepared', COUNT(*) FILTER (WHERE sub_program.prepared_by IS  NULL),
-  'reviewed', COUNT(*) FILTER (WHERE sub_program.reviewed_by IS NULL),
-    'completed', COUNT(*) FILTER (
-      WHERE sub_program.prepared_by IS  NULL
-        AND sub_program.reviewed_by IS  NULL
-  )
-) AS reviewer_summary
-FROM sub_program
-JOIN main_program ON sub_program.program = main_program.id
-JOIN engagements ON main_program.engagement = engagements.id
-WHERE engagements.id = 'a92587cfffc1';
+          'prepared', COUNT(*) FILTER (WHERE sub_program.prepared_by IS  NULL),
+          'reviewed', COUNT(*) FILTER (WHERE sub_program.reviewed_by IS NULL),
+            'completed', COUNT(*) FILTER (
+              WHERE sub_program.prepared_by IS  NULL
+                AND sub_program.reviewed_by IS  NULL
+          )
+        ) AS reviewer_summary
+        FROM sub_program
+        JOIN main_program ON sub_program.program = main_program.id
+        JOIN engagements ON main_program.engagement = engagements.id
+        WHERE engagements.id = %s;
         """
     )
-    pass
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if audit_plan_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Cant provide planning details check the module id")
+            return audit_plan_data[0]
+
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
