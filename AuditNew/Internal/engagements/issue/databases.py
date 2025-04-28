@@ -97,6 +97,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 status,
                 lod1_implementer,
                 lod1_owner,
+                observers,
                 lod2_risk_manager,
                 lod2_compliance_officer,
                 lod3_audit_manager
@@ -104,7 +105,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
         VALUES (
          %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s, 
+         %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s
         );
         """)
@@ -138,6 +139,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 issue.status,
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.IMPLEMENTER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.OWNER.value))),
+                json.dumps(jsonable_encoder(issue.model_dump().get("observers"))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.RISK_MANAGER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.COMPLIANCE_OFFICER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value)))
