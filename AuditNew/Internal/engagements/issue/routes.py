@@ -11,8 +11,11 @@ import tempfile
 import shutil
 import uuid
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 router = APIRouter(prefix="/issue")
+
 
 @router.post("/{sub_program_id}", response_model=ResponseMessage)
 async def create_new_issue_(
@@ -92,7 +95,7 @@ async def save_issue_implementation(
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 issued_by=User(
-                    name=implementer_name,
+                    name=user.user_name,
                     email=user.user_email,
                     date_issued=datetime.now()
                 ),
@@ -100,13 +103,13 @@ async def save_issue_implementation(
             )
         else:
             key: str = f"issue/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
-            public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+            public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
             print(public_url)
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 attachments=[public_url],
                 issued_by=User(
-                    name=implementer_name,
+                    name=user.user_name,
                     email=user.user_email,
                     date_issued=datetime.now()
                 ),
@@ -135,7 +138,11 @@ async def submit_issue_to_owner(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await send_issues_to_owner(connection=db, issue_id=issue_id, user_email=user.user_email)
+        await send_issues_to_owner(
+            connection=db,
+            issue_id=issue_id,
+            user_email=user.user_email,
+            user_name=user.user_name)
         return ResponseMessage(detail="Successfully send the issue to owner")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -166,7 +173,12 @@ async def issue_accept_response(
                 accept_attachment=[accept_attachment.filename],
                 lod2_feedback=lod2_feedback
             )
-        is_success = await send_accept_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
+        is_success = await send_accept_response(
+            connection=db,
+            issue=issue,
+            issue_id=issue_id,
+            user_email=user.user_email,
+            user_name=user.user_name)
         if is_success:
             if accept_attachment is not None:
                 pass
@@ -187,7 +199,12 @@ async def issue_decline_response(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await send_decline_response(connection=db, issue=issue, issue_id=issue_id, user_email=user.user_email)
+        await send_decline_response(
+            connection=db,
+            issue=issue,
+            issue_id=issue_id,
+            user_email=user.user_email,
+            user_name=user.user_name)
         return ResponseMessage(detail=f"Successfully decline issue")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

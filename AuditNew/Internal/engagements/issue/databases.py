@@ -254,13 +254,13 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving issue implementation {e}")
 
-async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_email: str):
+async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_email: str, user_name: str):
     query_issue = sql.SQL("SELECT * FROM public.issue WHERE id = %s;")
     try:
         issue_details = IssueImplementationDetails(
             notes="Issue sent to the owner",
             issued_by=User(
-                name="",
+                name=user_name,
                 email=user_email,
                 date_issued=datetime.now()
             ),
@@ -296,13 +296,13 @@ async def send_issues_to_owner(connection: AsyncConnection, issue_id: str, user_
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending issue to owner {e}")
 
-async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptResponse, issue_id: str, user_email: str):
+async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptResponse, issue_id: str, user_email: str, user_name: str):
     query = sql.SQL("SELECT * FROM public.issue WHERE id = %s")
     issue_details = IssueImplementationDetails(
         notes=issue.accept_notes,
         attachments=issue.accept_attachment,
         issued_by=User(
-            name="",
+            name=user_name,
             email=user_email,
             date_issued=datetime.now()
         ),
@@ -380,13 +380,13 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending accept response {e}")
 
-async def send_decline_response(connection: AsyncConnection, issue: IssueDeclineResponse, issue_id: str, user_email: str):
+async def send_decline_response(connection: AsyncConnection, issue: IssueDeclineResponse, issue_id: str, user_email: str, user_name: str):
     query = sql.SQL("SELECT * FROM public.issue WHERE id = %s")
     try:
         issue_details = IssueImplementationDetails(
             notes=issue.decline_notes,
             issued_by=User(
-                name="",
+                name=user_name,
                 email=user_email,
                 date_issued=datetime.now()
             ),
