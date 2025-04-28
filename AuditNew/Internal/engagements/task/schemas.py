@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+from enum import Enum
+
+class TaskDecisionStatus(str, Enum):
+    ACCEPTED = "Accept"
+    CLOSED = "Closed"
+    RE_OPEN = "Re open"
 
 class User(BaseModel):
     name: Optional[str]
@@ -23,4 +29,7 @@ class ResolveTask(BaseModel):
     resolution_summary: Optional[str]
     resolution_details: Optional[str]
     resolved_by: Optional[User]
+
+class TaskDecision(BaseModel):
     decision: Optional[str]
+    status: Optional[TaskDecisionStatus]

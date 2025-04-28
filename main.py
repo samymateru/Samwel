@@ -1,3 +1,5 @@
+import tempfile
+
 from fastapi import FastAPI, Depends, Form, BackgroundTasks
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.companies.routes import router as companies_router
@@ -96,7 +98,14 @@ async def tester(
         #per = Depends(check_permission(module="planning", action= "c"))
 ):
     try:
-        pass
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            shutil.copyfileobj(file.file, tmp)
+            temp_path = tmp.name
+
+        key: str = f"annual_plans/{file.filename}"
+        public_url: str = f"https://egarc.s3.us-east-1.amazonaws.com/{key}"
+        background_tasks.add_task(upload_file, temp_path, key)
+        print(public_url)
     except HTTPException as h:
         raise HTTPException(status_code=h.status_code, detail=h.detail)
     # print(file.filename)

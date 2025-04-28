@@ -16,9 +16,10 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
             title,
             description,
             raised_by,
-            action_owner
+            action_owner,
+            status
             ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
         reference = await get_reference(connection=connection, resource="task", id=engagement_id)
@@ -30,7 +31,8 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
                 task.title,
                 task.description,
                 task.raised_by.model_dump_json(),
-                json.dumps(task.model_dump().get("action_owner"))
+                json.dumps(task.model_dump().get("action_owner")),
+                "Not started"
             ))
         await connection.commit()
     except ForeignKeyViolation:
@@ -62,7 +64,7 @@ async def resolve_task_(connection: AsyncConnection, task: ResolveTask, task_id:
            resolution_summary = %s,
            resolution_details = %s,
            resolved_by = %s::jsonb,
-           decision = %s
+           status = %s
            WHERE id = %s;
         """)
     try:
@@ -71,7 +73,7 @@ async def resolve_task_(connection: AsyncConnection, task: ResolveTask, task_id:
                 task.resolution_summary,
                 task.resolution_details,
                 task.resolved_by.model_dump_json(),
-                task.decision,
+                "Pending",
                 task_id
             ))
         await connection.commit()
@@ -79,3 +81,23 @@ async def resolve_task_(connection: AsyncConnection, task: ResolveTask, task_id:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error resolving task {e}")
 
+async def resolve_decision_(connection: AsyncConnection, task: TaskDecision, task_id: str):
+    query = sql.SQL(
+        """
+           UPDATE public.task
+           SET 
+           decision = %s,
+           status = %s
+           WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                task.decision,
+                task.status.value,
+                task_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error resolving task decision {e}")
