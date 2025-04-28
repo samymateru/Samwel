@@ -48,7 +48,8 @@ async def get_summary_review_notes(connection: AsyncConnection, engagement_id: s
         review_comment.resolution_summary,
         review_comment.resolution_details,
         review_comment.resolved_by,
-        review_comment.decision
+        review_comment.decision,
+        review_comment.status
         FROM review_comment 
         WHERE engagement = %s;
         """)
@@ -75,7 +76,8 @@ async def get_summary_task(connection: AsyncConnection, engagement_id: str):
         task.resolution_summary,
         task.resolution_details,
         task.resolved_by,
-        task.decision
+        task.decision,
+        task.status
         FROM task 
         WHERE engagement = %s;
         """)

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
+from AuditNew.Internal.dashboards.databases import query_annual_plans_summary
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
@@ -84,8 +85,11 @@ app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 
 
 @app.post("/test")
-async def tester():
-    pass
+async def tester(
+        db=Depends(get_async_db_connection)
+):
+    data = await query_annual_plans_summary(connection=db, company_module_id="00ff3fbe5c65")
+    return data
 
 
 @app.post("/login", tags=["Authentication"])

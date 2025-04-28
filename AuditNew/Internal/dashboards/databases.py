@@ -1,33 +1,61 @@
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 
-
-async def query_annual_plans_summary(connection: AsyncConnection, company_module_id:str):
-    query = sql.SQL(
-        """
+async def query_annual_plans_summary(
+        connection: AsyncConnection,
+        company_module_id:str,
+        start_year: str = None,
+        end_year: str = None,
+        year: str = None
+):
+    base_query = sql.SQL("""
         SELECT
-        COUNT(*) AS total,
-        COUNT(*) FILTER (WHERE status = 'Not Started') AS not_started,
-        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Not Started') / COUNT(*), 2) AS not_started_percent,
-        COUNT(*) FILTER (WHERE status = 'In progress') AS in_progress,
-        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'In progress') / COUNT(*), 2) AS in_progress_percent,
-        COUNT(*) FILTER (WHERE status = 'Completed') AS completed,
-        ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Completed') / COUNT(*), 2) AS completed_percent
-        FROM annual_plans WHERE company_module = %s;
-        """
+            annual_plans.year,
+            COUNT(*) AS total,
+            COUNT(*) FILTER (WHERE status = 'Not Started') AS not_started,
+            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Not Started') / COUNT(*), 2) AS not_started_percent,
+            COUNT(*) FILTER (WHERE status = 'In progress') AS in_progress,
+            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'In progress') / COUNT(*), 2) AS in_progress_percent,
+            COUNT(*) FILTER (WHERE status = 'Completed') AS completed,
+            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Completed') / COUNT(*), 2) AS completed_percent
+        FROM annual_plans
+        WHERE company_module = {company_module}
+    """).format(
+        company_module=sql.Literal(company_module_id)
     )
+
+    conditions = []
+
+    if start_year and end_year:
+        conditions.append(
+            sql.SQL("year BETWEEN {start} AND {end}").format(
+                start=sql.Literal(start_year),
+                end=sql.Literal(end_year)
+            )
+        )
+    elif year:
+        conditions.append(
+            sql.SQL("year = {year}").format(
+                year=sql.Literal(year)
+            )
+        )
+
+    if conditions:
+        base_query += sql.SQL(" AND ") + sql.SQL(" AND ").join(conditions)
+
+    base_query += sql.SQL(" GROUP BY annual_plans.year ORDER BY annual_plans.year;")
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (company_module_id,))
+            await cursor.execute(base_query)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
             if audit_plan_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="Cant provide annual plans check the module id")
-            return audit_plan_data[0]
+            return audit_plan_data
     except Exception as e:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail="Error fetching summary of annual plans")
+        raise HTTPException(status_code=400, detail=f"Error fetching summary of annual plans {e}")
 
 async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
@@ -182,3 +210,4 @@ async def querying_engagement_details(connection: AsyncConnection, engagement_id
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
+
