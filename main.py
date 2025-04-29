@@ -137,6 +137,7 @@ async def change_password(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+
         await update_user_password(
             connection=db,
             user_id=user.user_id,
