@@ -104,7 +104,6 @@ async def save_issue_implementation(
         else:
             key: str = f"issue/{user.company_name}/{uuid.uuid4()}-{attachment.filename}"
             public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
-            print(public_url)
             issue_details = IssueImplementationDetails(
                 notes=notes,
                 attachments=[public_url],
