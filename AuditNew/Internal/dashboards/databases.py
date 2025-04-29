@@ -50,8 +50,6 @@ async def query_annual_plans_summary(
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if audit_plan_data.__len__() == 0:
-                raise HTTPException(status_code=400, detail="Cant provide annual plans check the module id")
             return audit_plan_data
     except Exception as e:
         await connection.rollback()

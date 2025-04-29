@@ -27,8 +27,8 @@ class SubProgram(BaseModel):
     extended_procedure: Optional[str]
     extended_results: Optional[str]
     effectiveness: Optional[str]
-    reviewed_by: Optional[User] = None
-    prepared_by: Optional[User] = None
+    reviewed_by: Optional[User]
+    prepared_by: Optional[User]
     conclusion: Optional[str]
 
 class SubProgramEvidence(BaseModel):

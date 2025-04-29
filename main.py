@@ -88,7 +88,7 @@ app.add_middleware(RateLimiterMiddleware, max_requests=10, window_seconds=60)
 async def tester(
         db=Depends(get_async_db_connection)
 ):
-    data = await query_annual_plans_summary(connection=db, company_module_id="00ff3fbe5c65")
+    data = await query_annual_plans_summary(connection=db, company_module_id="00ff3fbe5c65", start_year="2024", end_year="2028")
     return data
 
 

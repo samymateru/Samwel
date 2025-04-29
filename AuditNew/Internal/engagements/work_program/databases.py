@@ -186,6 +186,8 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
         conclusion = %s WHERE id = %s; 
         """)
     try:
+        prepared_by = None if sub_program.prepared_by is None else sub_program.prepared_by.model_dump_json()
+        reviewed_by = None if sub_program.reviewed_by is None else sub_program.reviewed_by.model_dump_json()
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 sub_program.title,
@@ -200,8 +202,8 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
                 sub_program.extended_procedure,
                 sub_program.extended_results,
                 sub_program.effectiveness,
-                sub_program.prepared_by.model_dump_json(),
-                sub_program.reviewed_by.model_dump_json(),
+                prepared_by,
+                reviewed_by,
                 sub_program.conclusion,
                 sub_program_id
             ))
