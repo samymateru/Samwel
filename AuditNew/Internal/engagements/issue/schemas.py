@@ -66,7 +66,7 @@ class Issue(BaseModel):
     reportable: Optional[bool] = None
     lod1_implementer: List[User]
     lod1_owner: List[User]
-    observers: Optional[List[User]]
+    observers: Optional[List[User]] = None
     lod2_risk_manager: Optional[List[User]]
     lod2_compliance_officer: Optional[List[User]] = None
     lod3_audit_manager: List[User]
