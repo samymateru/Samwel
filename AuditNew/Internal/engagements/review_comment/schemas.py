@@ -4,8 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 class ReviewCommentDecisionStatus(str, Enum):
-    ACCEPTED = "Accept"
-    CLOSED = "Closed"
+    CLOSED_ACCEPTED = "Closed & Accepted"
     RE_OPEN = "Re-open"
 
 class User(BaseModel):
