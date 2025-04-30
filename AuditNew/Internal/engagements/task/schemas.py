@@ -5,7 +5,7 @@ from enum import Enum
 
 class TaskDecisionStatus(str, Enum):
     CLOSED_ACCEPTED = "Closed & Accepted"
-    RE_OPEN = "Re open"
+    RE_OPEN = "Re-open"
 
 class User(BaseModel):
     name: Optional[str]

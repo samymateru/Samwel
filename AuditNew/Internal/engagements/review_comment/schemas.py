@@ -6,7 +6,7 @@ from enum import Enum
 class ReviewCommentDecisionStatus(str, Enum):
     ACCEPTED = "Accept"
     CLOSED = "Closed"
-    RE_OPEN = "Re open"
+    RE_OPEN = "Re-open"
 
 class User(BaseModel):
     name: Optional[str]
