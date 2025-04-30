@@ -30,6 +30,5 @@ class ResolveReviewComment(BaseModel):
     resolved_by: Optional[User]
 
 class ReviewCommentDecision(BaseModel):
-    decision: Optional[str]
-    status: Optional[ReviewCommentDecisionStatus]
+    decision: Optional[ReviewCommentDecisionStatus]
 

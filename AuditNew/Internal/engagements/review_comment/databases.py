@@ -94,8 +94,8 @@ async def review_comment_decision_(connection: AsyncConnection, review_comment: 
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
-                review_comment.decision,
-                review_comment.status.value,
+                review_comment.decision.value,
+                "Not started" if review_comment.decision.value == review_comment.decision.RE_OPEN else review_comment.decision.value,
                 review_comment_id
             ))
         await connection.commit()

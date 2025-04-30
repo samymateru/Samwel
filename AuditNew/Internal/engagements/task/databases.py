@@ -93,8 +93,8 @@ async def resolve_decision_(connection: AsyncConnection, task: TaskDecision, tas
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
-                task.decision,
-                task.status.value,
+                task.decision.value,
+                "Not started" if task.decision.value == task.decision.RE_OPEN else task.decision.value,
                 task_id
             ))
         await connection.commit()

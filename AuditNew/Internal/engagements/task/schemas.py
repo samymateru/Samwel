@@ -4,8 +4,7 @@ from datetime import datetime
 from enum import Enum
 
 class TaskDecisionStatus(str, Enum):
-    ACCEPTED = "Accept"
-    CLOSED = "Closed"
+    CLOSED_ACCEPTED = "Closed & Accepted"
     RE_OPEN = "Re open"
 
 class User(BaseModel):
@@ -31,5 +30,4 @@ class ResolveTask(BaseModel):
     resolved_by: Optional[User]
 
 class TaskDecision(BaseModel):
-    decision: Optional[str]
-    status: Optional[TaskDecisionStatus]
+    decision: Optional[TaskDecisionStatus]
