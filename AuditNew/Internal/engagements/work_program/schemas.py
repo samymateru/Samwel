@@ -31,6 +31,16 @@ class SubProgram(BaseModel):
     prepared_by: Optional[User]
     conclusion: Optional[str]
 
+
+class Procedure(BaseModel):
+    procedure_id: Optional[str] = None
+    procedure_title: Optional[str] = None
+
+class WorkProgram(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str]
+    procedures: List[Procedure]
+
 class SubProgramEvidence(BaseModel):
     id: Optional[str] = None
     attachment: Optional[str]

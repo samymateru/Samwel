@@ -53,6 +53,20 @@ async def update_main_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.get("/work_program/{engagement_id}", response_model=WorkProgram)
+async def fetch_work_program(
+        engagement_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_work_program(db, engagement_id=engagement_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 @router.delete("/main_program/{program_id}", response_model=ResponseMessage)
 async def delete_main_program(
         program_id: str,

@@ -234,6 +234,39 @@ async def edit_main_program(connection: AsyncConnection, program: MainProgram, p
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating main program {e}")
 
+async def get_work_program(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL(
+        """
+        SELECT
+          main_program.id,
+          main_program.name,
+          json_agg(
+            json_build_object(
+              'procedure_id', sub_program.id,
+              'procedure_title', sub_program.title
+            )
+          ) AS procedures
+        FROM
+          main_program
+        LEFT JOIN sub_program ON sub_program.program = main_program.id
+        WHERE
+          main_program.engagement = %s
+        GROUP BY
+          main_program.id, main_program.name
+        ORDER BY
+          main_program.name;
+        """
+    )
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching work program {e}")
+
 
 
 
