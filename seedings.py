@@ -1277,7 +1277,7 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
                 await cursor.execute(query, (
                     get_unique_key_(),
                     engagement_id,
-                    f"REF-{ref:04d}",
+                    f"PLN-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),
@@ -1567,7 +1567,7 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
                 await cursor.execute(query, (
                     get_unique_key_(),
                     engagement_id,
-                    f"REF-{ref:04d}",
+                    f"RPT-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),
@@ -1722,7 +1722,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
                 await cursor.execute(query, (
                     get_unique_key_(),
                     engagement_id,
-                    f"REF-{ref:04d}",
+                    f"FNL-{ref:04d}",
                     value["title"],
                     json.dumps(value["tests"]),
                     json.dumps(value["results"]),

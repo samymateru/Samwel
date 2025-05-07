@@ -1,8 +1,6 @@
 from fastapi import HTTPException
-from psycopg2.extensions import connection as Connection
 from AuditNew.Internal.engagements.finalizations.schemas import *
 from AuditNew.Internal.engagements.planning.schemas import StandardTemplate
-from psycopg2.extensions import cursor as Cursor
 from utils import get_next_reference
 import json
 from psycopg import AsyncConnection, sql

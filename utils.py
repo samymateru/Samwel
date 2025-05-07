@@ -111,17 +111,22 @@ async def get_next_reference(connection: AsyncConnection, resource: str, engagem
         ORDER BY reference DESC
         LIMIT 1
     """).format(resource=sql.Identifier('public', resource))
+    prefix_map = {
+        "finalization_procedure": "FNL",
+        "std_template": "PLN",
+        "reporting_procedure": "RPT",
+    }
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (engagement_id,))
             result = await cursor.fetchone()
 
             if result is None:
-                return "REF-0001"
+                return f"{prefix_map.get(resource)}-0001"
 
             #Extract number, increment, and format
             last_number = int(result[0].split("-")[1])
-            new_ref = f"REF-{last_number + 1:04d}"
+            new_ref = f"{prefix_map.get(resource)}-{last_number + 1:04d}"
             return new_ref
 
     except Exception as e:
