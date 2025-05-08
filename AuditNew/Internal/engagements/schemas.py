@@ -47,8 +47,8 @@ class Engagement(BaseModel):
     sub_departments: Optional[List[str]]
     status: EngagementStatus = EngagementStatus.NOT_STARTED
     stage: EngagementStage = EngagementStage.NOT_STARTED
-    start_date: Optional[datetime]
-    end_date: Optional[datetime]
+    start_date: Optional[datetime] = datetime.now()
+    end_date: Optional[datetime] = datetime.now()
     created_at: datetime = datetime.now()
 
 class UpdateEngagement(BaseModel):
