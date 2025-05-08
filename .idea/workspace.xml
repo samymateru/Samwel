@@ -28,12 +28,12 @@
     &quot;assignee&quot;: &quot;samymateru&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/samymateru/Backend.git",
-    "accountId": "6411a992-8491-4d4c-aa78-6f6516803d8c"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/samymateru/Backend.git&quot;,
+    &quot;accountId&quot;: &quot;6411a992-8491-4d4c-aa78-6f6516803d8c&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/AuditNew/engagement_profile/routes.py" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -121,14 +121,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00361" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1745509083953</created>
-      <option name="number" value="00361" />
-      <option name="presentableId" value="LOCAL-00361" />
-      <option name="project" value="LOCAL" />
-      <updated>1745509083954</updated>
     </task>
     <task id="LOCAL-00362" summary="adding dashboards">
       <option name="closed" value="true" />
@@ -514,7 +506,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746612139018</updated>
     </task>
-    <option name="localTasksCounter" value="410" />
+    <task id="LOCAL-00410" summary="adding dashboards">
+      <option name="closed" value="true" />
+      <created>1746615380540</created>
+      <option name="number" value="00410" />
+      <option name="presentableId" value="LOCAL-00410" />
+      <option name="project" value="LOCAL" />
+      <updated>1746615380540</updated>
+    </task>
+    <option name="localTasksCounter" value="411" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

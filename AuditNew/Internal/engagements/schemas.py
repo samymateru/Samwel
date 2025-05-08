@@ -32,8 +32,8 @@ class Risk(BaseModel):
 class Lead(BaseModel):
     name: Optional[str]
     email: Optional[str]
-    user_id: Optional[str]
-    role: List[Role]
+    user_id: Optional[str] = None
+    role: Optional[List[Role]] = None
 
 class Engagement(BaseModel):
     id: Optional[str] = None
