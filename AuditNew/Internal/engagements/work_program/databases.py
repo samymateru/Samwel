@@ -56,9 +56,10 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
                     effectiveness,
                     conclusion,
                     reviewed_by,
-                    prepared_by
+                    prepared_by,
+                    status
                     ) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id;
         """)
     try:
@@ -82,7 +83,8 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
                 "",
                 "",
                 None,
-                None
+                None,
+                "Pending"
             ))
             sub_program_id = await cursor.fetchone()
             await connection.commit()

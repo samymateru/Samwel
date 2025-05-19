@@ -245,7 +245,7 @@ async def query_planning_details(connection: AsyncConnection, plan_id: str):
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (plan_id,))
+            await cursor.execute(query, (plan_id, plan_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]

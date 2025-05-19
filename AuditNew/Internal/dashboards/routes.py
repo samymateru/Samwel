@@ -1,3 +1,4 @@
+from AuditNew.Internal.dashboards.schemas import *
 from utils import get_current_user, get_async_db_connection
 from schema import CurrentUser
 from fastapi import APIRouter, Depends
@@ -27,3 +28,23 @@ async def fetch_main_dashboard(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.get("/eauditNext/plan_details/{plan_id}", response_model=PlanDetails)
+async def fetch_plan_details(
+        plan_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await query_planning_details(connection=db, plan_id=plan_id)
+        if data is None:
+            raise HTTPException(status_code=400, detail="No plan details available")
+        return PlanDetails(
+            total=data.get("total_engagements") or 0,
+            completed=data.get("status_summary", {}).get("Completed", 0),
+            not_started=data.get("status_summary", {}).get("Not started", 0),
+            closed=data.get("status_summary", {}).get("Closed", 0)
+        )
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
