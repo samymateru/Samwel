@@ -340,7 +340,7 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
 
     update_procedure_status = sql.SQL(
         """
-        UPDATE public.sub_program
+        UPDATE public.std_template
         SET 
         status = %s
         WHERE id = %s; 
