@@ -1266,9 +1266,10 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
             conclusion,
             type,
             prepared_by,
-            reviewed_by
+            reviewed_by,
+            status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1286,7 +1287,8 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
                     json.dumps(value["conclusion"]),
                     value["type"],
                     None,
-                    None
+                    None,
+                    "Pending"
                 ))
                 ref = ref + 1
 
@@ -1556,9 +1558,10 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
             conclusion,
             type,
             prepared_by,
-            reviewed_by
+            reviewed_by,
+            status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1576,7 +1579,8 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
                     json.dumps(value["conclusion"]),
                     value["type"],
                     None,
-                    None
+                    None,
+                    "Pending"
                 ))
                 ref = ref + 1
 
@@ -1711,9 +1715,10 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
             conclusion,
             type,
             prepared_by,
-            reviewed_by
+            reviewed_by,
+            status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1731,7 +1736,8 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
                     json.dumps(value["conclusion"]),
                     value["type"],
                     None,
-                    None
+                    None,
+                    "Pending"
                 ))
                 ref = ref + 1
 

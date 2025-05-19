@@ -197,6 +197,13 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
         reviewed_by = %s::jsonb,
         conclusion = %s WHERE id = %s; 
         """)
+    update_procedure_status = sql.SQL(
+        """
+        UPDATE public.sub_program
+        SET 
+        status = %s
+        WHERE id = %s; 
+        """)
     try:
         prepared_by = None if sub_program.prepared_by is None else sub_program.prepared_by.model_dump_json()
         reviewed_by = None if sub_program.reviewed_by is None else sub_program.reviewed_by.model_dump_json()
@@ -219,7 +226,13 @@ async def edit_sub_program(connection: AsyncConnection, sub_program: SubProgram,
                 sub_program.conclusion,
                 sub_program_id
             ))
-        await connection.commit()
+            await connection.commit()
+            if sub_program.reviewed_by is None:
+                await cursor.execute(update_procedure_status, ("In progress", sub_program_id))
+            else:
+                await cursor.execute(update_procedure_status, ("Completed", sub_program_id))
+            await connection.commit()
+
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Sub program already exist")

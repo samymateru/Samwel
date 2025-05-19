@@ -241,9 +241,10 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
                 conclusion,
                 type,
                 prepared_by,
-                reviewed_by
+                reviewed_by,
+                status
            ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -260,7 +261,8 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
                 json.dumps(data["conclusion"]),
                 data["type"],
                 None,
-                None
+                None,
+                "Pending"
             ))
         await connection.commit()
     except ForeignKeyViolation:
@@ -359,7 +361,7 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
                 procedure_id
             ))
             await connection.commit()
-            if std_template.prepared_by.id == "0" or std_template.prepared_by.name == "":
+            if std_template.reviewed_by.id == "0" or std_template.reviewed_by.name == "":
                 await cursor.execute(update_procedure_status, ("In progress", procedure_id))
             else:
                 await cursor.execute(update_procedure_status, ("Completed", procedure_id))

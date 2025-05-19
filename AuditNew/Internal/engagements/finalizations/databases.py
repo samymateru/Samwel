@@ -53,9 +53,10 @@ async def add_finalization_procedure(connection: AsyncConnection, finalization: 
             conclusion,
             type,
             prepared_by,
-            reviewed_by
+            reviewed_by,
+            status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -72,7 +73,8 @@ async def add_finalization_procedure(connection: AsyncConnection, finalization: 
                 json.dumps(data["conclusion"]),
                 data["type"],
                 None,
-                None
+                None,
+                "Pending"
             ))
         await connection.commit()
     except ForeignKeyViolation:
@@ -111,6 +113,13 @@ async def edit_finalization_procedure(connection: AsyncConnection, finalization:
         prepared_by = %s::jsonb,
         reviewed_by = %s::jsonb  WHERE id = %s; 
         """)
+    update_procedure_status = sql.SQL(
+        """
+        UPDATE public.finalization_procedure
+        SET 
+        status = %s
+        WHERE id = %s; 
+        """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -124,7 +133,12 @@ async def edit_finalization_procedure(connection: AsyncConnection, finalization:
                 safe_json_dump(finalization.reviewed_by),
                 procedure_id
             ))
-        await connection.commit()
+            await connection.commit()
+            if finalization.reviewed_by.id == "0" or finalization.reviewed_by.name == "":
+                await cursor.execute(update_procedure_status, ("In progress", procedure_id))
+            else:
+                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
+            await connection.commit()
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Finalization procedure already exist")

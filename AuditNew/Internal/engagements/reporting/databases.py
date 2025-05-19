@@ -52,9 +52,10 @@ async def add_reporting_procedure(connection: AsyncConnection, report: NewReport
                 conclusion,
                 type,
                 prepared_by,
-                reviewed_by
+                reviewed_by,
+                status
            ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -71,7 +72,8 @@ async def add_reporting_procedure(connection: AsyncConnection, report: NewReport
                 json.dumps(data["conclusion"]),
                 data["type"],
                 None,
-                None
+                None,
+                "Pending"
             ))
         await connection.commit()
     except ForeignKeyViolation:
@@ -110,6 +112,13 @@ async def edit_reporting_procedure(connection: AsyncConnection, report: Standard
             prepared_by = %s::jsonb,
             reviewed_by = %s::jsonb  WHERE id = %s; 
         """)
+    update_procedure_status = sql.SQL(
+        """
+        UPDATE public.reporting_procedure
+        SET 
+        status = %s
+        WHERE id = %s; 
+        """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -123,7 +132,12 @@ async def edit_reporting_procedure(connection: AsyncConnection, report: Standard
                 safe_json_dump(report.reviewed_by),
                 procedure_id
             ))
-        await connection.commit()
+            await connection.commit()
+            if report.reviewed_by.id == "0" or report.reviewed_by.name == "":
+                await cursor.execute(update_procedure_status, ("In progress", procedure_id))
+            else:
+                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
+            await connection.commit()
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Report procedure already exist")
