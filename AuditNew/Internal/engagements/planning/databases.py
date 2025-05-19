@@ -337,6 +337,14 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
             prepared_by = %s::jsonb,
             reviewed_by = %s::jsonb  WHERE id = %s; 
         """)
+
+    update_procedure_status = sql.SQL(
+        """
+        UPDATE public.sub_program
+        SET 
+        status = %s
+        WHERE id = %s; 
+        """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -350,7 +358,13 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
                 safe_json_dump(std_template.reviewed_by),
                 procedure_id
             ))
-        await connection.commit()
+            await connection.commit()
+            print(std_template.reviewed_by)
+            if std_template.reviewed_by is None:
+                await cursor.execute(update_procedure_status, ("In progress", procedure_id))
+            else:
+                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
+            await connection.commit()
 
     except UniqueViolation:
         await connection.rollback()
@@ -477,42 +491,3 @@ async def save_procedure_(connection: AsyncConnection, procedure: SaveProcedure,
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving procedure {e}")
-
-
-async def edit_work_program_procedure_prepared(connection: AsyncConnection, sub_program: PreparedReviewedBy, sub_program_id: str):
-    query = sql.SQL(
-        """
-            UPDATE public.sub_program
-            SET 
-            prepared_by = %s::jsonb
-            WHERE id = %s; 
-        """)
-    try:
-        async with connection.cursor() as cursor:
-            await cursor.execute(query, (
-                sub_program.model_dump_json(),
-                sub_program_id
-            ))
-        await connection.commit()
-    except Exception as e:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error prepared procedure {e}")
-
-async def edit_work_program_procedure_reviewed(connection: AsyncConnection, sub_program: PreparedReviewedBy, sub_program_id: str):
-    query = sql.SQL(
-        """
-            UPDATE public.sub_program
-            SET 
-            reviewed_by = %s::jsonb
-            WHERE id = %s; 
-        """)
-    try:
-        async with connection.cursor() as cursor:
-            await cursor.execute(query, (
-                sub_program.model_dump_json(),
-                sub_program_id
-            ))
-        await connection.commit()
-    except Exception as e:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error review procedure {e}")

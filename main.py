@@ -28,9 +28,11 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.engagements.risk.routes import router as risk_
+from AuditNew.Internal.dashboards.routes import router as dashboards
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from contextlib import asynccontextmanager
+
 
 from schema import CurrentUser, ResponseMessage
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
@@ -177,6 +179,8 @@ app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
 app.include_router(risk_, tags=["Engagement Risk"])
 app.include_router(control_, tags=["Engagement Control"])
+app.include_router(dashboards, tags=["System Dashboards"])
+
 
 if __name__ == "__main__":
     import uvicorn

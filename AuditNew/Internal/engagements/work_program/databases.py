@@ -364,3 +364,40 @@ async def save_sub_program_(connection: AsyncConnection, sub_program: SaveWorkPr
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving sub program procedure {e}")
 
+async def edit_work_program_procedure_prepared(connection: AsyncConnection, sub_program: PreparedReviewedBy, sub_program_id: str):
+    query = sql.SQL(
+        """
+            UPDATE public.sub_program
+            SET 
+            prepared_by = %s::jsonb
+            WHERE id = %s; 
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                sub_program.model_dump_json(),
+                sub_program_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error prepared procedure {e}")
+
+async def edit_work_program_procedure_reviewed(connection: AsyncConnection, sub_program: PreparedReviewedBy, sub_program_id: str):
+    query = sql.SQL(
+        """
+            UPDATE public.sub_program
+            SET 
+            reviewed_by = %s::jsonb
+            WHERE id = %s; 
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                sub_program.model_dump_json(),
+                sub_program_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error review procedure {e}")

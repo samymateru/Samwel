@@ -183,6 +183,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
           JOIN company_modules ON annual_plans.company_module = company_modules.id
           WHERE company_modules.id = %s
           GROUP BY issue.process
+          ORDER BY count DESC
+          LIMIT 5
         ) AS process
         ) AS process_summary,
 
