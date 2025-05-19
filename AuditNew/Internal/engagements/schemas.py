@@ -7,7 +7,7 @@ from utils import get_unique_key
 class EngagementStatus(str, Enum):
     NOT_STARTED = "Not started"
     OPEN = "Open"
-    COMPLETE = "Complete"
+    COMPLETE = "Completed"
     CLOSED = "Closed"
 
 class EngagementStage(str, Enum):
