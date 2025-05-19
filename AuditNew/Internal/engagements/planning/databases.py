@@ -359,10 +359,10 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
                 procedure_id
             ))
             await connection.commit()
-            if std_template.prepared_by.id != "" or std_template.prepared_by.name != "":
-                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
-            else:
+            if std_template.prepared_by.id == "0" or std_template.prepared_by.name == "":
                 await cursor.execute(update_procedure_status, ("In progress", procedure_id))
+            else:
+                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
             await connection.commit()
 
     except UniqueViolation:
