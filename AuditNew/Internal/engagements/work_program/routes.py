@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File
+
+from AuditNew.Internal.engagements.planning.databases import edit_work_program_procedure_prepared, \
+    edit_work_program_procedure_reviewed
 from utils import  get_async_db_connection
 from AuditNew.Internal.engagements.work_program.databases import *
 from AuditNew.Internal.engagements.work_program.schemas import *
@@ -98,7 +101,7 @@ async def create_new_sub_program(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/sub_program/{program_id}", response_model=List[SubProgram])
-async def fetch_sub_program(
+async def fetch_sub_programs(
         program_id: str,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -108,6 +111,22 @@ async def fetch_sub_program(
     try:
         data = await get_sub_program(db, program_id=program_id)
         return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/sub_program_/{sub_program_id}", response_model=SubProgram | None)
+async def fetch_sub_program(
+        sub_program_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_sub_program_(db, sub_program_id=sub_program_id)
+        if data.__len__() == 0:
+            return None
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -159,6 +178,35 @@ async def create_new_sub_program_evidence(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.post("/sub_program/risk_control/{sub_program_id}", response_model=ResponseMessage)
+async def create_new_sub_program_risk_control(
+        sub_program_id: str,
+        risk_control: RiskControl,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await add_new_sub_program_risk_control(db, risk_control=risk_control, sub_program_id=sub_program_id)
+        return {"detail": "Risk added successfully"}
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/sub_program/risk_control/{sub_program_id}", response_model=List[RiskControl])
+async def fetch_sub_program_risk_control(
+        sub_program_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_sub_program_risk_control(db, sub_program_id=sub_program_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 @router.get("/sub_program/evidence/{sub_program_id}", response_model=List[SubProgramEvidence])
 async def fetch_engagement_letter(
@@ -175,9 +223,51 @@ async def fetch_engagement_letter(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
+#######################################################################################
+@router.put("/sub_program/save/{sub_program_id}", response_model=ResponseMessage)
+async def save_sub_program(
+        sub_program_id: str,
+        sub_program: SaveWorkProgramProcedure,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await save_sub_program_(db, sub_program=sub_program, sub_program_id=sub_program_id)
+        return ResponseMessage(detail="Sub program saved successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.put("/sub_program/prepare/{sub_program_id}", response_model=ResponseMessage)
+async def edit_prepared_by(
+        sub_program_id: str,
+        sub_program: PreparedReviewedBy,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await edit_work_program_procedure_prepared(db, sub_program=sub_program, sub_program_id=sub_program_id)
+        return ResponseMessage(detail="Sub program prepared successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-
+@router.put("/sub_program/review/{sub_program_id}", response_model=ResponseMessage)
+async def edit_reviewed_by(
+        sub_program_id: str,
+        sub_program: PreparedReviewedBy,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await edit_work_program_procedure_reviewed(db, sub_program=sub_program, sub_program_id=sub_program_id)
+        return ResponseMessage(detail="Sub program prepared successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 

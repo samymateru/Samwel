@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-from AuditNew.Internal.dashboards.databases import query_annual_plans_summary
+from AuditNew.Internal.dashboards.databases import query_annual_plans_summary, query_audit_summary, \
+    all_engagement_with_status, query_all_issues
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
@@ -88,7 +89,7 @@ app.add_middleware(
 async def tester(
         db=Depends(get_async_db_connection)
 ):
-    data = await query_annual_plans_summary(connection=db, company_module_id="00ff3fbe5c65", start_year="2024", end_year="2028")
+    data = await query_all_issues(connection=db, company_module_id="eab4b1515fa0")
     return data
 
 
@@ -180,4 +181,3 @@ app.include_router(control_, tags=["Engagement Control"])
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

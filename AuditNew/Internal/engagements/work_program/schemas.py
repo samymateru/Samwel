@@ -35,6 +35,7 @@ class SubProgram(BaseModel):
 class Procedure(BaseModel):
     procedure_id: Optional[str] = None
     procedure_title: Optional[str] = None
+    reference: Optional[str] = None
 
 class WorkProgram(BaseModel):
     id: Optional[str] = None
@@ -47,6 +48,34 @@ class SubProgramEvidence(BaseModel):
 
 class NewSubProgram(BaseModel):
     title: str
+
+class SaveWorkProgramProcedure(BaseModel):
+    brief_description: Optional[str]
+    audit_objective: Optional[str]
+    test_description: Optional[str]
+    test_type: Optional[str]
+    sampling_approach: Optional[str]
+    results_of_test: Optional[str]
+    observation: Optional[str]
+    extended_testing: Optional[bool]
+    extended_procedure: Optional[str]
+    extended_results: Optional[str]
+    effectiveness: Optional[str]
+    conclusion: Optional[str]
+
+class RiskControl(BaseModel):
+    id: Optional[str] = None
+    risk: Optional[str]
+    risk_rating: Optional[str]
+    control: Optional[str]
+    control_objective: Optional[str]
+    control_type: Optional[str]
+    residue_risk: Optional[str] = None
+
+class PreparedReviewedBy(BaseModel):
+    name: Optional[str]
+    email: Optional[str]
+    date_issued: Optional[datetime] = datetime.now()
 
 
 

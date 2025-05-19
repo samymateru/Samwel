@@ -154,6 +154,18 @@ async def get_sub_program(connection: AsyncConnection, program_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
 
+async def get_sub_program_(connection: AsyncConnection, sub_program_id: str):
+    query = sql.SQL("SELECT * FROM public.sub_program WHERE id = %s")
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (sub_program_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
+
 async def remove_work_program(connection: AsyncConnection, id: str, table: str, resource: str):
     query = sql.SQL("DELETE FROM {table} WHERE id = %s").format(table=sql.Identifier('public', table))
     try:
@@ -243,6 +255,7 @@ async def get_work_program(connection: AsyncConnection, engagement_id: str):
           json_agg(
             json_build_object(
               'procedure_id', sub_program.id,
+              'reference', sub_program.reference,
               'procedure_title', sub_program.title
             )
           ) AS procedures
@@ -267,6 +280,87 @@ async def get_work_program(connection: AsyncConnection, engagement_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching work program {e}")
 
+async  def add_new_sub_program_risk_control(connection: AsyncConnection, risk_control: RiskControl, sub_program_id: str):
+    query = sql.SQL(
+        """
+           INSERT INTO public.risk_control (
+                id,
+                sub_program,
+                risk,
+                risk_rating,
+                control,
+                control_objective,
+                control_type
+           ) 
+        VALUES(%s, %s, %s, %s, %s, %s, %s)
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                get_unique_key(),
+                sub_program_id,
+                risk_control.risk,
+                risk_control.risk_rating,
+                risk_control.control,
+                risk_control.control_objective,
+                risk_control.control_type
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding work program risk {e}")
 
+async def get_sub_program_risk_control(connection: AsyncConnection, sub_program_id: str):
+    query = sql.SQL("SELECT * FROM public.risk_control WHERE sub_program = %s")
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (sub_program_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching sub program risk control {e}")
 
+##########################################################################################################
+async def save_sub_program_(connection: AsyncConnection, sub_program: SaveWorkProgramProcedure, sub_program_id: str):
+    query = sql.SQL(
+        """
+        UPDATE public.sub_program
+        SET 
+        brief_description = %s,
+        audit_objective = %s,
+        test_description = %s,
+        test_type = %s,
+        sampling_approach = %s,
+        results_of_test = %s,
+        observation = %s,
+        extended_testing = %s,
+        extended_procedure = %s,
+        extended_results = %s,
+        effectiveness = %s,
+        conclusion = %s 
+        WHERE id = %s; 
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                sub_program.brief_description,
+                sub_program.audit_objective,
+                sub_program.test_description,
+                sub_program.test_type,
+                sub_program.sampling_approach,
+                sub_program.results_of_test,
+                sub_program.observation,
+                sub_program.extended_testing,
+                sub_program.extended_procedure,
+                sub_program.extended_results,
+                sub_program.effectiveness,
+                sub_program.conclusion,
+                sub_program_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error saving sub program procedure {e}")
 

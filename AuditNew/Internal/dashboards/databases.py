@@ -13,11 +13,8 @@ async def query_annual_plans_summary(
             annual_plans.year,
             COUNT(*) AS total,
             COUNT(*) FILTER (WHERE status = 'Not Started') AS not_started,
-            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Not Started') / COUNT(*), 2) AS not_started_percent,
             COUNT(*) FILTER (WHERE status = 'In progress') AS in_progress,
-            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'In progress') / COUNT(*), 2) AS in_progress_percent,
-            COUNT(*) FILTER (WHERE status = 'Completed') AS completed,
-            ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Completed') / COUNT(*), 2) AS completed_percent
+            COUNT(*) FILTER (WHERE status = 'Completed') AS completed
         FROM annual_plans
         WHERE company_module = {company_module}
     """).format(
@@ -54,6 +51,85 @@ async def query_annual_plans_summary(
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of annual plans {e}")
+
+async def query_audit_summary(
+        connection: AsyncConnection,
+        company_module_id: str,
+        start_year: str = None,
+        end_year: str = None,
+        year: str = None
+):
+    query = sql.SQL(
+        """
+        SELECT jsonb_build_object(
+            'total', COUNT(*),
+            'not_started', COUNT(*) FILTER (WHERE status = 'Not Started'),
+            'in_progress', COUNT(*) FILTER (WHERE status = 'In progress'),
+            'completed', COUNT(*) FILTER (WHERE status = 'Completed')
+        ) AS annual_plans
+        FROM annual_plans
+        WHERE company_module = {company_module};
+        """).format(
+        company_module=sql.Literal(company_module_id)
+    )
+    conditions = []
+
+    if start_year and end_year:
+        conditions.append(
+            sql.SQL("year BETWEEN {start} AND {end}").format(
+                start=sql.Literal(start_year),
+                end=sql.Literal(end_year)
+            )
+        )
+    elif year:
+        conditions.append(
+            sql.SQL("year = {year}").format(
+                year=sql.Literal(year)
+            )
+        )
+
+    if conditions:
+        query += sql.SQL(" AND ") + sql.SQL(" AND ").join(conditions)
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if audit_plan_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="No audit plans found")
+            return audit_plan_data[0]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching audit plans {e}")
+
+async def all_engagement_with_status(connection: AsyncConnection, plan_id: str):
+    query = sql.SQL(
+        """
+        SELECT jsonb_build_object(
+            'total', COUNT(*),
+            'not_started', COUNT(*) FILTER (WHERE status = 'Not started'),
+            'in_progress', COUNT(*) FILTER (WHERE status = 'In progress'),
+            'completed', COUNT(*) FILTER (WHERE status = 'Completed')
+        ) AS engagements
+        FROM engagements
+        WHERE plan_id = {plan_id};
+        """
+    ).format(plan_id=sql.Literal(plan_id))
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            if data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="No engagements found")
+            return data[0]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")
+
 
 async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
@@ -133,7 +209,7 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (company_module_id,))
+            await cursor.execute(query, (company_module_id, company_module_id, company_module_id, company_module_id,company_module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -143,6 +219,7 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
+
 
 async def query_planning_details(connection: AsyncConnection, plan_id: str):
     query = sql.SQL(

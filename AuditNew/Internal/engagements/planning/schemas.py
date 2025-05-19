@@ -15,6 +15,11 @@ class Type(str, Enum):
     SURVEY = "survey"
     ARCHIVE = "archive"
 
+class ProcedureTypes(str, Enum):
+    PLANNING = "Planning"
+    REPORTING = "Reporting"
+    FINALIZATION = "Finalization"
+
 class Section(BaseModel):
     value: str
 
@@ -75,3 +80,12 @@ class SummaryAuditProgramResponse(BaseModel):
     control: Optional[str]
     procedure: Optional[str]
     program: Optional[str]
+
+
+class SaveProcedure(BaseModel):
+    objective: Optional[Section] = None
+    tests: Optional[Section]
+    results: Optional[Section]
+    observation: Optional[Section]
+    conclusion: Optional[Section]
+    type: Optional[ProcedureTypes]

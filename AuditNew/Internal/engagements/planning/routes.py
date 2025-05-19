@@ -207,3 +207,20 @@ async def update_planning_procedure(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
+
+###############################################################################
+@router.put("/procedure/{procedure_id}", response_model=ResponseMessage)
+async def save_procedure(
+        procedure_id: str,
+        procedure: SaveProcedure,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await save_procedure_(connection=db, procedure=procedure, procedure_id=procedure_id, resource=procedure.type)
+        return ResponseMessage(detail="Planning procedure saved successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
