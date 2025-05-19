@@ -65,8 +65,8 @@ class StandardTemplate(BaseModel):
     attachments: Optional[List[str]]
     conclusion: Optional[Section]
     type: Optional[Type]  = Type.STANDARD
-    prepared_by: Optional[User]
-    reviewed_by: Optional[User]
+    prepared_by: Optional[User] = None
+    reviewed_by: Optional[User] = None
 
 class NewPlanningProcedure(BaseModel):
     title: str
