@@ -264,7 +264,9 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
         """
          UPDATE public.issue
          SET
-         status = %s
+         status = %s,
+         response = %s
+         res
          WHERE id = %s;
         """)
     try:
@@ -286,7 +288,10 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
                         issue_details=issue_details,
                         issue_id=issue_id
                     )
-                    await cursor.execute(query_update, (IssueStatus.IN_PROGRESS_IMPLEMENTER, issue_id))
+                    await cursor.execute(query_update, (
+                        IssueStatus.IN_PROGRESS_IMPLEMENTER,
+                        issue_details.notes,
+                        issue_id))
                     await connection.commit()
                 if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
                     await update_issue_details(
@@ -405,6 +410,16 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                         )
                     case issue.actor.AUDIT_MANAGER:
                         data = []
+                        query_ = sql.SQL(
+                            """
+                            UPDATE public.issue
+                            SET 
+                            date_closed = %s,
+                            response = %s
+                            WHERE id = %s
+                            """)
+                        await cursor.execute(query_, (datetime.now(), issue.accept_notes, issue_id))
+                        await connection.commit()
                         await update_issue_status(
                             connection=connection,
                             cursor=cursor,
@@ -525,7 +540,9 @@ async def get_issue_and_issue_actors(
     query_update = sql.SQL(
         """
         UPDATE public.issue
-        SET status = %s
+        SET 
+        status = %s,
+        response = %s
         WHERE id = %s;
         """)
     await cursor.execute(query_implementers, issue_ids.id)
@@ -563,7 +580,7 @@ async def get_issue_and_issue_actors(
                 issue_details=issue_details
             )
             issue_list.append(mailed_issue)
-            await cursor.execute(query_update, (next_status, issue.get("id")))
+            await cursor.execute(query_update, (next_status, issue_details.notes, issue.get("id")))
             await connection.commit()
         else:
             raise HTTPException(status_code=403, detail="Issue cant be updated right now")

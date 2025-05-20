@@ -23,10 +23,10 @@ async def create_new_issue_(
         issue: Issue,
         engagement_id: str = Query(),
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await add_new_issue(db, issue=issue, sub_program_id=sub_program_id, engagement_id=engagement_id)
         return ResponseMessage(detail="Issue created successfully")
