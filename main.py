@@ -31,6 +31,7 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
+from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 
 
@@ -180,6 +181,7 @@ app.include_router(review_comment_, tags=["Review Comment"])
 app.include_router(risk_, tags=["Engagement Risk"])
 app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
+app.include_router(reports, tags=["System Reports"])
 
 
 if __name__ == "__main__":

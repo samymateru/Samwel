@@ -100,13 +100,16 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 observers,
                 lod2_risk_manager,
                 lod2_compliance_officer,
-                lod3_audit_manager
+                lod3_audit_manager,
+                date_revised,
+                revised_count,
+                reportable
                 )
         VALUES (
          %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s
+         %s, %s, %s, %s, %s, %s, %s, %s, %s
+         %s, %s, %s, %s, %s, %s, %s, %s, %s
         );
         """)
     try:
@@ -142,7 +145,10 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 json.dumps(jsonable_encoder(issue.model_dump().get("observers"))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.RISK_MANAGER.value))),
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.COMPLIANCE_OFFICER.value))),
-                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value)))
+                json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value))),
+                issue.estimated_implementation_date,
+                0,
+                False
             ))
         await connection.commit()
     except ForeignKeyViolation:
