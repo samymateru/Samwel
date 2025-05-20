@@ -280,7 +280,7 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
             for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
                 allowed_to_save_list.append(implementer.get("email"))
             if user_email in allowed_to_save_list:
-                if issue_data[0].get("status") == IssueStatus.OPEN.value:
+                if issue_data[0].get("status") == IssueStatus.OPEN.value or IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
                     await update_issue_details(
                         connection=connection,
                         cursor=cursor,
@@ -292,13 +292,6 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
                         issue_details.notes,
                         issue_id))
                     await connection.commit()
-                if issue_data[0].get("status") == IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
-                    await update_issue_details(
-                        connection=connection,
-                        cursor=cursor,
-                        issue_details=issue_details,
-                        issue_id=issue_id
-                    )
                 return True
             else:
                 raise HTTPException(status_code=403, detail="Your not issue implementer")
