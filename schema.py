@@ -11,6 +11,7 @@ class CurrentUser(BaseModel):
     user_name: Optional[str] = None
     company_id: Optional[str] = None
     company_name: Optional[str] = None
+    modules: Optional[List[Dict]] = None
     role_id: Optional[str] = None
     type: Optional[str] = None
     status_code: Optional[int] = None

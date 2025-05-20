@@ -4,6 +4,7 @@ from AuditNew.Internal.dashboards.databases import query_annual_plans_summary, q
     all_engagement_with_status, query_all_issues
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
+from Management.company_modules.databases import get_company_modules
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
 from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -106,6 +107,7 @@ async def login(
         raise HTTPException(status_code=400, detail="User doesn't exists")
     password_hash: bytes = user_data[0]["password_hash"].encode()
     company = await get_companies(db, company_id=user_data[0].get("company"))
+    company_module = await get_company_modules(db, user_data[0].get("company"))
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),
@@ -113,6 +115,7 @@ async def login(
             "user_name": user_data[0].get("name"),
             "company_id": user_data[0].get("company"),
             "company_name": company[0].get("name"),
+            "modules": company_module,
             "type": user_data[0].get("type"),
             "status": user_data[0].get("status")
         }

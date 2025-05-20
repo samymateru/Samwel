@@ -168,6 +168,9 @@ async def get_reference(connection: AsyncConnection, resource: str, id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
+async def get_next_issue_id():
+    pass
+
 def get_user_data(token: str = Depends(oauth2_scheme)):
     if not token:
         return CurrentUser(status_code=401, description="auth token not provided")
