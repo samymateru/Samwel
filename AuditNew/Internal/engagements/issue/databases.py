@@ -266,7 +266,6 @@ async def save_issue_implementation_(connection: AsyncConnection, issue_details:
          SET
          status = %s,
          response = %s
-         res
          WHERE id = %s;
         """)
     try:
