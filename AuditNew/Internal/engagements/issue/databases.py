@@ -108,7 +108,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
         VALUES (
          %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s, %s, %s
+         %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s
         );
         """)
