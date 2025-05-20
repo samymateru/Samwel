@@ -10,6 +10,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         engagements.name AS engagement_name,
         engagements.code AS engagement_code,
         annual_plans.year as financial_year,
+        engagements.opinion_rating as overall_opinion_rating,
         issue.title as issue_name,
         issue.risk_rating as issue_rating,
         issue.source as issue_source,
@@ -46,12 +47,39 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         ELSE 'No'
         END AS issue_due_more_than_365_days,
         issue.status as issue_overall_status,
-        issue.lod1_owner as LOD1_Owner,
-        issue.lod1_implementer as LOD1_Implementer,
-        issue.lod2_risk_manager as LOD2_Risk_Manager,
-        issue.lod2_compliance_officer as LOD2_Compliance_Officer,
-        issue.lod3_audit_manager as LOD3_Audit_Manager,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.lod1_owner) AS elem
+        ) AS LOD1_owner,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.lod1_implementer) AS elem
+        ) AS LOD1_Implementer,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.lod2_risk_manager) AS elem
+        ) AS LOD2_Risk_Manager,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.lod2_compliance_officer) AS elem
+        ) AS LOD2_Compliance_Officer,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.lod3_audit_manager) AS elem
+        ) AS LOD3_Audit_Manager,
+        
+        (
+        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+        FROM jsonb_array_elements(issue.observers) AS elem
+        ) AS Observers,
+        
         issue.response as latest_response
+        
         FROM issue
         JOIN engagements ON issue.engagement = engagements.id
         JOIN annual_plans ON engagements.plan_id = annual_plans.id
@@ -61,6 +89,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         engagements.name,
         engagement_code,
         financial_year,
+        overall_opinion_rating,
         issue_id,
         issue_name,
         issue_rating,
@@ -79,6 +108,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         LOD2_Risk_Manager,
         LOD2_Compliance_Officer,
         LOD3_Audit_Manager,
+        Observers,
         latest_revised_date,
         is_issue_revised,
         actual_implementation_date,
@@ -88,7 +118,8 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         issue_due_more_than_365_days,
         is_issue_sent_to_owner,
         is_issue_pass_due,
-        latest_response;
+        latest_response
+        ;
         """)
     try:
         async with connection.cursor() as cursor:
@@ -98,7 +129,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
             if audit_plan_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="Cant provide issue details check the module id")
-            return audit_plan_data[0]
+            return audit_plan_data
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
