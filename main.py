@@ -91,10 +91,11 @@ app.add_middleware(
 
 @app.post("/test")
 async def tester(
-        db=Depends(get_async_db_connection)
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
 ):
-    data = await query_all_issues(connection=db, company_module_id="eab4b1515fa0")
-    return data
+    print(user.modules)
+
 
 
 @app.post("/login", tags=["Authentication"])
@@ -108,6 +109,7 @@ async def login(
     password_hash: bytes = user_data[0]["password_hash"].encode()
     company = await get_companies(db, company_id=user_data[0].get("company"))
     company_module = await get_company_modules(db, user_data[0].get("company"))
+    print(company_module)
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),

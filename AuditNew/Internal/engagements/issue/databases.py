@@ -67,6 +67,24 @@ async def edit_issue(connection: AsyncConnection, issue: Issue, issue_id: str):
         raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
 
 async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_id: str, engagement_id: str):
+    query_last_issue = sql.SQL(
+        """
+        SELECT issue.id AS issue_id
+        FROM issue
+        JOIN engagements ON issue.engagement = engagements.id
+        JOIN annual_plans ON engagements.plan_id = annual_plans.id
+        JOIN company_modules ON annual_plans.company_module = company_modules.id
+        WHERE company_modules.id = (
+        SELECT company_modules.id
+        FROM engagements
+        JOIN annual_plans ON engagements.plan_id = annual_plans.id
+        JOIN company_modules ON company_modules.id = annual_plans.company_module
+        WHERE engagements.id = {engagement_id}
+        )
+        ORDER BY issue.id DESC 
+        LIMIT 1;
+        """).format(engagement_id=sql.Literal(engagement_id))
+
     query = sql.SQL(
         """
         INSERT INTO public.issue (
@@ -114,8 +132,21 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
         """)
     try:
         async with connection.cursor() as cursor:
+            await cursor.execute(query_last_issue)
+            data: List[str] = await cursor.fetchall()
+            if data.__len__() == 0:
+                if issue.source == "Internal Audit":
+                    issue_id = f"IA-00001"
+                else:
+                    issue_id = f"FND-00001"
+            else:
+                prefix = int(data[0].split("-")[1][1])
+                if issue.source == "Internal Audit":
+                    issue_id = f"IA-{prefix:04d}"
+                else:
+                    issue_id = f"FND-{prefix:04d}"
             await cursor.execute(query,(
-                get_unique_key(),
+                issue_id,
                 sub_program_id,
                 engagement_id,
                 issue.title,
