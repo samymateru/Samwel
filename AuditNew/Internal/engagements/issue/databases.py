@@ -240,6 +240,15 @@ async def send_issues_to_implementor(connection: AsyncConnection, issue_ids: Iss
                         next_status=IssueStatus.OPEN,
                         issue_details=issue_details
                     )
+                    query = sql.SQL(
+                        """
+                        UPDATE public.issue
+                        SET date_opened = %s
+                        WHERE id IN ({placeholders})
+                        """).format(placeholders=placeholders)
+                    params = [datetime.now()] + issue_ids.id
+                    await cursor.execute(query, params)
+                    await connection.commit()
                 else:
                     raise HTTPException(status_code=403, detail="Your not team lead")
     except HTTPException as h:
