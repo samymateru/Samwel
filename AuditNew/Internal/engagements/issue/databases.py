@@ -142,9 +142,9 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
             else:
                 prefix = int(data[0][0].split("-")[1])
                 if issue.source == "Internal Audit":
-                    issue_id = f"IA-{prefix:04d}"
+                    issue_id = f"IA-{prefix:05d}"
                 else:
-                    issue_id = f"FND-{prefix:04d}"
+                    issue_id = f"FND-{prefix:05d}"
             await cursor.execute(query,(
                 issue_id,
                 sub_program_id,
