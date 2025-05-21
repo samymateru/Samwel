@@ -89,11 +89,9 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
             procedure,
             program,
             procedure_id,
-            program_id,
-            risk_id,
-            control_id
+            program_id
        ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
     try:
         async with connection.cursor() as cursor:
@@ -103,6 +101,13 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
             program_rows = await cursor.fetchall()
             program_column_names = [desc[0] for desc in cursor.description]
             program_data = [dict(zip(program_column_names, row_)) for row_ in program_rows]
+            risk_control = RiskControl(
+                risk=summary.risk,
+                risk_rating=summary.risk_rating,
+                control=summary.control,
+                control_type=summary.control_type,
+                control_objective=summary.control_objective
+            )
             if program_data.__len__() != 0: # the program exists check for the procedure
                 await cursor.execute(check_sub_program, (program_data[0].get("id"), summary.procedure))
                 procedure_rows = await cursor.fetchall()
@@ -110,21 +115,9 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
                 procedure_data = [dict(zip(procedure_column_names, row_)) for row_ in procedure_rows]
                 if procedure_data.__len__() != 0:# procedure exists attach risk
                     sub_program_id = procedure_data[0].get("id")
-                    risk = Risk(
-                        name=summary.risk,
-                        rating=summary.risk_rating
-                    )
-                    risk_id = await add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
-                    control = Control(
-                        name=summary.control,
-                        objective=summary.control_objective,
-                        type=summary.control_type
-                    )
-                    control_id = await add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
                     program_id_ = program_data[0].get("id")
                     procedure_id = sub_program_id
-                    risk_id_ = risk_id
-                    control_id_ = control_id
 
                 else: # procedure does not exist attach procedure the ris and control
                     program_id = program_data[0].get("id")
@@ -133,21 +126,9 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
                     )
                     sub_program_id = await add_new_sub_program(connection=connection, sub_program=sub_program,
                                                          program_id=program_id)
-                    risk = Risk(
-                        name=summary.risk,
-                        rating=summary.risk_rating
-                    )
-                    risk_id = await add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
-                    control = Control(
-                        name=summary.control,
-                        objective=summary.control_objective,
-                        type=summary.control_type
-                    )
-                    control_id = await add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                    await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
                     program_id_ = program_id
                     procedure_id = sub_program_id
-                    risk_id_ = risk_id
-                    control_id_ = control_id
 
             else: # program does not exist
                 program = MainProgram(
@@ -158,21 +139,9 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
                     title=summary.procedure
                 )
                 sub_program_id = await add_new_sub_program(connection=connection, sub_program=sub_program, program_id=program_id)
-                risk = Risk(
-                    name=summary.risk,
-                    rating=summary.risk_rating
-                )
-                risk_id = await add_new_risk(connection=connection, risk=risk, sub_program_id=sub_program_id)
-                control = Control(
-                    name=summary.control,
-                    objective=summary.control_objective,
-                    type=summary.control_type
-                )
-                control_id = await add_new_control(connection=connection, control=control, sub_program_id=sub_program_id)
+                await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
                 program_id_ = program_id
                 procedure_id = sub_program_id
-                risk_id_ = risk_id
-                control_id_ = control_id
 
             await cursor.execute(query, (
                 get_unique_key(),
@@ -185,9 +154,7 @@ async def add_summary_audit_program(connection: AsyncConnection, summary: Summar
                 summary.procedure,
                 summary.program,
                 procedure_id,
-                program_id_,
-                risk_id_,
-                control_id_
+                program_id_
             ))
             summary_audit_program_id = await cursor.fetchone()
             await cursor.execute("""UPDATE public."PRCM" SET summary_audit_program = %s WHERE id = %s""", (
