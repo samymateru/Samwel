@@ -53,14 +53,13 @@ async def fetch_plan_details(
 async def fetch_engagement_details(
         engagement_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await query_engagement_details(connection=db, engagement_id=engagement_id)
-        if data is None:
-            raise HTTPException(status_code=400, detail="No engagement details available")
+
         return data
 
     except HTTPException as e:
