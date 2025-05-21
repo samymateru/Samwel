@@ -121,11 +121,12 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 lod3_audit_manager,
                 date_revised,
                 revised_count,
-                reportable
+                reportable,
+                revised_status
                 )
         VALUES (
          %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s
         );
@@ -179,6 +180,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 json.dumps(jsonable_encoder(issue.model_dump().get(IssueActors.AUDIT_MANAGER.value))),
                 issue.estimated_implementation_date,
                 0,
+                False,
                 False
             ))
         await connection.commit()
@@ -381,25 +383,72 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                             issue_details=issue_details
                         )
                     case issue.actor.RISK_MANAGER:
-                        data = await get_issue_and_issue_actors(
-                            connection=connection,
-                            cursor=cursor,
-                            issue_ids=issue_ids,
-                            issue_actors=IssueActors.AUDIT_MANAGER,
-                            status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=str(issue.lod2_feedback.value),
-                            issue_details=issue_details
-                        )
+                        if issue_data[0].get("revised_status"):
+                            data = await get_issue_and_issue_actors(
+                                connection=connection,
+                                cursor=cursor,
+                                issue_ids=issue_ids,
+                                issue_actors=IssueActors.IMPLEMENTER,
+                                status={IssueStatus.CLOSED_NOT_VERIFIED},
+                                next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER,
+                                issue_details=issue_details
+                            )
+                            update = sql.SQL("""
+                                            UPDATE public.issue SET 
+                                            devised_status = %s,
+                                            response = %s
+                                            WHERE id = %s
+                                            """)
+                            await cursor.execute(update, (
+                                False,
+                                issue_details.notes,
+                                issue_id
+                            ))
+                            await connection.commit()
+                        else:
+                            data = await get_issue_and_issue_actors(
+                                connection=connection,
+                                cursor=cursor,
+                                issue_ids=issue_ids,
+                                issue_actors=IssueActors.AUDIT_MANAGER,
+                                status={IssueStatus.CLOSED_NOT_VERIFIED},
+                                next_status=str(issue.lod2_feedback.value),
+                                issue_details=issue_details
+                            )
+
                     case issue.actor.COMPLIANCE_OFFICER:
-                        data = await get_issue_and_issue_actors(
-                            connection=connection,
-                            cursor=cursor,
-                            issue_ids=issue_ids,
-                            issue_actors=IssueActors.AUDIT_MANAGER,
-                            status={IssueStatus.CLOSED_NOT_VERIFIED},
-                            next_status=str(issue.lod2_feedback.value),
-                            issue_details=issue_details
-                        )
+                        if issue_data[0].get("revised_status"):
+                            data = await get_issue_and_issue_actors(
+                                connection=connection,
+                                cursor=cursor,
+                                issue_ids=issue_ids,
+                                issue_actors=IssueActors.IMPLEMENTER,
+                                status={IssueStatus.CLOSED_NOT_VERIFIED},
+                                next_status=IssueStatus.IN_PROGRESS_IMPLEMENTER,
+                                issue_details=issue_details
+                            )
+                            update = sql.SQL("""
+                                        UPDATE public.issue SET 
+                                        devised_status = %s,
+                                        response = %s
+                                        WHERE id = %s
+                                        """)
+                            await cursor.execute(update, (
+                                False,
+                                issue_details.notes,
+                                issue_id
+                            ))
+                            await connection.commit()
+                        else:
+                            data = await get_issue_and_issue_actors(
+                                connection=connection,
+                                cursor=cursor,
+                                issue_ids=issue_ids,
+                                issue_actors=IssueActors.AUDIT_MANAGER,
+                                status={IssueStatus.CLOSED_NOT_VERIFIED},
+                                next_status=str(issue.lod2_feedback.value),
+                                issue_details=issue_details
+                            )
                     case issue.actor.AUDIT_MANAGER:
                         data = []
                         query_ = sql.SQL(
@@ -741,7 +790,7 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
         date_revised = %s,
         revised_count = %s,
         response = %s,
-        status = %s
+        revised_status = %s
         WHERE id = %s
         """)
     try:
@@ -760,10 +809,12 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
                     revise.revised_date,
                     int(issue_data[0].get("revised_count")) + 1,
                     revise.reason,
-                    "Revised -> pending",
+                    True,
                     issue_id
                 ))
                 await connection.commit()
+            else:
+                raise HTTPException(status_code=400, detail=f"Error your not ")
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error request extension time {e}")

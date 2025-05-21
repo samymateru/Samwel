@@ -21,7 +21,6 @@ class IssueStatus(str, Enum):
     IN_PROGRESS_IMPLEMENTER = "In progress -> implementer"
     IN_PROGRESS_OWNER = "In progress -> owner"
     CLOSED_NOT_VERIFIED = "Closed -> not verified"
-    REVISED_PENDING = "Revised -> pending"
     CLOSED_VERIFIED_BY_RISK = "Closed -> verified by risk"
     CLOSED_RISK_NA = "Closed -> risk N/A"
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
