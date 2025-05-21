@@ -17,9 +17,10 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
             description,
             raised_by,
             action_owner,
-            status
+            status,
+            href
             ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
         reference = await get_reference(connection=connection, resource="task", id=engagement_id)
@@ -32,7 +33,8 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
                 task.description,
                 task.raised_by.model_dump_json(),
                 json.dumps(task.model_dump().get("action_owner")),
-                "Not started"
+                "Not started",
+                task.href
             ))
         await connection.commit()
     except ForeignKeyViolation:

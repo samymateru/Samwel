@@ -23,6 +23,7 @@ class NewTask(BaseModel):
     description: Optional[str]
     raised_by: Optional[User]
     action_owner: Optional[List[ActionOwner]]
+    href: Optional[str]
 
 class ResolveTask(BaseModel):
     resolution_summary: Optional[str]

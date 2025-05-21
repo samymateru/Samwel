@@ -21,6 +21,7 @@ class NewReviewComment(BaseModel):
     title: Optional[str]
     description: Optional[str]
     raised_by: Optional[User]
+    href: Optional[str]
     action_owner: Optional[List[ActionOwner]]
 
 class ResolveReviewComment(BaseModel):
