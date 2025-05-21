@@ -729,4 +729,42 @@ async def mark_issue_reportable(connection: AsyncConnection, reportable: bool, i
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error mark issue reportable {e}")
 
+async def request_extension_time(connection: AsyncConnection, revise: Revise, issue_id: str, user_email: str):
+    query = sql.SQL(
+        """
+        SELECT revised_count FROM public.issue WHERE id = {issue_id}
+        """).format(issue_id=sql.Literal(issue_id))
+    query_update_revise = sql.SQL(
+        """
+        UPDATE public.issue
+        SET
+        date_revised = %s,
+        revised_count = %s,
+        response = %s,
+        status = %s
+        WHERE id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            issue_data = [dict(zip(column_names, row_)) for row_ in rows]
+            allowed_to_save_list = []
+            if issue_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Issue not found")
+            for implementer in issue_data[0].get(IssueActors.IMPLEMENTER.value):
+                allowed_to_save_list.append(implementer.get("email"))
+            if user_email in allowed_to_save_list:
+                await cursor.execute(query_update_revise, (
+                    revise.revised_date,
+                    int(issue_data[0].get("revised_count")) + 1,
+                    revise.reason,
+                    "Revised -> pending",
+                    issue_id
+                ))
+                await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error request extension time {e}")
 

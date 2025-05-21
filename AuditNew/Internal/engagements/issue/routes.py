@@ -23,10 +23,10 @@ async def create_new_issue_(
         issue: Issue,
         engagement_id: str = Query(),
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await add_new_issue(db, issue=issue, sub_program_id=sub_program_id, engagement_id=engagement_id)
         return ResponseMessage(detail="Issue created successfully")
@@ -205,6 +205,21 @@ async def issue_decline_response(
             user_email=user.user_email,
             user_name=user.user_name)
         return ResponseMessage(detail=f"Successfully decline issue")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/revise/{issue_id}", response_model=ResponseMessage)
+async def request_revise(
+        issue_id: str,
+        revise: Revise,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await request_extension_time(connection=db, revise=revise, issue_id=issue_id, user_email=user.user_email)
+        return ResponseMessage(detail=f"Successfully requesting time extension")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
