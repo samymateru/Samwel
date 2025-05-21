@@ -136,25 +136,26 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         """
         SELECT 
         -- Total issue count
-        COUNT(*) AS total_issues,
+        COUNT(*) FILTER (WHERE issue.status != 'Not started') AS total_issues,
   
         -- Recurring counts
         jsonb_build_object(
-        'recurring', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE),
-        'non_recurring', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE)
-        ) AS recurring_summary,
+        'recurring', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE AND issue.status != 'Not started'),
+        'non_recurring', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE AND issue.status != 'Not started')
+        )AS recurring_summary,
 
         -- Impact category counts
         (
         SELECT jsonb_object_agg(impact_category, count)
         FROM (
-          SELECT issue.impact_category, COUNT(*) AS count
+          SELECT issue.impact_category, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
           JOIN company_modules ON annual_plans.company_module = company_modules.id
           WHERE company_modules.id = %s
           GROUP BY issue.impact_category
+          HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
         ) AS impact
         ) AS impact_summary,
 
@@ -162,13 +163,14 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         (
         SELECT jsonb_object_agg(status, count)
         FROM (
-          SELECT issue.status, COUNT(*) AS count
+          SELECT issue.status, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
           JOIN company_modules ON annual_plans.company_module = company_modules.id
           WHERE company_modules.id = %s
           GROUP BY issue.status
+          HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
         ) AS status
         ) AS status_summary,
   
@@ -176,13 +178,14 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         (
         SELECT jsonb_object_agg(process, count)
         FROM (
-          SELECT issue.process, COUNT(*) AS count
+          SELECT issue.process, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
           JOIN company_modules ON annual_plans.company_module = company_modules.id
           WHERE company_modules.id = %s
           GROUP BY issue.process
+          HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
           ORDER BY count DESC
           LIMIT 5
         ) AS process
@@ -192,13 +195,14 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         (
         SELECT jsonb_object_agg(root_cause, count)
         FROM (
-          SELECT issue.root_cause, COUNT(*) AS count
+          SELECT issue.root_cause, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
           JOIN company_modules ON annual_plans.company_module = company_modules.id
           WHERE company_modules.id = %s
-          GROUP BY issue.root_cause    
+          GROUP BY issue.root_cause   
+          HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
 	    ) AS root_cause
         ) AS root_cause_summary
   
