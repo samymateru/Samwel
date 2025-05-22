@@ -3,6 +3,8 @@ from Management.companies.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
 from psycopg import AsyncConnection, sql
+
+from redis_cache import cached
 from utils import get_unique_key
 
 async def create_new_company(connection: AsyncConnection, company: NewCompany):
@@ -34,6 +36,7 @@ async def create_new_company(connection: AsyncConnection, company: NewCompany):
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new company {e}")
 
+@cached(ttl=300)
 async def get_companies(connection: AsyncConnection, company_id: str):
     query = sql.SQL("""SELECT * FROM public.companies WHERE id = %s""")
 

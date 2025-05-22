@@ -1,7 +1,8 @@
+import time
 from fastapi import FastAPI, Depends, Form
+from psycopg import AsyncConnection
+
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-from AuditNew.Internal.dashboards.databases import query_annual_plans_summary, query_audit_summary, \
-    all_engagement_with_status, query_all_issues
 from Management.companies.routes import router as companies_router
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.company_modules.databases import get_company_modules
@@ -34,15 +35,13 @@ from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-
-
+from redis_cache import cached, init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
     update_user_password
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.companies.databases import  get_companies
-from rabbitmq import rabbitmq
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
@@ -56,23 +55,22 @@ if sys.platform == "win32":
 
 @asynccontextmanager
 async def lifespan(api: FastAPI):
-    from utils import connection_pool
-    if connection_pool:
-        #rabbitmq.connect(queue_name="task")
-        #consumer_thread = threading.Thread(target=rabbitmq.consume_messages, args=("task",), daemon=True)
-        #consumer_thread.start()
-        print("Database connection sync pool initialized.")
+    try:
+        await init_redis_pool()
+        await connection_pool_async.open()
+        print("System booted successfully")
+    except Exception as e:
+        print(e)
 
-    await connection_pool_async.open()
-    if connection_pool_async:
-        print("Database connection async pool initialized.")
     yield
-    from utils import connection_pool
-    connection_pool.closeall()
-    await connection_pool_async.close()
-    rabbitmq.close()
-    print("Database connection sync pool closed")
-    print("Database connection async pool closed")
+
+    try:
+        await close_redis_pool()
+        await connection_pool_async.close()
+        print("System shutdown successfully")
+    except Exception as e:
+        print(e)
+
 
 
 app = FastAPI(lifespan=lifespan)
@@ -85,18 +83,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
+app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 
 
-@app.post("/test")
+@app.post("/test/{company_id}")
 async def tester(
+        company_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    print(user.modules)
-
-
+    start = time.perf_counter()
+    data = await get_companies(connection=db, company_id=company_id)
+    end = time.perf_counter()
+    return {
+        "data": data,
+        "time_taken": end - start
+    }
 
 @app.post("/login", tags=["Authentication"])
 async def login(
@@ -109,7 +112,6 @@ async def login(
     password_hash: bytes = user_data[0]["password_hash"].encode()
     company = await get_companies(db, company_id=user_data[0].get("company"))
     company_module = await get_company_modules(db, user_data[0].get("company"))
-    print(company_module)
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),

@@ -18,6 +18,10 @@ from psycopg2.extensions import cursor as Cursor
 from psycopg import AsyncConnection, sql
 from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
 from typing import List
+import redis.asyncio as redis
+from redis.asyncio import Redis, ConnectionPool
+from redis.exceptions import ConnectionError
+
 
 
 load_dotenv()
@@ -41,6 +45,8 @@ connection_pool_async = AsyncConnectionPool(
 )
 
 connection_pool_async_: Optional[AsyncConnectionPool] = None
+redis_client: Optional[Redis] = None
+
 
 @asynccontextmanager
 async def get_db_connection_async():
@@ -325,5 +331,22 @@ async def update_user_password(connection: AsyncConnection, user_id: str, old_pa
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")
 
+def create_redis_client() -> Redis:
+    """
+    Create and return a Redis client.
+    This is called once during the app startup.
+    """
+    return redis.Redis(
+        host="localhost",
+        port=6379,
+        decode_responses=True,
+        max_connections=10
+    )
 
-
+async def get_redis_connect():
+    """
+    Returns the global Redis client instance if initialized.
+    """
+    if not redis_client:
+        raise RuntimeError("Redis client is not initialized!")
+    return redis_client

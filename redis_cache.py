@@ -1,50 +1,89 @@
 import hashlib
 import json
+import pickle
 from functools import wraps
-from typing import Callable, Any, Awaitable
+from fastapi import HTTPException
 
-from psycopg2.extensions import connection as Connection
-from redis_client import redis_client  # assumes aioredis or redis.asyncio
+import asyncio
+import redis.asyncio as redis
+from redis.asyncio import Redis
+from typing import Optional
 
-from Management.companies.databases import get_companies
+redis_queue: Optional[asyncio.Queue] = None
+redis_client: Optional[Redis] = None
+REDIS_POOL_SIZE = 100
 
+def safe_serialize(obj):
+    try:
+        return json.dumps(obj, sort_keys=True)
+    except TypeError:
+        return str(obj)
 
 def cached(ttl: int = 300, prefix: str = "cache"):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            key_raw = json.dumps({
-                "func": func.__name__,
-                "args": args,
-                "kwargs": kwargs
-            }, sort_keys=True)
-            key = f"{prefix}:{hashlib.sha256(key_raw.encode()).hexdigest()}"
-
-            # Check Redis cache first
-            cached_data = await redis_client.get(key)
-            if cached_data:
-                print("✅ Cache hit")
-                return json.loads(cached_data)
-
-            # Cache miss, execute the actual function
+            global redis_client
             try:
-                print("❌ Cache miss — executing function")
-                result = await func(*args, **kwargs)
+                redis_client = await get_redis_connection()
+                key_raw = json.dumps({
+                    "func": func.__name__,
+                    "args": [safe_serialize(arg) for arg in args],
+                    "kwargs": {k: safe_serialize(v) for k, v in kwargs.items() if k != "connection"}
+                }, sort_keys=True)
+                key = f"{prefix}:{hashlib.sha256(key_raw.encode()).hexdigest()}"
 
-                # If function was successful, cache the result
-                await redis_client.set(key, json.dumps(result), ex=ttl)
-                print("📦 Cached result to Redis")
+                # Check Redis cache first
+                cached_data = await redis_client.get(key)
+                if cached_data: # Cache hit return the data
+                    await return_redis_connection(redis_client)
+                    return pickle.loads(cached_data)
+
+                else:# Cache miss, execute the actual function
+                    result = await func(*args, **kwargs)
+                    await redis_client.set(key, pickle.dumps(result), ex=ttl)
+                    await return_redis_connection(redis_client)
+                    return result
+            except RuntimeError:
+                await return_redis_connection(redis_client)
+                result = await func(*args, **kwargs)
                 return result
-            except Exception as e:
-                print(f"⚠️ Error occurred: {e}")
-                raise  # Reraise the exception to propagate the error
+            except HTTPException as e:
+                await return_redis_connection(redis_client)
+                raise  HTTPException(status_code=e.status_code, detail=e.detail)
         return wrapper
     return decorator
 
+async def create_redis_connection() -> Redis:
+    return redis.Redis(
+        host="localhost",
+        port=6379,
+        decode_responses=False
+    )
 
+async def init_redis_pool():
+    global redis_queue
+    redis_queue = asyncio.Queue(maxsize=REDIS_POOL_SIZE)
 
-@cached(ttl=300)
-async def get_data(key: str, connection: Connection):
-    data = get_companies(connection=connection, company_id=1)
-    return data
+    for _ in range(REDIS_POOL_SIZE):
+        conn = await create_redis_connection()
+        await redis_queue.put(conn)
 
+async def get_redis_connection() -> Redis:
+    if redis_queue is None:
+        raise RuntimeError("Redis pool not initialized")
+    try:
+        return await asyncio.wait_for(redis_queue.get(), timeout=2)
+    except asyncio.TimeoutError:
+        raise RuntimeError("Time out")
+
+async def return_redis_connection(conn: Redis):
+    if redis_queue is None:
+        raise RuntimeError("Redis pool not initialized")
+    await redis_queue.put(conn)
+
+async def close_redis_pool():
+    if redis_queue:
+        while not redis_queue.empty():
+            conn: Redis = await redis_queue.get()
+            await conn.close()
