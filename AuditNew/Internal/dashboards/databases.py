@@ -143,6 +143,20 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         'recurring', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE AND issue.status != 'Not started'),
         'non_recurring', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE AND issue.status != 'Not started')
         )AS recurring_summary,
+        
+        --Issue status
+        jsonb_build_object(
+        'open', COUNT(*) FILTER (WHERE issue.status = 'Open' AND issue.status != 'Not started'),
+        
+        'in_progress', COUNT(*) FILTER (WHERE issue.status 
+        IN ('In progress -> implementer', 'In progress -> owner') 
+        AND issue.status != 'Not started'),
+        
+        'closed', COUNT(*) FILTER (WHERE issue.status 
+        IN ('Closed -> not verified', 'Closed -> verified by risk',
+        'Closed -> risk N/A', 'Closed -> risk accepted', 'Closed -> verified by audit')
+        AND issue.status != 'Not started')
+        )AS status_summary,
 
         -- Impact category counts
         (
@@ -159,21 +173,6 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         ) AS impact
         ) AS impact_summary,
 
-        -- Issue status
-        (
-        SELECT jsonb_object_agg(status, count)
-        FROM (
-          SELECT issue.status, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
-          FROM issue
-          JOIN engagements ON issue.engagement = engagements.id
-          JOIN annual_plans ON engagements.plan_id = annual_plans.id
-          JOIN company_modules ON annual_plans.company_module = company_modules.id
-          WHERE company_modules.id = %s
-          GROUP BY issue.status
-          HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
-        ) AS status
-        ) AS status_summary,
-  
         -- Business processes
         (
         SELECT jsonb_object_agg(process, count)
@@ -215,7 +214,7 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (company_module_id, company_module_id, company_module_id, company_module_id,company_module_id))
+            await cursor.execute(query, (company_module_id, company_module_id, company_module_id,company_module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -332,36 +331,38 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 
     query_root_cause_rating = sql.SQL(
         """
-SELECT
-    COUNT(*) AS total_issues,
+        SELECT
+        COUNT(*) FILTER (WHERE issue.status != 'Not started') AS total_issues,
 
-    -- Root cause summary as JSON
-    (
+        -- Root cause summary as JSON
+        (
         SELECT jsonb_object_agg(root_cause, count)
         FROM (
-            SELECT i.root_cause, COUNT(*) AS count
+            SELECT i.root_cause, COUNT(*) FILTER (WHERE i.status != 'Not started') AS count
             FROM issue i
             JOIN engagements e ON i.engagement = e.id
             WHERE e.id = {engagement_id}
             GROUP BY i.root_cause
+            HAVING COUNT(*) FILTER (WHERE i.status != 'Not started') > 0
         ) AS root_cause_summary
-    ) AS root_cause_summary,
+        ) AS root_cause_summary,
 
-    -- Risk rating summary as JSON
-    (
+        -- Risk rating summary as JSON
+        (
         SELECT jsonb_object_agg(risk_rating, count)
         FROM (
-            SELECT i.risk_rating, COUNT(*) AS count
+            SELECT i.risk_rating, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
             FROM issue i
             JOIN engagements e ON i.engagement = e.id
             WHERE e.id = {engagement_id}
             GROUP BY i.risk_rating
+            HAVING COUNT(*) FILTER (WHERE i.status != 'Not started') > 0
         ) AS risk_rating_summary
-    ) AS risk_rating_summary
+        ) AS risk_rating_summary
 
-    FROM issue i
-    JOIN engagements e ON i.engagement = e.id
-    WHERE e.id = {engagement_id};
+        FROM issue i
+        JOIN engagements e ON i.engagement = e.id
+        WHERE e.id = {engagement_id};
         """).format(engagement_id=sql.Literal(engagement_id))
 
     query_review_comment = sql.SQL(

@@ -790,7 +790,8 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
         date_revised = %s,
         revised_count = %s,
         response = %s,
-        revised_status = %s
+        revised_status = %s,
+        status = %s
         WHERE id = %s
         """)
     try:
@@ -810,6 +811,7 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
                     int(issue_data[0].get("revised_count")) + 1,
                     revise.reason,
                     True,
+                    IssueStatus.IN_PROGRESS_OWNER.value,
                     issue_id
                 ))
                 await connection.commit()

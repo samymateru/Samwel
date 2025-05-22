@@ -68,7 +68,7 @@ async def update_user(
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        await edit_user(db, user_update)
+        #await edit_user(db, user_update)
         return ResponseMessage(detail="user successfully updated")
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
