@@ -3,28 +3,28 @@ from fastapi import FastAPI, Depends, Form
 from psycopg import AsyncConnection
 
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-from Management.companies.routes import router as companies_router
+from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.company_modules.databases import get_company_modules
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
-from Management.companies.profile.risk_maturity_rating.routes import router as risk_maturity
-from Management.companies.profile.control_weakness_rating.routes import router as control_weakness
-from Management.companies.profile.issue_source.routes import router as issue_source
-from Management.companies.profile.opinion_rating.routes import router as opinion_rating
-from Management.companies.profile.control_effectiveness_rating.routes import router as control_effectiveness
-from Management.companies.profile.control_type.routes import router as control_type_
-from Management.companies.profile.risk_rating.routes import router as risk_rating_
-from Management.companies.profile.business_process.routes import router as business_process_
-from Management.companies.profile.impact_category.routes import router as impact_category_
-from Management.companies.profile.engagement_type.routes import router as engagement_type
+from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
+from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
+from Management.entity.profile.issue_source.routes import router as issue_source
+from Management.entity.profile.opinion_rating.routes import router as opinion_rating
+from Management.entity.profile.control_effectiveness_rating.routes import router as control_effectiveness
+from Management.entity.profile.control_type.routes import router as control_type_
+from Management.entity.profile.risk_rating.routes import router as risk_rating_
+from Management.entity.profile.business_process.routes import router as business_process_
+from Management.entity.profile.impact_category.routes import router as impact_category_
+from Management.entity.profile.engagement_type.routes import router as engagement_type
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.work_program.routes import router as work_program_router
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
 from AuditNew.Internal.engagements.issue.routes import router as issue_
 from AuditNew.Internal.engagements.task.routes import router as task_
-from Management.companies.profile.root_cause_category.routes import router as root_cause
-from Management.companies.profile.risk_category.routes import router as risk_category_
+from Management.entity.profile.root_cause_category.routes import router as root_cause
+from Management.entity.profile.risk_category.routes import router as risk_category_
 from AuditNew.Internal.engagements.review_comment.routes import router as review_comment_
 from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
 from AuditNew.Internal.engagements.planning.routes import router as planning_router
@@ -33,6 +33,7 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
+from Management.organization.routes import router as organization
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import cached, init_redis_pool, close_redis_pool
@@ -41,7 +42,7 @@ from utils import verify_password, create_jwt_token, get_async_db_connection, co
     update_user_password
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
-from Management.companies.databases import  get_companies
+from Management.entity.databases import  get_entities
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
@@ -94,7 +95,7 @@ async def tester(
         #user: CurrentUser = Depends(get_current_user)
 ):
     start = time.perf_counter()
-    data = await get_companies(connection=db, company_id=company_id)
+    data = await get_entities(connection=db, company_id=company_id)
     end = time.perf_counter()
     return {
         "data": data,
@@ -110,7 +111,7 @@ async def login(
     if len(user_data) == 0:
         raise HTTPException(status_code=400, detail="User doesn't exists")
     password_hash: bytes = user_data[0]["password_hash"].encode()
-    company = await get_companies(db, company_id=user_data[0].get("company"))
+    company = await get_entities(db, company_id=user_data[0].get("company"))
     company_module = await get_company_modules(db, user_data[0].get("company"))
     if verify_password(password_hash, password):
         user: dict = {
@@ -149,7 +150,6 @@ async def change_password(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
         await update_user_password(
             connection=db,
             user_id=user.user_id,
@@ -159,8 +159,9 @@ async def change_password(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-app.include_router(companies_router, tags=["Company"])
-app.include_router(company_modules_router, tags=["Company Modules"])
+app.include_router(entity, tags=["Entity"])
+app.include_router(organization, tags=["Organization"])
+app.include_router(company_modules_router, tags=["Modules"])
 app.include_router(users_router,tags=["User"])
 app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
 app.include_router(engagements_router, tags=["Engagements"])

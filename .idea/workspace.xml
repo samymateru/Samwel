@@ -4,10 +4,54 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding dashboards">
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="starting enhanced version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/companies/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/x.py" beforeDir="false" afterPath="$PROJECT_DIR$/x.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/business_process/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/business_process/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/business_process/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/business_process/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_effectiveness_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_effectiveness_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_effectiveness_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_effectiveness_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_type/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_type/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_type/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_type/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_weakness_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_weakness_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/control_weakness_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_weakness_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/engagement_type/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/engagement_type/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/engagement_type/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/engagement_type/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/impact_category/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/impact_category/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/impact_category/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/impact_category/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/issue_source/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/issue_source/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/issue_source/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/issue_source/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/issue_source/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/issue_source/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/opinion_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/opinion_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/opinion_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/opinion_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_category/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_category/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_category/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_category/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_maturity_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_maturity_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_maturity_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_maturity_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_rating/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_rating/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_rating/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/risk_rating/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/risk_rating/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/root_cause_category/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/root_cause_category/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/profile/root_cause_category/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/root_cause_category/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/companies/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/organization/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/organization/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/organization/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,22 +167,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00400" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1745925442168</created>
-      <option name="number" value="00400" />
-      <option name="presentableId" value="LOCAL-00400" />
-      <option name="project" value="LOCAL" />
-      <updated>1745925442169</updated>
-    </task>
-    <task id="LOCAL-00401" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1746007751477</created>
-      <option name="number" value="00401" />
-      <option name="presentableId" value="LOCAL-00401" />
-      <option name="project" value="LOCAL" />
-      <updated>1746007751477</updated>
     </task>
     <task id="LOCAL-00402" summary="adding dashboards">
       <option name="closed" value="true" />
@@ -516,7 +544,23 @@
       <option name="project" value="LOCAL" />
       <updated>1747916232117</updated>
     </task>
-    <option name="localTasksCounter" value="449" />
+    <task id="LOCAL-00449" summary="adding dashboards">
+      <option name="closed" value="true" />
+      <created>1747990047878</created>
+      <option name="number" value="00449" />
+      <option name="presentableId" value="LOCAL-00449" />
+      <option name="project" value="LOCAL" />
+      <updated>1747990047879</updated>
+    </task>
+    <task id="LOCAL-00450" summary="starting enhanced version">
+      <option name="closed" value="true" />
+      <created>1747990096179</created>
+      <option name="number" value="00450" />
+      <option name="presentableId" value="LOCAL-00450" />
+      <option name="project" value="LOCAL" />
+      <updated>1747990096179</updated>
+    </task>
+    <option name="localTasksCounter" value="451" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -565,7 +609,8 @@
     <MESSAGE value="refactoring the company endpoint" />
     <MESSAGE value="refactoring" />
     <MESSAGE value="adding dashboards" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding dashboards" />
+    <MESSAGE value="starting enhanced version" />
+    <option name="LAST_COMMIT_MESSAGE" value="starting enhanced version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

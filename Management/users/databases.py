@@ -6,35 +6,34 @@ from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 from utils import get_unique_key
 
-async def new_user(connection: AsyncConnection, user_: NewUser, company_id: str):
+async def new_user(connection: AsyncConnection, user: User, organization_id: List[str]):
     query = sql.SQL(
         """
-        INSERT INTO public.users (id, company, name, telephone, email,
-        type, module, role, password_hash, status, created_at) 
+        INSERT INTO public.users (id, organization, name, email, telephone,title, module,
+         role, password_hash, status, created_at) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query,
-                                 (
-                                     get_unique_key(),
-                                     company_id,
-                                     user_.name,
-                                     user_.telephone,
-                                     user_.email,
-                                     user_.type,
-                                     '[]',
-                                     json.dumps(user_.model_dump().get("role")),
-                                     generate_hash_password(user_.password),
-                                     user_.status,
-                                     datetime.now()
-                                 ))
+            await cursor.execute(query,(
+                 get_unique_key(),
+                 organization_id,
+                 user.name,
+                 user.email,
+                 user.telephone,
+                 user.title,
+                 json.dumps(user.model_dump().get("module")),
+                 json.dumps(user.model_dump().get("role")),
+                 generate_hash_password(user.password),
+                 user.status,
+                 datetime.now()
+             ))
             user_id = await cursor.fetchone()
             await connection.commit()
-            return user_id[0]
+        return user_id[0]
     except ForeignKeyViolation:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail="Invalid company id")
+        raise HTTPException(status_code=400, detail="Invalid organization id")
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="User already exist")

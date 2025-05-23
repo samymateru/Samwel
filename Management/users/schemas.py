@@ -2,52 +2,44 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional, List
 
-
 class Role(BaseModel):
-    id: Optional[str] = None
     name: str
 
 class Module(BaseModel):
-    id: str
     name: str
 
-class UserA(BaseModel):
-    id: str
+class Assignee(BaseModel):
     name: str
     email: str
 
 class Task(BaseModel):
-    assigned_by: UserA
+    assigned_by: Assignee
+    href: str
     date_assigned: datetime
 
-class User(BaseModel):
-    id: str
+class __User__(BaseModel):
+    id: Optional[str] = None
     name: str
-    telephone: str
-    type: str
     email: str
+    telephone: str
+    title: str
     status: bool
     role: List[Role]
     module: List[Module]
-    task: Optional[Task] = None
-    created_at: datetime
+    task: Optional[List[Task]] = None
+    created_at: datetime = datetime.now()
 
-class NewUser(BaseModel):
+class User(BaseModel):
+    id: Optional[str] = None
     name: str
     email: str
-    module: List[Module]
-    role: List[Role]
-    telephone: Optional[str] = Field(default="12345678")
-    type: Optional[str] = Field(default="user")
+    telephone: str
     password: Optional[str] = Field(default="1234")
-    status: Optional[bool] = False
-
-class UpdateUser(BaseModel):
-    name: Optional[str]
-    telephone: Optional[str] = None
-    type: Optional[str] = None
-    email: Optional[ str] = None
-    password: Optional[str] = None
-    status: Optional[bool] = None
+    title: str
+    status: bool
+    role: List[Role]
+    module: List[Module]
+    task: Optional[List[Task]] = None
+    created_at: datetime = datetime.now()
 
 
