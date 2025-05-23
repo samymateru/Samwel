@@ -124,6 +124,7 @@ async def login(
             "status": user_data[0].get("status")
         }
 
+
         token: str = create_jwt_token(user)
         user: dict = {
             "id": user_data[0].get("id"),
