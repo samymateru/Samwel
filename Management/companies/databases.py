@@ -36,7 +36,7 @@ async def create_new_company(connection: AsyncConnection, company: NewCompany):
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new company {e}")
 
-@cached(ttl=300)
+@cached(ttl=60*60)
 async def get_companies(connection: AsyncConnection, company_id: str):
     query = sql.SQL("""SELECT * FROM public.companies WHERE id = %s""")
 
