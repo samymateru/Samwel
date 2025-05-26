@@ -5,7 +5,8 @@ from datetime import datetime
 from psycopg import AsyncConnection, sql
 from Management.organization.databases import new_organization
 from Management.organization.schemas import Organization, OrganizationStatus
-from redis_cache import cached
+from Management.users.databases import new_user
+from Management.users.schemas import User
 from utils import get_unique_key
 
 async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
@@ -17,7 +18,6 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
 
     organization = Organization(
         name=entity.name,
-        owner=entity.owner,
         email=entity.email,
         telephone=entity.telephone,
         type=entity.type,
@@ -25,6 +25,12 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         status=OrganizationStatus.OPENED.value,
         default=True,
         created_at=datetime.now()
+    )
+
+    user = User(
+        name=organization.owner.name,
+        email=organization.email,
+        telephone=organization.telephone
     )
 
     try:
@@ -38,7 +44,8 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
                 datetime.now()
             ))
             entity_id = await cursor.fetchone()
-            await new_organization(connection=connection, organization=organization, entity_id=entity_id[0])
+            organization_id = await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
+            await new_user(connection=connection, user=user, organization_id=organization_id)
             await connection.commit()
         return entity_id[0]
     except UniqueViolation:
@@ -48,7 +55,6 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new entity {e}")
 
-@cached(ttl=60*60)
 async def get_entities(connection: AsyncConnection, entity_id: str):
     query = sql.SQL("""SELECT * FROM public.entity WHERE id = %s""")
 

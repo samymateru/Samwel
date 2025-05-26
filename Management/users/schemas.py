@@ -5,9 +5,6 @@ from typing import Optional, List
 class Role(BaseModel):
     name: str
 
-class Module(BaseModel):
-    name: str
-
 class Assignee(BaseModel):
     name: str
     email: str
@@ -17,15 +14,18 @@ class Task(BaseModel):
     href: str
     date_assigned: datetime
 
+class Type(BaseModel):
+    name: str
+    modules: List[str]
+
 class __User__(BaseModel):
     id: Optional[str] = None
     name: str
     email: str
     telephone: str
     title: str
+    type: Type
     status: bool
-    role: List[Role]
-    module: List[Module]
     task: Optional[List[Task]] = None
     created_at: datetime = datetime.now()
 
@@ -35,11 +35,7 @@ class User(BaseModel):
     email: str
     telephone: str
     password: Optional[str] = Field(default="1234")
-    title: str
-    status: bool
-    role: List[Role]
-    module: List[Module]
-    task: Optional[List[Task]] = None
+    module_id: List[str]
     created_at: datetime = datetime.now()
 
 

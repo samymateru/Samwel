@@ -95,7 +95,7 @@ async def tester(
         #user: CurrentUser = Depends(get_current_user)
 ):
     start = time.perf_counter()
-    data = await get_entities(connection=db, company_id=company_id)
+    data = await get_entities(connection=db, entity_id=company_id)
     end = time.perf_counter()
     return {
         "data": data,
@@ -108,10 +108,10 @@ async def login(
           password: str = Form(...),
           db=Depends(get_async_db_connection)):
     user_data  = await get_user_by_email(connection=db, email=email)
-    if len(user_data) == 0:
+    if user_data.__len__() == 0:
         raise HTTPException(status_code=400, detail="User doesn't exists")
-    password_hash: bytes = user_data[0]["password_hash"].encode()
-    company = await get_entities(db, company_id=user_data[0].get("company"))
+    password_hash: bytes = user_data[0].get("password_hash").encode()
+    company = await get_entities(db, entity_id=user_data[0].get("company"))
     company_module = await get_company_modules(db, user_data[0].get("company"))
     if verify_password(password_hash, password):
         user: dict = {

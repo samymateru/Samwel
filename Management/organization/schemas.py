@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from enum import Enum
 from datetime import datetime
@@ -11,12 +11,11 @@ class OrganizationStatus(str, Enum):
 class Organization(BaseModel):
     id: Optional[str] = None
     name: str
-    owner: str
     email: str
     telephone: str
-    default: bool
+    default: Optional[bool] = Field(default=False)
     type: str
-    status: OrganizationStatus
+    status: Optional[OrganizationStatus] = Field(default=OrganizationStatus.OPENED)
     website: str
     created_at: datetime = datetime.now()
 

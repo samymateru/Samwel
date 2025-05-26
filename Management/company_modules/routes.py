@@ -1,49 +1,55 @@
 from fastapi import APIRouter, Depends
 from utils import get_async_db_connection
 from Management.company_modules.databases import *
-from Management.company_modules.schemas import *
-from Management.users.schemas import Module
-from Management.users.databases import add_user_module
 from typing import List
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
 
-router = APIRouter(prefix="/company_modules")
+router = APIRouter(prefix="/modules")
 
-@router.get("/", response_model=List[CompanyModule])
-async def fetch_company_modules(
+@router.get("/{organization_id}", response_model=List[Module])
+async def fetch_organization_modules(
+        organization_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_company_modules(db, company_id=user.company_id)
+        data = await get_organization_modules(connection=db, organization_id=organization_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/", response_model=ResponseMessage)
-async def create_new_company_module(
-        company_module: CompanyModule,
+@router.get("/")
+async def fetch_users_modules(
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        module = CompanyModule(
-            name=company_module.name,
-            purchase_date=None,
-            status="active"
+        data = await get_users_modules(connection=db, user_id=user.user_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.post("/{organization_id}", response_model=ResponseMessage)
+async def create_new_organization_module(
+        organization_id: str,
+        module: Module,
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+    ):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await add_new_organization_module(
+            connection=db,
+            organization_module=module,
+            organization_id=organization_id,
         )
-        id = await add_new_company_module(connection=db, company_module=module, company_id=user.company_id)
-        user_module = Module(
-            id = id,
-            name = module.name
-        )
-        await add_user_module(connection=db, module=user_module, user_id=user.user_id)
-        return ResponseMessage(detail="Company module create successfully")
+        return ResponseMessage(detail="Organization module create successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

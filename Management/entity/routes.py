@@ -1,6 +1,4 @@
 from fastapi import APIRouter, Depends
-
-from Management.organization.schemas import Organization, OrganizationStatus
 from utils import get_async_db_connection
 from schema import CurrentUser, ResponseMessage
 from utils import get_current_user
@@ -25,12 +23,12 @@ async def create_entity(
 @router.get("/", response_model=Entity)
 async def fetch_entity(
         db = Depends(get_async_db_connection),
-        user: CurrentUser  = Depends(get_current_user)
+        #user: CurrentUser  = Depends(get_current_user)
     ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_entities(db, company_id=user.company_id)
+        data = await get_entities(db, entity_id="4ff844540762")
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="No data found")
         return data[0]
