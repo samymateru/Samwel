@@ -1,3 +1,5 @@
+from typing import LiteralString
+
 from fastapi import HTTPException
 from AuditNew.Internal.engagements.work_program.schemas import *
 from utils import get_reference, get_unique_key
@@ -36,39 +38,72 @@ async def add_new_main_program(connection: AsyncConnection, program: MainProgram
         raise HTTPException(status_code=400, detail=f"Error creating main program {e}")
 
 async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubProgram, program_id: str):
+    check_module_id_query = sql.SQL(
+        """
+        SELECT cm.procedure_reference AS reference, cm.id
+        FROM company_modules cm
+        JOIN annual_plans ap ON ap.company_module = cm.id
+        JOIN engagements e ON e.plan_id = ap.id
+        JOIN main_program mp ON mp.engagement = e.id
+        WHERE mp.id = {program_id};
+        """).format(program_id=sql.Literal(program_id))
+
+    update_module_id_query = sql.SQL(
+        """
+        UPDATE public.company_modules
+        SET 
+        procedure_reference = %s
+        WHERE id = %s
+        """)
+
     query = sql.SQL(
         """
-            INSERT INTO public.sub_program (
-                    id,
-                    program,
-                    reference,
-                    title,
-                    brief_description,
-                    audit_objective,
-                    test_description,
-                    test_type,
-                    sampling_approach,
-                    results_of_test,
-                    observation,
-                    extended_testing,
-                    extended_procedure,
-                    extended_results,
-                    effectiveness,
-                    conclusion,
-                    reviewed_by,
-                    prepared_by,
-                    status
-                    ) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id;
+        INSERT INTO public.sub_program (
+        id,
+        program,
+        reference,
+        title,
+        brief_description,
+        audit_objective,
+        test_description,
+        test_type,
+        sampling_approach,
+        results_of_test,
+        observation,
+        extended_testing,
+        extended_procedure,
+        extended_results,
+        effectiveness,
+        conclusion,
+        reviewed_by,
+        prepared_by,
+        status
+        ) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id;
         """)
     try:
         reference = await get_reference(connection=connection, resource="sub_program", id=program_id)
         async with connection.cursor() as cursor:
+            await cursor.execute(check_module_id_query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            reference = [dict(zip(column_names, row_)) for row_ in rows]
+            count = reference[0].get("reference")
+            if count is None:
+                count = 1
+                prefix = f"PROC-{count:04d}"
+
+            else:
+                count = int(count) + 1
+                prefix = f"PROC-{count:05d}"
+
+            await cursor.execute(update_module_id_query, (count, reference[0].get("id")))
+
             await cursor.execute(query,(
                 get_unique_key(),
                 program_id,
-                reference,
+                prefix,
                 sub_program.title,
                 "",
                 "",
