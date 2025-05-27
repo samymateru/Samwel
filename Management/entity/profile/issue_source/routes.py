@@ -33,7 +33,7 @@ async def fetch_company_issue_source(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_company_issue_source(connection=db, company_id=user.company_id)
+        data = await get_company_issue_source(connection=db, company_id=user.entity_id)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="Issue source not found")
         return data[0]

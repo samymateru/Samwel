@@ -1,11 +1,8 @@
 import time
 from fastapi import FastAPI, Depends, Form
-from psycopg import AsyncConnection
-
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
-from Management.company_modules.databases import get_company_modules
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -36,13 +33,13 @@ from Management.users.routes import router as users_router
 from Management.organization.routes import router as organization
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-from redis_cache import cached, init_redis_pool, close_redis_pool
+from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
     update_user_password
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
-from Management.entity.databases import  get_entities
+from Management.entity.databases import get_entities, get_entities_by_email
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
@@ -111,30 +108,20 @@ async def login(
     if user_data.__len__() == 0:
         raise HTTPException(status_code=400, detail="User doesn't exists")
     password_hash: bytes = user_data[0].get("password_hash").encode()
-    company = await get_entities(db, entity_id=user_data[0].get("company"))
-    company_module = await get_company_modules(db, user_data[0].get("company"))
+    entity_data = await get_entities_by_email(connection=db, email=email)
     if verify_password(password_hash, password):
         user: dict = {
             "user_id": user_data[0].get("id"),
             "user_email": user_data[0].get("email"),
             "user_name": user_data[0].get("name"),
-            "company_id": user_data[0].get("company"),
-            "company_name": company[0].get("name"),
-            "modules": company_module,
-            "type": user_data[0].get("type"),
-            "status": user_data[0].get("status")
+            "entity_name": entity_data[0].get("name"),
+            "entity_id": entity_data[0].get("id")
         }
-
-
         token: str = create_jwt_token(user)
         user: dict = {
             "id": user_data[0].get("id"),
             "name": user_data[0].get("name"),
-            "email": user_data[0].get("email"),
-            "company_name": company[0].get("name"),
-            "account_status": company[0].get("status"),
-            "role": user_data[0].get("role"),
-            "module": user_data[0].get("module")
+            "email": user_data[0].get("email")
         }
         return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
     else:

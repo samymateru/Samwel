@@ -28,9 +28,10 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
     )
 
     user = User(
-        name=organization.owner.name,
+        name=organization.name,
         email=organization.email,
-        telephone=organization.telephone
+        telephone=organization.telephone,
+        module_id=[]
     )
 
     try:
@@ -56,11 +57,11 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         raise HTTPException(status_code=500, detail=f"Error creating new entity {e}")
 
 async def get_entities(connection: AsyncConnection, entity_id: str):
-    query = sql.SQL("""SELECT * FROM public.entity WHERE id = %s""")
+    query = sql.SQL("""SELECT * FROM public.entity WHERE id = {id}""").format(id=sql.Literal(entity_id))
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (entity_id,))
+            await cursor.execute(query)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -68,3 +69,18 @@ async def get_entities(connection: AsyncConnection, entity_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying entity {e}")
+
+
+async def get_entities_by_email(connection: AsyncConnection, email: str):
+    query = sql.SQL("""SELECT * FROM public.entity WHERE email = {email}""").format(email=sql.Literal(email))
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            return data
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying entity by email {e}")

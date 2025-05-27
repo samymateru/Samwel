@@ -19,7 +19,7 @@ async def create_risk_maturity_rating(
         await new_risk_maturity_rating(
             connection=db,
             maturity_rating=maturity_rating,
-            company_id=user.company_id)
+            company_id=user.entity_id)
         return ResponseMessage(detail="Risk maturity rating added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

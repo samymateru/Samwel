@@ -18,7 +18,7 @@ def create_opinion_rating(
         new_opinion_rating(
             db,
             opinion_rating=opinion_rating,
-            company_id=user.company_id)
+            company_id=user.entity_id)
         return {"detail": "Opinion rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

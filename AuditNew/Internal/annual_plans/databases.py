@@ -8,7 +8,7 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPlan, company_module_id: str):
     query = sql.SQL(
         """
-        INSERT INTO public.annual_plans (id, company_module, name, year, status, start, "end", attachment, created_at)
+        INSERT INTO public.annual_plans (id, module, name, year, status, start, "end", attachment, created_at)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
@@ -77,7 +77,7 @@ async def remove_annual_plan(connection: AsyncConnection, annual_plan_id: str):
         raise HTTPException(status_code=400, detail=f"Error deleting annual plan {e}")
 
 async def get_annual_plans(connection: AsyncConnection,  company_module_id: str):
-    query = sql.SQL("SELECT * FROM public.annual_plans WHERE company_module = %s")
+    query = sql.SQL("SELECT * FROM public.annual_plans WHERE module = %s")
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (company_module_id,))

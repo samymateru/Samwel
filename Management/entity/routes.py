@@ -21,14 +21,14 @@ async def create_entity(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.get("/", response_model=Entity)
-async def fetch_entity(
+async def fetch_entity_by_email(
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_entities(db, entity_id="4ff844540762")
+        data = await get_entities_by_email(db, email=user.user_email)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="No data found")
         return data[0]

@@ -23,10 +23,6 @@ class __User__(BaseModel):
     name: str
     email: str
     telephone: str
-    title: str
-    type: Type
-    status: bool
-    task: Optional[List[Task]] = None
     created_at: datetime = datetime.now()
 
 class User(BaseModel):
@@ -34,7 +30,7 @@ class User(BaseModel):
     name: str
     email: str
     telephone: str
-    password: Optional[str] = Field(default="1234")
+    password: Optional[str] = Field(default="123456")
     module_id: List[str]
     created_at: datetime = datetime.now()
 

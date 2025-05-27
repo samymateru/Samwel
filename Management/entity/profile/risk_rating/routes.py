@@ -18,7 +18,7 @@ def create_risk_rating(
         new_risk_rating(
             db,
             risk_rating=risk_rating,
-            company_id=user.company_id)
+            company_id=user.entity_id)
         return {"detail": "Risk rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -31,7 +31,8 @@ async def fetch_company_risk_rating(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_company_risk_rating(db, company_id=user.company_id)
+        data = await get_company_risk_rating(db, company_id=user.entity_id)
+        print(user.entity_id)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="Risk rating not found")
         return data[0]

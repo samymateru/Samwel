@@ -9,21 +9,15 @@ class CurrentUser(BaseModel):
     user_id: Optional[str] = None
     user_email: Optional[str] = None
     user_name: Optional[str] = None
-    company_id: Optional[str] = None
-    company_name: Optional[str] = None
-    modules: Optional[List[Dict]] = None
-    role_id: Optional[str] = None
-    type: Optional[str] = None
+    entity_id: Optional[str] = None
+    entity_name: Optional[str] = None
     status_code: Optional[int] = None
-    description: Optional[str] = None
 
 class UserData(BaseModel):
     id: Optional[str]
     name: Optional[str]
     email: Optional[str]
     telephone: Optional[str]
-    user_role: List[Dict]
-    company_roles: List[Dict]
     type: Optional[str]
     module: List[Dict]
     status: Optional[bool]

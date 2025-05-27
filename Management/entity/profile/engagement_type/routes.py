@@ -15,7 +15,7 @@ def create_engagement_type(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_engagement_type(db, engagement_type=engagement_type, company_id=user.company_id)
+        new_engagement_type(db, engagement_type=engagement_type, company_id=user.entity_id)
         return {"detail": "Engagement type added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -29,7 +29,8 @@ async def fetch_company_engagement_type(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_company_engagement_type(db, company_id=user.company_id)
+        data = await get_company_engagement_type(db, company_id=user.entity_id)
+        print(data)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="Engagement type not found")
         return data[0]

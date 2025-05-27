@@ -15,7 +15,7 @@ def create_control_effectiveness_rating(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_control_effectiveness_rating(db, control_effectiveness_rating=control_effectiveness_rating, company_id=user.company_id)
+        new_control_effectiveness_rating(db, control_effectiveness_rating=control_effectiveness_rating, company_id=user.entity_id)
         return {"detail": "Control effectiveness rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

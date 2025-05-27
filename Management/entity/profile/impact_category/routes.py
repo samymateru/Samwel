@@ -42,7 +42,7 @@ async def fetch_combined_impact_category(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_combined_impact_category(connection=db, company_id=user.company_id)
+        data = await get_combined_impact_category(connection=db, company_id=user.entity_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

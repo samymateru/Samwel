@@ -15,7 +15,7 @@ def create_control_type(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        new_control_type(db, control_type=control_type, company_id=user.company_id)
+        new_control_type(db, control_type=control_type, company_id=user.entity_id)
         return {"detail": "Control effectiveness rating added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
