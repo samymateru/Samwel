@@ -27,13 +27,6 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         created_at=datetime.now()
     )
 
-    user = User(
-        name=organization.name,
-        email=organization.email,
-        telephone=organization.telephone,
-        module_id=[]
-    )
-
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -45,8 +38,7 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
                 datetime.now()
             ))
             entity_id = await cursor.fetchone()
-            organization_id = await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
-            await new_user(connection=connection, user=user, organization_id=organization_id)
+            await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
             await connection.commit()
         return entity_id[0]
     except UniqueViolation:

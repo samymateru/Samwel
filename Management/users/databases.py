@@ -153,11 +153,15 @@ async def get_module_users(connection: AsyncConnection, module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             user_ids = [dict(zip(column_names, row_)) for row_ in rows]
+            if user_ids.__len__() == 0:
+                return []
             await cursor.execute(query, (user_ids[0].get("users"),))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             user_data = [dict(zip(column_names, row_)) for row_ in rows]
             return user_data
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")

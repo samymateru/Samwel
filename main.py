@@ -71,7 +71,7 @@ async def lifespan(api: FastAPI):
 
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -121,7 +121,10 @@ async def login(
         user: dict = {
             "id": user_data[0].get("id"),
             "name": user_data[0].get("name"),
-            "email": user_data[0].get("email")
+            "email": user_data[0].get("email"),
+            "telephone": user_data[0].get("telephone"),
+            "entity_email": entity_data[0].get("email"),
+            "entity_id": entity_data[0].get("id")
         }
         return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
     else:
