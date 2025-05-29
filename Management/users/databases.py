@@ -27,7 +27,7 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
     update_module_query = sql.SQL(
         """
         UPDATE public.modules 
-        SET users = users || %s
+        SET users = COALESCE(users, '[]'::jsonb) || %s::jsonb
         WHERE id = %s;
         """)
 
@@ -48,8 +48,12 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                     datetime.now()
                 ))
                 user_id = await cursor.fetchone()
-                for module_id in user.module_id:
-                    await cursor.execute(update_module_query, ([user_id[0]], module_id))
+                user_type = UserType(
+                    id = user_id[0],
+                    type = user.type,
+                    role = user.role
+                )
+                await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                 await connection.commit()
                 return user_id[0]
 
@@ -57,8 +61,12 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                 if organization_id not in user_data[0].get("organization"):
                     await cursor.execute(update_user_query, ([organization_id], user_data[0].get("id")))
                     user_id = await cursor.fetchone()
-                    for module_id in user.module_id:
-                        await cursor.execute(update_module_query, ([user_id[0]], module_id))
+                    user_type = UserType(
+                        id=user_id[0],
+                        type=user.type,
+                        role=user.role
+                    )
+                    await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                     await connection.commit()
                     return user_id[0]
                 else:

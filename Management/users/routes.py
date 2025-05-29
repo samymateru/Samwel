@@ -58,12 +58,12 @@ async def create_new_user(
         organization_id: str,
         user_: User,
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        user_id = await new_user(connection=db, user=user_,  organization_id="65afdfa52cef")
+        await new_user(connection=db, user=user_,  organization_id=organization_id)
         return ResponseMessage(detail="User successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -23,6 +23,13 @@ async def add_new_organization_module(
         organization=sql.Literal(organization_id)
     )
 
+    update_user_query = sql.SQL(
+        """
+        UPDATE public.modules 
+        SET users = %s::jsonb
+        WHERE id = %s
+        """)
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(check_module_query)
@@ -38,6 +45,7 @@ async def add_new_organization_module(
                     organization_module.status
                 ))
                 module_id = await cursor.fetchone()
+                await cursor.execute(update_user_query, (module_id[0]))
                 await connection.commit()
                 return module_id[0]
             else:

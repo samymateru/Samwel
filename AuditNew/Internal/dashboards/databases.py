@@ -351,7 +351,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         (
         SELECT jsonb_object_agg(risk_rating, count)
         FROM (
-            SELECT i.risk_rating, COUNT(*) FILTER (WHERE issue.status != 'Not started') AS count
+            SELECT i.risk_rating, COUNT(*) FILTER (WHERE i.status != 'Not started') AS count
             FROM issue i
             JOIN engagements e ON i.engagement = e.id
             WHERE e.id = {engagement_id}

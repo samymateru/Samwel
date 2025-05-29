@@ -14,9 +14,10 @@ class Task(BaseModel):
     href: str
     date_assigned: datetime
 
-class Type(BaseModel):
-    name: str
-    modules: List[str]
+class UserType(BaseModel):
+    id: str
+    type: str
+    role: str
 
 class __User__(BaseModel):
     id: Optional[str] = None
@@ -31,7 +32,9 @@ class User(BaseModel):
     email: str
     telephone: str
     password: Optional[str] = Field(default="123456")
-    module_id: List[str]
+    role: str
+    module: str
+    type: str
     created_at: datetime = datetime.now()
 
 
