@@ -1,4 +1,6 @@
 import time
+from typing import Optional
+
 from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
@@ -69,8 +71,6 @@ async def lifespan(api: FastAPI):
     except Exception as e:
         print(e)
 
-
-
 app = FastAPI()
 
 app.add_middleware(
@@ -109,13 +109,22 @@ async def login(
         raise HTTPException(status_code=400, detail="User doesn't exists")
     password_hash: bytes = user_data[0].get("password_hash").encode()
     entity_data = await get_entities_by_email(connection=db, email=email)
+    entity_name: str = ""
+    entity_email:  str = ""
+    entity_id: str = ""
+    if entity_data.__len__() != 0:
+        entity_name = entity_data[0].get("name")
+        entity_email = entity_data[0].get("email")
+        entity_id = entity_data[0].get("id")
+
     if verify_password(password_hash, password):
+
         user: dict = {
             "user_id": user_data[0].get("id"),
             "user_email": user_data[0].get("email"),
             "user_name": user_data[0].get("name"),
-            "entity_name": entity_data[0].get("name"),
-            "entity_id": entity_data[0].get("id")
+            "entity_name": entity_name,
+            "entity_id": entity_id
         }
         token: str = create_jwt_token(user)
         user: dict = {
@@ -123,8 +132,8 @@ async def login(
             "name": user_data[0].get("name"),
             "email": user_data[0].get("email"),
             "telephone": user_data[0].get("telephone"),
-            "entity_email": entity_data[0].get("email"),
-            "entity_id": entity_data[0].get("id")
+            "entity_email": entity_email,
+            "entity_id": entity_id
         }
         return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
     else:

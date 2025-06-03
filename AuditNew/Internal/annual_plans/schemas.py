@@ -6,7 +6,8 @@ from utils import get_unique_key
 
 class AnnualPlansStatus(str, Enum):
     NOT_STARTED = "Not Started"
-    PROGRESS = "In progress"
+    PENDING = "Pending"
+    ON_GOING = "Ongoing"
     COMPLETED = "Completed"
 
 
@@ -14,7 +15,7 @@ class AnnualPlan(BaseModel):
     id: str = Field(default_factory=get_unique_key)
     name: str
     year: Optional[str] = datetime.now().year
-    status: AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED
+    status: AnnualPlansStatus = AnnualPlansStatus.PENDING
     start: Optional[datetime] = None
     end: Optional[datetime] = None
     attachment: str
@@ -23,7 +24,7 @@ class AnnualPlan(BaseModel):
 class NewAnnualPlan(BaseModel):
     name: str
     year: Optional[str] = datetime.now().year
-    status: AnnualPlansStatus = AnnualPlansStatus.NOT_STARTED
+    status: AnnualPlansStatus = AnnualPlansStatus.PENDING
     start: Optional[datetime] = None
     end: Optional[datetime] = None
     file: str

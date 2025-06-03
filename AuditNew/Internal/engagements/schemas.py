@@ -5,12 +5,15 @@ from enum import Enum
 from utils import get_unique_key
 
 class EngagementStatus(str, Enum):
+    PENDING = "Pending"
     NOT_STARTED = "Not started"
     OPEN = "Open"
     COMPLETE = "Completed"
     CLOSED = "Closed"
+    ONGOING = "Ongoing"
 
 class EngagementStage(str, Enum):
+    PENDING = "Pending"
     NOT_STARTED = "Not Started"
     ADMINISTRATION = "Administration"
     PLANNING = "Planning"
@@ -32,8 +35,7 @@ class Risk(BaseModel):
 class Lead(BaseModel):
     name: Optional[str]
     email: Optional[str]
-    user_id: Optional[str] = None
-    role: Optional[List[Role]] = None
+    role: Optional[str] = None
 
 class Engagement(BaseModel):
     id: Optional[str] = None
@@ -45,7 +47,7 @@ class Engagement(BaseModel):
     quarter: Optional[str] = None
     department: Optional[Department]
     sub_departments: Optional[List[str]]
-    status: EngagementStatus = EngagementStatus.NOT_STARTED
+    status: EngagementStatus = EngagementStatus.PENDING
     stage: EngagementStage = EngagementStage.NOT_STARTED
     start_date: Optional[datetime] = datetime.now()
     end_date: Optional[datetime] = datetime.now()

@@ -6,10 +6,28 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="Adding functionality to add new entity, include default organization and user">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/company_modules/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/company_modules/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/issue/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/entity/profile/control_type/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_type/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/entity/profile/control_weakness_rating/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/profile/control_weakness_rating/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/schema.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,14 +145,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00407" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1746513902676</created>
-      <option name="number" value="00407" />
-      <option name="presentableId" value="LOCAL-00407" />
-      <option name="project" value="LOCAL" />
-      <updated>1746513902677</updated>
     </task>
     <task id="LOCAL-00408" summary="adding dashboards">
       <option name="closed" value="true" />
@@ -520,7 +530,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748439363185</updated>
     </task>
-    <option name="localTasksCounter" value="456" />
+    <task id="LOCAL-00456" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1748506264944</created>
+      <option name="number" value="00456" />
+      <option name="presentableId" value="LOCAL-00456" />
+      <option name="project" value="LOCAL" />
+      <updated>1748506264945</updated>
+    </task>
+    <option name="localTasksCounter" value="457" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

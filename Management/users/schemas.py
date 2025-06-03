@@ -18,12 +18,16 @@ class UserType(BaseModel):
     id: str
     type: str
     role: str
+    title: str
 
 class __User__(BaseModel):
     id: Optional[str] = None
     name: str
     email: str
     telephone: str
+    role: Optional[str] = None
+    type: Optional[str] = None
+    title: Optional[str]= None
     created_at: datetime = datetime.now()
 
 class User(BaseModel):
@@ -33,6 +37,7 @@ class User(BaseModel):
     telephone: str
     password: Optional[str] = Field(default="123456")
     role: str
+    title: str = None
     module: str
     type: str
     created_at: datetime = datetime.now()

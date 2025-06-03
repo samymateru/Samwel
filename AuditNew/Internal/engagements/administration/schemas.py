@@ -38,17 +38,14 @@ class Regulations(BaseModel):
     key_areas: Optional[str]
     attachment: Optional[str]
 
-class Role(BaseModel):
-    id: str
-    name: str
-
 class Staff(BaseModel):
     id: Optional[str] = None
     name: Optional[str]
-    role: Optional[Role]
+    email: Optional[str]
+    role: Optional[str]
     start_date: datetime = datetime.now()
     end_date: Optional[datetime]
-    tasks: Optional[str]
+    tasks: Optional[str] = None
 
 class User(BaseModel):
     id: str

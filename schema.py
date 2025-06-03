@@ -12,6 +12,7 @@ class CurrentUser(BaseModel):
     entity_id: Optional[str] = None
     entity_name: Optional[str] = None
     status_code: Optional[int] = None
+    description: Optional[str] = None
 
 class UserData(BaseModel):
     id: Optional[str]

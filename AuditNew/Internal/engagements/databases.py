@@ -1,5 +1,10 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
+
+from AuditNew.Internal.engagements.administration.databases import add_engagement_staff
+from AuditNew.Internal.engagements.administration.schemas import Staff
 from AuditNew.Internal.engagements.schemas import Engagement
 import json
 from psycopg import AsyncConnection
@@ -16,26 +21,40 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query,
-                           (
-                               get_unique_key(),
-                               plan_id,
-                               code,
-                               engagement.name,
-                               json.dumps(engagement.risk.model_dump()),
-                               engagement.type,
-                               engagement.status,
-                               json.dumps(engagement.model_dump().get("leads")),
-                               engagement.stage,
-                               json.dumps(engagement.department.model_dump()),
-                               json.dumps(engagement.sub_departments),
-                               engagement.quarter,
-                               engagement.start_date,
-                               engagement.end_date,
-                               engagement.created_at
-                           ))
-            id = await cursor.fetchone()
+        (
+               get_unique_key(),
+               plan_id,
+               code,
+               engagement.name,
+               json.dumps(engagement.risk.model_dump()),
+               engagement.type,
+               engagement.status,
+               json.dumps(engagement.model_dump().get("leads")),
+               engagement.stage,
+               json.dumps(engagement.department.model_dump()),
+               json.dumps(engagement.sub_departments),
+               engagement.quarter,
+               engagement.start_date,
+               engagement.end_date,
+               engagement.created_at
+            ))
+            engagement_id = await cursor.fetchone()
             await connection.commit()
-        return id[0]
+            for lead in engagement.leads:
+                staff = Staff(
+                    name = lead.name,
+                    email= lead.email,
+                    role= "Lead",
+                    start_date = datetime.now(),
+                    end_date = datetime.now()
+                )
+                await add_engagement_staff(
+                    connection=connection,
+                    staff=staff,
+                    engagement_id=engagement_id[0]
+                )
+            await connection.commit()
+        return engagement_id[0]
     except ForeignKeyViolation:
         await connection.rollback()
         raise HTTPException(status_code=400, detail="Invalid annual plan id")

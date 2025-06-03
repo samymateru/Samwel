@@ -40,12 +40,13 @@ class LOD2Feedback(str, Enum):
 class Issue(BaseModel):
     id: Optional[str] = None
     title: Optional[str]
+    ref: Optional[str] = None
     criteria: Optional[str]
     finding: Optional[str]
     risk_rating: Optional[str]
     process: Optional[str]
     source: Optional[str]
-    sdi_name: Optional[str]
+    sdi_name: Optional[str] = None
     sub_process: Optional[str]
     root_cause_description: Optional[str]
     root_cause: Optional[str]

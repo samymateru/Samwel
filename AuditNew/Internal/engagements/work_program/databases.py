@@ -1,8 +1,6 @@
-from typing import LiteralString
-
 from fastapi import HTTPException
 from AuditNew.Internal.engagements.work_program.schemas import *
-from utils import get_reference, get_unique_key
+from utils import get_unique_key
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
@@ -41,8 +39,8 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
     check_module_id_query = sql.SQL(
         """
         SELECT cm.procedure_reference AS reference, cm.id
-        FROM company_modules cm
-        JOIN annual_plans ap ON ap.company_module = cm.id
+        FROM modules cm
+        JOIN annual_plans ap ON ap.module = cm.id
         JOIN engagements e ON e.plan_id = ap.id
         JOIN main_program mp ON mp.engagement = e.id
         WHERE mp.id = {program_id};
@@ -50,7 +48,7 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
 
     update_module_id_query = sql.SQL(
         """
-        UPDATE public.company_modules
+        UPDATE public.modules
         SET 
         procedure_reference = %s
         WHERE id = %s
@@ -83,7 +81,6 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
         RETURNING id;
         """)
     try:
-        reference = await get_reference(connection=connection, resource="sub_program", id=program_id)
         async with connection.cursor() as cursor:
             await cursor.execute(check_module_id_query)
             rows = await cursor.fetchall()
@@ -99,7 +96,7 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
                 prefix = f"PROC-{count:05d}"
 
             await cursor.execute(update_module_id_query, (count, reference[0].get("id")))
-
+            
             await cursor.execute(query,(
                 get_unique_key(),
                 program_id,

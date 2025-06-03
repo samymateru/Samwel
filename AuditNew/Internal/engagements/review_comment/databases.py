@@ -30,9 +30,10 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
             raised_by,
             action_owner,
             status,
-            href
+            href,
+            due_date
             ) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
         reference: str = await get_reference(connection=connection, resource="review_comment", id=engagement_id)
@@ -45,8 +46,9 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
                 review_comment.description,
                 review_comment.raised_by.model_dump_json(),
                 json.dumps(review_comment.model_dump().get("action_owner")),
-                "Not started",
-                review_comment.href
+                "Pending",
+                review_comment.href,
+                review_comment.due_date
             ))
         await connection.commit()
     except ForeignKeyViolation:

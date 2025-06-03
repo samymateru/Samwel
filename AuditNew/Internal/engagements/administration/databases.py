@@ -188,12 +188,13 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
             id,
             engagement,
             name,
+            email,
             role,
             start_date,
             end_date,
             tasks
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -201,7 +202,8 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
                 get_unique_key(),
                 engagement_id,
                 staff.name,
-                staff.role.model_dump_json(),
+                staff.email,
+                staff.role,
                 staff.start_date,
                 staff.end_date,
                 staff.tasks

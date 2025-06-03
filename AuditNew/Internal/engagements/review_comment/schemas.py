@@ -22,6 +22,7 @@ class NewReviewComment(BaseModel):
     description: Optional[str]
     raised_by: Optional[User]
     href: Optional[str]
+    due_date: datetime
     action_owner: Optional[List[ActionOwner]]
 
 class ResolveReviewComment(BaseModel):

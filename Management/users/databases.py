@@ -51,7 +51,8 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                 user_type = UserType(
                     id = user_id[0],
                     type = user.type,
-                    role = user.role
+                    role = user.role,
+                    title = user.title
                 )
                 await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                 await connection.commit()
@@ -64,7 +65,8 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                     user_type = UserType(
                         id=user_id[0],
                         type=user.type,
-                        role=user.role
+                        role=user.role,
+                        title=user.title
                     )
                     await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                     await connection.commit()
@@ -148,22 +150,22 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
 async def get_module_users(connection: AsyncConnection, module_id: str):
     query = sql.SQL(
         """
-        SELECT * FROM public.users WHERE id = ANY(%s);
-        """)
-
-    user_list_query = sql.SQL(
-        """
-        SELECT users FROM public.modules WHERE id = {module_id};
+        SELECT
+          u_data ->> 'id' AS id,
+          u_data ->> 'type' AS type,
+          u_data ->> 'role' AS role,
+          u_data ->> 'title' AS title,
+          u.name,
+          u.email,
+          u.telephone
+        FROM modules m
+        JOIN LATERAL jsonb_array_elements(m.users) AS u_data ON true
+        JOIN users u ON u.id = u_data ->> 'id'
+        WHERE m.id = {module_id};
         """).format(module_id=sql.Literal(module_id))
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(user_list_query)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            user_ids = [dict(zip(column_names, row_)) for row_ in rows]
-            if user_ids.__len__() == 0:
-                return []
-            await cursor.execute(query, (user_ids[0].get("users"),))
+            await cursor.execute(query)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             user_data = [dict(zip(column_names, row_)) for row_ in rows]

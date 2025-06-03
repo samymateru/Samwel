@@ -67,28 +67,37 @@ async def edit_issue(connection: AsyncConnection, issue: Issue, issue_id: str):
         raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
 
 async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_id: str, engagement_id: str):
-    query_last_issue = sql.SQL(
+    check_module_id_query = sql.SQL(
         """
-        SELECT issue.id AS issue_id
-        FROM issue
-        JOIN engagements ON issue.engagement = engagements.id
-        JOIN annual_plans ON engagements.plan_id = annual_plans.id
-        JOIN company_modules ON annual_plans.company_module = company_modules.id
-        WHERE company_modules.id = (
-        SELECT company_modules.id
-        FROM engagements
-        JOIN annual_plans ON engagements.plan_id = annual_plans.id
-        JOIN company_modules ON company_modules.id = annual_plans.company_module
-        WHERE engagements.id = {engagement_id}
-        )
-        ORDER BY issue.id DESC 
-        LIMIT 1;
+        SELECT 
+        cm.internal_issues AS internal,
+        cm.external_issues AS external,
+        cm.id
+        FROM modules cm
+        JOIN annual_plans ap ON ap.module = cm.id
+        JOIN engagements e ON e.plan_id = ap.id
+        WHERE e.id = {engagement_id};
         """).format(engagement_id=sql.Literal(engagement_id))
+
+    update_company_module_internal = sql.SQL(
+        """
+        UPDATE public.modules 
+        SET internal_issues = %s
+        WHERE id = %s;
+        """)
+
+    update_company_module_external = sql.SQL(
+        """
+        UPDATE public.modules 
+        SET external_issues = %s
+        WHERE id = %s;
+        """)
 
     query = sql.SQL(
         """
         INSERT INTO public.issue (
                 id,
+                ref,
                 sub_program,
                 engagement,
                 title,
@@ -125,7 +134,7 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 revised_status
                 )
         VALUES (
-         %s, %s, %s, %s, %s, %s, %s, %s,
+         %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s
@@ -133,20 +142,21 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query_last_issue)
-            data: List[str] = await cursor.fetchall()
-            if data.__len__() == 0:
-                if issue.source == "Internal Audit":
-                    issue_id = f"IA-00001"
-                else:
-                    issue_id = f"FND-00001"
+            await cursor.execute(check_module_id_query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            reference = [dict(zip(column_names, row_)) for row_ in rows]
+            if issue.source == "Internal Audit":
+                pref = int(reference[0].get("internal")) + 1
+                issue_id = f"IA-{pref:05d}"
+                await cursor.execute(update_company_module_internal, (pref, reference[0].get("id")))
             else:
-                prefix = int(data[0][0].split("-")[1]) + 1
-                if issue.source == "Internal Audit":
-                    issue_id = f"IA-{prefix:05d}"
-                else:
-                    issue_id = f"FND-{prefix:05d}"
+                pref = int(reference[0].get("external")) + 1
+                issue_id = f"FND-{pref:05d}"
+                await cursor.execute(update_company_module_external, (pref, reference[0].get("id")))
+
             await cursor.execute(query,(
+                get_unique_key(),
                 issue_id,
                 sub_program_id,
                 engagement_id,

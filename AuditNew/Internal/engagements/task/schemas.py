@@ -22,6 +22,7 @@ class NewTask(BaseModel):
     title: Optional[str]
     description: Optional[str]
     raised_by: Optional[User]
+    due_date: datetime
     action_owner: Optional[List[ActionOwner]]
     href: Optional[str]
 

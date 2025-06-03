@@ -230,25 +230,20 @@ async def query_planning_details(connection: AsyncConnection, plan_id: str):
     query = sql.SQL(
         """
         SELECT
-        COUNT(*) AS total_engagements,
+        jsonb_build_object(
+            'total', COUNT(*),
+            'pending', COUNT(*) FILTER (WHERE eng.status = 'Pending'),
+            'ongoing', COUNT(*) FILTER (WHERE eng.status = 'Ongoing'),
+            'completed', COUNT(*) FILTER (WHERE eng.status = 'Completed')
+        ) AS planning_summary
 
-        (
-        SELECT jsonb_object_agg(status, count)
-        FROM (
-          SELECT status, COUNT(*) AS count
-          FROM engagements
-          WHERE plan_id = %s
-          GROUP BY status
-        ) AS status_counts
-        ) AS status_summary
-
-        FROM engagements
-        WHERE plan_id = %s;
+        FROM engagements eng
+        WHERE eng.plan_id = %s;
         """
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (plan_id, plan_id))
+            await cursor.execute(query, (plan_id,))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -332,7 +327,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
     query_root_cause_rating = sql.SQL(
         """
         SELECT
-        COUNT(*) FILTER (WHERE issue.status != 'Not started') AS total_issues,
+        COUNT(*) FILTER (WHERE i.status != 'Not started') AS total_issues,
 
         -- Root cause summary as JSON
         (
@@ -357,7 +352,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             WHERE e.id = {engagement_id}
             GROUP BY i.risk_rating
             HAVING COUNT(*) FILTER (WHERE i.status != 'Not started') > 0
-        ) AS risk_rating_summary
+        ) AS rating_summary
         ) AS risk_rating_summary
 
         FROM issue i
@@ -367,17 +362,13 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 
     query_review_comment = sql.SQL(
         """
-        SELECT COUNT(*) AS total_comments,
-        (
-        SELECT jsonb_object_agg(status, count)
-        FROM (
-            SELECT rc.status, COUNT(*) AS count
-            FROM review_comment rc
-            JOIN engagements e ON rc.engagement = e.id
-            WHERE e.id = {engagement_id}
-            GROUP BY rc.status
-        ) AS status
-        ) AS status_summary
+        SELECT
+        jsonb_build_object(
+            'pending', COUNT(*) FILTER (WHERE rc.status = 'Pending'),
+            'in_progress', COUNT(*) FILTER (WHERE rc.status = 'In progress'),
+            'closed', COUNT(*) FILTER (WHERE rc.status = 'Completed'),
+            'total', COUNT(*)
+        ) as review_status
         
         FROM review_comment rc
         JOIN engagements e ON rc.engagement = e.id
@@ -433,7 +424,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             return {
                 "procedure_summary": engagement_data,
                 "issue_details": root_cause_rating_data[0],
-                "review_comment": review_comment_data[0]
+                "review_comment": review_comment_data[0].get("review_status")
             }
     except Exception as e:
         await connection.rollback()
