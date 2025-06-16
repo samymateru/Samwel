@@ -51,7 +51,7 @@ async def create_new_annual_plan(
             temp_path = tmp.name
 
         key: str = f"annual_plans/{user.entity_name}/{uuid.uuid4()}-{attachment.filename}"
-        public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
+        public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
 
         background_tasks.add_task(upload_file, temp_path, key)
         audit_plan = AnnualPlan(
