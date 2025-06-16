@@ -17,11 +17,13 @@ async def fetch_main_dashboard(
     try:
         issues_data = await query_all_issues(connection=db, company_module_id=company_module_id)
         audit_summary = await query_audit_summary(connection=db, company_module_id=company_module_id)
+        engagement_summary = await all_engagement_summary(connection=db, company_module_id=company_module_id)
         if issues_data is  None and audit_summary is None:
             raise HTTPException(status_code=400, detail="No data to show")
         data = {
             "issues_data": issues_data,
-            "audits_summary": audit_summary.get("annual_plans")
+            "audits_summary": audit_summary.get("annual_plans_summary"),
+            "engagements_summary": engagement_summary.get("engagements_summary")
         }
         return data
 
@@ -53,10 +55,10 @@ async def fetch_plan_details(
 async def fetch_engagement_details(
         engagement_id: str,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await query_engagement_details(connection=db, engagement_id=engagement_id)
         return data

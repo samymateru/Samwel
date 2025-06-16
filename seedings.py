@@ -817,441 +817,202 @@ async def impact_category(connection: AsyncConnection, company: str):
         logger.error(e)
 
 async def planning_procedures(connection: AsyncConnection, engagement_id: str):
-    values = [
-        {
-            "title": "Pre-engagement meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Client notification",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Audit mobilization meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Allocation of staff",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "id": 0,
-            "title": "Collection of client information",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Analyze client information",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Review of prior audit reports",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Engagement risk assessment",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "risk",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Fraud risk assessment",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Data analytics",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Identification of laws",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Benchmarking",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Engagement scope",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Audit engagement letters",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "letter",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Engagement work program",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "program",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Audit kick off meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        }
-    ]
+    values = data = [
+    {
+        "title": "Pre-engagement meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Client notification",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Audit mobilization meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Allocation of staff",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "id": 0,
+        "title": "Collection of client information",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Analyze client information",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Review of prior audit reports",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Engagement risk assessment",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "risk",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Fraud risk assessment",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Data analytics",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Identification of laws",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Benchmarking",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Engagement scope",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Audit engagement letters",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "letter",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Engagement work program",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "program",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Audit kick off meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    }
+]
+
     query = sql.SQL(
         """
         INSERT INTO public.std_template (
@@ -1264,12 +1025,13 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
             observation,
             attachments,
             conclusion,
+            objectives,
             type,
             prepared_by,
             reviewed_by,
             status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1285,6 +1047,7 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
                     json.dumps(value["observation"]),
                     value["attachments"],
                     json.dumps(value["conclusion"]),
+                    json.dumps(value["objectives"]),
                     value["type"],
                     None,
                     None,
@@ -1299,251 +1062,117 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail="Error creating planning procedure")
 
 async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
-    values = [
-        {
-            "title": "Summary of audit findings",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "finding",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Summary of audit process and rating",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "audit_process",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Finding sheet and management letter",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "sheet",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Exit meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Draft audit report",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Final audit report",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Updating audit findings",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Audit closure meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Circulation of final audit report",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-    ]
+    values = data = [
+    {
+        "title": "Summary of audit findings",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "finding",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Summary of audit process and rating",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "audit_process",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Finding sheet and management letter",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "sheet",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Exit meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Draft audit report",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Final audit report",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Updating audit findings",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Audit closure meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Circulation of final audit report",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    }
+]
+
     query = sql.SQL(
         """
         INSERT INTO public.reporting_procedure (
@@ -1556,12 +1185,13 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
             observation,
             attachments,
             conclusion,
+            objectives,
             type,
             prepared_by,
             reviewed_by,
             status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1577,6 +1207,7 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
                     json.dumps(value["observation"]),
                     value["attachments"],
                     json.dumps(value["conclusion"]),
+                    json.dumps(value["objectives"]),
                     value["type"],
                     None,
                     None,
@@ -1592,115 +1223,55 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
 
 async def finalization_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
-        {
-            "title": "Audit feedback process",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "survey",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Post audit meeting",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Closure of audit file",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-        {
-            "title": "Archive file",
-            "tests": {
-                "value": ""
-            },
-            "results": {
-                "value": ""
-            },
-            "observation": {
-                "value": ""
-            },
-            "attachments": [
-                ""
-            ],
-            "conclusion": {
-                "value": ""
-            },
-            "type": "archive",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
-            },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
-        },
-    ]
+    {
+        "title": "Audit feedback process",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "survey",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Post audit meeting",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Closure of audit file",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
+    {
+        "title": "Archive file",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "archive",
+        "prepared_by": None,
+        "reviewed_by": None
+    }
+]
     query = sql.SQL(
         """
         INSERT INTO public.finalization_procedure (
@@ -1713,12 +1284,13 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
             observation,
             attachments,
             conclusion,
+            objectives,
             type,
             prepared_by,
             reviewed_by,
             status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -1734,6 +1306,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
                     json.dumps(value["observation"]),
                     value["attachments"],
                     json.dumps(value["conclusion"]),
+                    json.dumps(value["objectives"]),
                     value["type"],
                     None,
                     None,
@@ -1790,7 +1363,7 @@ async def add_engagement_profile(connection: AsyncConnection, engagement_id: str
             json.dumps({
                 "value": ""
             }),
-            [""],
+            [],
             json.dumps({
                 "value": ""
             })
@@ -1803,3 +1376,32 @@ async def add_engagement_profile(connection: AsyncConnection, engagement_id: str
         logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding engagement profile {e}")
 
+async def engagement_letter(connection: AsyncConnection, engagement_id: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.engagement_letter (id, engagement, name, value, size, type, extension) VALUES(%s, %s, %s, %s, %s, %s, %s)
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                get_unique_key_(),
+                engagement_id,
+                "",
+                "",
+                0,
+                "final",
+                ""
+            ))
+            await cursor.execute(query, (
+                get_unique_key_(),
+                engagement_id,
+                "",
+                "",
+                0,
+                "scoped",
+                ""
+            ))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding engagement letter {e}")

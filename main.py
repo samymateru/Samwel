@@ -1,6 +1,4 @@
 import time
-from typing import Optional
-
 from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
@@ -80,6 +78,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 

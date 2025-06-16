@@ -16,7 +16,10 @@ class ActionOwner(BaseModel):
 
 class SummaryReviewNotes(BaseModel):
     id: Optional[str] = None
+    engagement: Optional[str] = None
     reference: Optional[str]
+    href: Optional[str]
+    due_date: Optional[datetime] = None
     title: Optional[str]
     description: Optional[str]
     raised_by: Optional[User]
@@ -29,7 +32,10 @@ class SummaryReviewNotes(BaseModel):
 
 class SummaryTask(BaseModel):
     id: Optional[str] = None
+    engagement: Optional[str] = None
     reference: Optional[str]
+    href: Optional[str]
+    due_date: Optional[datetime] = None
     title: Optional[str]
     description: Optional[str]
     raised_by: Optional[User]

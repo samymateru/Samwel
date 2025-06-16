@@ -10,15 +10,13 @@ router = APIRouter(prefix="/reports")
 async def fetch_detailed_issue_reports(
         company_module_id: str,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        main_report_data = await get_main_reports(connection=db, company_module_id=company_module_id)
-        if main_report_data is None:
-            raise HTTPException(status_code=400, detail="No data to show")
-        return main_report_data
+        data = await get_main_reports(connection=db, company_module_id=company_module_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -35,5 +33,19 @@ async def fetch_summary_issue_reports(
         if summary_report_data is None:
             raise HTTPException(status_code=400, detail="No data to show")
         return summary_report_data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/review_comments/{company_module_id}")
+async def fetch_review_comments(
+        company_module_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_review_comments_report(connection=db, company_module_id=company_module_id)
+        return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

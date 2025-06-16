@@ -33,6 +33,7 @@ class Risk(BaseModel):
     magnitude: int
 
 class Lead(BaseModel):
+    id: Optional[str] = None
     name: Optional[str]
     email: Optional[str]
     role: Optional[str] = None
@@ -54,17 +55,12 @@ class Engagement(BaseModel):
     created_at: datetime = datetime.now()
 
 class UpdateEngagement(BaseModel):
-    engagement_id: int
-    engagement_name: str = None
-    engagement_risk: str = None
-    engagement_type: str = None
-    engagement_lead: str = None
-    engagement_status: EngagementStatus = None
-    engagement_phase: EngagementStage = None
-    quarter: str = None
-    start_date: datetime = None
-    end_date: datetime = None
-    updated_at: datetime = datetime.now()
+    name: str
+    risk: Optional[Risk]
+    type: str
+    department: Optional[Department]
+    sub_departments: Optional[List[str]]
+
 
 class DeleteEngagements(BaseModel):
     engagement_id: List[str]

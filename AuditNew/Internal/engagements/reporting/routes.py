@@ -52,7 +52,7 @@ async def update_reporting_procedure(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/summary_findings/{engagement_id}", response_model=List[Issue])
+@router.get("/summary_findings/{engagement_id}", response_model=List[SummaryFinding])
 async def fetch_summary_of_findings(
         engagement_id: str,
         db=Depends(get_async_db_connection),

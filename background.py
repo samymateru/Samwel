@@ -25,4 +25,5 @@ async def set_engagement_templates(engagement_id: str):
         await reporting_procedures(connection=connection, engagement_id=engagement_id)
         await add_engagement_profile(connection=connection, engagement_id=engagement_id)
         await add_new_business_contact(connection=connection, engagement_id=engagement_id)
+        await engagement_letter(connection=connection, engagement_id=engagement_id)
 

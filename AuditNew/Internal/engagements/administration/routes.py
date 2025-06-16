@@ -1,3 +1,4 @@
+from AuditNew.Internal.engagements.administration.schemas import __Staff__
 from utils import get_current_user
 from schema import CurrentUser
 from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks
@@ -32,19 +33,19 @@ async def fetch_business_contacts(
 @router.put("/business_contact/{engagement_id}", response_model=ResponseMessage)
 async def update_business_contact(
         engagement_id: str,
-        business_contacts: List[BusinessContact],
+        business_contacts: BusinessContact,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await edit_business_contact(db, business_contacts=business_contacts, engagement_id=engagement_id)
+        await edit_business_contact(db, business_contact=business_contacts, engagement_id=engagement_id)
         return ResponseMessage(detail="Business contact updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/profile/{engagement_id}", response_model=List[EngagementProfile])
+@router.get("/profile/{engagement_id}", response_model=EngagementProfile)
 async def fetch_engagement_profile(
         engagement_id: str,
         db=Depends(get_async_db_connection),
@@ -54,7 +55,10 @@ async def fetch_engagement_profile(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_engagement_profile(connection=db, engagement_id=engagement_id)
-        return data
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Engagement profile not found")
+
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -91,13 +95,22 @@ async def update_engagement_process(
 @router.put("/context/policies/{policy_id}", response_model=ResponseMessage)
 async def update_policies(
         policy_id: str,
-        policy: Policy,
+        name: str = Form(...),
+        version: str = Form(...),
+        key_areas: str = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        policy = Policy(
+            name=name,
+            version=version,
+            key_areas=key_areas,
+            attachment=attachment.filename
+        )
         await edit_policies(db, policy=policy, policy_id=policy_id)
         return ResponseMessage(detail="Policy updated successfully")
     except HTTPException as e:
@@ -107,13 +120,22 @@ async def update_policies(
 @router.put("/context/regulations/{regulation_id}", response_model=ResponseMessage)
 async def update_regulations(
         regulation_id: str,
-        regulation: Regulations,
+        name: str = Form(...),
+        issue_date: datetime = Form(...),
+        key_areas=Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        regulation = Regulations(
+            name=name,
+            issue_date=issue_date,
+            key_areas=key_areas,
+            attachment=attachment.filename
+        )
         await edit_regulations(db, regulation=regulation, regulation_id=regulation_id)
         return ResponseMessage(detail="Regulation updated successfully")
     except HTTPException as e:
@@ -122,7 +144,7 @@ async def update_regulations(
 @router.put("/context/staff/{staff_id}", response_model=ResponseMessage)
 async def update_staff(
         staff_id: str,
-        staff: Staff,
+        staff: __Staff__,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -297,7 +319,7 @@ async def delete_regulation(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/staff/{engagement_id}", response_model=List[Staff])
+@router.get("/staff/{engagement_id}", response_model=List[__Staff__])
 async def fetch_staff(
         engagement_id: str,
         db=Depends(get_async_db_connection),

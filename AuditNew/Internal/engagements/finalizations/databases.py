@@ -29,15 +29,12 @@ async def add_finalization_procedure(connection: AsyncConnection, finalization: 
         "conclusion": {
             "value": ""
         },
-        "type": "standard",
-        "prepared_by": {
-            "id": 0,
-            "name": ""
+        "objectives": {
+            "value": ""
         },
-        "reviewed_by": {
-            "id": 0,
-            "name": ""
-        }
+        "type": "standard",
+        "prepared_by": None,
+        "reviewed_by": None
     }
     query = sql.SQL(
         """
@@ -51,12 +48,13 @@ async def add_finalization_procedure(connection: AsyncConnection, finalization: 
             observation,
             attachments,
             conclusion,
+            objectives,
             type,
             prepared_by,
             reviewed_by,
             status
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:

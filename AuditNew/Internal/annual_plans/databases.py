@@ -8,13 +8,31 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPlan, company_module_id: str):
     query = sql.SQL(
         """
-        INSERT INTO public.annual_plans (id, module, name, year, status, start, "end", attachment, created_at)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO public.annual_plans (id, reference, module, name, year, status, start, "end", attachment, created_at)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """)
+
+    get_plan_count = sql.SQL(
+        """
+        SELECT plan_reference FROM modules WHERE id = {company_module_id}
+        """).format(company_module_id=sql.Literal(company_module_id))
+
+    update_module = sql.SQL(
+        """
+        UPDATE public.modules
+        SET plan_reference = %s
+        WHERE id = %s
         """)
     try:
         async with connection.cursor() as cursor:
+            await cursor.execute(get_plan_count)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            module_data = [dict(zip(column_names, row_)) for row_ in rows]
+            reference = module_data[0].get("plan_reference") + 1
             await cursor.execute(query, (
                 audit_plan.id,
+                "P-{:05d}".format(reference),
                 company_module_id,
                 audit_plan.name,
                 audit_plan.year,
@@ -24,6 +42,7 @@ async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPla
                 audit_plan.attachment,
                 datetime.now()
             ))
+            await cursor.execute(update_module, (reference, company_module_id))
         await connection.commit()
     except ForeignKeyViolation:
         await connection.rollback()

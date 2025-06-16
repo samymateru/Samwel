@@ -1,13 +1,19 @@
+import json
+
 from fastapi import HTTPException
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 from Management.company_modules.schemas import *
+from Management.users.schemas import User
 from psycopg import AsyncConnection, sql
+
+from Management.users.schemas import UserType
 from utils import get_unique_key
 
 async def add_new_organization_module(
         connection: AsyncConnection,
         organization_module: Module,
-        organization_id: str
+        organization_id: str,
+        user_id: str
 ):
     query = sql.SQL(
         """
@@ -30,6 +36,14 @@ async def add_new_organization_module(
         WHERE id = %s
         """)
 
+    user_type = UserType(
+        id=user_id,
+        type="audit",
+        role="Administrator",
+        title="Administrator",
+        engagements=[]
+    )
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(check_module_query)
@@ -45,7 +59,7 @@ async def add_new_organization_module(
                     organization_module.status
                 ))
                 module_id = await cursor.fetchone()
-                await cursor.execute(update_user_query, (module_id[0]))
+                await cursor.execute(update_user_query, (json.dumps([user_type.model_dump()]), module_id[0]))
                 await connection.commit()
                 return module_id[0]
             else:

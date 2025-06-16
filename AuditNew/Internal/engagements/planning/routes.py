@@ -79,11 +79,9 @@ async def fetch_engagement_letter(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/engagement_letter/{engagement_id}", response_model=ResponseMessage)
+@router.put("/engagement_letter/{engagement_id}", response_model=ResponseMessage)
 async def create_new_engagement_letter(
         engagement_id: str,
-        name: str = Form(...),
-        date_attached: datetime = Form(...),
         attachment: UploadFile = File(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -92,9 +90,10 @@ async def create_new_engagement_letter(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         letter = EngagementLetter(
-            name=name,
-            date_attached=date_attached,
-            attachment=attachment.filename
+            name=attachment.filename,
+            value="",
+            size=attachment.size,
+            extension=attachment.content_type
         )
         await add_engagement_letter(db, letter=letter, engagement_id=engagement_id)
         return ResponseMessage(detail="Letter added successfully")
@@ -222,5 +221,37 @@ async def save_procedure(
     try:
         await save_procedure_(connection=db, procedure=procedure, procedure_id=procedure_id, resource=procedure.type)
         return ResponseMessage(detail="Planning procedure saved successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/procedure/prepare/{procedure_id}", response_model=ResponseMessage)
+async def prepare_procedure(
+        procedure_id: str,
+        procedure: PreparedReviewedBy,
+        resource: str = Query(...),
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await prepare_std_template(connection=db, procedure=procedure, procedure_id=procedure_id, resource=resource)
+        return ResponseMessage(detail="Planning procedure prepared successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.put("/procedure/review/{procedure_id}", response_model=ResponseMessage)
+async def review_procedure(
+        procedure_id: str,
+        procedure: PreparedReviewedBy,
+        resource: str = Query(...),
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await review_std_template(connection=db, procedure=procedure, procedure_id=procedure_id, resource=resource)
+        return ResponseMessage(detail="Planning procedure reviewed successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

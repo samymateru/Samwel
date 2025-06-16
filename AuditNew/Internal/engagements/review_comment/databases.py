@@ -78,7 +78,7 @@ async def resolve_review_comment_(connection: AsyncConnection, review_comment: R
                 review_comment.resolution_summary,
                 review_comment.resolution_details,
                 review_comment.resolved_by.model_dump_json(),
-                "Pending",
+                "Ongoing",
                 review_comment_id
             ))
         await connection.commit()
@@ -99,10 +99,39 @@ async def review_comment_decision_(connection: AsyncConnection, review_comment: 
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 review_comment.decision.value,
-                "Not started" if review_comment.decision.value == review_comment.decision.RE_OPEN else review_comment.decision.value,
+                "Pending" if review_comment.decision.value == review_comment.decision.RE_OPEN else "Closed",
                 review_comment_id
             ))
         await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")
+
+async def update_review_comment(connection:AsyncConnection, review_comment:NewReviewComment, review_comment_id:str):
+    query = sql.SQL(
+        """
+        UPDATE public.review_comment
+        SET 
+        title = %s,
+        description = %s,
+        raised_by = %s::jsonb,
+        href = %s,
+        due_date = %s,
+        action_owner = %s::jsonb
+        WHERE id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                review_comment.title,
+                review_comment.description,
+                review_comment.raised_by.model_dump_json(),
+                review_comment.href,
+                review_comment.due_date,
+                json.dumps(review_comment.model_dump().get("action_owner")),
+                review_comment_id
+            ))
+            await connection.commit()
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")

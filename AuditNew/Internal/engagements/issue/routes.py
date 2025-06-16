@@ -211,14 +211,38 @@ async def issue_decline_response(
 @router.put("/revise/{issue_id}", response_model=ResponseMessage)
 async def request_revise(
         issue_id: str,
-        revise: Revise,
+        revised_date: datetime = Form(...),
+        reason: str = Form(...),
+        attachment: UploadFile = File(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await request_extension_time(connection=db, revise=revise, issue_id=issue_id, user_email=user.user_email)
+        revise = Revise(
+            reason=reason,
+            revised_date=revised_date,
+        )
+
+        issue_details = IssueImplementationDetails(
+            notes=reason,
+            attachments=[attachment.filename],
+            issued_by=User(
+                name=user.user_name,
+                email=user.user_email,
+                date_issued=datetime.now()
+            ),
+            type="extension"
+        )
+
+        await request_extension_time(
+            connection=db,
+            revise=revise,
+            issue_id=issue_id,
+            user_email=user.user_email,
+            issue_details=issue_details)
+
         return ResponseMessage(detail=f"Successfully requesting time extension")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

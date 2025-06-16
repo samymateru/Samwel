@@ -32,7 +32,7 @@ async def update_raised_task(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
+        await update_task(connection=db, task=task, task_id=task_id)
         return ResponseMessage(detail="Raised task updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

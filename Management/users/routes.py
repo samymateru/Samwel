@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
-from Management.organization.databases import get_user_organizations
+from fastapi import APIRouter, Depends
 from Management.users.schemas import __User__
 from utils import get_db_connection, get_async_db_connection
 from Management.users.databases import *
@@ -69,16 +68,17 @@ async def create_new_user(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.put("/")
+@router.put("/{user_id}")
 async def update_user(
-        user_update: User,
+        user_id: str,
+        user: User,
         db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
-        pass
+        await edit_user(connection=db, user=user, user_id=user_id)
         return ResponseMessage(detail="user successfully updated")
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)

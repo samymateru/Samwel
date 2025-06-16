@@ -3,6 +3,8 @@ from fastapi import HTTPException
 from AuditNew.Internal.engagements.administration.schemas import *
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
+
+from AuditNew.Internal.engagements.administration.schemas import __Staff__
 from utils import get_unique_key
 
 async def edit_engagement_profile(connection: AsyncConnection, profile: EngagementProfile, engagement_id: str):
@@ -17,22 +19,20 @@ async def edit_engagement_profile(connection: AsyncConnection, profile: Engageme
             key_changes = %s::jsonb,
             reliance = %s::jsonb,
             scope_exclusion = %s::jsonb,
-            core_risk = %s,
-            estimated_dates = %s::jsonb
+            core_risk = %s
             WHERE engagement = %s;
         """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
-            profile.audit_background.model_dump_json(),
-            profile.audit_objectives.model_dump_json(),
-            profile.key_legislations.model_dump_json(),
-            profile.relevant_systems.model_dump_json(),
-            profile.key_changes.model_dump_json(),
-            profile.reliance.model_dump_json(),
-            profile.scope_exclusion.model_dump_json(),
+            json.dumps(profile.audit_background),
+            json.dumps(profile.audit_objectives),
+            json.dumps(profile.key_legislations),
+            json.dumps(profile.relevant_systems),
+            json.dumps(profile.key_changes),
+            json.dumps(profile.reliance),
+            json.dumps(profile.scope_exclusion),
             profile.core_risk,
-            profile.estimated_dates.model_dump_json(),
             engagement_id
         ))
         await connection.commit()
@@ -196,6 +196,34 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
         ) 
         VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
         """)
+
+    query_module_id = sql.SQL(
+        """
+        SELECT ap.module as module
+        FROM engagements eng
+        JOIN annual_plans ap ON ap.id = eng.plan_id
+        WHERE eng.id = {engagement_id}
+        """).format(engagement_id=sql.Literal(engagement_id))
+
+    add_task_query = sql.SQL(
+        """
+        UPDATE modules
+        SET users = (
+        SELECT jsonb_agg(
+        CASE
+        WHEN item->>'id' = %s THEN
+        jsonb_set(
+            jsonb_set(item, '{engagements}', item->'engagements' || to_jsonb(%s::varchar[])),
+            '{title}', to_jsonb(item->'title'::text)
+            )              
+            ELSE item
+            END
+            )
+            FROM jsonb_array_elements(users) AS item
+        )
+        WHERE id = %s;
+        """)
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -208,7 +236,13 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
                 staff.end_date,
                 staff.tasks
             ))
-        await connection.commit()
+            await cursor.execute(query_module_id)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            module_id = [dict(zip(column_names, row_)) for row_ in rows]
+            print(module_id[0].get("module"))
+            await cursor.execute(add_task_query, (staff.user_id, [engagement_id], module_id[0].get("module")))
+            await connection.commit()
     except ForeignKeyViolation:
         await connection.rollback()
         raise HTTPException(status_code=400, detail="Engagement id is invalid")
@@ -345,7 +379,7 @@ async def remove_regulation(connection: AsyncConnection, regulation_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error removing regulation {e}")
 
-async def edit_business_contact(connection: AsyncConnection, business_contacts: List[BusinessContact], engagement_id: str):
+async def edit_business_contact(connection: AsyncConnection, business_contact: BusinessContact, engagement_id: str):
     query = sql.SQL(
         """
           UPDATE public.business_contact
@@ -355,12 +389,12 @@ async def edit_business_contact(connection: AsyncConnection, business_contacts: 
         """)
     try:
         async with connection.cursor() as cursor:
-            for business_contact in business_contacts:
-                await cursor.execute(query, (
-                    json.dumps(business_contact.model_dump().get("user")),
-                    engagement_id,
-                    business_contact.type
-                    ))
+
+            await cursor.execute(query, (
+                json.dumps(business_contact.model_dump().get("user")),
+                engagement_id,
+                business_contact.type
+                ))
         await connection.commit()
     except ForeignKeyViolation:
         await connection.rollback()
@@ -390,9 +424,6 @@ async def edit_engagement_process(connection: AsyncConnection, engagement_proces
                 engagement_process_id
                 ))
         await connection.commit()
-    except ForeignKeyViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail="Engagement id is invalid")
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Process already exist")
@@ -407,8 +438,7 @@ async def edit_regulations(connection: AsyncConnection, regulation: Regulations,
           SET 
           name = %s,
           issue_date = %s,
-          key_areas = %s,
-          attachment = %s
+          key_areas = %s
           WHERE id = %s
         """)
     try:
@@ -417,13 +447,9 @@ async def edit_regulations(connection: AsyncConnection, regulation: Regulations,
                 regulation.name,
                 regulation.issue_date,
                 regulation.key_areas,
-                regulation.attachment,
                 regulation_id
                 ))
         await connection.commit()
-    except ForeignKeyViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail="Engagement id is invalid")
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Regulation already exist")
@@ -433,27 +459,22 @@ async def edit_regulations(connection: AsyncConnection, regulation: Regulations,
 
 async def edit_policies(connection: AsyncConnection, policy: Policy, policy_id: str):
     query = sql.SQL(
-        """
-          UPDATE public.policies
-          SET 
-          name = %s,
-          version = %s,
-          key_areas = %s,
-          attachment = %s
-          WHERE id = %s
-        """)
+    """
+    UPDATE public.policies
+    SET 
+    name = %s,
+    version = %s,
+    key_areas = %s
+    WHERE id = %s
+    """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 policy.name,
                 policy.version,
                 policy.key_areas,
-                policy.attachment,
                 policy_id))
         await connection.commit()
-    except ForeignKeyViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail="Engagement id is invalid")
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Policy already exist")
@@ -461,26 +482,22 @@ async def edit_policies(connection: AsyncConnection, policy: Policy, policy_id: 
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating policy {e}")
 
-async def edit_staff(connection: AsyncConnection, staff: Staff, staff_id: str):
+async def edit_staff(connection: AsyncConnection, staff: __Staff__, staff_id: str):
     query = sql.SQL(
         """
           UPDATE public.staff
           SET 
-          name = %s,
-          role = %s::jsonb,
+          role = %s,
           start_date = %s,
-          end_date = %s,
-          tasks = %s
+          end_date = %s
           WHERE id = %s
         """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
-                staff.name,
-                staff.role.model_dump_json(),
+                staff.role,
                 staff.start_date,
                 staff.end_date,
-                staff.tasks,
                 staff_id
                 ))
         await connection.commit()

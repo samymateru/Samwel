@@ -7,6 +7,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         """
         SELECT 
         issue.id as issue_id,
+        issue.ref as reference,
         engagements.name AS engagement_name,
         engagements.code AS engagement_code,
         annual_plans.year as financial_year,
@@ -83,8 +84,8 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         FROM issue
         JOIN engagements ON issue.engagement = engagements.id
         JOIN annual_plans ON engagements.plan_id = annual_plans.id
-        JOIN company_modules ON annual_plans.company_module = company_modules.id
-        WHERE company_modules.id = %s
+        JOIN modules ON annual_plans.module = modules.id
+        WHERE modules.id = %s
         GROUP BY
         engagements.name,
         engagement_code,
@@ -127,8 +128,6 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if audit_plan_data.__len__() == 0:
-                raise HTTPException(status_code=400, detail="Cant provide issue details check the module id")
             return audit_plan_data
     except Exception as e:
         await connection.rollback()
@@ -266,3 +265,45 @@ async def get_summary_issue_reports(connection: AsyncConnection, company_module_
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue details {e}")
+
+async def get_review_comments_report(connection: AsyncConnection, company_module_id: str):
+    query = sql.SQL(
+        """
+        SELECT 
+        rc.title,
+        rc.reference,
+        rc.description,
+        rc.raised_by,
+        rc.resolution_summary,
+        rc.resolution_details,
+        rc.resolved_by,
+        rc.decision,
+        rc.status,
+        rc.href
+        FROM review_comment rc
+        JOIN engagements en ON rc.engagement = en.id
+        JOIN annual_plans ap ON en.plan_id = ap.id
+        JOIN modules m ON ap.module = m.id
+        WHERE m.id = %s
+        GROUP BY
+        rc.title,
+        rc.reference,
+        rc.description,
+        rc.raised_by,
+        rc.resolution_summary,
+        rc.resolution_details,
+        rc.resolved_by,
+        rc.decision,
+        rc.status,
+        rc.href
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (company_module_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
+            return audit_plan_data
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching review comments {e}")

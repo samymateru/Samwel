@@ -5,7 +5,7 @@ from datetime import datetime
 from psycopg import AsyncConnection, sql
 from Management.organization.databases import new_organization
 from Management.organization.schemas import Organization, OrganizationStatus
-from Management.users.databases import new_user
+from Management.users.databases import new_user, new_owner
 from Management.users.schemas import User
 from utils import get_unique_key
 
@@ -27,6 +27,12 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         created_at=datetime.now()
     )
 
+    user = User(
+        name=entity.owner,
+        email=entity.email,
+        telephone=entity.telephone,
+    )
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -38,7 +44,8 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
                 datetime.now()
             ))
             entity_id = await cursor.fetchone()
-            await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
+            organization_id = await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
+            await new_owner(connection=connection, user=user, organization_id=organization_id)
             await connection.commit()
         return entity_id[0]
     except UniqueViolation:
@@ -76,3 +83,29 @@ async def get_entities_by_email(connection: AsyncConnection, email: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying entity by email {e}")
+
+async def get_entity(connection: AsyncConnection, organization_id: str):
+    query = sql.SQL(
+        """
+        SELECT * FROM public.organization WHERE id = {organization_id};
+        """).format(organization_id=sql.Literal(organization_id))
+
+    query_entity = sql.SQL(
+        """
+        SELECT * FROM public.entity WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            organization_data = [dict(zip(column_names, row_)) for row_ in rows]
+            await cursor.execute(query_entity, (organization_data[0].get("entity"),))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            entity_data = [dict(zip(column_names, row_)) for row_ in rows]
+            return entity_data
+
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying entity {e}")

@@ -40,8 +40,11 @@ async def get_summary_review_notes(connection: AsyncConnection, engagement_id: s
         """
         SELECT 
         review_comment.id,
+        review_comment.engagement,
         review_comment.reference,
         review_comment.title,
+        review_comment.href,
+        review_comment.due_date,
         review_comment.description,
         review_comment.raised_by,
         review_comment.action_owner,
@@ -68,7 +71,10 @@ async def get_summary_task(connection: AsyncConnection, engagement_id: str):
         """
         SELECT 
         task.id,
+        task.engagement,
         task.reference,
+        task.href,
+        task.due_date,
         task.title,
         task.description,
         task.raised_by,

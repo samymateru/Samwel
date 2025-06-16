@@ -5,10 +5,12 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from AuditNew.Internal.engagements.administration.databases import add_engagement_staff
 from AuditNew.Internal.engagements.administration.schemas import Staff
-from AuditNew.Internal.engagements.schemas import Engagement
+from AuditNew.Internal.engagements.schemas import Engagement, UpdateEngagement
 import json
 from psycopg import AsyncConnection
 from psycopg import sql
+
+from Management.users.databases import get_module_users
 from utils import get_unique_key
 
 async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str):
@@ -18,6 +20,12 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
         sub_departments, quarter, start_date, end_date, created_at)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
+
+    query_module_id = sql.SQL(
+        """
+        SELECT module FROM annual_plans WHERE id = {plan_id}
+        """).format(plan_id=sql.Literal(plan_id))
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query,
@@ -39,9 +47,29 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
                engagement.created_at
             ))
             engagement_id = await cursor.fetchone()
-            await connection.commit()
+            await cursor.execute(query_module_id)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            module_id = [dict(zip(column_names, row_)) for row_ in rows]
+            users = await get_module_users(connection=connection, module_id=module_id[0].get("module"))
+            for user in users:
+                if user.get("role") == "Head of Audit":
+                    head = Staff(
+                        user_id=user.get("id"),
+                        name=user.get("name"),
+                        email=user.get("email"),
+                        role="Head of Audit",
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
+                    )
+                    await add_engagement_staff(
+                        connection=connection,
+                        staff=head,
+                        engagement_id=engagement_id[0]
+                    )
             for lead in engagement.leads:
                 staff = Staff(
+                    user_id=lead.id,
                     name = lead.name,
                     email= lead.email,
                     role= "Lead",
@@ -76,21 +104,33 @@ async def remove_engagements(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail=f"Error deleting engagement {e}")
 
 
-async def get_engagements(connection: AsyncConnection, annual_id: str):
-    query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s")
+async def get_engagements(connection: AsyncConnection, annual_id: str, user_id: str):
+    query = sql.SQL("SELECT * FROM public.engagements WHERE id = ANY(%s) AND plan_id = %s")
+
+    query_module_id = sql.SQL(
+        """
+        SELECT module FROM annual_plans WHERE id = {plan_id}
+        """).format(plan_id=sql.Literal(annual_id))
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (annual_id,))
+            await cursor.execute(query_module_id)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            return [dict(zip(column_names, row_)) for row_ in rows]
+            module_id = [dict(zip(column_names, row_)) for row_ in rows]
+            users = await get_module_users(connection=connection, module_id=module_id[0].get("module"))
+            for user in users:
+                if user.get("id") == user_id:
+                    await cursor.execute(query, (user.get("engagements"), annual_id))
+                    rows = await cursor.fetchall()
+                    column_names = [desc[0] for desc in cursor.description]
+                    return [dict(zip(column_names, row_)) for row_ in rows]
+            return []
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")
 
 async def get_engagement_code(connection: AsyncConnection, annual_id: str):
     query = sql.SQL("SELECT code FROM public.engagements WHERE plan_id = %s;")
-
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (annual_id,))
@@ -104,5 +144,43 @@ async def get_engagement_code(connection: AsyncConnection, annual_id: str):
         #raise HTTPException(status_code=400, detail=f"Error fetching engagement code {e}")
         return []
 
-def delete_engagement(connection: AsyncConnection, engagement_id: str):
-    pass
+async def edit_engagement(connection: AsyncConnection, engagement: UpdateEngagement, engagement_id: str):
+    get_code_query = sql.SQL(
+        """
+        SELECT code FROM public.engagements WHERE id = {engagement_id}
+        """).format(engagement_id=sql.Literal(engagement_id))
+
+    query = sql.SQL(
+        """
+        UPDATE public.engagements
+        SET
+        name = %s,
+        type = %s,
+        code = %s,
+        department = %s::jsonb,
+        sub_departments = %s,
+        risk = %s::jsonb
+        WHERE id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(get_code_query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            engagement_code = [dict(zip(column_names, row_)) for row_ in rows]
+            code_string: str = engagement_code[0].get("code", "")
+            data = code_string.split("-")
+            data[0] = engagement.department.code
+            await cursor.execute(query, (
+                engagement.name,
+                engagement.type,
+                "-".join(data),
+                engagement.department.model_dump_json(),
+                json.dumps(engagement.sub_departments),
+                engagement.risk.model_dump_json(),
+                engagement_id
+                ))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating engagement {e}")

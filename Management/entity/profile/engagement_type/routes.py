@@ -21,16 +21,16 @@ def create_engagement_type(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/", response_model=EngagementType)
+@router.get("/{entity_id}", response_model=EngagementType)
 async def fetch_company_engagement_type(
+        entity_id: str,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_company_engagement_type(db, company_id=user.entity_id)
-        print(data)
+        data = await get_company_engagement_type(db, company_id=entity_id)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="Engagement type not found")
         return data[0]

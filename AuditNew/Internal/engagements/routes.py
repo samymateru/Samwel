@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends
+
+from AuditNew.Internal.engagements.schemas import UpdateEngagement
 from utils import get_async_db_connection
 from AuditNew.Internal.engagements.databases import *
 from typing import List
@@ -19,7 +21,7 @@ async def fetch_engagements(
     if user.status_code != 200:
         return HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_engagements(connection=db, annual_id=annual_id)
+        data = await get_engagements(connection=db, annual_id=annual_id, user_id=user.user_id)
         return data
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
@@ -56,16 +58,17 @@ async def create_new_engagement(
 @router.put("/{engagement_id}", response_model=ResponseMessage)
 async def update_engagement(
         engagement_id: str,
+        engagement: UpdateEngagement,
         db = Depends(get_async_db_connection),
-        current_user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
     ):
-    if current_user.status_code != 200:
-        return HTTPException(status_code=current_user.status_code, detail=current_user.description)
+    if user.status_code != 200:
+        return HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
+        await edit_engagement(connection=db, engagement=engagement, engagement_id=engagement_id)
         return ResponseMessage(detail="Engagement successfully updated")
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.delete("/{engagement_id}")
 async def delete_engagement(

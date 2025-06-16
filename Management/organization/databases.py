@@ -1,25 +1,22 @@
 from psycopg import AsyncConnection, sql
 from psycopg.errors import UniqueViolation
-
-from Management.users.databases import new_user
-from Management.users.schemas import User
 from utils import get_unique_key
 from Management.organization.schemas import *
 from fastapi import HTTPException
 
-async def new_organization(connection: AsyncConnection, organization: Organization, entity_id: str, default: bool = False):
+async def new_organization(connection: AsyncConnection, organization: Organization, entity_id: str,  user_id: str ="", default: bool = False):
     query = sql.SQL(
         """
         INSERT INTO public.organization (id, entity, name, email, telephone, "default", type, status, website, created_at) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
 
-    user = User(
-        name=organization.name,
-        email=organization.email,
-        telephone=organization.telephone,
-        module_id=[]
-    )
+    update_user_organization_query = sql.SQL(
+        """
+        UPDATE public.users 
+        SET organization = organization || %s
+        WHERE id = %s;
+        """)
 
     try:
         async with connection.cursor() as cursor:
@@ -36,7 +33,8 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
             datetime.now()
             ))
             organization_id = await cursor.fetchone()
-            await new_user(connection=connection, user=user, organization_id=organization_id[0])
+            if user_id != "":
+                await cursor.execute(update_user_organization_query, ([organization_id[0]], user_id,))
             await connection.commit()
             return organization_id[0]
 
@@ -76,3 +74,33 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying user {e}")
+
+
+async def update_organization(connection: AsyncConnection, organization: Organization, organization_id: str):
+    query = sql.SQL(
+        """
+        UPDATE public.organization
+        SET 
+        name = %s,
+        email = %s,
+        telephone = %s,
+        type = %s
+        WHERE id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query,(
+                organization.name,
+                organization.email,
+                organization.telephone,
+                organization.type,
+                organization_id
+            ))
+            await connection.commit()
+
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail=" already already exist")
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Error updating organization {e}")

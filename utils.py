@@ -2,7 +2,7 @@ from typing import Optional
 from contextlib import asynccontextmanager
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from psycopg2 import pool
 import os
@@ -19,8 +19,7 @@ from psycopg import AsyncConnection, sql
 from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
 from typing import List
 import redis.asyncio as redis
-from redis.asyncio import Redis, ConnectionPool
-from redis.exceptions import ConnectionError
+from redis.asyncio import Redis
 
 
 
@@ -76,10 +75,10 @@ def verify_password(stored_hash: bytes, password: str) -> bool:
     return stored_hash == bcrypt.hashpw(password.encode(), stored_hash)
 
 
-def create_jwt_token(data: dict, expiration_days: int = 3) -> str:
+def create_jwt_token(data: dict, expiration_time: int = 2) -> str:
     payload = data.copy()
-    expiration = datetime.now() + timedelta(days=expiration_days)
-    payload.update({"exp": expiration})
+    expiration = datetime.now(timezone.utc) + timedelta(days=expiration_time)
+    payload.update({"exp": int(expiration.timestamp())})
     token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm="HS256")
     return token
 

@@ -14,23 +14,24 @@ def safe_json_dump(obj):
 async def add_engagement_letter(connection: AsyncConnection, letter: EngagementLetter, engagement_id: str):
     query = sql.SQL(
         """
-           INSERT INTO public.engagement_letter (
-                id,
-                engagement,
-                name,
-                date_attached,
-                attachment
-           ) 
-        VALUES(%s, %s, %s, %s, %s)
+            UPDATE public.engagement_letter
+            SET 
+            name = %s,
+            value = %s,
+            size = %s,
+            extension = %s
+            WHERE engagement = %s AND type = %s; 
+
         """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
-                get_unique_key(),
-                engagement_id,
                 letter.name,
-                letter.date_attached,
-                letter.attachment
+                letter.value,
+                letter.size,
+                letter.extension,
+                engagement_id,
+                "final"
             ))
         await connection.commit()
     except Exception as e:
@@ -184,15 +185,12 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
             "conclusion": {
                 "value": ""
             },
-            "type": "standard",
-            "prepared_by": {
-                "id": 0,
-                "name": ""
+            "objectives": {
+                "value": ""
             },
-            "reviewed_by": {
-                "id": 0,
-                "name": ""
-            }
+            "type": "standard",
+            "prepared_by": None,
+            "reviewed_by": None
         }
     query = sql.SQL(
         """
@@ -206,12 +204,13 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
                 observation,
                 attachments,
                 conclusion,
+                objectives,
                 type,
                 prepared_by,
                 reviewed_by,
                 status
            ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -441,6 +440,7 @@ async def save_procedure_(connection: AsyncConnection, procedure: SaveProcedure,
             UPDATE {resource}
             SET 
             tests = %s::jsonb,
+            objectives = %s::jsonb,
             results = %s::jsonb,
             observation = %s::jsonb,
             conclusion = %s::jsonb
@@ -450,6 +450,7 @@ async def save_procedure_(connection: AsyncConnection, procedure: SaveProcedure,
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 safe_json_dump(procedure.tests),
+                safe_json_dump(procedure.objectives),
                 safe_json_dump(procedure.results),
                 safe_json_dump(procedure.observation),
                 safe_json_dump(procedure.conclusion),
@@ -459,3 +460,51 @@ async def save_procedure_(connection: AsyncConnection, procedure: SaveProcedure,
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error saving procedure {e}")
+
+async def prepare_std_template(connection: AsyncConnection, procedure: PreparedReviewedBy, procedure_id: str, resource: str):
+    procedure_types = {
+        "Planning": "std_template",
+        "Reporting": "reporting_procedure",
+        "Finalization": "finalization_procedure"
+    }
+    query = sql.SQL(
+        """
+        UPDATE {resource}
+        SET 
+        prepared_by = %s::jsonb
+        WHERE id = %s; 
+        """).format(resource=sql.Identifier('public', procedure_types.get(resource)))
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                procedure.model_dump_json(),
+                procedure_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error preparing {resource} procedure {e}")
+
+async def review_std_template(connection: AsyncConnection, procedure: PreparedReviewedBy, procedure_id: str, resource: str):
+    procedure_types = {
+        "Planning": "std_template",
+        "Reporting": "reporting_procedure",
+        "Finalization": "finalization_procedure"
+    }
+    query = sql.SQL(
+        """
+        UPDATE {resource}
+        SET 
+        reviewed_by = %s::jsonb
+        WHERE id = %s; 
+        """).format(resource=sql.Identifier('public', procedure_types.get(resource)))
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                procedure.model_dump_json(),
+                procedure_id
+            ))
+        await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error preparing {resource} procedure {e}")

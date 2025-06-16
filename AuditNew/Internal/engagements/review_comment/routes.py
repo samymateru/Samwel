@@ -32,7 +32,7 @@ async def update_raised_review_comment(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
+        await update_review_comment(connection=db, review_comment=review_comment, review_comment_id=review_comment_id)
         return ResponseMessage(detail="Raised review comment updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

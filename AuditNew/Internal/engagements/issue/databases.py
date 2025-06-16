@@ -405,7 +405,7 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                             )
                             update = sql.SQL("""
                                             UPDATE public.issue SET 
-                                            devised_status = %s,
+                                            revised_status = %s,
                                             response = %s
                                             WHERE id = %s
                                             """)
@@ -439,7 +439,7 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
                             )
                             update = sql.SQL("""
                                         UPDATE public.issue SET 
-                                        devised_status = %s,
+                                        revised_status = %s,
                                         response = %s
                                         WHERE id = %s
                                         """)
@@ -490,6 +490,8 @@ async def send_accept_response(connection: AsyncConnection, issue: IssueAcceptRe
             else:
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
 
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending accept response {e}")
@@ -572,7 +574,8 @@ async def send_decline_response(connection: AsyncConnection, issue: IssueDecline
                 return True
             else:
                 raise HTTPException(status_code=403, detail=f"Your not issue {issue.actor.value}")
-
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error sending decline response {e}")
@@ -788,11 +791,12 @@ async def mark_issue_reportable(connection: AsyncConnection, reportable: bool, i
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error mark issue reportable {e}")
 
-async def request_extension_time(connection: AsyncConnection, revise: Revise, issue_id: str, user_email: str):
+async def request_extension_time(connection: AsyncConnection, revise: Revise, issue_id: str, issue_details: IssueImplementationDetails, user_email: str):
     query = sql.SQL(
         """
-        SELECT revised_count FROM public.issue WHERE id = {issue_id}
+        SELECT revised_count, lod1_implementer FROM public.issue WHERE id = {issue_id}
         """).format(issue_id=sql.Literal(issue_id))
+
     query_update_revise = sql.SQL(
         """
         UPDATE public.issue
@@ -825,9 +829,18 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
                     issue_id
                 ))
                 await connection.commit()
+                await update_issue_details(
+                    connection=connection,
+                    cursor=cursor,
+                    issue_id=issue_id,
+                    issue_details=issue_details
+                )
             else:
-                raise HTTPException(status_code=400, detail=f"Error your not ")
+                raise HTTPException(status_code=403, detail=f"Your not Implementor")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error request extension time {e}")
+
 

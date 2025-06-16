@@ -14,12 +14,12 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
 
     check_user_query = sql.SQL(
         """
-        SELECT id, organization FROM public.users WHERE email = {email} 
-        """).format(email=user.email)
+        SELECT id, organization FROM public.users WHERE email = %s 
+        """)
 
     update_user_query = sql.SQL(
         """
-        UPDATE public.users 
+        UPDATE public.users
         SET organization = organization || %s
         WHERE id = %s RETURNING id;
         """)
@@ -33,7 +33,7 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(check_user_query)
+            await cursor.execute(check_user_query, (user.email, ))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             user_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -52,7 +52,8 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                     id = user_id[0],
                     type = user.type,
                     role = user.role,
-                    title = user.title
+                    title = user.title,
+                    engagements=[]
                 )
                 await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                 await connection.commit()
@@ -66,7 +67,8 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
                         id=user_id[0],
                         type=user.type,
                         role=user.role,
-                        title=user.title
+                        title=user.title,
+                        engagements=[]
                     )
                     await cursor.execute(update_module_query, (f"[{user_type.model_dump_json()}]", user.module))
                     await connection.commit()
@@ -85,6 +87,66 @@ async def new_user(connection: AsyncConnection, user: User, organization_id: str
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating new user {e}")
+
+async def new_owner(connection: AsyncConnection, user: User, organization_id: str):
+    query = sql.SQL(
+        """
+        INSERT INTO public.users (id, organization, name, email, telephone, password_hash, created_at) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        """)
+
+    check_user_query = sql.SQL(
+        """
+        SELECT id, organization FROM public.users WHERE email = %s 
+        """)
+
+    update_user_query = sql.SQL(
+        """
+        UPDATE public.users 
+        SET organization = organization || %s
+        WHERE id = %s RETURNING id;
+        """)
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(check_user_query, (user.email, ))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if user_data.__len__() == 0:
+                await cursor.execute(query, (
+                    get_unique_key(),
+                    [organization_id],
+                    user.name,
+                    user.email,
+                    user.telephone,
+                    generate_hash_password(user.password),
+                    datetime.now()
+                ))
+                user_id = await cursor.fetchone()
+                await connection.commit()
+                return user_id[0]
+            else:
+                if organization_id not in user_data[0].get("organization"):
+                    await cursor.execute(update_user_query, ([organization_id], user_data[0].get("id")))
+                    user_id = await cursor.fetchone()
+                    await connection.commit()
+                    return user_id[0]
+                else:
+                    raise HTTPException(status_code=400, detail="Users exists in this organization")
+    except ForeignKeyViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail="Invalid organization id")
+    except UniqueViolation:
+        await connection.rollback()
+        raise HTTPException(status_code=409, detail="User already exist")
+    except HTTPException as e:
+        await connection.rollback()
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error creating new user {e}")
+
 
 async def delete_user(connection: AsyncConnection, user_id: str):
     query = sql.SQL("DELETE FROM public.users WHERE id = %s")
@@ -155,6 +217,7 @@ async def get_module_users(connection: AsyncConnection, module_id: str):
           u_data ->> 'type' AS type,
           u_data ->> 'role' AS role,
           u_data ->> 'title' AS title,
+          u_data -> 'engagements' AS engagements,
           u.name,
           u.email,
           u.telephone
@@ -190,4 +253,29 @@ async def get_user_by_email(connection: AsyncConnection, email: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
 
-
+async def edit_user(connection: AsyncConnection, user: User, user_id: str):
+    query = sql.SQL(
+        """
+        UPDATE modules
+        SET users = (
+            SELECT jsonb_agg(
+                CASE
+                    WHEN item->>'id' = %s THEN
+                        jsonb_set(
+                            jsonb_set(item, '{role}', to_jsonb(%s::text)),
+                            '{title}', to_jsonb(%s::text)
+                        )
+                    ELSE item
+                END
+            )
+            FROM jsonb_array_elements(users) AS item
+        )
+        WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (user_id, user.role, user.title, user.module))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")

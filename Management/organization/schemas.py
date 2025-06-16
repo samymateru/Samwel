@@ -19,3 +19,11 @@ class Organization(BaseModel):
     website: str
     created_at: datetime = datetime.now()
 
+class UpdateOrganization(BaseModel):
+    name: str
+    email: str
+    telephone: str
+    default: Optional[bool] = Field(default=False)
+    type: str
+
+

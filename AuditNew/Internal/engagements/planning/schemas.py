@@ -27,6 +27,11 @@ class User(BaseModel):
     id: str
     name: str
 
+class PreparedReviewedBy(BaseModel):
+    name: Optional[str]
+    email: Optional[str]
+    date_issued: Optional[datetime] = datetime.now()
+
 class PRCM(BaseModel):
     id: Optional[str] = None
     process: Optional[str]
@@ -52,12 +57,15 @@ class SummaryAuditProgram(BaseModel):
 class EngagementLetter(BaseModel):
     id: Optional[str] = None
     name: Optional[str]
-    date_attached: Optional[datetime]
-    attachment: Optional[str]
+    value: Optional[str]
+    size: Optional[int]
+    type: Optional[str] = None
+    extension: Optional[str]
 
 class StandardTemplate(BaseModel):
     id: Optional[str] = None
     reference: Optional[str] = None
+    objectives: Optional[Section] = None
     title: Optional[str]
     tests: Optional[Section]
     results: Optional[Section]
@@ -65,8 +73,8 @@ class StandardTemplate(BaseModel):
     attachments: Optional[List[str]]
     conclusion: Optional[Section]
     type: Optional[Type]  = Type.STANDARD
-    prepared_by: Optional[User] = None
-    reviewed_by: Optional[User] = None
+    prepared_by: Optional[PreparedReviewedBy] = None
+    reviewed_by: Optional[PreparedReviewedBy] = None
 
 class NewPlanningProcedure(BaseModel):
     title: str
@@ -83,9 +91,11 @@ class SummaryAuditProgramResponse(BaseModel):
 
 
 class SaveProcedure(BaseModel):
-    objective: Optional[Section] = None
+    objectives: Optional[Section] = None
     tests: Optional[Section]
     results: Optional[Section]
     observation: Optional[Section]
     conclusion: Optional[Section]
     type: Optional[ProcedureTypes]
+
+

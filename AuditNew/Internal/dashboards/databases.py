@@ -63,12 +63,12 @@ async def query_audit_summary(
         """
         SELECT jsonb_build_object(
             'total', COUNT(*),
-            'not_started', COUNT(*) FILTER (WHERE status = 'Not Started'),
-            'in_progress', COUNT(*) FILTER (WHERE status = 'In progress'),
+            'pending', COUNT(*) FILTER (WHERE status = 'Pending'),
+            'ongoing', COUNT(*) FILTER (WHERE status = 'Ongoing'),
             'completed', COUNT(*) FILTER (WHERE status = 'Completed')
-        ) AS annual_plans
-        FROM annual_plans
-        WHERE company_module = {company_module};
+        ) AS annual_plans_summary
+        FROM annual_plans ap
+        WHERE ap.module = {company_module};
         """).format(
         company_module=sql.Literal(company_module_id)
     )
@@ -131,6 +131,34 @@ async def all_engagement_with_status(connection: AsyncConnection, plan_id: str):
         raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")
 
 
+async def all_engagement_summary(connection: AsyncConnection, company_module_id: str):
+    query = sql.SQL(
+        """
+        SELECT jsonb_build_object(
+            'total', COUNT(*),
+            'pending', COUNT(*) FILTER (WHERE eng.status = 'Pending'),
+            'ongoing', COUNT(*) FILTER (WHERE eng.status = 'Ongoing'),
+            'completed', COUNT(*) FILTER (WHERE eng.status = 'Completed')
+        ) AS engagements_summary
+        FROM engagements eng
+        JOIN annual_plans ap ON ap.id = eng.plan_id
+        JOIN modules m ON m.id = ap.module
+        WHERE m.id = {company_module_id};
+        """
+    ).format(company_module_id=sql.Literal(company_module_id))
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            if data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="No engagements found")
+            return data[0]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")
+
 async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
         """
@@ -140,8 +168,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
   
         -- Recurring counts
         jsonb_build_object(
-        'recurring', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE AND issue.status != 'Not started'),
-        'non_recurring', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE AND issue.status != 'Not started')
+        'yes', COUNT(*) FILTER (WHERE issue.recurring_status = TRUE AND issue.status != 'Not started'),
+        'no', COUNT(*) FILTER (WHERE issue.recurring_status = FALSE AND issue.status != 'Not started')
         )AS recurring_summary,
         
         --Issue status
@@ -166,8 +194,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
-          JOIN company_modules ON annual_plans.company_module = company_modules.id
-          WHERE company_modules.id = %s
+          JOIN modules ON annual_plans.module = modules.id
+          WHERE modules.id = %s
           GROUP BY issue.impact_category
           HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
         ) AS impact
@@ -181,8 +209,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
-          JOIN company_modules ON annual_plans.company_module = company_modules.id
-          WHERE company_modules.id = %s
+          JOIN modules ON annual_plans.module = modules.id
+          WHERE modules.id = %s
           GROUP BY issue.process
           HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
           ORDER BY count DESC
@@ -198,8 +226,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
           FROM issue
           JOIN engagements ON issue.engagement = engagements.id
           JOIN annual_plans ON engagements.plan_id = annual_plans.id
-          JOIN company_modules ON annual_plans.company_module = company_modules.id
-          WHERE company_modules.id = %s
+          JOIN modules ON annual_plans.module = modules.id
+          WHERE modules.id = %s
           GROUP BY issue.root_cause   
           HAVING COUNT(*) FILTER (WHERE issue.status != 'Not started') > 0
 	    ) AS root_cause
@@ -208,8 +236,8 @@ async def query_all_issues(connection: AsyncConnection, company_module_id: str):
         FROM issue
         JOIN engagements ON issue.engagement = engagements.id
         JOIN annual_plans ON engagements.plan_id = annual_plans.id
-        JOIN company_modules ON annual_plans.company_module = company_modules.id
-        WHERE company_modules.id = %s;
+        JOIN modules ON annual_plans.module = modules.id
+        WHERE modules.id = %s;
         """
     )
     try:
@@ -365,8 +393,8 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         SELECT
         jsonb_build_object(
             'pending', COUNT(*) FILTER (WHERE rc.status = 'Pending'),
-            'in_progress', COUNT(*) FILTER (WHERE rc.status = 'In progress'),
-            'closed', COUNT(*) FILTER (WHERE rc.status = 'Completed'),
+            'in_progress', COUNT(*) FILTER (WHERE rc.status = 'Ongoing'),
+            'closed', COUNT(*) FILTER (WHERE rc.status = 'Closed'),
             'total', COUNT(*)
         ) as review_status
         

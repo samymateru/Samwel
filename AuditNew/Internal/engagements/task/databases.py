@@ -34,7 +34,7 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
                 task.description,
                 task.raised_by.model_dump_json(),
                 json.dumps(task.model_dump().get("action_owner")),
-                "Not started",
+                "Pending",
                 task.href,
                 task.due_date
             ))
@@ -77,7 +77,7 @@ async def resolve_task_(connection: AsyncConnection, task: ResolveTask, task_id:
                 task.resolution_summary,
                 task.resolution_details,
                 task.resolved_by.model_dump_json(),
-                "Pending",
+                "Ongoing",
                 task_id
             ))
         await connection.commit()
@@ -98,10 +98,39 @@ async def resolve_decision_(connection: AsyncConnection, task: TaskDecision, tas
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 task.decision.value,
-                "Not started" if task.decision.value == task.decision.RE_OPEN else task.decision.value,
+                "Pending" if task.decision.value == task.decision.RE_OPEN else "Closed",
                 task_id
             ))
         await connection.commit()
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error resolving task decision {e}")
+
+async def update_task(connection:AsyncConnection, task:NewTask, task_id:str):
+    query = sql.SQL(
+        """
+        UPDATE public.task
+        SET 
+        title = %s,
+        description = %s,
+        raised_by = %s::jsonb,
+        href = %s,
+        due_date = %s,
+        action_owner = %s::jsonb
+        WHERE id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+                task.title,
+                task.description,
+                task.raised_by.model_dump_json(),
+                task.href,
+                task.due_date,
+                json.dumps(task.model_dump().get("action_owner")),
+                task_id
+            ))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error resolving review comment decision {e}")
