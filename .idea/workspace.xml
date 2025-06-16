@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="Adding functionality to add new entity, include default organization and user">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/default.conf" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/default.conf" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="Adding functionality to add new entity, include default organization and user" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -125,38 +121,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00430" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747742712101</created>
-      <option name="number" value="00430" />
-      <option name="presentableId" value="LOCAL-00430" />
-      <option name="project" value="LOCAL" />
-      <updated>1747742712101</updated>
-    </task>
-    <task id="LOCAL-00431" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747743238911</created>
-      <option name="number" value="00431" />
-      <option name="presentableId" value="LOCAL-00431" />
-      <option name="project" value="LOCAL" />
-      <updated>1747743238911</updated>
-    </task>
-    <task id="LOCAL-00432" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747743758183</created>
-      <option name="number" value="00432" />
-      <option name="presentableId" value="LOCAL-00432" />
-      <option name="project" value="LOCAL" />
-      <updated>1747743758183</updated>
-    </task>
-    <task id="LOCAL-00433" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747747050815</created>
-      <option name="number" value="00433" />
-      <option name="presentableId" value="LOCAL-00433" />
-      <option name="project" value="LOCAL" />
-      <updated>1747747050815</updated>
     </task>
     <task id="LOCAL-00434" summary="adding dashboards">
       <option name="closed" value="true" />
@@ -518,7 +482,39 @@
       <option name="project" value="LOCAL" />
       <updated>1750097197305</updated>
     </task>
-    <option name="localTasksCounter" value="479" />
+    <task id="LOCAL-00479" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750102199830</created>
+      <option name="number" value="00479" />
+      <option name="presentableId" value="LOCAL-00479" />
+      <option name="project" value="LOCAL" />
+      <updated>1750102199830</updated>
+    </task>
+    <task id="LOCAL-00480" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750102228617</created>
+      <option name="number" value="00480" />
+      <option name="presentableId" value="LOCAL-00480" />
+      <option name="project" value="LOCAL" />
+      <updated>1750102228617</updated>
+    </task>
+    <task id="LOCAL-00481" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750102324964</created>
+      <option name="number" value="00481" />
+      <option name="presentableId" value="LOCAL-00481" />
+      <option name="project" value="LOCAL" />
+      <updated>1750102324964</updated>
+    </task>
+    <task id="LOCAL-00482" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750102389702</created>
+      <option name="number" value="00482" />
+      <option name="presentableId" value="LOCAL-00482" />
+      <option name="project" value="LOCAL" />
+      <updated>1750102389718</updated>
+    </task>
+    <option name="localTasksCounter" value="483" />
     <servers />
   </component>
   <component name="UnknownFeatures">
