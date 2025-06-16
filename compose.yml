@@ -15,7 +15,6 @@ services:
     container_name: frontend_
     expose:
       - "3000"
-
   nginx:
     image: nginx:latest
     container_name: nginx
