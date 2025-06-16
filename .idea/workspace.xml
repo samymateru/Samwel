@@ -122,22 +122,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00423" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747732922180</created>
-      <option name="number" value="00423" />
-      <option name="presentableId" value="LOCAL-00423" />
-      <option name="project" value="LOCAL" />
-      <updated>1747732922183</updated>
-    </task>
-    <task id="LOCAL-00424" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747734686893</created>
-      <option name="number" value="00424" />
-      <option name="presentableId" value="LOCAL-00424" />
-      <option name="project" value="LOCAL" />
-      <updated>1747734686894</updated>
-    </task>
     <task id="LOCAL-00425" summary="adding dashboards">
       <option name="closed" value="true" />
       <created>1747735835576</created>
@@ -514,7 +498,23 @@
       <option name="project" value="LOCAL" />
       <updated>1750095620001</updated>
     </task>
-    <option name="localTasksCounter" value="472" />
+    <task id="LOCAL-00472" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750095714428</created>
+      <option name="number" value="00472" />
+      <option name="presentableId" value="LOCAL-00472" />
+      <option name="project" value="LOCAL" />
+      <updated>1750095714429</updated>
+    </task>
+    <task id="LOCAL-00473" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750095913581</created>
+      <option name="number" value="00473" />
+      <option name="presentableId" value="LOCAL-00473" />
+      <option name="project" value="LOCAL" />
+      <updated>1750095913581</updated>
+    </task>
+    <option name="localTasksCounter" value="474" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
