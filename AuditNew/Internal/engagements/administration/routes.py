@@ -189,7 +189,7 @@ async def create_engagement_policy(
             temp_path = tmp.name
 
         key: str = f"administration/policies/{user.entity_name}/{uuid.uuid4()}-{attachment.filename}"
-        public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
+        public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
         background_upload.add_task(upload_file, temp_path, key)
         policy = Policy(
             name=name,
@@ -292,7 +292,7 @@ async def create_engagement_regulations(
             temp_path = tmp.name
 
         key: str = f"administration/regulations/{user.entity_name}/{uuid.uuid4()}-{attachment.filename}"
-        public_url: str = f"https://{os.getenv("S3_BUCKET_NAME")}.s3.{os.getenv("AWS_DEFAULT_REGION")}.amazonaws.com/{key}"
+        public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
         background_upload.add_task(upload_file, temp_path, key)
         regulation = Regulations(
             name=name,
