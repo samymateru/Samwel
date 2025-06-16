@@ -2,7 +2,7 @@ version: '1.0.0'
 
 services:
   backend:
-    image: backend
+    image: backend_
     container_name: backend
     restart: unless-stopped
     expose:
@@ -11,7 +11,7 @@ services:
       - .env
 
   frontend:
-    image: frontend
+    image: frontend_
     container_name: frontend
     expose:
       - "3000"
