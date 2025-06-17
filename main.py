@@ -82,7 +82,9 @@ app.add_middleware(
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
-
+@app.get("/api")
+async def home():
+    return "hello"
 
 @app.post("/test/{company_id}")
 async def tester(
