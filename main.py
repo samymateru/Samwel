@@ -79,8 +79,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(RedirectSlashesMiddleware)
-
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 @app.get("/")
