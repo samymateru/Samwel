@@ -45,7 +45,6 @@ from dotenv import load_dotenv
 import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
-from starlette.middleware.redirectslashe import RedirectSlashesMiddleware
 
 load_dotenv()
 
