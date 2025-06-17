@@ -70,9 +70,11 @@ async def lifespan(api: FastAPI):
         print(e)
 
 app = FastAPI(
-    docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    docs_url="/api/docs",        # Swagger at /api/docs
+    redoc_url="/api/redoc",      # ReDoc at /api/redoc
+    openapi_url="/api/openapi.json"  # OpenAPI schema
 )
+
 
 
 app.add_middleware(
