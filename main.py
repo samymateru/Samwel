@@ -69,7 +69,11 @@ async def lifespan(api: FastAPI):
     except Exception as e:
         print(e)
 
-app = FastAPI()
+app = FastAPI(
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
+
 
 app.add_middleware(
     CORSMiddleware,
