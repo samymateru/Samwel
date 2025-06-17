@@ -45,6 +45,7 @@ from dotenv import load_dotenv
 import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
+from starlette.middleware.redirectslashe import RedirectSlashesMiddleware
 
 load_dotenv()
 
@@ -79,6 +80,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(RedirectSlashesMiddleware)
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 

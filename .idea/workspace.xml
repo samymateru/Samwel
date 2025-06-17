@@ -124,14 +124,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00446" summary="adding dashboards">
-      <option name="closed" value="true" />
-      <created>1747916006442</created>
-      <option name="number" value="00446" />
-      <option name="presentableId" value="LOCAL-00446" />
-      <option name="project" value="LOCAL" />
-      <updated>1747916006442</updated>
-    </task>
     <task id="LOCAL-00447" summary="adding dashboards">
       <option name="closed" value="true" />
       <created>1747916029307</created>
@@ -516,7 +508,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750146554642</updated>
     </task>
-    <option name="localTasksCounter" value="495" />
+    <task id="LOCAL-00495" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750147243730</created>
+      <option name="number" value="00495" />
+      <option name="presentableId" value="LOCAL-00495" />
+      <option name="project" value="LOCAL" />
+      <updated>1750147243730</updated>
+    </task>
+    <option name="localTasksCounter" value="496" />
     <servers />
   </component>
   <component name="UnknownFeatures">
