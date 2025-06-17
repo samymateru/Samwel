@@ -160,7 +160,7 @@ async def change_password(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 app.include_router(entity, tags=["Entity"])
-app.include_router(organization, tags=["Organization"])
+app.include_router(organization, tags=["Organization"], prefix="/api")
 app.include_router(company_modules_router, tags=["Modules"])
 app.include_router(users_router,tags=["User"])
 app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
