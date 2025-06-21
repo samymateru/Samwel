@@ -35,6 +35,21 @@ async def fetch_user_organizations(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+@router.get("/{organization_id}", response_model=Organization)
+async def fetch_organization_data(
+        organization_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+    ):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_organization_data(db, organization_id=organization_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="Organization not found")
+        return data[0]
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/{organization_id}", response_model=ResponseMessage)
 async def edit_entity_organization(

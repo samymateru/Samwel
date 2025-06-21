@@ -62,7 +62,7 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
             column_names = [desc[0] for desc in cursor.description]
             user_organizations = [dict(zip(column_names, row_)) for row_ in rows]
             if user_organizations.__len__() == 0:
-                raise HTTPException(status_code=400, detail="User not exists")
+                raise HTTPException(status_code=401, detail="Users not exists")
             await cursor.execute(query, (user_organizations[0].get("organization"),))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -104,3 +104,22 @@ async def update_organization(connection: AsyncConnection, organization: Organiz
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error updating organization {e}")
+
+async def get_organization_data(connection: AsyncConnection, organization_id: str):
+    query = sql.SQL(
+        """
+        SELECT * FROM public.organization WHERE id = {id}
+        """).format(id=sql.Literal(organization_id))
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            organization_data = [dict(zip(column_names, row_)) for row_ in rows]
+            return organization_data
+    except HTTPException as e:
+        await connection.rollback()
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error organization data {e}")
