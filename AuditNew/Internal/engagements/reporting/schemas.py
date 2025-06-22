@@ -94,3 +94,4 @@ class SummaryFinding(BaseModel):
     date_revised: Optional[datetime] = None
     revised_status: Optional[bool] = False
     revised_count: Optional[int] = 0
+    created_at: Optional[datetime] = None

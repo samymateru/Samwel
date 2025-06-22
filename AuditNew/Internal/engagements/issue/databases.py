@@ -131,13 +131,14 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 date_revised,
                 revised_count,
                 reportable,
-                revised_status
+                revised_status,
+                created_at
                 )
         VALUES (
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
          %s, %s, %s, %s, %s, %s, %s, %s, %s,
-         %s, %s, %s, %s, %s, %s, %s, %s, %s
+         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
         );
         """)
     try:
@@ -191,7 +192,8 @@ async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_i
                 issue.estimated_implementation_date,
                 0,
                 False,
-                False
+                False,
+                datetime.now()
             ))
         await connection.commit()
     except ForeignKeyViolation:

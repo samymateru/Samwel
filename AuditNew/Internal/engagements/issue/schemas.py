@@ -71,6 +71,7 @@ class Issue(BaseModel):
     lod2_risk_manager: Optional[List[User]]
     lod2_compliance_officer: Optional[List[User]] = None
     lod3_audit_manager: List[User]
+    created_at: Optional[datetime] = None
 
 class IssueSendImplementation(BaseModel):
     id: List[str]

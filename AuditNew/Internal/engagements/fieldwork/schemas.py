@@ -47,6 +47,7 @@ class SummaryTask(BaseModel):
     status: Optional[str]
 
 class SummaryAuditProcedure(BaseModel):
+    id: Optional[str] = None
     reference: Optional[str]
     program: Optional[str]
     title: Optional[str]

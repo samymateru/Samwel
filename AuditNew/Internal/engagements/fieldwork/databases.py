@@ -6,7 +6,8 @@ async def get_summary_procedures(connection: AsyncConnection, engagement_id: str
     query = sql.SQL(
         """ 
         SELECT 
-        main_program.name AS program, 
+        main_program.name AS program,
+        sub_program.id, 
         sub_program.reference,
         sub_program.title,
         sub_program.prepared_by,
@@ -19,6 +20,7 @@ async def get_summary_procedures(connection: AsyncConnection, engagement_id: str
         WHERE main_program.engagement = %s
         GROUP BY 
         main_program.name,
+        sub_program.id,
         sub_program.reference, 
         sub_program.title, 
         sub_program.prepared_by, 
