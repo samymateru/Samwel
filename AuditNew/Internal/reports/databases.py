@@ -49,35 +49,59 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         END AS issue_due_more_than_365_days,
         issue.status as issue_overall_status,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.lod1_owner) AS elem
-        ) AS LOD1_owner,
+        -- LOD1 Owner
+        CASE 
+          WHEN jsonb_typeof(issue.lod1_owner) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.lod1_owner) AS elem
+          )
+          ELSE NULL
+        END AS LOD1_owner,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.lod1_implementer) AS elem
-        ) AS LOD1_Implementer,
+        -- LOD1 Implementer
+        CASE 
+          WHEN jsonb_typeof(issue.lod1_implementer) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.lod1_implementer) AS elem
+          )
+          ELSE NULL
+        END AS LOD1_Implementer,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.lod2_risk_manager) AS elem
-        ) AS LOD2_Risk_Manager,
+        -- LOD2 Risk Manager
+        CASE 
+          WHEN jsonb_typeof(issue.lod2_risk_manager) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.lod2_risk_manager) AS elem
+          )
+          ELSE NULL
+        END AS LOD2_Risk_Manager,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.lod2_compliance_officer) AS elem
-        ) AS LOD2_Compliance_Officer,
+        -- LOD2 Compliance Officer
+        CASE 
+          WHEN jsonb_typeof(issue.lod2_compliance_officer) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.lod2_compliance_officer) AS elem
+          )
+          ELSE NULL
+        END AS LOD2_Compliance_Officer,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.lod3_audit_manager) AS elem
-        ) AS LOD3_Audit_Manager,
+        -- LOD3 Audit Manager
+        CASE 
+          WHEN jsonb_typeof(issue.lod3_audit_manager) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.lod3_audit_manager) AS elem
+          )
+          ELSE NULL
+        END AS LOD3_Audit_Manager,
         
-        (
-        SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-        FROM jsonb_array_elements(issue.observers) AS elem
-        ) AS Observers,
+        -- Observers
+        CASE 
+          WHEN jsonb_typeof(issue.observers) = 'array' THEN (
+            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
+            FROM jsonb_array_elements(issue.observers) AS elem
+          )
+          ELSE NULL
+        END AS Observers,
         
         issue.response as latest_response
         

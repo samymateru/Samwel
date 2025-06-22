@@ -31,6 +31,8 @@ async def fetch_user_organizations(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_user_organizations(db, user_id=user.user_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=401, detail="No organization found")
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

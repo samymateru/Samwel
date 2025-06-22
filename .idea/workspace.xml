@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="Adding functionality to add new entity, include default organization and user">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/organization/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Management/organization/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -126,14 +124,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00452" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1748257195700</created>
-      <option name="number" value="00452" />
-      <option name="presentableId" value="LOCAL-00452" />
-      <option name="project" value="LOCAL" />
-      <updated>1748257195701</updated>
     </task>
     <task id="LOCAL-00453" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
@@ -519,7 +509,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750154275392</updated>
     </task>
-    <option name="localTasksCounter" value="501" />
+    <task id="LOCAL-00501" summary="Adding functionality to add new entity, include default organization and user">
+      <option name="closed" value="true" />
+      <created>1750523537362</created>
+      <option name="number" value="00501" />
+      <option name="presentableId" value="LOCAL-00501" />
+      <option name="project" value="LOCAL" />
+      <updated>1750523537363</updated>
+    </task>
+    <option name="localTasksCounter" value="502" />
     <servers />
   </component>
   <component name="UnknownFeatures">
