@@ -65,6 +65,7 @@ class SaveWorkProgramProcedure(BaseModel):
 
 class RiskControl(BaseModel):
     id: Optional[str] = None
+    type: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]
     control: Optional[str]
@@ -77,7 +78,9 @@ class PreparedReviewedBy(BaseModel):
     email: Optional[str]
     date_issued: Optional[datetime] = datetime.now()
 
-
+class AddSummaryAuditProgram(BaseModel):
+    prcm_id: Optional[str]
+    procedure_id: Optional[str]
 
 
 

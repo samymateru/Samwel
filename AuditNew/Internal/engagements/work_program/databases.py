@@ -327,41 +327,50 @@ async def get_work_program(connection: AsyncConnection, engagement_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching work program {e}")
 
-async  def add_new_sub_program_risk_control(connection: AsyncConnection, risk_control: RiskControl, sub_program_id: str):
+async  def add_new_sub_program_risk_control(connection: AsyncConnection, risk_control: RiskControl, sub_program_id: str, engagement_id: str):
     query = sql.SQL(
         """
-           INSERT INTO public.risk_control (
+           INSERT INTO public."PRCM" (
                 id,
-                sub_program,
+                engagement,
                 risk,
                 risk_rating,
                 control,
                 control_objective,
-                control_type
+                control_type,
+                residue_risk,
+                type,
+                summary_audit_program
            ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
                 get_unique_key(),
-                sub_program_id,
+                engagement_id,
                 risk_control.risk,
                 risk_control.risk_rating,
                 risk_control.control,
                 risk_control.control_objective,
-                risk_control.control_type
+                risk_control.control_type,
+                risk_control.residue_risk,
+                "program",
+                sub_program_id
             ))
         await connection.commit()
     except Exception as e:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error adding work program risk {e}")
+        raise HTTPException(status_code=400, detail=f"Error adding sub procedure risk control {e}")
 
 async def get_sub_program_risk_control(connection: AsyncConnection, sub_program_id: str):
-    query = sql.SQL("SELECT * FROM public.risk_control WHERE sub_program = %s")
+    query = sql.SQL(
+        """
+        SELECT * from public."PRCM" WHERE summary_audit_program={procedure_id}
+        """).format(procedure_id=sql.Literal(sub_program_id))
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (sub_program_id,))
+            await cursor.execute(query)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

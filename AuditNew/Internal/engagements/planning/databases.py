@@ -50,9 +50,10 @@ async def add_engagement_prcm(connection: AsyncConnection, prcm: PRCM, engagemen
                 control,
                 control_objective,
                 control_type,
-                residue_risk
+                residue_risk,
+                type
            ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """)
     try:
         async with connection.cursor() as cursor:
@@ -65,104 +66,27 @@ async def add_engagement_prcm(connection: AsyncConnection, prcm: PRCM, engagemen
                 prcm.control,
                 prcm.control_objective,
                 prcm.control_type,
-                prcm.residue_risk
+                prcm.residue_risk,
+                "planning"
             ))
         await connection.commit()
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement PRCM {e}")
 
-async def add_summary_audit_program(connection: AsyncConnection, summary: SummaryAuditProgram, engagement_id: str, prcm_id: str):
-    program_id_ = 0
-    procedure_id = 0
-    risk_id_ = 0
-    control_id_ = 0
+async def add_summary_audit_program(connection: AsyncConnection, procedure_id: str, prcm_id: str, reference: str):
     query = sql.SQL(
         """
-            INSERT INTO public.summary_audit_program (
-            id,
-            engagement,
-            prcm,
-            process,
-            risk,
-            risk_rating,
-            control,
-            procedure,
-            program,
-            procedure_id,
-            program_id
-       ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        UPDATE public."PRCM" 
+        SET 
+        summary_audit_program = %s,
+        reference = %s
+        WHERE id = %s;
         """)
     try:
         async with connection.cursor() as cursor:
-            check_program_query = sql.SQL("SELECT name, id FROM public.main_program WHERE name = %s AND engagement = %s;")
-            check_sub_program = sql.SQL("SELECT title, id from public.sub_program WHERE program = %s AND title = %s")
-            await cursor.execute(check_program_query, (summary.program, engagement_id))
-            program_rows = await cursor.fetchall()
-            program_column_names = [desc[0] for desc in cursor.description]
-            program_data = [dict(zip(program_column_names, row_)) for row_ in program_rows]
-            risk_control = RiskControl(
-                risk=summary.risk,
-                risk_rating=summary.risk_rating,
-                control=summary.control,
-                control_type=summary.control_type,
-                control_objective=summary.control_objective
-            )
-            if program_data.__len__() != 0: # the program exists check for the procedure
-                await cursor.execute(check_sub_program, (program_data[0].get("id"), summary.procedure))
-                procedure_rows = await cursor.fetchall()
-                procedure_column_names = [desc[0] for desc in cursor.description]
-                procedure_data = [dict(zip(procedure_column_names, row_)) for row_ in procedure_rows]
-                if procedure_data.__len__() != 0:# procedure exists attach risk
-                    sub_program_id = procedure_data[0].get("id")
-                    await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
-                    program_id_ = program_data[0].get("id")
-                    procedure_id = sub_program_id
-
-                else: # procedure does not exist attach procedure the ris and control
-                    program_id = program_data[0].get("id")
-                    sub_program = NewSubProgram(
-                        title=summary.procedure
-                    )
-                    sub_program_id = await add_new_sub_program(connection=connection, sub_program=sub_program,
-                                                         program_id=program_id)
-                    await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
-                    program_id_ = program_id
-                    procedure_id = sub_program_id
-
-            else: # program does not exist
-                program = MainProgram(
-                    name=summary.program
-                )
-                program_id = await add_new_main_program(connection=connection, program=program, engagement_id=engagement_id)
-                sub_program = NewSubProgram(
-                    title=summary.procedure
-                )
-                sub_program_id = await add_new_sub_program(connection=connection, sub_program=sub_program, program_id=program_id)
-                await add_new_sub_program_risk_control(connection, risk_control, sub_program_id)
-                program_id_ = program_id
-                procedure_id = sub_program_id
-
-            await cursor.execute(query, (
-                get_unique_key(),
-                engagement_id,
-                prcm_id,
-                summary.process,
-                summary.risk,
-                summary.risk_rating,
-                summary.control,
-                summary.procedure,
-                summary.program,
-                procedure_id,
-                program_id_
-            ))
-            summary_audit_program_id = await cursor.fetchone()
-            await cursor.execute("""UPDATE public."PRCM" SET summary_audit_program = %s WHERE id = %s""", (
-                summary_audit_program_id[0],
-                prcm_id
-                ))
-        await connection.commit()
+            await cursor.execute(query, (procedure_id, reference, prcm_id))
+            await connection.commit()
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding summary of audit program {e}")
@@ -254,7 +178,7 @@ async def get_planning_procedures(connection: AsyncConnection, engagement_id: st
         raise HTTPException(status_code=400, detail=f"Error fetching planning procedures {e}")
 
 async def get_prcm(connection: AsyncConnection, engagement_id: str):
-    query = sql.SQL("""SELECT * from public."PRCM" WHERE engagement = %s""")
+    query = sql.SQL("""SELECT * from public."PRCM" WHERE engagement = %s AND type='planning';""")
 
     try:
         async with connection.cursor() as cursor:
@@ -280,13 +204,33 @@ async def get_engagement_letter(connection: AsyncConnection, engagement_id: str)
         raise HTTPException(status_code=400, detail=f"Error fetching engagement letter {e}")
 
 async def get_summary_audit_program(connection: AsyncConnection, engagement_id: str):
-    query = sql.SQL("SELECT * from public.summary_audit_program WHERE engagement = %s")
+    query = sql.SQL(
+        """
+        SELECT
+        proc.reference,
+        proc.title as procedure,
+        proc.id as procedure_id,
+         prog.name as program,
+        prcm.process,
+        prcm.risk,
+        prcm.risk_rating,
+        prcm.control,
+        prcm.control_type
+        from public."PRCM" prcm
+        JOIN sub_program proc ON prcm.summary_audit_program = proc.id
+        JOIN main_program prog ON proc.program = prog.id
+        WHERE 
+        prcm.engagement = %s AND 
+        prcm.type ='planning' AND 
+        prcm.reference IS NOT NULL;
+        """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (engagement_id,))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            return [dict(zip(column_names, row_)) for row_ in rows]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            return data
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of audit program {e}")
@@ -426,6 +370,22 @@ async def edit_summary_audit_finding(connection: AsyncConnection, summary: Summa
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating summary of audit program {e}")
+
+async def attach_procedure(connection: AsyncConnection, procedure_id:str, prcm_id:str):
+    query = sql.SQL(
+        """
+        UPDATE public."PRCM" 
+        SET
+        summary_audit_program = %s
+        WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (procedure_id, prcm_id))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error attaching risk control {e}")
 
 
 ####################################################################################################################

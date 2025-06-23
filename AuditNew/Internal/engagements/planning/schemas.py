@@ -34,6 +34,7 @@ class PreparedReviewedBy(BaseModel):
 
 class PRCM(BaseModel):
     id: Optional[str] = None
+    reference: Optional[str] = None
     process: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]
@@ -42,6 +43,7 @@ class PRCM(BaseModel):
     control_type: Optional[str]
     residue_risk: Optional[str] = None
     summary_audit_program: Optional[str] = None
+    type: Optional[str] = None
 
 class SummaryAuditProgram(BaseModel):
     id: Optional[str] = None
@@ -81,13 +83,15 @@ class NewPlanningProcedure(BaseModel):
 
 
 class SummaryAuditProgramResponse(BaseModel):
-    id: Optional[str] = None
+    reference: Optional[str] = None
     process: Optional[str]
     risk: Optional[str]
     risk_rating: Optional[str]
     control: Optional[str]
+    control_type: Optional[str] = None
     procedure: Optional[str]
     program: Optional[str]
+    procedure_id: Optional[str] = None
 
 
 class SaveProcedure(BaseModel):

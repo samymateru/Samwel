@@ -1,14 +1,10 @@
-from fastapi import APIRouter, Depends, UploadFile, File
-
-from AuditNew.Internal.engagements.planning.databases import edit_work_program_procedure_prepared, \
-    edit_work_program_procedure_reviewed
+from fastapi import APIRouter, Depends, UploadFile, File, Query
 from utils import  get_async_db_connection
 from AuditNew.Internal.engagements.work_program.databases import *
 from AuditNew.Internal.engagements.work_program.schemas import *
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
-
 
 router = APIRouter(prefix="/engagements")
 
@@ -182,13 +178,19 @@ async def create_new_sub_program_evidence(
 async def create_new_sub_program_risk_control(
         sub_program_id: str,
         risk_control: RiskControl,
+        engagement_id: str = Query(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await add_new_sub_program_risk_control(db, risk_control=risk_control, sub_program_id=sub_program_id)
+        await add_new_sub_program_risk_control(
+            connection=db,
+            risk_control=risk_control,
+            sub_program_id=sub_program_id,
+            engagement_id=engagement_id
+        )
         return {"detail": "Risk added successfully"}
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -115,18 +115,22 @@ async def create_new_prcm(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
+@router.post("/summary_audit_program/{prcm_id}", response_model=ResponseMessage)
 async def create_new_summary_of_audit_program(
-        engagement_id: str,
-        summary: SummaryAuditProgram,
+        prcm_id: str,
+        procedure_id: str = Query(...),
+        reference: str = Query(...),
         db=Depends(get_async_db_connection),
-        prcm_id: str = Query(None),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await add_summary_audit_program(db, summary=summary, engagement_id=engagement_id, prcm_id=prcm_id)
+        await add_summary_audit_program(
+            connection=db,
+            procedure_id=procedure_id,
+            prcm_id=prcm_id,
+            reference=reference)
         return ResponseMessage(detail="Audit program added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
