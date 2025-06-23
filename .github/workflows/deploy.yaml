@@ -1,0 +1,18 @@
+name: remote ssh command
+on: [push]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: "eauditrisk.com"
+          username: "ubuntu"
+          key: ${{ secrets.KEY }}
+          script: |
+            cd project/Samwel
+            git pull
+            sudo docker compose down
+            sudo docker compose up -d
