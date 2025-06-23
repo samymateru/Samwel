@@ -65,7 +65,7 @@ class SaveWorkProgramProcedure(BaseModel):
 
 class RiskControl(BaseModel):
     id: Optional[str] = None
-    type: Optional[str]
+    type: Optional[str] = None
     risk: Optional[str]
     risk_rating: Optional[str]
     control: Optional[str]
