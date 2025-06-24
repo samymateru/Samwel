@@ -26,11 +26,11 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
         default=True,
         created_at=datetime.now()
     )
-
     user = User(
         name=entity.owner,
         email=entity.email,
         telephone=entity.telephone,
+        password=entity.password
     )
 
     try:

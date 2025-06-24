@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing risk control">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/entity/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/entity/databases.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,14 +124,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00460" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750054901651</created>
-      <option name="number" value="00460" />
-      <option name="presentableId" value="LOCAL-00460" />
-      <option name="project" value="LOCAL" />
-      <updated>1750054901651</updated>
     </task>
     <task id="LOCAL-00461" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
@@ -521,7 +509,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750674188400</updated>
     </task>
-    <option name="localTasksCounter" value="509" />
+    <task id="LOCAL-00509" summary="fixing risk control">
+      <option name="closed" value="true" />
+      <created>1750754825012</created>
+      <option name="number" value="00509" />
+      <option name="presentableId" value="LOCAL-00509" />
+      <option name="project" value="LOCAL" />
+      <updated>1750754825013</updated>
+    </task>
+    <option name="localTasksCounter" value="510" />
     <servers />
   </component>
   <component name="UnknownFeatures">
