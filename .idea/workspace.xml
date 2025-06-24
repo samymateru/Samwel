@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding workflow" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing risk control">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/users/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/users/schemas.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,30 +128,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00457" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1748949573412</created>
-      <option name="number" value="00457" />
-      <option name="presentableId" value="LOCAL-00457" />
-      <option name="project" value="LOCAL" />
-      <updated>1748949573412</updated>
-    </task>
-    <task id="LOCAL-00458" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750052254557</created>
-      <option name="number" value="00458" />
-      <option name="presentableId" value="LOCAL-00458" />
-      <option name="project" value="LOCAL" />
-      <updated>1750052254557</updated>
-    </task>
-    <task id="LOCAL-00459" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750054863618</created>
-      <option name="number" value="00459" />
-      <option name="presentableId" value="LOCAL-00459" />
-      <option name="project" value="LOCAL" />
-      <updated>1750054863618</updated>
     </task>
     <task id="LOCAL-00460" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
@@ -514,7 +497,31 @@
       <option name="project" value="LOCAL" />
       <updated>1750671311765</updated>
     </task>
-    <option name="localTasksCounter" value="506" />
+    <task id="LOCAL-00506" summary="adding workflow">
+      <option name="closed" value="true" />
+      <created>1750671848570</created>
+      <option name="number" value="00506" />
+      <option name="presentableId" value="LOCAL-00506" />
+      <option name="project" value="LOCAL" />
+      <updated>1750671848570</updated>
+    </task>
+    <task id="LOCAL-00507" summary="adding workflow">
+      <option name="closed" value="true" />
+      <created>1750672444584</created>
+      <option name="number" value="00507" />
+      <option name="presentableId" value="LOCAL-00507" />
+      <option name="project" value="LOCAL" />
+      <updated>1750672444584</updated>
+    </task>
+    <task id="LOCAL-00508" summary="fixing risk control">
+      <option name="closed" value="true" />
+      <created>1750674188400</created>
+      <option name="number" value="00508" />
+      <option name="presentableId" value="LOCAL-00508" />
+      <option name="project" value="LOCAL" />
+      <updated>1750674188400</updated>
+    </task>
+    <option name="localTasksCounter" value="509" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -544,7 +551,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="refactoring code" />
     <MESSAGE value="adding git  ignore" />
     <MESSAGE value="Adding tags" />
     <MESSAGE value="adding admin auth" />
@@ -569,7 +575,8 @@
     <MESSAGE value="Adding functionality to add new entity, include default organization and user" />
     <MESSAGE value="fixing summary of work program" />
     <MESSAGE value="adding workflow" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding workflow" />
+    <MESSAGE value="fixing risk control" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing risk control" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

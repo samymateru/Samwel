@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from Management.users.schemas import __User__
 from utils import get_db_connection, get_async_db_connection
 from Management.users.databases import *
@@ -34,6 +34,23 @@ async def fetch_module_users(
     try:
         data = await get_module_users(db, module_id=module_id)
         return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/module/user/{user_id}", response_model=__User__)
+async def fetch_module_user(
+        user_id: str,
+        module_id: str = Query(...),
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_module_user(connection=db, module_id=module_id, user_id=user_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=400, detail="User not found")
+        return data[0]
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

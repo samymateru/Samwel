@@ -29,6 +29,7 @@ class __User__(BaseModel):
     role: Optional[str] = None
     type: Optional[str] = None
     title: Optional[str]= None
+    engagements: Optional[List[str]] = None
     created_at: datetime = datetime.now()
 
 class User(BaseModel):

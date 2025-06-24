@@ -31,6 +31,23 @@ async def fetch_annual_plans(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
+@router.get("/plan/{plan_id}", response_model=AnnualPlan)
+async def fetch_annual_plans(
+        plan_id: str,
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_annual_plan(connection=db, plan_id=plan_id)
+        if data.__len__() == 0:
+            raise HTTPException(status_code=401, detail="Plan not found")
+        return data[0]
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 @router.post("/{company_module_id}", response_model=ResponseMessage)
 async def create_new_annual_plan(
         company_module_id: str,
