@@ -1,3 +1,328 @@
+from Management.roles.schemas import Roles, Section, Permissions, Archive, Type
+from datetime import datetime, timedelta
+
+head_of_audit = Roles(
+    id="ROLE-001",
+    name="Head of Audit",
+    section=Section.E_AUDIT,
+    type=Type.AUDIT,
+    settings=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    audit_plans=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    administration=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.YES,
+    un_archive_audit=Archive.YES,
+    created_at=datetime.now()
+)
+
+audit_lead = Roles(
+    id="ROLE-002",
+    name="Audit Lead",
+    section=Section.ENGAGEMENT,
+    type=Type.AUDIT,
+    settings=[Permissions.VIEW],
+    audit_plans=[Permissions.VIEW],
+    administration=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=1)
+)
+
+
+audit_reviewer = Roles(
+    id="ROLE-003",
+    name="Audit Reviewer",
+    section=Section.ENGAGEMENT,
+    type=Type.AUDIT,
+    settings=[Permissions.VIEW],
+    audit_plans=[Permissions.VIEW],
+    administration=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=2)
+)
+
+audit_member = Roles(
+    id="ROLE-004",
+    name="Audit Member",
+    section=Section.ENGAGEMENT,
+    type=Type.AUDIT,
+    settings=[Permissions.VIEW],
+    audit_plans=[Permissions.VIEW],
+    administration=[Permissions.VIEW],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=3)
+)
+
+business_manager = Roles(
+    id="ROLE-005",
+    name="Business Manager",
+    section=Section.E_AUDIT,
+    type=Type.BUSINESS,
+    settings=[],
+    audit_plans=[],
+    administration=[],
+    planning=[],
+    fieldwork=[],
+    reporting=[],
+    audit_program=[],
+    follow_up=[],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    others=[],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=6)
+)
+
+risk_manager = Roles(
+    id="ROLE-006",
+    name="Risk Manager",
+    section=Section.E_AUDIT,
+    type=Type.BUSINESS,
+    settings=[],
+    audit_plans=[],
+    administration=[],
+    planning=[],
+    fieldwork=[],
+    reporting=[],
+    audit_program=[],
+    follow_up=[],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    others=[],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=6)
+)
+
+compliance_manager = Roles(
+    id="ROLE-007",
+    name="Compliance Manager",
+    section=Section.E_AUDIT,
+    type=Type.BUSINESS,
+    settings=[],
+    audit_plans=[],
+    administration=[],
+    planning=[],
+    fieldwork=[],
+    reporting=[],
+    audit_program=[],
+    follow_up=[],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    others=[],
+    archive_audit=Archive.NO,
+    un_archive_audit=Archive.NO,
+    created_at=datetime.now() + timedelta(seconds=6)
+)
+
 values = [
  {
             "name": "Owner",

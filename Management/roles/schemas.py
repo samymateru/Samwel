@@ -1,5 +1,6 @@
-from pydantic import BaseModel
-from typing import List
+from datetime import datetime
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from enum import Enum
 
 class Actions(str, Enum):
@@ -10,7 +11,7 @@ class Actions(str, Enum):
     ASSIGN = "assign"
     APPROVE = "approve"
 
-class Permissions(BaseModel):
+class Permission(BaseModel):
     annual_audit_plan: List[Actions]
     engagements: List[Actions]
     administration: List[Actions]
@@ -22,9 +23,48 @@ class Permissions(BaseModel):
 
 class Category(BaseModel):
     name: str
-    permissions: Permissions
+    permissions: Permission
 
 class Role(BaseModel):
     roles: List[Category]
 
 
+###################################################
+
+class Permissions(str, Enum):
+    VIEW = "view"
+    CREATE = "create"
+    EDIT = "edit"
+    DELETE = "delete"
+    APPROVE = "approve"
+
+class Section(str, Enum):
+    E_AUDIT = "e_audit"
+    ENGAGEMENT = "engagement"
+
+class Archive(str, Enum):
+    YES = "yes"
+    NO = "no"
+
+class Type(str, Enum):
+    BUSINESS = "business"
+    AUDIT = "audit"
+
+class Roles(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str]
+    section: Optional[Section] = Section.E_AUDIT
+    type: Type
+    settings: List[Permissions] = Field(default_factory=list)
+    audit_plans: List[Permissions] = Field(default_factory=list)
+    administration: List[Permissions]  = Field(default_factory=list)
+    planning: List[Permissions]  = Field(default_factory=list)
+    fieldwork: List[Permissions]  = Field(default_factory=list)
+    reporting: List[Permissions]  = Field(default_factory=list)
+    audit_program: List[Permissions]  = Field(default_factory=list)
+    follow_up: List[Permissions]  = Field(default_factory=list)
+    issue_management: List[Permissions]  = Field(default_factory=list)
+    archive_audit: Archive = Archive.NO
+    un_archive_audit: Archive = Archive.NO
+    others: List[Permissions]  = Field(default_factory=list)
+    created_at: Optional[datetime] = datetime.now()

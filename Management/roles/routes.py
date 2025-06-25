@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends
+from typing import List
+from constants import head_of_audit, audit_reviewer, audit_lead, audit_member, business_manager, risk_manager, \
+    compliance_manager
 from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.roles.databases import *
@@ -7,18 +10,24 @@ from Management.roles.schemas import *
 
 router = APIRouter(prefix="/roles")
 
-@router.get("/", response_model=Role)
+@router.get("/", response_model=List[Roles])
 async def fetch_roles(
         db = Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        roles = await get_roles(connection=db, company_id=user.company_id)
-        if roles.__len__() == 0:
-            raise HTTPException(status_code=400, detail="No roles")
-        return roles[0]
+        roles : List[Roles] = [
+            head_of_audit,
+            audit_lead,
+            audit_reviewer,
+            audit_member,
+            business_manager,
+            risk_manager,
+            compliance_manager
+        ]
+        return roles
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
