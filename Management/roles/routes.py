@@ -10,8 +10,9 @@ from Management.roles.schemas import *
 
 router = APIRouter(prefix="/roles")
 
-@router.get("/", response_model=List[Roles])
+@router.get("/{module_id}", response_model=List[Roles])
 async def fetch_roles(
+        module_id: str,
         db = Depends(get_async_db_connection),
         #user: CurrentUser = Depends(get_current_user)
 ):
@@ -27,20 +28,22 @@ async def fetch_roles(
             risk_manager,
             compliance_manager
         ]
-        return roles
+        data = await get_roles(connection=db, module_id=module_id)
+        return roles + data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/", response_model=ResponseMessage)
+@router.post("/{module_id}", response_model=ResponseMessage)
 async def add_roles(
-        role: Category,
+        module_id: str,
+        role: Roles,
         db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await add_role(connection=db, company_id=user.company_id, role=role)
+        await add_role(connection=db, module_id=module_id, role=role)
         return ResponseMessage(detail="Role added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

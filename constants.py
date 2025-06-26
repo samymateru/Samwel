@@ -1,8 +1,10 @@
-from Management.roles.schemas import Roles, Section, Permissions, Archive, Type
+from Management.roles.schemas import Roles, Section, Permissions, Archive, Type, Default
 from datetime import datetime, timedelta
 
 head_of_audit = Roles(
     id="ROLE-001",
+    reference="ROLE-001",
+    default=Default.YES,
     name="Head of Audit",
     section=Section.E_AUDIT,
     type=Type.AUDIT,
@@ -75,6 +77,8 @@ head_of_audit = Roles(
 
 audit_lead = Roles(
     id="ROLE-002",
+    reference="ROLE-002",
+    default=Default.YES,
     name="Audit Lead",
     section=Section.ENGAGEMENT,
     type=Type.AUDIT,
@@ -137,6 +141,8 @@ audit_lead = Roles(
 
 audit_reviewer = Roles(
     id="ROLE-003",
+    reference="ROLE-003",
+    default=Default.YES,
     name="Audit Reviewer",
     section=Section.ENGAGEMENT,
     type=Type.AUDIT,
@@ -198,6 +204,8 @@ audit_reviewer = Roles(
 
 audit_member = Roles(
     id="ROLE-004",
+    reference="ROLE-004",
+    default=Default.YES,
     name="Audit Member",
     section=Section.ENGAGEMENT,
     type=Type.AUDIT,
@@ -253,6 +261,8 @@ audit_member = Roles(
 
 business_manager = Roles(
     id="ROLE-005",
+    reference="ROLE-005",
+    default=Default.YES,
     name="Business Manager",
     section=Section.E_AUDIT,
     type=Type.BUSINESS,
@@ -277,6 +287,8 @@ business_manager = Roles(
 
 risk_manager = Roles(
     id="ROLE-006",
+    reference="ROLE-006",
+    default=Default.YES,
     name="Risk Manager",
     section=Section.E_AUDIT,
     type=Type.BUSINESS,
@@ -301,6 +313,8 @@ risk_manager = Roles(
 
 compliance_manager = Roles(
     id="ROLE-007",
+    reference="ROLE-007",
+    default=Default.YES,
     name="Compliance Manager",
     section=Section.E_AUDIT,
     type=Type.BUSINESS,

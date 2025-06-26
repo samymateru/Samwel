@@ -349,3 +349,17 @@ async def get_redis_connect():
     if not redis_client:
         raise RuntimeError("Redis client is not initialized!")
     return redis_client
+
+def get_latest_reference_number(references_data):
+    numbers = []
+
+    for ref in references_data:
+        ref_str = ref.get("reference", "")
+        if "-" in ref_str:
+            try:
+                num = int(ref_str.split("-")[1])
+                numbers.append(num)
+            except ValueError:
+                continue  # Skip invalid formats
+
+    return max(numbers, default=0)

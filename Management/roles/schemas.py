@@ -3,6 +3,9 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
 
+from utils import get_unique_key
+
+
 class Actions(str, Enum):
     CREATE = "create"
     READ = "read"
@@ -50,8 +53,14 @@ class Type(str, Enum):
     BUSINESS = "business"
     AUDIT = "audit"
 
+class Default(str, Enum):
+    YES = "yes"
+    NO = "no"
+
 class Roles(BaseModel):
-    id: Optional[str] = None
+    id: Optional[str] = Field(default_factory=get_unique_key)
+    reference: Optional[str] = None
+    default: Default = Default.NO
     name: Optional[str]
     section: Optional[Section] = Section.E_AUDIT
     type: Type
