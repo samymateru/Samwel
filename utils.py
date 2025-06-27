@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 from typing import Optional
 from contextlib import asynccontextmanager
 import bcrypt
@@ -7,9 +9,11 @@ from dotenv import load_dotenv
 from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
+
+from s3 import upload_file
 from schema import UserData, CurrentUser
 import secrets
 import string
@@ -20,6 +24,10 @@ from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
 from typing import List
 import redis.asyncio as redis
 from redis.asyncio import Redis
+
+from psycopg import AsyncConnection
+from psycopg.rows import dict_row
+from psycopg.sql import SQL, Identifier, Placeholder, Composed
 
 
 
@@ -363,3 +371,60 @@ def get_latest_reference_number(references_data):
                 continue  # Skip invalid formats
 
     return max(numbers, default=0)
+
+async def check_row_exists(
+    connection: AsyncConnection,
+    table_name: str,
+    filters: dict
+) -> bool:
+    """
+    Check if a row exists in the given table using column-value filters.
+
+    Args:
+        conn (AsyncConnection): psycopg async connection
+        table_name (str): table name (must be validated)
+        filters (dict): column-value conditions
+
+    Returns:
+        bool: True if row exists, False otherwise
+        :param filters:
+        :param table_name:
+        :param connection:
+    """
+    if not filters:
+        raise ValueError("filters cannot be empty")
+
+    # Build WHERE clause safely
+    conditions: list[Composed] = []
+    values = {}
+
+    for i, (col, val) in enumerate(filters.items()):
+        ph = f"val{i}"
+        conditions.append(SQL("{} = {}").format(Identifier(col), Placeholder(ph)))
+        values[ph] = val
+
+    where_clause = SQL(" AND ").join(conditions)
+
+    query = SQL("SELECT 1 FROM {} WHERE ").format(Identifier(table_name)) + where_clause + SQL(" LIMIT 1")
+
+    async with connection.cursor(row_factory=dict_row) as cur:
+        await cur.execute(query, values)
+        row = await cur.fetchone()
+
+    return row is not None
+
+def upload_attachment(
+        background_tasks: BackgroundTasks,
+        user: CurrentUser,
+        attachment: UploadFile
+):
+    try:
+        key: str = f"{user.entity_name}/{uuid.uuid4()}-{attachment.filename}"
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            shutil.copyfileobj(attachment.file, tmp)
+            temp_path = tmp.name
+
+        background_tasks.add_task(upload_file, temp_path, key)
+    except Exception as e:
+        print(e)
+

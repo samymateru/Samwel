@@ -64,3 +64,19 @@ class UpdateEngagement(BaseModel):
 
 class DeleteEngagements(BaseModel):
     engagement_id: List[str]
+
+
+class Rating(BaseModel):
+    maturity_rating: str
+    rationale: str
+
+class RiskMaturityRating(BaseModel):
+    engagement_id: str
+    operational_risk: Rating
+    strategic_risk: Rating
+    credit_risk: Rating
+    liquidity_risk: Rating
+    compliance_risk: Rating
+    market_risk: Rating
+    overall: Rating
+

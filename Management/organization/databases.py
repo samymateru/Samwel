@@ -1,6 +1,6 @@
 from psycopg import AsyncConnection, sql
 from psycopg.errors import UniqueViolation
-from utils import get_unique_key
+from utils import get_unique_key, check_row_exists
 from Management.organization.schemas import *
 from fastapi import HTTPException
 
@@ -20,6 +20,11 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
 
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="organization", filters={
+                "name": organization.name
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Organization exists")
             await cursor.execute(query, (
             get_unique_key(),
             entity_id,
@@ -41,6 +46,8 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail=" already already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new organization {e}")

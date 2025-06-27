@@ -4,6 +4,8 @@ from datetime import datetime
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
+from utils import check_row_exists
+
 
 async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPlan, company_module_id: str):
     query = sql.SQL(
@@ -25,6 +27,12 @@ async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPla
         """)
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="annual_plans", filters={
+                "name": audit_plan.name,
+                "module": company_module_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Audit plan already exists")
             await cursor.execute(get_plan_count)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -50,6 +58,8 @@ async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPla
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Annual plan name already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error occur while adding annual plan {e}")

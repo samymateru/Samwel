@@ -1,6 +1,4 @@
 from fastapi import APIRouter, Depends
-
-from AuditNew.Internal.engagements.schemas import UpdateEngagement
 from utils import get_async_db_connection
 from AuditNew.Internal.engagements.databases import *
 from typing import List
@@ -33,7 +31,6 @@ async def create_new_engagement(
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
-
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     max_ = 0
@@ -83,3 +80,5 @@ async def delete_engagement(
         return ResponseMessage(detail="Engagement successfully deleted")
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
+
+

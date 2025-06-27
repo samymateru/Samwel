@@ -31,6 +31,7 @@ from AuditNew.Internal.dashboards.routes import router as dashboards
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from Management.organization.routes import router as organization
+from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool
@@ -191,6 +192,8 @@ app.include_router(risk_, tags=["Engagement Risk"])
 app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
+app.include_router(attachments, tags=["Attachments"])
+
 
 
 if __name__ == "__main__":

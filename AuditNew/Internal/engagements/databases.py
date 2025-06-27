@@ -11,7 +11,8 @@ from psycopg import AsyncConnection
 from psycopg import sql
 
 from Management.users.databases import get_module_users
-from utils import get_unique_key
+from utils import get_unique_key, check_row_exists
+
 
 async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str):
     query = sql.SQL(
@@ -28,6 +29,12 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
 
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="engagements", filters={
+                "name": engagement.name,
+                "plan_id": plan_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Engagement already exists")
             await cursor.execute(query,
         (
                get_unique_key(),
@@ -89,6 +96,8 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Engagement already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating engagement {e}")

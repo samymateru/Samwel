@@ -64,7 +64,6 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
                 reference = reference + 8
             else:
                 reference = reference + 1
-            print(reference)
             await cursor.execute(query, (
                 module_id,
                 role.id,
