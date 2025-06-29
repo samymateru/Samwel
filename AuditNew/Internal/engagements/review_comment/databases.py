@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from psycopg2.extensions import connection as Connection
 from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.review_comment.schemas import *
-from utils import get_reference, get_unique_key
+from utils import get_reference, get_unique_key, check_row_exists
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
@@ -38,6 +38,12 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
     try:
         reference: str = await get_reference(connection=connection, resource="review_comment", id=engagement_id)
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="review_comment", filters={
+                "title": review_comment.title,
+                "engagement": engagement_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Review Comment already exists")
             await cursor.execute(query, (
                 get_unique_key(),
                 engagement_id,
@@ -57,6 +63,8 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Review comment already exits")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error raising review comment {e}")

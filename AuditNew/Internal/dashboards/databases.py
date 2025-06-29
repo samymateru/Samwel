@@ -290,9 +290,9 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         SELECT
         COUNT(*) AS total_finalization_procedures,
         jsonb_build_object(
-            'pending', COUNT(*) FILTER (WHERE fp.status = 'Pending'),
-            'in_progress', COUNT(*) FILTER (WHERE fp.status = 'In progress'),
-            'completed', COUNT(*) FILTER (WHERE fp.status = 'Completed')
+            'pending', COUNT(*) FILTER (WHERE fp.prepared_by IS NULL AND fp.reviewed_by IS NULL),
+            'in_progress', COUNT(*) FILTER (WHERE fp.prepared_by IS NOT NULL AND fp.reviewed_by IS NULL),
+            'completed', COUNT(*) FILTER (WHERE fp.prepared_by IS NOT NULL AND fp.reviewed_by IS NOT NULL)
         ) AS finalization_status_summary
         FROM finalization_procedure fp
         JOIN engagements e ON fp.engagement = e.id
@@ -302,9 +302,9 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         SELECT
         COUNT(*) AS total_reporting_procedures,
         jsonb_build_object(
-            'pending', COUNT(*) FILTER (WHERE rp.status = 'Pending'),
-            'in_progress', COUNT(*) FILTER (WHERE rp.status = 'In progress'),
-            'completed', COUNT(*) FILTER (WHERE rp.status = 'Completed')
+            'pending', COUNT(*) FILTER (WHERE rp.prepared_by IS NULL AND rp.reviewed_by IS NULL),
+            'in_progress', COUNT(*) FILTER (WHERE rp.prepared_by IS NOT NULL AND rp.reviewed_by IS NULL),
+            'completed', COUNT(*) FILTER (WHERE rp.prepared_by IS NOT NULL AND rp.reviewed_by IS NOT NULL)
         ) AS report_status_summary
         FROM reporting_procedure rp
         JOIN engagements e ON rp.engagement = e.id
@@ -314,9 +314,9 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         SELECT
         COUNT(*) AS total_planning_procedures,
         jsonb_build_object(
-            'pending', COUNT(*) FILTER (WHERE tmp.status = 'Pending'),
-            'in_progress', COUNT(*) FILTER (WHERE tmp.status = 'In progress'),
-            'completed', COUNT(*) FILTER (WHERE tmp.status = 'Completed')
+            'pending', COUNT(*) FILTER (WHERE tmp.prepared_by IS NULL AND tmp.reviewed_by IS NULL),
+            'in_progress', COUNT(*) FILTER (WHERE tmp.prepared_by IS NOT NULL AND tmp.reviewed_by IS NULL),
+            'completed', COUNT(*) FILTER (WHERE tmp.prepared_by IS NOT NULL AND tmp.reviewed_by IS NOT NULL)
         ) AS planning_status_summary
         FROM std_template tmp
         JOIN engagements e ON tmp.engagement = e.id
@@ -326,9 +326,9 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 	    SELECT
 	    COUNT(*) AS total_work_program_procedures,
 	    jsonb_build_object(
-	        'pending', COUNT(*) FILTER (WHERE sp.status = 'Pending'),
-	        'in_progress', COUNT(*) FILTER (WHERE sp.status = 'In progress'),
-	        'completed', COUNT(*) FILTER (WHERE sp.status = 'Completed')
+	        'pending', COUNT(*) FILTER (WHERE sp.prepared_by IS NULL AND sp.reviewed_by IS NULL),
+	        'in_progress', COUNT(*) FILTER (WHERE sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NULL),
+	        'completed', COUNT(*) FILTER (WHERE sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NOT NULL)
 	    ) AS work_program_procedure_status_summary
 	    FROM main_program mp
 	    JOIN engagements e ON mp.engagement = e.id

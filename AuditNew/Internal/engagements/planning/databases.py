@@ -57,6 +57,13 @@ async def add_engagement_prcm(connection: AsyncConnection, prcm: PRCM, engagemen
         """)
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="PRCM", filters={
+                "risk": prcm.risk,
+                "control": prcm.control,
+                "engagement": engagement_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="PRCM already exists")
             await cursor.execute(query, (
                 get_unique_key(),
                 engagement_id,
@@ -70,6 +77,8 @@ async def add_engagement_prcm(connection: AsyncConnection, prcm: PRCM, engagemen
                 "planning"
             ))
         await connection.commit()
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement PRCM {e}")
@@ -179,7 +188,6 @@ async def get_planning_procedures(connection: AsyncConnection, engagement_id: st
 
 async def get_prcm(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL("""SELECT * from public."PRCM" WHERE engagement = %s AND type='planning';""")
-
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (engagement_id,))

@@ -4,19 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing risk control">
-      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/databases.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/routes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/schemas.py" afterDir="false" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding attachment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/organization/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/organization/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Management/roles/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/roles/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/review_comment/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/task/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,14 +130,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00464" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750075376079</created>
-      <option name="number" value="00464" />
-      <option name="presentableId" value="LOCAL-00464" />
-      <option name="project" value="LOCAL" />
-      <updated>1750075376080</updated>
     </task>
     <task id="LOCAL-00465" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
@@ -528,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750948950006</updated>
     </task>
-    <option name="localTasksCounter" value="513" />
+    <task id="LOCAL-00513" summary="adding attachment">
+      <option name="closed" value="true" />
+      <created>1751031384071</created>
+      <option name="number" value="00513" />
+      <option name="presentableId" value="LOCAL-00513" />
+      <option name="project" value="LOCAL" />
+      <updated>1751031384072</updated>
+    </task>
+    <option name="localTasksCounter" value="514" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -558,7 +553,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adding git  ignore" />
     <MESSAGE value="Adding tags" />
     <MESSAGE value="adding admin auth" />
     <MESSAGE value="refactor" />
@@ -583,7 +577,8 @@
     <MESSAGE value="fixing summary of work program" />
     <MESSAGE value="adding workflow" />
     <MESSAGE value="fixing risk control" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixing risk control" />
+    <MESSAGE value="adding attachment" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding attachment" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

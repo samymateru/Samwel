@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from AuditNew.Internal.engagements.work_program.schemas import *
-from utils import get_unique_key
+from utils import get_unique_key, check_row_exists
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
@@ -16,6 +16,12 @@ async def add_new_main_program(connection: AsyncConnection, program: MainProgram
         """)
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="main_program", filters={
+                "name": program.name,
+                "engagement": engagement_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Program already exists")
             await cursor.execute(query,(
                 get_unique_key(),
                 engagement_id,
@@ -31,6 +37,8 @@ async def add_new_main_program(connection: AsyncConnection, program: MainProgram
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Main program already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating main program {e}")
@@ -82,6 +90,12 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
         """)
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="sub_program", filters={
+                "title": sub_program.title,
+                "program": program_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Procedure already exists")
             await cursor.execute(check_module_id_query)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -127,6 +141,8 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Sub program already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating sub program {e}")
@@ -346,6 +362,13 @@ async  def add_new_sub_program_risk_control(connection: AsyncConnection, risk_co
         """)
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="PRCM", filters={
+                "risk": risk_control.risk,
+                "control": risk_control.control,
+                "engagement": engagement_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Risk already exists")
             await cursor.execute(query, (
                 get_unique_key(),
                 engagement_id,
@@ -359,6 +382,8 @@ async  def add_new_sub_program_risk_control(connection: AsyncConnection, risk_co
                 sub_program_id
             ))
         await connection.commit()
+    except  HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding sub procedure risk control {e}")

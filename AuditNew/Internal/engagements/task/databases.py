@@ -1,7 +1,7 @@
 import json
 from fastapi import HTTPException
 from AuditNew.Internal.engagements.task.schemas import *
-from utils import get_reference, get_unique_key
+from utils import get_reference, get_unique_key, check_row_exists
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
@@ -26,6 +26,12 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
     try:
         reference = await get_reference(connection=connection, resource="task", id=engagement_id)
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="task", filters={
+                "title": task.title,
+                "engagement": engagement_id
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Task already exists")
             await cursor.execute(query, (
                 get_unique_key(),
                 engagement_id,
@@ -45,6 +51,8 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
     except UniqueViolation:
         await connection.rollback()
         raise HTTPException(status_code=409, detail="Task already exist")
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating task {e}")

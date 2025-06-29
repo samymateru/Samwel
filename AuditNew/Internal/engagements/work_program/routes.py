@@ -19,7 +19,7 @@ async def create_new_main_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await add_new_main_program(db, program=program, engagement_id=engagement_id)
-        return ResponseMessage(detail="Main program added successfully")
+        return ResponseMessage(detail="Program added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -48,7 +48,7 @@ async def update_main_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await edit_main_program(db, program=program, program_id=program_id)
-        return ResponseMessage(detail="Main program successfully updated")
+        return ResponseMessage(detail="Program successfully updated")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -76,7 +76,7 @@ async def delete_main_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await remove_work_program(connection=db, id=program_id, table="main_program", resource="Main program")
-        return ResponseMessage(detail="Main program deleted successfully")
+        return ResponseMessage(detail="Program deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -92,7 +92,7 @@ async def create_new_sub_program(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await add_new_sub_program(db, sub_program=sub_program, program_id=program_id)
-        return ResponseMessage(detail="Sub program added successfully")
+        return ResponseMessage(detail="Procedure added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
