@@ -14,10 +14,10 @@ router = APIRouter(prefix="/roles")
 async def fetch_roles(
         module_id: str,
         db = Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         roles : List[Roles] = [
             head_of_audit,

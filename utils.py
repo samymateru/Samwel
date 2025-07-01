@@ -1,6 +1,6 @@
 import shutil
 import tempfile
-from typing import Optional
+from typing import Optional, Union
 from contextlib import asynccontextmanager
 import bcrypt
 import jwt
@@ -12,24 +12,36 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
-
+from Management.roles.schemas import Roles
+from Management.users.schemas import __User__
+from commons import get_module_user, get_roles
+from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
+    risk_manager, compliance_manager
 from s3 import upload_file
-from schema import UserData, CurrentUser
+from schema import CurrentUser
 import secrets
 import string
-from psycopg2.extensions import connection as Connection
-from psycopg2.extensions import cursor as Cursor
-from psycopg import AsyncConnection, sql
+from psycopg import  sql
 from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
 from typing import List
 import redis.asyncio as redis
 from redis.asyncio import Redis
-
 from psycopg import AsyncConnection
 from psycopg.rows import dict_row
 from psycopg.sql import SQL, Identifier, Placeholder, Composed
 
 
+roles_map = {
+    "Administrator": administrator,
+    "Head of Audit": head_of_audit,
+    "Member": member,
+    "Audit Lead": audit_lead,
+    "Audit Reviewer": audit_reviewer,
+    "Audit Member": audit_member,
+    "Business Manager": business_manager,
+    "Risk Manager": risk_manager,
+    "Compliance Manager": compliance_manager
+}
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -184,48 +196,24 @@ async def get_reference(connection: AsyncConnection, resource: str, id: str):
 async def get_next_issue_id():
     pass
 
-def get_user_data(token: str = Depends(oauth2_scheme)):
+async def get_role_from_token(token: str = Depends(oauth2_scheme)):
     if not token:
         return CurrentUser(status_code=401, description="auth token not provided")
-    query: str = """
-                  SELECT * FROM public.users WHERE id = %s;
-                 """
-    query_roles: str = """
-                  SELECT * FROM public.roles WHERE company = %s;
-                 """
     try:
-        decoded_token = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-        connection: Connection = next(get_db_connection())
-        with connection.cursor() as cursor:
-            cursor: Cursor
-            cursor.execute(query, (decoded_token.get("user_id"),))
-            rows = cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            user_data = [dict(zip(column_names, row_)) for row_ in rows][0]
-
-            cursor.execute(query_roles, (decoded_token.get("company_id"),))
-            rows = cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            roles_data = [dict(zip(column_names, row_)) for row_ in rows]
-
-            user = UserData(
-                id=user_data.get("id"),
-                name=user_data.get("name"),
-                email=user_data.get("email"),
-                telephone=user_data.get("telephone"),
-                status=user_data.get("status"),
-                company_roles=roles_data[0].get("roles"),
-                user_role=user_data.get("role"),
-                module=user_data.get("module"),
-                type=user_data.get("type")
-            )
-
-            return user
+        user_dict = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        user = CurrentUser(**user_dict)
+        async for connection in get_async_db_connection():
+            data: __User__ = await get_module_user(connection=connection,  module_id=user.module_id, user_id=user.user_id)
+            roles_dicts = await get_roles(connection=connection, module_id=user.module_id)
+            roles: List[Roles] = [Roles(**role_dict) for role_dict in roles_dicts]
+            for role in roles:
+                if data[0].get("role") == role.name:
+                    return role
+            return roles_map.get(data[0].get("role"))
     except jwt.ExpiredSignatureError:
         return CurrentUser(status_code=401, description="token expired")
     except jwt.InvalidTokenError:
         return CurrentUser(status_code=401, description="invalid token")
-
 
 def authorize(user_roles: list, module: str, required_permission: str) -> bool:
     for role in user_roles:
@@ -235,16 +223,15 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
                 return True
     return False
 
-def check_permission(module: str, action: str):
-    def inner(user: UserData = Depends(get_user_data)):
-        roles = []
-        for company_role in user.company_roles:
-            for role in user.user_role:
-                if role.get("name") == company_role.get("name"):
-                    roles.append(company_role)
-
-        if not authorize(roles, module, action):
-            raise HTTPException(status_code=403, detail="Unauthorized")
+def check_permission(section: str, action: str):
+    def inner(role: Roles = Depends(get_role_from_token)):
+        print(role)
+        if not has_permission([role], section=section, action=action):
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access denied for '{section}:{action}'"
+            )
+        return True
     return inner
 
 def get_unique_key():
@@ -428,3 +415,73 @@ def upload_attachment(
     except Exception as e:
         print(e)
 
+def has_permission(roles: List[Roles], section: str, action: str) -> bool:
+
+    """
+    Checks if any of the given roles has the specified permission for a section.
+
+    Args:
+        roles (List[Roles]): List of role instances.
+        section (str): Section name (e.g., "planning").
+        action (str): Permission to check (e.g., "view").
+
+    Returns:
+        bool: True if any role grants the permission, else False.
+    """
+    for role in roles:
+        try:
+            section_permissions: Union[List[str], None] = getattr(role, section)
+        except AttributeError:
+            continue  # Skip if section doesn't exist in this role
+
+        if isinstance(section_permissions, list) and action in section_permissions:
+            return True
+
+    return False
+
+
+async def generate_user_token(connection: AsyncConnection, module_id: str, user_id: str):
+    query_module_data = sql.SQL(
+        """
+        SELECT 
+          m.id,
+          m.name,
+          m.organization,
+          (
+            SELECT jsonb_agg(u)
+            FROM jsonb_array_elements(m.users) AS u
+            WHERE u->>'id' = %s
+          ) AS users
+        FROM public.modules AS m
+        JOIN public.organization AS o ON m.organization = o.id
+        WHERE m.id = %s
+          AND EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(m.users) AS u
+            WHERE u->>'id' = %s
+          );
+        """)
+    query_user = sql.SQL(
+        """SELECT name, email, id FROM public.users WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_module_data, (user_id, module_id, user_id))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            module_data = [dict(zip(column_names, row_)) for row_ in rows]
+            await cursor.execute(query_user, (module_data[0].get("users")[0].get("id"),))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = [dict(zip(column_names, row_)) for row_ in rows]
+            current_user = CurrentUser(
+                user_id=user_data[0].get("id"),
+                user_email=user_data[0].get("email"),
+                organization_id = module_data[0].get("organization"),
+                module_id = module_data[0].get("id"),
+                module_name=module_data[0].get("name")
+            )
+            return current_user
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error generating token {e}")

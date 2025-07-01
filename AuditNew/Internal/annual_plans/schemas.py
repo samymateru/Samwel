@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import  Enum
 from typing import Optional, List
-from utils import get_unique_key
 
 class AnnualPlansStatus(str, Enum):
     NOT_STARTED = "Not Started"
@@ -12,7 +11,7 @@ class AnnualPlansStatus(str, Enum):
 
 
 class AnnualPlan(BaseModel):
-    id: str = Field(default_factory=get_unique_key)
+    id: Optional[str] = None
     reference: Optional[str] = None
     module: Optional[str] = None
     name: str

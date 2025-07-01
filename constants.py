@@ -75,9 +75,157 @@ head_of_audit = Roles(
     created_at=datetime.now()
 )
 
-audit_lead = Roles(
+administrator = Roles(
     id="ROLE-002",
     reference="ROLE-002",
+    default=Default.YES,
+    name="Administrator",
+    section=Section.E_AUDIT,
+    type=Type.AUDIT,
+    settings=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    audit_plans=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    administration=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.YES,
+    un_archive_audit=Archive.YES,
+    created_at=datetime.now()
+)
+
+member = Roles(
+    id="ROLE-003",
+    reference="ROLE-003",
+    default=Default.YES,
+    name="Member",
+    section=Section.E_AUDIT,
+    type=Type.AUDIT,
+    settings=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    audit_plans=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.APPROVE
+    ],
+    administration=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    planning=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    fieldwork=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    reporting=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    audit_program=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    follow_up=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    issue_management=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
+    others=[Permissions.VIEW],
+    archive_audit=Archive.YES,
+    un_archive_audit=Archive.YES,
+    created_at=datetime.now()
+)
+
+audit_lead = Roles(
+    id="ROLE-004",
+    reference="ROLE-004",
     default=Default.YES,
     name="Audit Lead",
     section=Section.ENGAGEMENT,
@@ -140,8 +288,8 @@ audit_lead = Roles(
 
 
 audit_reviewer = Roles(
-    id="ROLE-003",
-    reference="ROLE-003",
+    id="ROLE-005",
+    reference="ROLE-005",
     default=Default.YES,
     name="Audit Reviewer",
     section=Section.ENGAGEMENT,
@@ -203,8 +351,8 @@ audit_reviewer = Roles(
 )
 
 audit_member = Roles(
-    id="ROLE-004",
-    reference="ROLE-004",
+    id="ROLE-006",
+    reference="ROLE-006",
     default=Default.YES,
     name="Audit Member",
     section=Section.ENGAGEMENT,
@@ -260,8 +408,8 @@ audit_member = Roles(
 )
 
 business_manager = Roles(
-    id="ROLE-005",
-    reference="ROLE-005",
+    id="ROLE-007",
+    reference="ROLE-007",
     default=Default.YES,
     name="Business Manager",
     section=Section.E_AUDIT,
@@ -286,8 +434,8 @@ business_manager = Roles(
 )
 
 risk_manager = Roles(
-    id="ROLE-006",
-    reference="ROLE-006",
+    id="ROLE-008",
+    reference="ROLE-008",
     default=Default.YES,
     name="Risk Manager",
     section=Section.E_AUDIT,
@@ -312,8 +460,8 @@ risk_manager = Roles(
 )
 
 compliance_manager = Roles(
-    id="ROLE-007",
-    reference="ROLE-007",
+    id="ROLE-009",
+    reference="ROLE-009",
     default=Default.YES,
     name="Compliance Manager",
     section=Section.E_AUDIT,

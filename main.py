@@ -35,9 +35,9 @@ from AuditNew.Internal.engagements.attachments.routes import router as attachmen
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool
-from schema import CurrentUser, ResponseMessage
+from schema import CurrentUser, ResponseMessage, TokenResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
-    update_user_password
+    update_user_password, generate_user_token
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.entity.databases import get_entities, get_entities_by_email
@@ -83,6 +83,7 @@ app.add_middleware(
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
+
 @app.get("/")
 async def home():
     return "hello"
@@ -101,6 +102,18 @@ async def tester(
         "time_taken": end - start
     }
 
+@app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
+async def get_token(
+        module_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+    token: str = create_jwt_token(data.model_dump())
+    return TokenResponse(token=token)
+
 @app.post("/login", tags=["Authentication"])
 async def login(
           email: str = Form(...),
@@ -110,34 +123,18 @@ async def login(
     if user_data.__len__() == 0:
         raise HTTPException(status_code=400, detail="User doesn't exists")
     password_hash: bytes = user_data[0].get("password_hash").encode()
-    entity_data = await get_entities_by_email(connection=db, email=email)
-    entity_name: str = ""
-    entity_email:  str = ""
-    entity_id: str = ""
-    if entity_data.__len__() != 0:
-        entity_name = entity_data[0].get("name")
-        entity_email = entity_data[0].get("email")
-        entity_id = entity_data[0].get("id")
-
     if verify_password(password_hash, password):
-
-        user: dict = {
-            "user_id": user_data[0].get("id"),
-            "user_email": user_data[0].get("email"),
-            "user_name": user_data[0].get("name"),
-            "entity_name": entity_name,
-            "entity_id": entity_id
-        }
-        token: str = create_jwt_token(user)
+        user_ = CurrentUser(
+            user_id = user_data[0].get("id"),
+            user_email=user_data[0].get("email")
+        )
         user: dict = {
             "id": user_data[0].get("id"),
             "name": user_data[0].get("name"),
             "email": user_data[0].get("email"),
-            "telephone": user_data[0].get("telephone"),
-            "entity_email": entity_email,
-            "entity_id": entity_id
         }
-        return {"token": token, "token_type": "Bearer", "status_code": 203, "detail": "login success", "content": user}
+        token = create_jwt_token(user_.model_dump())
+        return {"token": token, "detail": "login success", "content": user}
     else:
         raise HTTPException(detail="Invalid password", status_code=400)
 

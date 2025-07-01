@@ -3,9 +3,6 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
 
-from utils import get_unique_key
-
-
 class Actions(str, Enum):
     CREATE = "create"
     READ = "read"
@@ -58,7 +55,7 @@ class Default(str, Enum):
     NO = "no"
 
 class Roles(BaseModel):
-    id: Optional[str] = Field(default_factory=get_unique_key)
+    id: Optional[str] = None
     reference: Optional[str] = None
     default: Default = Default.NO
     name: Optional[str]

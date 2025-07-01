@@ -4,7 +4,7 @@ from datetime import datetime
 from psycopg import AsyncConnection, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
-from utils import check_row_exists
+from utils import check_row_exists, get_unique_key
 
 
 async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPlan, company_module_id: str):
@@ -39,7 +39,7 @@ async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPla
             module_data = [dict(zip(column_names, row_)) for row_ in rows]
             reference = module_data[0].get("plan_reference") + 1
             await cursor.execute(query, (
-                audit_plan.id,
+                get_unique_key(),
                 "P-{:05d}".format(reference),
                 company_module_id,
                 audit_plan.name,

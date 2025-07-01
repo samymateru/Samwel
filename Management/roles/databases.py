@@ -1,9 +1,10 @@
 import json
+from typing import Union
+
 from fastapi import HTTPException
 from Management.roles.schemas import *
 from psycopg import AsyncConnection, sql
-
-from utils import get_latest_reference_number
+from utils import  get_unique_key
 
 
 async def get_roles(connection: AsyncConnection, module_id: str):
@@ -61,12 +62,12 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
             reference = int(get_latest_reference_number(references_data=references_data))
             print(reference)
             if reference == 0:
-                reference = reference + 8
+                reference = reference + 10
             else:
                 reference = reference + 1
             await cursor.execute(query, (
                 module_id,
-                role.id,
+                get_unique_key(),
                 role.name,
                 f"ROLE-{reference:03}",
                 role.section,
@@ -113,6 +114,7 @@ async def edit_role(connection: AsyncConnection, role: Category, company_id: str
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating roles {e}")
+
 
 
 
