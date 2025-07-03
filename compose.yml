@@ -14,7 +14,7 @@ services:
     image: backend
     container_name: backend_
     restart: always
-    expose:
+    ports:
       - "8000:8000"
     env_file:
       - .env
