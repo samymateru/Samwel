@@ -18,3 +18,5 @@ jobs:
             docker builder prune -f  
             sudo docker compose down
             sudo docker compose up -d
+            sudo systemctl stop backend.service
+            sudo systemctl start backend.service
