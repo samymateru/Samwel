@@ -127,22 +127,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00471" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750095620001</created>
-      <option name="number" value="00471" />
-      <option name="presentableId" value="LOCAL-00471" />
-      <option name="project" value="LOCAL" />
-      <updated>1750095620001</updated>
-    </task>
-    <task id="LOCAL-00472" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750095714428</created>
-      <option name="number" value="00472" />
-      <option name="presentableId" value="LOCAL-00472" />
-      <option name="project" value="LOCAL" />
-      <updated>1750095714429</updated>
-    </task>
     <task id="LOCAL-00473" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
       <created>1750095913581</created>
@@ -519,7 +503,23 @@
       <option name="project" value="LOCAL" />
       <updated>1751522623263</updated>
     </task>
-    <option name="localTasksCounter" value="520" />
+    <task id="LOCAL-00520" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1751522916481</created>
+      <option name="number" value="00520" />
+      <option name="presentableId" value="LOCAL-00520" />
+      <option name="project" value="LOCAL" />
+      <updated>1751522916481</updated>
+    </task>
+    <task id="LOCAL-00521" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1751523223987</created>
+      <option name="number" value="00521" />
+      <option name="presentableId" value="LOCAL-00521" />
+      <option name="project" value="LOCAL" />
+      <updated>1751523223987</updated>
+    </task>
+    <option name="localTasksCounter" value="522" />
     <servers />
   </component>
   <component name="UnknownFeatures">
