@@ -10,6 +10,15 @@ services:
     env_file:
       - .env
 
+  backend_:
+    image: backend
+    container_name: backend_
+    restart: always
+    expose:
+      - "8000:8000"
+    env_file:
+      - .env
+
   frontend:
     image: frontend
     container_name: frontend

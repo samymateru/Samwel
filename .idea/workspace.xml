@@ -127,14 +127,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00469" summary="Adding functionality to add new entity, include default organization and user">
-      <option name="closed" value="true" />
-      <created>1750092207123</created>
-      <option name="number" value="00469" />
-      <option name="presentableId" value="LOCAL-00469" />
-      <option name="project" value="LOCAL" />
-      <updated>1750092207123</updated>
-    </task>
     <task id="LOCAL-00470" summary="Adding functionality to add new entity, include default organization and user">
       <option name="closed" value="true" />
       <created>1750095483257</created>
@@ -519,7 +511,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751521820882</updated>
     </task>
-    <option name="localTasksCounter" value="518" />
+    <task id="LOCAL-00518" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1751522120246</created>
+      <option name="number" value="00518" />
+      <option name="presentableId" value="LOCAL-00518" />
+      <option name="project" value="LOCAL" />
+      <updated>1751522120246</updated>
+    </task>
+    <option name="localTasksCounter" value="519" />
     <servers />
   </component>
   <component name="UnknownFeatures">
