@@ -22,9 +22,9 @@ async def fetch_annual_plans(
         company_module_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user),
-        dep: bool = Depends(check_permission("audit_plans", "view"))
+       # dep: bool = Depends(check_permission("audit_plans", "view"))
 ):
-    if user.status_code != 200 and dep:
+    if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_annual_plans(connection=db, company_module_id=company_module_id)
