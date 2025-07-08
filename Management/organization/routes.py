@@ -15,7 +15,7 @@ async def create_new_organization(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await new_organization(db, organization=organization, user_email=user.user_email)
+        await new_organization(db, organization=organization, user_email=user.user_email, user_id=user.user_id)
         return ResponseMessage(detail="Organization successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
