@@ -126,6 +126,8 @@ async def get_engagements(connection: AsyncConnection, annual_id: str, user_id: 
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             module_id = [dict(zip(column_names, row_)) for row_ in rows]
+            if module_id.__len__() == 0:
+                raise HTTPException(status_code=400, detail="Invalid plan id")
             users = await get_module_users(connection=connection, module_id=module_id[0].get("module"))
             for user in users:
                 if user.get("id") == user_id:
@@ -134,6 +136,8 @@ async def get_engagements(connection: AsyncConnection, annual_id: str, user_id: 
                     column_names = [desc[0] for desc in cursor.description]
                     return [dict(zip(column_names, row_)) for row_ in rows]
             return []
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")

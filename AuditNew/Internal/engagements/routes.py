@@ -22,7 +22,7 @@ async def fetch_engagements(
         data = await get_engagements(connection=db, annual_id=annual_id, user_id=user.user_id)
         return data
     except HTTPException as e:
-        return HTTPException(status_code=e.status_code, detail=e.detail)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/{annual_id}", response_model=ResponseMessage)
 async def create_new_engagement(

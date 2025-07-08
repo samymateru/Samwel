@@ -19,7 +19,7 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
 
     check_user_query = sql.SQL(
         """
-        SELECT * public.entity WHERE email = %s;
+        SELECT * FROM public.entity WHERE email = %s;
         """)
 
     try:
