@@ -1,10 +1,9 @@
 from psycopg import AsyncConnection, sql
-from psycopg.errors import UniqueViolation
 from utils import get_unique_key, check_row_exists
 from Management.organization.schemas import *
 from fastapi import HTTPException
 
-async def new_organization(connection: AsyncConnection, organization: Organization, entity_id: str,  user_id: str ="", default: bool = False):
+async def new_organization(connection: AsyncConnection, organization: Organization,  user_email: str, user_id: str, default: bool = False):
     query = sql.SQL(
         """
         INSERT INTO public.organization (id, entity, name, email, telephone, "default", type, status, website, created_at) 
@@ -18,8 +17,19 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
         WHERE id = %s;
         """)
 
+    check_user_query = sql.SQL(
+        """
+        SELECT * public.entity WHERE email = %s;
+        """)
+
     try:
         async with connection.cursor() as cursor:
+            await cursor.execute(check_user_query, (user_email,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            entity_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if entity_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="You dont have entity")
             exists = await check_row_exists(connection=connection, table_name="organization", filters={
                 "name": organization.name
             })
@@ -27,7 +37,7 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
                 raise HTTPException(status_code=400, detail="Organization exists")
             await cursor.execute(query, (
             get_unique_key(),
-            entity_id,
+            entity_data[0].get("id"),
             organization.name,
             organization.email,
             organization.telephone,
@@ -38,14 +48,10 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
             datetime.now()
             ))
             organization_id = await cursor.fetchone()
-            if user_id != "":
-                await cursor.execute(update_user_organization_query, ([organization_id[0]], user_id,))
+            await cursor.execute(update_user_organization_query, ([organization_id[0]], user_id,))
             await connection.commit()
             return organization_id[0]
 
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail=" already already exist")
     except HTTPException:
         raise
     except Exception as e:
@@ -104,10 +110,6 @@ async def update_organization(connection: AsyncConnection, organization: Organiz
                 organization_id
             ))
             await connection.commit()
-
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail=" already already exist")
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error updating organization {e}")

@@ -6,9 +6,8 @@ from typing import List
 
 router = APIRouter(prefix="/organization")
 
-@router.post("/{entity_id}", response_model=ResponseMessage)
+@router.post("/", response_model=ResponseMessage)
 async def create_new_organization(
-        entity_id: str,
         organization: Organization,
         db=Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
@@ -16,7 +15,7 @@ async def create_new_organization(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await new_organization(db, organization=organization, entity_id=entity_id, user_id=user.user_id)
+        await new_organization(db, organization=organization, user_email=user.user_email)
         return ResponseMessage(detail="Organization successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
