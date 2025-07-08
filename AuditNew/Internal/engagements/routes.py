@@ -17,7 +17,7 @@ async def fetch_engagements(
         user: CurrentUser  = Depends(get_current_user)
 ):
     if user.status_code != 200:
-        return HTTPException(status_code=user.status_code, detail=user.description)
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_engagements(connection=db, annual_id=annual_id, user_id=user.user_id)
         return data
