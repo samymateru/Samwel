@@ -3,11 +3,40 @@ from Management.entity.schemas import *
 from fastapi import HTTPException
 from datetime import datetime
 from psycopg import AsyncConnection, sql
-from Management.organization.databases import new_organization
 from Management.organization.schemas import Organization, OrganizationStatus
 from Management.users.databases import new_user, new_owner
 from Management.users.schemas import User
-from utils import get_unique_key
+from utils import get_unique_key, check_row_exists
+
+
+async def new_default_organization(connection: AsyncConnection, organization: Organization,  entity_id: str, default: bool = True):
+    query = sql.SQL(
+        """
+        INSERT INTO public.organization (id, entity, name, email, telephone, "default", type, status, website, created_at) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (
+            get_unique_key(),
+            entity_id,
+            organization.name,
+            organization.email,
+            organization.telephone,
+            default,
+            organization.type,
+            "Opened",
+            organization.website,
+            datetime.now()
+            ))
+            organization_id = await cursor.fetchone()
+            await connection.commit()
+            return organization_id[0]
+    except HTTPException:
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Error creating default organization {e}")
 
 async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
     query = sql.SQL(
@@ -35,6 +64,12 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
 
     try:
         async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="entity", filters={
+                "email": entity.email
+            })
+            if exists:
+                raise HTTPException(status_code=400, detail="Entity exists")
+
             await cursor.execute(query, (
                 get_unique_key(),
                 entity.name,
@@ -44,16 +79,17 @@ async def create_new_entity(connection: AsyncConnection, entity : NewEntity):
                 datetime.now()
             ))
             entity_id = await cursor.fetchone()
-            organization_id = await new_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
+            organization_id = await new_default_organization(connection=connection, organization=organization, entity_id=entity_id[0], default=True)
             await new_owner(connection=connection, user=user, organization_id=organization_id)
             await connection.commit()
         return entity_id[0]
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail="Entity already already exist")
+
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new entity {e}")
+
 
 async def get_entities(connection: AsyncConnection, entity_id: str):
     query = sql.SQL("""SELECT * FROM public.entity WHERE id = {id}""").format(id=sql.Literal(entity_id))
