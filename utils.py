@@ -203,17 +203,25 @@ async def get_role_from_token(token: str = Depends(oauth2_scheme)):
         user_dict = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         user = CurrentUser(**user_dict)
         async for connection in get_async_db_connection():
-            data: __User__ = await get_module_user(connection=connection,  module_id=user.module_id, user_id=user.user_id)
+            data = await get_module_user(connection=connection,  module_id=user.module_id, user_id=user.user_id)
             roles_dicts = await get_roles(connection=connection, module_id=user.module_id)
             roles: List[Roles] = [Roles(**role_dict) for role_dict in roles_dicts]
+            if data.__len__() == 0:
+                raise HTTPException(status_code=403, detail="Error parsing the token")
             for role in roles:
                 if data[0].get("role") == role.name:
                     return role
             return roles_map.get(data[0].get("role"))
+
     except jwt.ExpiredSignatureError:
         return CurrentUser(status_code=401, description="token expired")
     except jwt.InvalidTokenError:
         return CurrentUser(status_code=401, description="invalid token")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
+
 
 def authorize(user_roles: list, module: str, required_permission: str) -> bool:
     for role in user_roles:
@@ -225,7 +233,6 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
 
 def check_permission(section: str, action: str):
     def inner(role: Roles = Depends(get_role_from_token)):
-        print(role)
         if not has_permission([role], section=section, action=action):
             raise HTTPException(
                 status_code=403,
