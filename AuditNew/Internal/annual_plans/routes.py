@@ -12,9 +12,8 @@ import tempfile
 import shutil
 from s3 import upload_file
 
-
-
 load_dotenv()
+
 
 router = APIRouter(prefix="/annual_plans")
 @router.get("/{company_module_id}", response_model=List[AnnualPlan])
@@ -22,7 +21,7 @@ async def fetch_annual_plans(
         company_module_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user),
-       # dep: bool = Depends(check_permission("audit_plans", "view"))
+        #dep: bool = Depends(check_permission("audit_plans", "view"))
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
@@ -34,7 +33,7 @@ async def fetch_annual_plans(
 
 
 @router.get("/plan/{plan_id}", response_model=AnnualPlan)
-async def fetch_annual_plans(
+async def fetch_annual_plan(
         plan_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user),
@@ -61,9 +60,9 @@ async def create_new_annual_plan(
         db = Depends(get_async_db_connection),
         background_tasks: BackgroundTasks = BackgroundTasks(),
         user: CurrentUser  = Depends(get_current_user),
-        dep: bool = Depends(check_permission("audit_plans", "create"))
+        #dep: bool = Depends(check_permission("audit_plans", "create"))
 ):
-    if user.status_code != 200 and dep:
+    if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         with tempfile.NamedTemporaryFile(delete=False) as tmp:

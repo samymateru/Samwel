@@ -1,11 +1,11 @@
 import smtplib
-from email.message import EmailMessage
+from mail.message import EmailMessage
 
 # Email details
 sender_email = "samymateru1999@gmail.com"
-receiver_email = "swaicatherine26@gmail.com"
+receiver_email = "bngonde@capstone.co.tz"
 subject = "Hello from Python!"
-body = "Punguza umbea binti"
+body = "dogo vpi"
 
 # Create the email
 email = EmailMessage()

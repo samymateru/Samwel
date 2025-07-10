@@ -6,7 +6,6 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from utils import check_row_exists, get_unique_key
 
-
 async def add_new_annual_plan(connection: AsyncConnection, audit_plan: AnnualPlan, company_module_id: str):
     query = sql.SQL(
         """
@@ -94,6 +93,7 @@ async def edit_annual_plan(connection: AsyncConnection, annual_plan: AnnualPlan,
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error occur while updating annual plan {e}")
+
 
 async def remove_annual_plan(connection: AsyncConnection, annual_plan_id: str):
     query = sql.SQL("DELETE FROM public.annual_plans WHERE id = %s")
