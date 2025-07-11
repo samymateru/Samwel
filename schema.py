@@ -41,3 +41,8 @@ class ResponseMessage(BaseModel):
 
 class TokenResponse(BaseModel):
     token: Optional[str]
+
+class EmailSchema(BaseModel):
+    to: str
+    subject: str
+    body: str

@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict
 from datetime import datetime
 from enum import Enum
 
@@ -27,4 +27,6 @@ class Module(BaseModel):
     name: ModuleName
     purchase_date: Optional[datetime] = datetime.now()
     status: Optional[ModuleStatus] = ModuleStatus.ACTIVE
+    assigned: Optional[bool] = Field(default=False)
+
 

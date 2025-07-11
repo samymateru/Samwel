@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
+
+from mx import email_queue
 from utils import get_async_db_connection
-from schema import CurrentUser, ResponseMessage
+from schema import CurrentUser, ResponseMessage, EmailSchema
 from utils import get_current_user
 from background import set_company_profile
 from Management.entity.databases import *
@@ -16,6 +18,8 @@ async def create_entity(
     try:
         entity_id = await create_new_entity(connection=db_async, entity=entity)
         asyncio.create_task(set_company_profile(company_id=entity_id))
+        email = EmailSchema(to=entity.email, subject="Entity created", body="Congrats new entity has been created success fully please visit our login page with your credentials")
+        await email_queue.put(email.model_dump())
         return ResponseMessage(detail="Entity successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

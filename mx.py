@@ -1,10 +1,6 @@
-from fastapi import FastAPI, BackgroundTasks
-from pydantic import BaseModel, EmailStr
+from email.message import EmailMessage
 import asyncio
 from aiosmtplib import SMTP
-from mail.message import EmailMessage
-
-app = FastAPI()
 
 # Email config
 SMTP_SERVER = "smtp.gmail.com"

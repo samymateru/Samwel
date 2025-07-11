@@ -1,5 +1,5 @@
 import smtplib
-from mail.message import EmailMessage
+from mx.message import EmailMessage
 
 # Email details
 sender_email = "samymateru1999@gmail.com"

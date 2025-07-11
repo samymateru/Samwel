@@ -17,6 +17,11 @@ async def fetch_organization_modules(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_organization_modules(connection=db, organization_id=organization_id)
+        for module in data:
+            for user_ in module.get("users"):
+                if user.user_id == user_.get("id", ""):
+                    module["assigned"] = True
+
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

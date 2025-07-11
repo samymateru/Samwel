@@ -34,6 +34,7 @@ from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
+from mx import smtp_worker, email_queue
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
@@ -56,6 +57,7 @@ if sys.platform == "win32":
 @asynccontextmanager
 async def lifespan(api: FastAPI):
     try:
+        #asyncio.create_task(smtp_worker())
         await init_redis_pool()
         await connection_pool_async.open()
         print("System booted successfully")
@@ -71,7 +73,8 @@ async def lifespan(api: FastAPI):
     except Exception as e:
         print(e)
 
-app = FastAPI()
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -82,7 +85,6 @@ app.add_middleware(
 )
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
-
 
 @app.get("/")
 async def home():
@@ -191,7 +193,6 @@ app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 app.include_router(attachments, tags=["Attachments"])
-
 
 
 if __name__ == "__main__":

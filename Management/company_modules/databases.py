@@ -1,11 +1,8 @@
 import json
-
 from fastapi import HTTPException
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 from Management.company_modules.schemas import *
-from Management.users.schemas import User
 from psycopg import AsyncConnection, sql
-
 from Management.users.schemas import UserType
 from utils import get_unique_key
 
@@ -103,7 +100,7 @@ async def get_users_modules(connection: AsyncConnection, user_id: str):
         raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")
 
 async def get_organization_modules(connection: AsyncConnection, organization_id: str):
-    query = sql.SQL("SELECT * FROM public.modules WHERE organization = %s")
+    query = sql.SQL("SELECT id, name, purchase_date, status, users FROM public.modules WHERE organization = %s")
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (organization_id,))
