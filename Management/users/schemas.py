@@ -33,15 +33,40 @@ class __User__(BaseModel):
     created_at: datetime = datetime.now()
 
 class User(BaseModel):
-    id: Optional[str] = None
+    id: str
+    entity_id: str
     name: str
     email: str
     telephone: str
-    password: Optional[str] = Field(default="123456")
+    password: str
+    administrator: bool = Field(default=False)
+    owner: bool = Field(default=False)
     role: Optional[str] = None
     title: str = None
     module: Optional[str] = None
     type: Optional[str] = None
     created_at: datetime = datetime.now()
+
+class NewUser(BaseModel):
+    name: str = Field(default="")
+    telephone: str =  Field(default="")
+    email: str
+    title: str
+    role: str
+    module_id: str
+
+class OrganizationsUsers(BaseModel):
+    organization_id: str
+    user_id: str
+    administrator: bool
+    owner: bool
+    created_at: datetime = Field(default=datetime.now())
+
+class ModulesUsers(BaseModel):
+    module_id: str
+    user_id: str
+    title: str
+    role: str
+    created_at: datetime = Field(default=datetime.now())
 
 

@@ -3,55 +3,36 @@ from utils import get_unique_key, check_row_exists
 from Management.organization.schemas import *
 from fastapi import HTTPException
 
-async def new_organization(connection: AsyncConnection, organization: Organization,  user_email: str, user_id: str, default: bool = False):
+async def create_organization(connection: AsyncConnection, organization: Organization,  entity_id: str):
     query = sql.SQL(
         """
-        INSERT INTO public.organization (id, entity, name, email, telephone, "default", type, status, website, created_at) 
+        INSERT INTO public.organizations (id, entity, name, email, telephone, "default", type, status, website, created_at) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
-        """)
-
-    update_user_organization_query = sql.SQL(
-        """
-        UPDATE public.users 
-        SET organization = organization || %s
-        WHERE id = %s;
-        """)
-
-    check_user_query = sql.SQL(
-        """
-        SELECT * FROM public.entity WHERE email = %s;
         """)
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(check_user_query, (user_email,))
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            entity_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if entity_data.__len__() == 0:
-                raise HTTPException(status_code=400, detail="You dont have entity")
-            exists = await check_row_exists(connection=connection, table_name="organization", filters={
-                "name": organization.name
+            exists = await check_row_exists(connection=connection, table_name="organizations", filters={
+                "name": organization.name,
+                "entity": entity_id
             })
             if exists:
                 raise HTTPException(status_code=400, detail="Organization exists")
             await cursor.execute(query, (
-            get_unique_key(),
-            entity_data[0].get("id"),
+            organization.id,
+            entity_id,
             organization.name,
             organization.email,
             organization.telephone,
-            default,
+            organization.default,
             organization.type,
             "Opened",
             organization.website,
             datetime.now()
             ))
             organization_id = await cursor.fetchone()
-            await cursor.execute(update_user_organization_query, ([organization_id[0]], user_id,))
             await connection.commit()
             return organization_id[0]
-
     except HTTPException:
         raise
     except Exception as e:
@@ -62,21 +43,24 @@ async def new_organization(connection: AsyncConnection, organization: Organizati
 async def get_user_organizations(connection: AsyncConnection, user_id: str):
     query = sql.SQL(
         """
-        SELECT * FROM public.organization WHERE id = ANY(%s);
-        """)
-    organization_list_query = sql.SQL(
-        """
-        SELECT organization FROM public.users WHERE id = %s;
+        SELECT
+        org.id,
+        org.name,
+        org.email,
+        org.telephone,
+        org.default,
+        org.type,
+        org.status,
+        org.website,
+        org_user.administrator,
+        org_user.owner
+        FROM public.organizations_users as org_user
+        JOIN organizations org ON org.id = org_user.organization_id
+        WHERE user_id = %s;
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(organization_list_query, (user_id,))
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            user_organizations = [dict(zip(column_names, row_)) for row_ in rows]
-            if user_organizations.__len__() == 0:
-                raise HTTPException(status_code=401, detail="Users not exists")
-            await cursor.execute(query, (user_organizations[0].get("organization"),))
+            await cursor.execute(query, (user_id,))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             organization_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -92,7 +76,7 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
 async def update_organization(connection: AsyncConnection, organization: Organization, organization_id: str):
     query = sql.SQL(
         """
-        UPDATE public.organization
+        UPDATE public.organizations
         SET 
         name = %s,
         email = %s,
@@ -117,7 +101,7 @@ async def update_organization(connection: AsyncConnection, organization: Organiz
 async def get_organization_data(connection: AsyncConnection, organization_id: str):
     query = sql.SQL(
         """
-        SELECT * FROM public.organization WHERE id = {id}
+        SELECT * FROM public.organizations WHERE id = {id}
         """).format(id=sql.Literal(organization_id))
     try:
         async with connection.cursor() as cursor:

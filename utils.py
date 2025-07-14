@@ -460,7 +460,7 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
             WHERE u->>'id' = %s
           ) AS users
         FROM public.modules AS m
-        JOIN public.organization AS o ON m.organization = o.id
+        JOIN public.organizations AS o ON m.organization = o.id
         WHERE m.id = %s
           AND EXISTS (
             SELECT 1

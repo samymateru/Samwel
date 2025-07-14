@@ -23,10 +23,15 @@ class Role(BaseModel):
     user: User
 
 class Module(BaseModel):
-    id: Optional[str] = None
+    id: str
     name: ModuleName
-    purchase_date: Optional[datetime] = datetime.now()
-    status: Optional[ModuleStatus] = ModuleStatus.ACTIVE
-    assigned: Optional[bool] = Field(default=False)
+    purchase_date: Optional[datetime] = Field(default=datetime.now())
+    status: Optional[ModuleStatus] = Field(default=ModuleStatus.ACTIVE)
+    role: Optional[str] = None
+    title: Optional[str] = None
+
+class NewModule(BaseModel):
+    name: ModuleName
+
 
 

@@ -9,14 +9,16 @@ class OrganizationStatus(str, Enum):
     OPENED = "Opened"
 
 class Organization(BaseModel):
-    id: Optional[str] = None
+    id: str
     name: str
     email: str
-    telephone: str
-    default: Optional[bool] = Field(default=False)
+    telephone: Optional[str] = None
+    default: bool = Field(default=False)
     type: str
     status: Optional[OrganizationStatus] = Field(default=OrganizationStatus.OPENED)
-    website: str
+    website: Optional[str] = None
+    administrator: Optional[bool] = False
+    owner: Optional[bool] = False
     created_at: datetime = datetime.now()
 
 class UpdateOrganization(BaseModel):
@@ -24,6 +26,13 @@ class UpdateOrganization(BaseModel):
     email: str
     telephone: str
     default: Optional[bool] = Field(default=False)
+    type: str
+
+class NewOrganization(BaseModel):
+    name: str
+    email: str
+    telephone: Optional[str] = None
+    website: Optional[str] = None
     type: str
 
 

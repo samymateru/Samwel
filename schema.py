@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List, Dict
 from enum import Enum
 
+from Management.organization.schemas import Organization
 from Management.roles.schemas import Roles
 
 
@@ -46,3 +47,15 @@ class EmailSchema(BaseModel):
     to: str
     subject: str
     body: str
+
+class LoginResponse(BaseModel):
+    token: str
+    token_type: str = "Bearer"
+    user_id: str
+    entity_id: str
+    name: str
+    email: str
+    telephone: str = None
+    administrator: bool
+    owner: bool
+    organizations: List[Organization]

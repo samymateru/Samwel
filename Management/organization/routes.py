@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends
+
+from Management.users.databases import attach_user_to_organization
+from Management.users.schemas import OrganizationsUsers
 from schema import ResponseMessage, CurrentUser
 from Management.organization.databases import *
 from utils import get_async_db_connection, get_current_user
@@ -6,16 +9,35 @@ from typing import List
 
 router = APIRouter(prefix="/organization")
 
-@router.post("/", response_model=ResponseMessage)
+@router.post("/{entity_id}", response_model=ResponseMessage)
 async def create_new_organization(
-        organization: Organization,
+        entity_id: str,
+        new_organization: NewOrganization,
         db=Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user)
     ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await new_organization(db, organization=organization, user_email=user.user_email, user_id=user.user_id)
+        organization = Organization(
+            id=get_unique_key(),
+            name=new_organization.name,
+            email=new_organization.email,
+            telephone=new_organization.telephone,
+            type=new_organization.type,
+            website=new_organization.website,
+        )
+
+        organization_id = await create_organization(db, organization=organization, entity_id=entity_id)
+
+        attach_data = OrganizationsUsers(
+            organization_id=organization_id,
+            user_id=user.user_id,
+            administrator=True,
+            owner=True
+        )
+
+        await attach_user_to_organization(connection=db, attach_data=attach_data)
         return ResponseMessage(detail="Organization successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

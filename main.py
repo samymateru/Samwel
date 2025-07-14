@@ -3,6 +3,8 @@ from fastapi import FastAPI, Depends, Form
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
+from Management.organization.databases import get_user_organizations
+from Management.organization.schemas import Organization
 from Management.roles.routes import router as roles_router
 from Management.company_modules.routes import router as company_modules_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -36,7 +38,7 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from mx import smtp_worker, email_queue
 from redis_cache import init_redis_pool, close_redis_pool
-from schema import CurrentUser, ResponseMessage, TokenResponse
+from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
     update_user_password, generate_user_token
 from Management.users.databases import get_user_by_email
@@ -116,7 +118,7 @@ async def get_token(
     token: str = create_jwt_token(data.model_dump())
     return TokenResponse(token=token)
 
-@app.post("/login", tags=["Authentication"])
+@app.post("/login", tags=["Authentication"], response_model=LoginResponse)
 async def login(
           email: str = Form(...),
           password: str = Form(...),
@@ -130,13 +132,23 @@ async def login(
             user_id = user_data[0].get("id"),
             user_email=user_data[0].get("email")
         )
-        user: dict = {
-            "id": user_data[0].get("id"),
-            "name": user_data[0].get("name"),
-            "email": user_data[0].get("email"),
-        }
+        data = await get_user_organizations(connection=db, user_id=user_data[0].get("id"))
+        organizations = [Organization(**p) for p in data]
         token = create_jwt_token(user_.model_dump())
-        return {"token": token, "detail": "login success", "content": user}
+
+        login_response = LoginResponse (
+            user_id=user_data[0].get("id"),
+            entity_id=user_data[0].get("entity"),
+            name= user_data[0].get("name"),
+            email= user_data[0].get("email"),
+            telephone=user_data[0].get("telephone"),
+            administrator=user_data[0].get("administrator"),
+            owner=user_data[0].get("owner"),
+            organizations= organizations,
+            token=token
+        )
+
+        return login_response
     else:
         raise HTTPException(detail="Invalid password", status_code=400)
 
