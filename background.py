@@ -2,6 +2,7 @@ from seedings import *
 from utils import get_async_db_connection
 from AuditNew.Internal.engagements.administration.databases import add_new_business_contact
 
+
 async def set_company_profile(company_id: str):
     async for connection in get_async_db_connection():
         await risk_rating(connection=connection, company=company_id)
