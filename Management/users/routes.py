@@ -9,7 +9,7 @@ from Management.roles.databases import *
 
 router = APIRouter(prefix="/users")
 
-@router.get("/entity/{entity_id}")
+@router.get("/entity/{entity_id}", response_model=List[EntityUser])
 async def fetch_entity_users(
         entity_id: str,
         db = Depends(get_async_db_connection),
@@ -23,7 +23,7 @@ async def fetch_entity_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/organization/{organization_id}")
+@router.get("/organization/{organization_id}", response_model=List[OrganizationUser])
 async def fetch_organization_users(
         organization_id: str,
         db = Depends(get_async_db_connection),
@@ -37,7 +37,7 @@ async def fetch_organization_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/module/{module_id}")
+@router.get("/module/{module_id}", response_model=List[ModuleUser])
 async def fetch_module_users(
         module_id: str,
         db = Depends(get_async_db_connection),
@@ -51,7 +51,7 @@ async def fetch_module_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/module/user/{user_id}")
+@router.get("/module/user/{user_id}", response_model=ModuleUser)
 async def fetch_module_user(
         user_id: str,
         module_id: str = Query(...),

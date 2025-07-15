@@ -47,6 +47,40 @@ class User(BaseModel):
     type: Optional[str] = None
     created_at: datetime = datetime.now()
 
+class EntityUser(BaseModel):
+    id: str
+    entity: str
+    name: str
+    email: str
+    telephone: str
+    administrator: bool = Field(default=False)
+    owner: bool = Field(default=False)
+    created_at: datetime = datetime.now()
+
+class OrganizationUser(BaseModel):
+    id: str
+    entity: str
+    organization: str
+    name: str
+    email: str
+    telephone: str
+    administrator: bool = Field(default=False)
+    owner: bool = Field(default=False)
+    created_at: datetime = datetime.now()
+
+class ModuleUser(BaseModel):
+    id: str
+    entity: str
+    module: str
+    name: str
+    email: str
+    telephone: str
+    title: str
+    role: str
+    type: Optional[str] = None
+    created_at: datetime = datetime.now()
+
+
 class NewUser(BaseModel):
     name: str = Field(default="")
     telephone: str =  Field(default="")

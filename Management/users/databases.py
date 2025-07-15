@@ -211,12 +211,13 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
         SELECT 
         usr.id,
         usr.entity,
+        org_usr.organization_id as organization,
         usr.name,
         usr.email,
         usr.telephone,
         usr.created_at,
         org_usr.administrator,
-        org_usr.owner,
+        org_usr.owner
         FROM public.organizations_users org_usr
         JOIN public.users usr ON usr.id = org_usr.user_id
         WHERE org_usr.organization_id = %s;
@@ -238,19 +239,21 @@ async def get_module_users(connection: AsyncConnection, module_id: str):
         SELECT 
         usr.id,
         usr.entity,
+        mod_usr.module_id as module,
         usr.name,
         usr.email,
         usr.telephone,
         usr.created_at,
         mod_usr.title,
-        mod_usr.role 
+        mod_usr.role,
+        mod_usr.type 
         FROM public.modules_users mod_usr
         JOIN public.users usr ON usr.id = mod_usr.user_id
         WHERE  mod_usr.module_id = %s;
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query)
+            await cursor.execute(query, (module_id,))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             user_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -264,9 +267,10 @@ async def get_module_users(connection: AsyncConnection, module_id: str):
 async def get_module_user(connection: AsyncConnection, module_id: str, user_id: str):
     query = sql.SQL(
         """
-                SELECT 
+        SELECT 
         usr.id,
         usr.entity,
+        mod_usr.module_id as module,
         usr.name,
         usr.email,
         usr.telephone,
@@ -274,12 +278,12 @@ async def get_module_user(connection: AsyncConnection, module_id: str, user_id: 
         mod_usr.title,
         mod_usr.role 
         FROM public.modules_users mod_usr
-        JOIN public.users usr ON usr.id = %s
-        WHERE  mod_usr.module_id = %s;
+        JOIN public.users usr ON usr.id = mod_usr.user_id
+        WHERE  mod_usr.module_id = %s AND usr.id = %s;
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (user_id, module_id))
+            await cursor.execute(query, (module_id, user_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row)) for row in rows]
