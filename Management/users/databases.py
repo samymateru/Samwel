@@ -332,21 +332,14 @@ async def get_user_by_email(connection: AsyncConnection, email: str):
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
 
 async def remove_module(connection: AsyncConnection, module_id: str):
-    query = sql.SQL(
-        """
-        BEGIN;
-        DELETE FROM public.modules_users
-        WHERE modules_users.module_id = %s;
-        
-        DELETE FROM public.modules
-        WHERE modules.id = %s;
-        
-        COMMIT;
-        """)
+    delete_modules_users = sql.SQL("DELETE FROM public.modules_users WHERE module_id = %s;")
+    delete_module = sql.SQL("DELETE FROM public.modules WHERE id = %s;")
+
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query=query, params=(module_id, module_id))
-            await connection.commit()
+            await cursor.execute(delete_modules_users,(module_id,))
+            await cursor.execute(delete_module,(module_id,))
+        await connection.commit()
     except HTTPException:
         await connection.rollback()
         raise
