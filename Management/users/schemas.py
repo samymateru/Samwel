@@ -57,6 +57,13 @@ class EntityUser(BaseModel):
     owner: bool = Field(default=False)
     created_at: datetime = datetime.now()
 
+
+class ModuleSection(BaseModel):
+    id: str
+    role: str
+    title: str
+    type: Optional[str] = None
+
 class OrganizationUser(BaseModel):
     id: str
     entity: str
@@ -66,6 +73,7 @@ class OrganizationUser(BaseModel):
     telephone: str
     administrator: bool = Field(default=False)
     owner: bool = Field(default=False)
+    modules: List[ModuleSection]
     created_at: datetime = datetime.now()
 
 class ModuleUser(BaseModel):

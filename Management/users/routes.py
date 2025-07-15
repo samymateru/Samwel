@@ -33,6 +33,7 @@ async def fetch_organization_users(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_organizations_users(db, organization_id=organization_id)
+        print(data)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

@@ -209,18 +209,42 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
     query = sql.SQL(
         """
         SELECT 
-        usr.id,
-        usr.entity,
-        org_usr.organization_id as organization,
-        usr.name,
-        usr.email,
-        usr.telephone,
-        usr.created_at,
-        org_usr.administrator,
-        org_usr.owner
+          usr.id,
+          usr.entity,
+          org_usr.organization_id as organization,
+          usr.name,
+          usr.email,
+          usr.telephone,
+          usr.created_at,
+          org_usr.administrator,
+          org_usr.owner,
+          COALESCE(
+            JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id', mod_usr.module_id,
+                'role', mod_usr.role,
+                'title', mod_usr.title,
+                'type', mod_usr.type
+              )
+            ) FILTER (WHERE mod_usr.module_id IS NOT NULL),
+            '[]'::json
+          ) AS modules
         FROM public.organizations_users org_usr
         JOIN public.users usr ON usr.id = org_usr.user_id
-        WHERE org_usr.organization_id = %s;
+        LEFT JOIN public.modules_users mod_usr ON mod_usr.user_id = org_usr.user_id
+        LEFT JOIN public.modules mod ON mod.id = mod_usr.module_id
+          AND mod.organization = org_usr.organization_id
+        WHERE org_usr.organization_id = %s
+        GROUP BY 
+          usr.id,
+          usr.entity,
+          org_usr.organization_id,
+          usr.name,
+          usr.email,
+          usr.telephone,
+          usr.created_at,
+          org_usr.administrator,
+          org_usr.owner;
         """)
     try:
         async with connection.cursor() as cursor:
