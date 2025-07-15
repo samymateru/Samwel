@@ -334,7 +334,6 @@ async def get_user_by_email(connection: AsyncConnection, email: str):
 async def remove_module(connection: AsyncConnection, module_id: str):
     delete_modules_users = sql.SQL("DELETE FROM public.modules_users WHERE module_id = %s;")
     delete_module = sql.SQL("DELETE FROM public.modules WHERE id = %s;")
-
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(delete_modules_users,(module_id,))
