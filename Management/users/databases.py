@@ -211,7 +211,7 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
         SELECT 
           usr.id,
           usr.entity,
-          org_usr.organization_id as organization,
+          org_usr.organization_id AS organization,
           usr.name,
           usr.email,
           usr.telephone,
@@ -221,7 +221,7 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
           COALESCE(
             JSON_AGG(
               JSON_BUILD_OBJECT(
-                'id',    mod_usr.module_id,
+                'id',    mod.id,
                 'title', mod_usr.title,
                 'role',  mod_usr.role,
                 'type',  mod_usr.type,
@@ -231,10 +231,12 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
             '[]'::json
           ) AS modules
         FROM public.organizations_users org_usr
-        JOIN public.users usr ON usr.id = org_usr.user_id
-        LEFT JOIN public.modules_users mod_usr ON mod_usr.user_id = org_usr.user_id
-        LEFT JOIN public.modules mod ON mod.id = mod_usr.module_id
-          AND mod.organization = org_usr.organization_id
+        JOIN public.users usr 
+          ON usr.id = org_usr.user_id
+        LEFT JOIN public.modules_users mod_usr 
+          ON mod_usr.user_id = usr.id
+        LEFT JOIN public.modules mod 
+          ON mod.id = mod_usr.module_id
         WHERE org_usr.organization_id = %s
         GROUP BY 
           usr.id,
