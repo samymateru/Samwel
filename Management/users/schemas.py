@@ -61,6 +61,9 @@ class EntityUser(BaseModel):
 class ModuleSection(BaseModel):
     id: str
     name: str
+    role: str
+    title: str
+    type: Optional[str] = None
 
 class OrganizationUser(BaseModel):
     id: str

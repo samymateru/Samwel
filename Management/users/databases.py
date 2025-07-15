@@ -221,8 +221,11 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
           COALESCE(
             JSON_AGG(
               JSON_BUILD_OBJECT(
-                'id', mod_usr.module_id,
-                'name', mod.name
+                'id',    mod_usr.module_id,
+                'title', mod_usr.title,
+                'role',  mod_usr.role,
+                'type',  mod_usr.type,
+                'name',  mod.name
               )
             ) FILTER (WHERE mod_usr.module_id IS NOT NULL),
             '[]'::json
