@@ -29,6 +29,7 @@ class Module(BaseModel):
     status: Optional[ModuleStatus] = Field(default=ModuleStatus.ACTIVE)
     role: Optional[str] = None
     title: Optional[str] = None
+    type: Optional[str] = None
 
 class NewModule(BaseModel):
     name: ModuleName

@@ -52,7 +52,14 @@ async def add_new_organization_module(
 async def get_users_modules(connection: AsyncConnection, user_id: str, organization_id: str):
     query = sql.SQL(
         """
-        SELECT *
+        SELECT
+        mod.id, 
+        mod.name,
+        mod.purchase_date,
+        mod.status,
+        mod_usr.role,
+        mod_usr.title,
+        mod_usr.type
         FROM modules mod
         JOIN organizations org ON mod.organization = org.id
         JOIN modules_users mod_usr ON mod.id = mod_usr.module_id
