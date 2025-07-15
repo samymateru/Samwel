@@ -256,7 +256,7 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
             return user_data
     except Exception as e:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
+        raise HTTPException(status_code=400, detail=f"Error querying organization users {e}")
 
 async def get_module_users(connection: AsyncConnection, module_id: str):
     query = sql.SQL(
