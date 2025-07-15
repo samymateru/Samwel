@@ -83,12 +83,9 @@ async def get_organization_modules(connection: AsyncConnection, organization_id:
         mod.id, 
         mod.name, 
         mod.purchase_date, 
-        mod.status,
-        mod_usr.title,
-        mod_usr.role
+        mod.status
         FROM public.modules mod
-        JOIN modules_users mod_usr ON mod_usr.module_id = mod.id
-        WHERE organization = %s
+        WHERE mod.organization = %s;
         """)
     try:
         async with connection.cursor() as cursor:

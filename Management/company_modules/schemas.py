@@ -31,6 +31,13 @@ class Module(BaseModel):
     title: Optional[str] = None
     type: Optional[str] = None
 
+
+class OrganizationModule(BaseModel):
+    id: str
+    name: ModuleName
+    purchase_date: Optional[datetime] = Field(default=datetime.now())
+    status: Optional[ModuleStatus] = Field(default=ModuleStatus.ACTIVE)
+
 class NewModule(BaseModel):
     name: ModuleName
 

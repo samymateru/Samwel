@@ -10,7 +10,7 @@ from schema import CurrentUser, ResponseMessage
 
 router = APIRouter(prefix="/modules")
 
-@router.get("/organization/{organization_id}", response_model=List[Module])
+@router.get("/organization/{organization_id}", response_model=List[OrganizationModule])
 async def fetch_organization_modules(
         organization_id: str,
         db = Depends(get_async_db_connection),
@@ -33,7 +33,7 @@ async def fetch_users_modules(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_users_modules(connection=db, user_id="23777b70230b", organization_id=organization_id)
+        data = await get_users_modules(connection=db, user_id=user.user_id, organization_id=organization_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
