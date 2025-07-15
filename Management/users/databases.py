@@ -222,9 +222,7 @@ async def get_organizations_users(connection: AsyncConnection, organization_id: 
             JSON_AGG(
               JSON_BUILD_OBJECT(
                 'id', mod_usr.module_id,
-                'role', mod_usr.role,
-                'title', mod_usr.title,
-                'type', mod_usr.type
+                'name', mod.name
               )
             ) FILTER (WHERE mod_usr.module_id IS NOT NULL),
             '[]'::json
@@ -331,4 +329,24 @@ async def get_user_by_email(connection: AsyncConnection, email: str):
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
 
 async def remove_module(connection: AsyncConnection, module_id: str):
-    pass
+    query = sql.SQL(
+        """
+        BEGIN;
+        DELETE FROM public.modules_users
+        WHERE modules_users.module_id = %s;
+        
+        DELETE FROM public.modules
+        WHERE modules.id = %s;
+        
+        COMMIT;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query=query, params=(module_id, module_id))
+            await connection.commit()
+    except HTTPException:
+        await connection.rollback()
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting module {e}")
