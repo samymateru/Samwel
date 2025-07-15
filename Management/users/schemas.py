@@ -53,6 +53,7 @@ class NewUser(BaseModel):
     email: str
     title: str
     role: str
+    type: str
     module_id: str
 
 class OrganizationsUsers(BaseModel):
@@ -67,6 +68,7 @@ class ModulesUsers(BaseModel):
     user_id: str
     title: str
     role: str
+    type: str
     created_at: datetime = Field(default=datetime.now())
 
 
