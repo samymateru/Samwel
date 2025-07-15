@@ -49,27 +49,22 @@ async def add_new_organization_module(
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating organization module {e}")
 
-async def get_users_modules(connection: AsyncConnection, user_id: str):
+async def get_users_modules(connection: AsyncConnection, user_id: str, organization_id: str):
     query = sql.SQL(
         """
-        SELECT * FROM public.modules WHERE id = ANY(%s)
+        SELECT *
+        FROM modules mod
+        JOIN organizations org ON mod.organization = org.id
+        JOIN modules_users mod_usr ON mod.id = mod_usr.module_id
+        WHERE mod_usr.user_id = %s AND org.id = %s;
         """)
-
-    check_user_query = sql.SQL(
-        """
-        SELECT modules FROM public.users WHERE id = {user_id}
-        """).format(user_id=sql.Literal(user_id))
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(check_user_query)
+            await cursor.execute(query, (user_id, organization_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            user_data = [dict(zip(column_names, row_)) for row_ in rows]
-            await cursor.execute(query, (user_data[0].get("modules"), ))
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            module_data = [dict(zip(column_names, row_)) for row_ in rows]
-            return module_data
+            modules_data = [dict(zip(column_names, row_)) for row_ in rows]
+            return modules_data
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")
