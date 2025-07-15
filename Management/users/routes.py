@@ -23,7 +23,7 @@ async def fetch_entity_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/organization/{organization_id}", response_model=List[OrganizationUser])
+@router.get("/organization/{organization_id}")
 async def fetch_organization_users(
         organization_id: str,
         db = Depends(get_async_db_connection),
