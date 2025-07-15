@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from Management.users.databases import attach_user_to_module
+from Management.users.databases import attach_user_to_module, remove_module
 from Management.users.schemas import ModulesUsers
 from utils import get_async_db_connection
 from Management.company_modules.databases import *
@@ -35,6 +35,20 @@ async def fetch_users_modules(
     try:
         data = await get_users_modules(connection=db, user_id=user.user_id, organization_id=organization_id)
         return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/{module_id}", response_model=ResponseMessage)
+async def delete_module(
+        module_id: str,
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+    ):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await remove_module(connection=db, module_id=module_id)
+        return ResponseMessage(detail="Module deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

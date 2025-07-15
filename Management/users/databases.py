@@ -329,3 +329,6 @@ async def get_user_by_email(connection: AsyncConnection, email: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
+
+async def remove_module(connection: AsyncConnection, module_id: str):
+    pass
