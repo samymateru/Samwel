@@ -62,8 +62,9 @@ async def create_new_organization_module(
         attach_data = ModulesUsers(
             module_id=module_id,
             user_id=user.user_id,
-            title="Owner",
-            role="Administrator"
+            title="Administrator",
+            role="Administrator",
+            type="audit",
         )
 
         await attach_user_to_module(connection=db, attach_data=attach_data)
