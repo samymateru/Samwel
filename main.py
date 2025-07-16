@@ -117,13 +117,12 @@ async def get_token(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
     token: str = create_jwt_token(data.model_dump())
-    print(request.url.hostname)
     response.set_cookie(
         key="refresh_token",
         value=token,
         httponly=True,
         max_age=3600,
-        secure=False,
+        secure=True,
         samesite="lax",
         domain=request.url.hostname
     )
