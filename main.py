@@ -1,5 +1,5 @@
 import time
-from fastapi import FastAPI, Depends, Form
+from fastapi import FastAPI, Depends, Form, Response, Request
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -36,7 +36,6 @@ from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-from mx import smtp_worker, email_queue
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
@@ -109,14 +108,25 @@ async def tester(
 @app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
 async def get_token(
         module_id: str,
+        response: Response,
+        request: Request,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
-    print(data)
     token: str = create_jwt_token(data.model_dump())
+    print(request.url.hostname)
+    response.set_cookie(
+        key="refresh_token",
+        value=token,
+        httponly=True,
+        max_age=3600,
+        secure=False,
+        samesite="lax",
+        domain=request.url.hostname
+    )
     return TokenResponse(token=token)
 
 @app.post("/login", tags=["Authentication"], response_model=LoginResponse)

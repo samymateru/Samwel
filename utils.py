@@ -126,7 +126,6 @@ def generated_password() -> str:
     password = ''.join(secrets.choice(alphabet) for _ in range(16))
     return password
 
-
 async def get_next_reference(connection: AsyncConnection, resource: str, engagement_id: str):
     query = sql.SQL(
         """
@@ -156,7 +155,6 @@ async def get_next_reference(connection: AsyncConnection, resource: str, engagem
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
-
 
 async def get_reference(connection: AsyncConnection, resource: str, id: str):
     if resource == "review_comment":
@@ -220,7 +218,6 @@ async def get_role_from_token(token: str = Depends(oauth2_scheme)):
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
-
 
 def authorize(user_roles: list, module: str, required_permission: str) -> bool:
     for role in user_roles:
