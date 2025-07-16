@@ -115,6 +115,7 @@ async def get_token(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+    print(data)
     token: str = create_jwt_token(data.model_dump())
     return TokenResponse(token=token)
 
@@ -130,7 +131,9 @@ async def login(
     if verify_password(password_hash, password):
         user_ = CurrentUser(
             user_id = user_data[0].get("id"),
-            user_email=user_data[0].get("email")
+            user_name=user_data[0].get("name"),
+            user_email=user_data[0].get("email"),
+            entity_id=user_data[0].get("entity")
         )
         data = await get_user_organizations(connection=db, user_id=user_data[0].get("id"))
         organizations = [Organization(**p) for p in data]

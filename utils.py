@@ -451,42 +451,33 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
     query_module_data = sql.SQL(
         """
         SELECT 
-          m.id,
-          m.name,
-          m.organization,
-          (
-            SELECT jsonb_agg(u)
-            FROM jsonb_array_elements(m.users) AS u
-            WHERE u->>'id' = %s
-          ) AS users
-        FROM public.modules AS m
-        JOIN public.organizations AS o ON m.organization = o.id
-        WHERE m.id = %s
-          AND EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements(m.users) AS u
-            WHERE u->>'id' = %s
-          );
-        """)
-    query_user = sql.SQL(
-        """SELECT name, email, id FROM public.users WHERE id = %s;
+        usr.id,
+        usr.name,
+        usr.email,
+        usr.entity,
+        mod_usr.module_id,
+        mod_usr.title,
+        mod_usr.role,
+        mod_usr.type
+        FROM modules_users mod_usr
+        JOIN users usr ON usr.id = mod_usr.user_id
+        WHERE mod_usr.module_id = %s  AND mod_usr.user_id = %s
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query_module_data, (user_id, module_id, user_id))
+            await cursor.execute(query_module_data, (module_id, user_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            module_data = [dict(zip(column_names, row_)) for row_ in rows]
-            await cursor.execute(query_user, (module_data[0].get("users")[0].get("id"),))
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            user_data = [dict(zip(column_names, row_)) for row_ in rows]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
             current_user = CurrentUser(
-                user_id=user_data[0].get("id"),
-                user_email=user_data[0].get("email"),
-                organization_id = module_data[0].get("organization"),
-                module_id = module_data[0].get("id"),
-                module_name=module_data[0].get("name")
+                user_id=data[0].get("id"),
+                user_name=data[0].get("name"),
+                user_email=data[0].get("email"),
+                entity_id=data[0].get("entity"),
+                module_id=data[0].get("module_id"),
+                role=data[0].get("role"),
+                title=data[0].get("title"),
+                type=data[0].get("type"),
             )
             return current_user
     except Exception as e:
