@@ -89,7 +89,6 @@ administrator = Roles(
         Permissions.APPROVE
     ],
     audit_plans=[
-        Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.APPROVE

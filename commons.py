@@ -40,11 +40,11 @@ async def get_module_user(connection: AsyncConnection, module_id: str, user_id: 
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
 
-async def get_roles(connection: AsyncConnection, module_id: str):
-    query = sql.SQL("SELECT * FROM public.roles WHERE module = %s")
+async def get_role(connection: AsyncConnection, name: str, module_id: str):
+    query = sql.SQL("SELECT * FROM public.roles WHERE name = %s AND module = %s")
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (module_id,))
+            await cursor.execute(query, (name, module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

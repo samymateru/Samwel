@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Form, UploadFile, File, BackgroundTasks
 from AuditNew.Internal.annual_plans.databases import *
+from Management.roles.schemas import Permissions, RolesSections
 from utils import get_async_db_connection, check_permission
 from AuditNew.Internal.annual_plans.schemas import *
 from typing import List
@@ -21,9 +22,9 @@ async def fetch_annual_plans(
         company_module_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user),
-        #dep: bool = Depends(check_permission("audit_plans", "view"))
+        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.VIEW))
 ):
-    if user.status_code != 200:
+    if user.status_code != 200 and dep:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_annual_plans(connection=db, company_module_id=company_module_id)
@@ -37,7 +38,7 @@ async def fetch_annual_plan(
         plan_id: str,
         db = Depends(get_async_db_connection),
         user: CurrentUser  = Depends(get_current_user),
-        dep: bool = Depends(check_permission("audit_plans", "view"))
+        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.VIEW))
 ):
     if user.status_code != 200 and dep:
         raise HTTPException(status_code=user.status_code, detail=user.description)
@@ -60,16 +61,16 @@ async def create_new_annual_plan(
         db = Depends(get_async_db_connection),
         background_tasks: BackgroundTasks = BackgroundTasks(),
         user: CurrentUser  = Depends(get_current_user),
-        #dep: bool = Depends(check_permission("audit_plans", "create"))
+        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.CREATE))
 ):
-    if user.status_code != 200:
+    if user.status_code != 200 and dep:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
 
-        key: str = f"annual_plans/{user.module_name}/{uuid.uuid4()}-{attachment.filename}"
+        key: str = f"annual_plans/{user.entity_id}/{uuid.uuid4()}-{attachment.filename}"
         public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
 
         background_tasks.add_task(upload_file, temp_path, key)
@@ -94,18 +95,20 @@ async def update_annual_plan(
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
         db = Depends(get_async_db_connection),
-        current_user: CurrentUser = Depends(get_current_user)
-    ):
-    annual_plan = AnnualPlan(
-        name=name,
-        year=year,
-        start=start,
-        end=end,
-        attachment=attachment.filename
-    )
-    if current_user.status_code != 200:
+        current_user: CurrentUser = Depends(get_current_user),
+        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.EDIT))
+
+):
+    if current_user.status_code != 200 and dep:
         raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
+        annual_plan = AnnualPlan(
+            name=name,
+            year=year,
+            start=start,
+            end=end,
+            attachment=attachment.filename
+        )
         await edit_annual_plan(db, annual_plan=annual_plan, annual_plan_id=annual_plan_id)
         return {"detail": "annual plan successfully updated"}
     except HTTPException as e:
@@ -115,9 +118,10 @@ async def update_annual_plan(
 async def delete_annual_plan(
         annual_plan_id: str,
         db = Depends(get_async_db_connection),
-        current_user: CurrentUser = Depends(get_current_user)
-    ):
-    if current_user.status_code != 200:
+        current_user: CurrentUser = Depends(get_current_user),
+        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.DELETE))
+):
+    if current_user.status_code != 200 and dep:
         raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
         await remove_annual_plan(db, annual_plan_id=annual_plan_id)

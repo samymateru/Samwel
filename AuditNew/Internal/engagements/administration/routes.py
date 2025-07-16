@@ -188,7 +188,7 @@ async def create_engagement_policy(
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
 
-        key: str = f"administration/policies/{user.module_name}/{uuid.uuid4()}-{attachment.filename}"
+        key: str = f"administration/policies/{user.entity_id}/{uuid.uuid4()}-{attachment.filename}"
         public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
         background_upload.add_task(upload_file, temp_path, key)
         policy = Policy(
@@ -291,7 +291,7 @@ async def create_engagement_regulations(
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
 
-        key: str = f"administration/regulations/{user.module_name}/{uuid.uuid4()}-{attachment.filename}"
+        key: str = f"administration/regulations/{user.entity_id}/{uuid.uuid4()}-{attachment.filename}"
         public_url: str = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{key}"
         background_upload.add_task(upload_file, temp_path, key)
         regulation = Regulations(

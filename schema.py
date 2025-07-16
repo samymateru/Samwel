@@ -61,3 +61,10 @@ class LoginResponse(BaseModel):
     administrator: bool
     owner: bool
     organizations: List[Organization]
+
+class RoleActions(str, Enum):
+    VIEW = "view"
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+    APPROVE = "approve"

@@ -38,6 +38,20 @@ class Permissions(str, Enum):
     DELETE = "delete"
     APPROVE = "approve"
 
+class RolesSections(str, Enum):
+    SETTINGS = "settings"
+    AUDIT_PLAN = "audit_plans"
+    ADMINISTRATION = "administration"
+    PLANNING = "planning"
+    FIELDWORK = "fieldwork"
+    REPORTING = "reporting"
+    AUDIT_PROGRAM = "audit_program"
+    FOLLOW_UP = "follow_up"
+    ISSUE_MANAGEMENT = "issue_management"
+    ARCHIVE_AUDIT = "archive_audit"
+    UN_ARCHIVE_AUDIT = "un_archive_audit"
+    OTHERS = "others"
+
 class Section(str, Enum):
     E_AUDIT = "e_audit"
     ENGAGEMENT = "engagement"

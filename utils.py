@@ -13,8 +13,7 @@ from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
 from Management.roles.schemas import Roles
-from Management.users.schemas import __User__
-from commons import get_module_user, get_roles
+from commons import  get_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
@@ -203,15 +202,15 @@ async def get_role_from_token(token: str = Depends(oauth2_scheme)):
         user_dict = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         user = CurrentUser(**user_dict)
         async for connection in get_async_db_connection():
-            data = await get_module_user(connection=connection,  module_id=user.module_id, user_id=user.user_id)
-            roles_dicts = await get_roles(connection=connection, module_id=user.module_id)
-            roles: List[Roles] = [Roles(**role_dict) for role_dict in roles_dicts]
-            if data.__len__() == 0:
-                raise HTTPException(status_code=403, detail="Error parsing the token")
-            for role in roles:
-                if data[0].get("role") == role.name:
-                    return role
-            return roles_map.get(data[0].get("role"))
+            if user.module_id is not None and user.role is not None:
+                role_data = await get_role(connection=connection, name=user.role, module_id=user.module_id)
+                roles: List[Roles] = [Roles(**role_dict) for role_dict in role_data]
+                if roles.__len__() != 0:
+                    return roles[0]
+                else:
+                    return roles_map.get(user.role)
+            else:
+                raise HTTPException(status_code=400, detail="Invalid token make sure to re-authorize")
 
     except jwt.ExpiredSignatureError:
         return CurrentUser(status_code=401, description="token expired")
@@ -233,6 +232,7 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
 
 def check_permission(section: str, action: str):
     def inner(role: Roles = Depends(get_role_from_token)):
+        print(role.model_dump())
         if not has_permission([role], section=section, action=action):
             raise HTTPException(
                 status_code=403,
@@ -443,9 +443,7 @@ def has_permission(roles: List[Roles], section: str, action: str) -> bool:
 
         if isinstance(section_permissions, list) and action in section_permissions:
             return True
-
     return False
-
 
 async def generate_user_token(connection: AsyncConnection, module_id: str, user_id: str):
     query_module_data = sql.SQL(
