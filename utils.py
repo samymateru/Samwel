@@ -105,7 +105,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if not token:
         return CurrentUser(status_code=401, description="auth token not provided")
     try:
-        decoded_token = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        decoded_token = jwt.decode(token, key=os.getenv("SECRET_KEY"), algorithms=["HS256"])
         decoded_token["status_code"] = 200
         decoded_token["description"] = "success"
         return CurrentUser(**decoded_token)
