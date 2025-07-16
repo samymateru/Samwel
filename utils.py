@@ -232,7 +232,11 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
 
 def check_permission(section: RoleActions, action: Permissions):
     def inner(role: Roles = Depends(get_role_from_token)):
-        print(role.model_dump())
+        if role == None:
+            raise HTTPException(
+                status_code=403,
+                detail=f"System cant retrieve role information"
+            )
         if not has_permission([role], section=section.value, action=action.value):
             raise HTTPException(
                 status_code=403,
