@@ -12,12 +12,12 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
-from Management.roles.schemas import Roles
+from Management.roles.schemas import Roles, Permission, Permissions
 from commons import  get_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
-from schema import CurrentUser
+from schema import CurrentUser, RoleActions
 import secrets
 import string
 from psycopg import  sql
@@ -230,13 +230,13 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
                 return True
     return False
 
-def check_permission(section: str, action: str):
+def check_permission(section: RoleActions, action: Permissions):
     def inner(role: Roles = Depends(get_role_from_token)):
         print(role.model_dump())
-        if not has_permission([role], section=section, action=action):
+        if not has_permission([role], section=section.value, action=action.value):
             raise HTTPException(
                 status_code=403,
-                detail=f"Access denied for '{section}:{action}'"
+                detail=f"Access denied to {action.value.upper().title()} {section.value.upper().replace("_", " ").title()}"
             )
         return True
     return inner
