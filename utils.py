@@ -487,3 +487,14 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error generating token {e}")
+
+def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime]) -> None:
+    now = datetime.now()
+
+    if start is not None:
+        if start <= now:
+            raise HTTPException(status_code=400, detail="Start time must be in the future.")
+
+    if start is not None and end is not None:
+        if end <= start:
+            raise HTTPException(status_code=400, detail="End time must be after start time.")
