@@ -65,9 +65,10 @@ async def create_new_annual_plan(
         user: CurrentUser  = Depends(get_current_user),
         dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.CREATE))
 ):
-    if user.status_code != 200 and dep:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        if user.status_code != 200 and dep:
+            raise HTTPException(status_code=user.status_code, detail=user.description)
+
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             shutil.copyfileobj(attachment.file, tmp)
             temp_path = tmp.name
@@ -87,9 +88,8 @@ async def create_new_annual_plan(
         return ResponseMessage(detail="Annual plan successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Error Querying audit plans")
+        raise HTTPException(status_code=400, detail=f"Error Querying audit plans {e}")
 
 @router.put("/{annual_plan_id}", response_model=ResponseMessage)
 async def update_annual_plan(
@@ -102,7 +102,6 @@ async def update_annual_plan(
         db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user),
         dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.EDIT))
-
 ):
     if current_user.status_code != 200 and dep:
         raise HTTPException(status_code=current_user.status_code, detail=current_user.description)
