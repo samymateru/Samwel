@@ -82,7 +82,7 @@ async def create_new_annual_plan(
             attachment=public_url
         )
         await add_new_annual_plan(db, audit_plan=audit_plan, company_module_id=company_module_id)
-        return {"detail": "Annual plan successfully created"}
+        return ResponseMessage(detail="Annual plan successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
