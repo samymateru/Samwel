@@ -31,6 +31,8 @@ async def fetch_annual_plans(
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error Querying audit plans")
 
 
 @router.get("/plan/{plan_id}", response_model=AnnualPlan)
@@ -85,6 +87,9 @@ async def create_new_annual_plan(
         return ResponseMessage(detail="Annual plan successfully created")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Error Querying audit plans")
 
 @router.put("/{annual_plan_id}", response_model=ResponseMessage)
 async def update_annual_plan(
