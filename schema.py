@@ -14,7 +14,9 @@ class CurrentUser(BaseModel):
     user_name: Optional[str] = None
     user_email: Optional[str] = None
     entity_id: Optional[str] = None
+    organization_id: Optional[str] = None
     module_id: Optional[str] = None
+    module_name: Optional[str] = None
     role: Optional[str] = None
     title: Optional[str] = None
     type: Optional[str] = None

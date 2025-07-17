@@ -12,7 +12,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
-from Management.roles.schemas import Roles, Permission, Permissions
+from Management.roles.schemas import Roles, Permission, Permissions, RolesSections
 from commons import  get_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
@@ -227,7 +227,7 @@ def authorize(user_roles: list, module: str, required_permission: str) -> bool:
                 return True
     return False
 
-def check_permission(section: RoleActions, action: Permissions):
+def check_permission(section: RolesSections, action: Permissions):
     def inner(role: Roles = Depends(get_role_from_token)):
         if role == None:
             raise HTTPException(
@@ -454,12 +454,15 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
         usr.name,
         usr.email,
         usr.entity,
+        mod.organization,
         mod_usr.module_id,
+        mod.name as module_name,
         mod_usr.title,
         mod_usr.role,
         mod_usr.type
         FROM modules_users mod_usr
         JOIN users usr ON usr.id = mod_usr.user_id
+        JOIN modules mod ON mod.id = mod_usr.module_id
         WHERE mod_usr.module_id = %s  AND mod_usr.user_id = %s
         """)
     try:
@@ -473,7 +476,9 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
                 user_name=data[0].get("name"),
                 user_email=data[0].get("email"),
                 entity_id=data[0].get("entity"),
+                organization_id=data[0].get("organization"),
                 module_id=data[0].get("module_id"),
+                module_name=data[0].get("module_name"),
                 role=data[0].get("role"),
                 title=data[0].get("title"),
                 type=data[0].get("type"),
