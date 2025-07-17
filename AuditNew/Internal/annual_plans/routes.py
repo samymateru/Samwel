@@ -63,10 +63,9 @@ async def create_new_annual_plan(
         db = Depends(get_async_db_connection),
         background_tasks: BackgroundTasks = BackgroundTasks(),
         user: CurrentUser  = Depends(get_current_user),
-        dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.CREATE))
 ):
     try:
-        if user.status_code != 200 and dep:
+        if user.status_code != 200:
             raise HTTPException(status_code=user.status_code, detail=user.description)
 
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
