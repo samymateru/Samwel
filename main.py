@@ -1,5 +1,9 @@
 import time
+import traceback
+
 from fastapi import FastAPI, Depends, Form, Response, Request
+from starlette.responses import JSONResponse
+
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -84,6 +88,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def catch_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"detail": f"{e}"})
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
