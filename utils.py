@@ -237,7 +237,7 @@ def check_permission(section: RolesSections, action: Permissions):
         if not has_permission([role], section=section.value, action=action.value):
             raise HTTPException(
                 status_code=403,
-                detail=f"Access denied to {action.value.upper().title()} {section.value.upper().replace("_", " ").title()}"
+                detail=f"Access denied to {action.value.upper().title()} {section.value.upper().replace('_', ' ').title()}"
             )
         return True
     return inner

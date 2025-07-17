@@ -127,14 +127,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00518" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1751522120246</created>
-      <option name="number" value="00518" />
-      <option name="presentableId" value="LOCAL-00518" />
-      <option name="project" value="LOCAL" />
-      <updated>1751522120246</updated>
-    </task>
     <task id="LOCAL-00519" summary="fixing auth and token generation">
       <option name="closed" value="true" />
       <created>1751522623263</created>
@@ -519,7 +511,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752744891522</updated>
     </task>
-    <option name="localTasksCounter" value="567" />
+    <task id="LOCAL-00567" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1752745223561</created>
+      <option name="number" value="00567" />
+      <option name="presentableId" value="LOCAL-00567" />
+      <option name="project" value="LOCAL" />
+      <updated>1752745223561</updated>
+    </task>
+    <option name="localTasksCounter" value="568" />
     <servers />
   </component>
   <component name="UnknownFeatures">
