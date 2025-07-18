@@ -194,34 +194,7 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
             end_date,
             tasks
         ) 
-        VALUES(%s, %s, %s, %s, %s, %s, %s, %s)
-        """)
-
-    query_module_id = sql.SQL(
-        """
-        SELECT ap.module as module
-        FROM engagements eng
-        JOIN annual_plans ap ON ap.id = eng.plan_id
-        WHERE eng.id = {engagement_id}
-        """).format(engagement_id=sql.Literal(engagement_id))
-
-    add_task_query = sql.SQL(
-        """
-        UPDATE modules
-        SET users = (
-        SELECT jsonb_agg(
-        CASE
-        WHEN item->>'id' = %s THEN
-        jsonb_set(
-            jsonb_set(item, '{engagements}', item->'engagements' || to_jsonb(%s::varchar[])),
-            '{title}', to_jsonb(item->'title'::text)
-            )              
-            ELSE item
-            END
-            )
-            FROM jsonb_array_elements(users) AS item
-        )
-        WHERE id = %s;
+        VALUES(%s, %s, %s, %s, %s, %s, %s, %s);
         """)
 
     try:
@@ -236,19 +209,10 @@ async def add_engagement_staff(connection: AsyncConnection, staff: Staff, engage
                 staff.end_date,
                 staff.tasks
             ))
-            await cursor.execute(query_module_id)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            module_id = [dict(zip(column_names, row_)) for row_ in rows]
-            print(module_id[0].get("module"))
-            await cursor.execute(add_task_query, (staff.user_id, [engagement_id], module_id[0].get("module")))
             await connection.commit()
     except ForeignKeyViolation:
         await connection.rollback()
         raise HTTPException(status_code=400, detail="Engagement id is invalid")
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail="Staff already exist")
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error adding engagement staff {e}")

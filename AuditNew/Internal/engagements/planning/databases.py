@@ -1,7 +1,6 @@
 from AuditNew.Internal.engagements.planning.schemas import *
-from utils import get_next_reference, get_unique_key
+from utils import get_next_reference
 from AuditNew.Internal.engagements.work_program.databases import *
-from AuditNew.Internal.engagements.risk.databases import *
 from AuditNew.Internal.engagements.control.databases import *
 from psycopg import AsyncConnection, sql
 import json
@@ -95,6 +94,46 @@ async def add_summary_audit_program(connection: AsyncConnection, procedure_id: s
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (procedure_id, reference, prcm_id))
+            await connection.commit()
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding summary of audit program {e}")
+
+async def work_program_(connection: AsyncConnection, work_program: PlanningWorkProgram, engagement_id: str):
+    query = sql.SQL(
+        """
+        UPDATE public."PRCM" 
+        SET 
+        summary_audit_program = %s,
+        reference = %s
+        WHERE id = %s;
+        """)
+
+    try:
+        async with connection.cursor() as cursor:
+            program = MainProgram(
+                name=work_program.program_name
+            )
+
+            sub_program = NewSubProgram(
+                title=work_program.procedure_name
+            )
+
+            program_id = await add_new_main_program(
+                connection=connection,
+                program=program,
+                engagement_id=engagement_id,
+                callee=False
+            )
+
+            procedure = await add_new_sub_program(
+                connection=connection,
+                sub_program=sub_program,
+                program_id=program_id,
+                callee=False
+            )
+
+            await cursor.execute(query, (procedure[0], procedure[1], work_program.prcm_id))
             await connection.commit()
     except Exception as e:
         await connection.rollback()
@@ -342,39 +381,14 @@ async def remove_summary_audit_program(connection: AsyncConnection, summary_audi
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting summary of audit program {e}")
 
-async def edit_summary_audit_finding(connection: AsyncConnection, summary: SummaryAuditProgram, summary_audit_program_id: str):
+async def edit_summary_audit_finding(connection: AsyncConnection):
     query = sql.SQL(
         """
-           UPDATE public.summary_audit_program 
-           SET
-           process = %s,
-           risk = %s,
-           risk_rating = %s,
-           control = %s,
-           procedure = %s,
-           program = %s
-           WHERE id = %s
         """)
     try:
         async with connection.cursor() as cursor:
-            query_prog_id = sql.SQL("SELECT prog_id FROM public.summary_audit_program WHERE id = %s")
-            await cursor.execute(query_prog_id, (summary_audit_program_id,))
-            summary_data = await cursor.fetchall()[0][0]
-            risk = Risk(
-                name=summary.risk,
-                rating=summary.risk_rating
-            )
-            #await edit_risk(connection=connection, risk=risk, )
-            await cursor.execute(query, (
-                summary.process,
-                summary.risk,
-                summary.risk_rating,
-                summary.control,
-                summary.procedure,
-                summary.program,
-                summary_audit_program_id
-            ))
-        await connection.commit()
+            print(query, cursor)
+
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating summary of audit program {e}")

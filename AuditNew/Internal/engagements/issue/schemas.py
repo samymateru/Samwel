@@ -1,6 +1,6 @@
 from pydantic import BaseModel, model_validator
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 
 class User(BaseModel):
@@ -59,6 +59,42 @@ class Issue(BaseModel):
     recurring_status: Optional[bool]
     recommendation: Optional[str]
     management_action_plan: Optional[str]
+    regulatory: Optional[bool]
+    estimated_implementation_date: Optional[datetime]
+    prepared_by: Optional[User] = None
+    reviewed_by: Optional[User] = None
+    status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
+    reportable: Optional[bool] = None
+    lod1_implementer: List[User]
+    lod1_owner: List[User]
+    observers: Optional[List[User]] = None
+    lod2_risk_manager: Optional[List[User]]
+    lod2_compliance_officer: Optional[List[User]] = None
+    lod3_audit_manager: List[User]
+    created_at: Optional[datetime] = None
+
+class Issue_(BaseModel):
+    id: Optional[str] = None
+    title: Optional[str]
+    ref: Optional[str] = None
+    criteria: Dict
+    finding: Dict
+    risk_rating: Optional[str]
+    process: Optional[str]
+    source: Optional[str]
+    sdi_name: Optional[str] = None
+    sub_process: Optional[str]
+    root_cause_description: Dict
+    root_cause: Optional[str]
+    sub_root_cause: Optional[str]
+    risk_category: Optional[str]
+    sub_risk_category: Optional[str]
+    impact_description: Dict
+    impact_category: Optional[str]
+    impact_sub_category: Optional[str]
+    recurring_status: Optional[bool]
+    recommendation: Dict
+    management_action_plan: Dict
     regulatory: Optional[bool]
     estimated_implementation_date: Optional[datetime]
     prepared_by: Optional[User] = None

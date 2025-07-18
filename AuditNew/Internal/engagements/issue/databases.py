@@ -10,7 +10,7 @@ from utils import get_unique_key
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
-async def edit_issue(connection: AsyncConnection, issue: Issue, issue_id: str):
+async def edit_issue(connection: AsyncConnection, issue: Issue_, issue_id: str):
     query = sql.SQL(
     """
     UPDATE public.issue
@@ -66,7 +66,7 @@ async def edit_issue(connection: AsyncConnection, issue: Issue, issue_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating issue {e}")
 
-async def add_new_issue(connection: AsyncConnection, issue: Issue, sub_program_id: str, engagement_id: str):
+async def add_new_issue(connection: AsyncConnection, issue: Issue_, sub_program_id: str, engagement_id: str):
     check_module_id_query = sql.SQL(
         """
         SELECT 

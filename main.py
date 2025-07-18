@@ -194,7 +194,6 @@ async def change_password(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-
 app.include_router(entity, tags=["Entity"])
 app.include_router(organization, tags=["Organization"])
 app.include_router(company_modules_router, tags=["Modules"])
@@ -228,7 +227,6 @@ app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 app.include_router(attachments, tags=["Attachments"])
-
 
 if __name__ == "__main__":
     import uvicorn

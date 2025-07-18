@@ -20,7 +20,7 @@ router = APIRouter(prefix="/issue")
 @router.post("/{sub_program_id}", response_model=ResponseMessage)
 async def create_new_issue_(
         sub_program_id: str,
-        issue: Issue,
+        issue: Issue_,
         engagement_id: str = Query(),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -36,7 +36,7 @@ async def create_new_issue_(
 @router.put("/{issue_id}", response_model=ResponseMessage)
 async def update_issue(
         issue_id: str,
-        issue: Issue,
+        issue: Issue_,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
@@ -247,7 +247,7 @@ async def request_revise(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/", response_model=List[Issue])
+@router.get("/", response_model=List[Issue_])
 async def fetch_issue_based_on_actor(
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -260,7 +260,7 @@ async def fetch_issue_based_on_actor(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/{issue_id}", response_model=Issue)
+@router.get("/{issue_id}", response_model=Issue_)
 async def fetch_single_issue(
         issue_id: str,
         db=Depends(get_async_db_connection),

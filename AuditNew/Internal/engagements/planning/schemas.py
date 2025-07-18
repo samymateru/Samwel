@@ -102,4 +102,7 @@ class SaveProcedure(BaseModel):
     conclusion: Optional[Section]
     type: Optional[ProcedureTypes]
 
-
+class PlanningWorkProgram(BaseModel):
+    program_name: str
+    procedure_name: str
+    prcm_id: str

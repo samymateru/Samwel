@@ -8,42 +8,50 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
-async def add_new_main_program(connection: AsyncConnection, program: MainProgram, engagement_id: str):
+async def add_new_main_program(connection: AsyncConnection, program: MainProgram, engagement_id: str, callee: bool = True):
     query = sql.SQL(
         """
         INSERT INTO public.main_program (id, engagement, name, status) 
         VALUES (%s, %s, %s, %s) RETURNING id;
         """)
+
+    check_program_exist = sql.SQL(
+        """
+        SELECT * FROM main_program WHERE name = %s AND engagement = %s;
+        """)
     try:
         async with connection.cursor() as cursor:
-            exists = await check_row_exists(connection=connection, table_name="main_program", filters={
-                "name": program.name,
-                "engagement": engagement_id
-            })
-            if exists:
+            await cursor.execute(check_program_exist, (program.name, engagement_id))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            program_data = [dict(zip(column_names, row_)) for row_ in rows]
+
+            if callee and program_data.__len__() != 0:
                 raise HTTPException(status_code=400, detail="Program already exists")
-            await cursor.execute(query,(
-                get_unique_key(),
-                engagement_id,
-                program.name,
-                "Not Started"
-            ))
-            main_program_id = await cursor.fetchone()
-            await connection.commit()
-            return main_program_id[0]
+
+            if not callee and program_data.__len__() != 0:
+                return program_data[0].get("id")
+
+            if program_data.__len__() == 0:
+                await cursor.execute(query,(
+                    get_unique_key(),
+                    engagement_id,
+                    program.name,
+                    "Pending"
+                ))
+                main_program_id = await cursor.fetchone()
+                await connection.commit()
+                return main_program_id[0]
     except ForeignKeyViolation:
         await connection.rollback()
         raise HTTPException(status_code=400, detail="Engagement id is invalid")
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail="Main program already exist")
     except HTTPException:
         raise
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating main program {e}")
 
-async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubProgram, program_id: str):
+async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubProgram, program_id: str, callee: bool = True):
     check_module_id_query = sql.SQL(
         """
         SELECT cm.procedure_reference AS reference, cm.id
@@ -86,61 +94,70 @@ async def add_new_sub_program(connection: AsyncConnection, sub_program: NewSubPr
         status
         ) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        RETURNING id;
+        RETURNING id, reference;
+        """)
+
+    check_sub_program_exist = sql.SQL(
+        """
+        SELECT * FROM public.sub_program WHERE title = %s AND program = %s;
         """)
     try:
         async with connection.cursor() as cursor:
-            exists = await check_row_exists(connection=connection, table_name="sub_program", filters={
-                "title": sub_program.title,
-                "program": program_id
-            })
-            if exists:
-                raise HTTPException(status_code=400, detail="Procedure already exists")
-            await cursor.execute(check_module_id_query)
+            await cursor.execute(check_sub_program_exist, (sub_program.title, program_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            reference = [dict(zip(column_names, row_)) for row_ in rows]
-            count = reference[0].get("reference")
-            if count is None:
-                count = 1
-                prefix = f"PROC-{count:04d}"
+            procedure_data = [dict(zip(column_names, row_)) for row_ in rows]
 
-            else:
-                count = int(count) + 1
-                prefix = f"PROC-{count:05d}"
+            if callee and procedure_data.__len__() != 0: # Call from create endpoint
+                raise HTTPException(status_code=400, detail="Procedure already exist")
 
-            await cursor.execute(update_module_id_query, (count, reference[0].get("id")))
-            
-            await cursor.execute(query,(
-                get_unique_key(),
-                program_id,
-                prefix,
-                sub_program.title,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                True,
-                "",
-                "",
-                "",
-                "",
-                None,
-                None,
-                "Pending"
-            ))
-            sub_program_id = await cursor.fetchone()
-            await connection.commit()
-            return sub_program_id[0]
+            if not callee and procedure_data.__len__() != 0:
+                return procedure_data
+
+            if procedure_data.__len__() == 0:
+                await cursor.execute(check_module_id_query)
+                rows = await cursor.fetchall()
+                column_names = [desc[0] for desc in cursor.description]
+                reference = [dict(zip(column_names, row_)) for row_ in rows]
+                count = reference[0].get("reference")
+                if count is None:
+                    count = 1
+                    prefix = f"PROC-{count:04d}"
+
+                else:
+                    count = int(count) + 1
+                    prefix = f"PROC-{count:05d}"
+
+                await cursor.execute(query,(
+                    get_unique_key(),
+                    program_id,
+                    prefix,
+                    sub_program.title,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    True,
+                    "",
+                    "",
+                    "",
+                    "",
+                    None,
+                    None,
+                    "Pending"
+                ))
+
+                sub_program = await cursor.fetchone()
+                await cursor.execute(update_module_id_query, (count, reference[0].get("id")))
+                await connection.commit()
+                return sub_program
+
     except ForeignKeyViolation:
         await connection.rollback()
         raise HTTPException(status_code=400, detail="Main program id is invalid")
-    except UniqueViolation:
-        await connection.rollback()
-        raise HTTPException(status_code=409, detail="Sub program already exist")
     except HTTPException:
         raise
     except Exception as e:
@@ -216,11 +233,11 @@ async def get_sub_program_(connection: AsyncConnection, sub_program_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching sub program {e}")
 
-async def remove_work_program(connection: AsyncConnection, id: str, table: str, resource: str):
+async def remove_work_program(connection: AsyncConnection, id_: str, table: str, resource: str):
     query = sql.SQL("DELETE FROM {table} WHERE id = %s").format(table=sql.Identifier('public', table))
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (id,))
+            await cursor.execute(query, (id_,))
         await connection.commit()
     except Exception as e:
         await connection.rollback()

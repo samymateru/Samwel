@@ -489,7 +489,7 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
         raise HTTPException(status_code=400, detail=f"Error generating token {e}")
 
 def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime]) -> None:
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
 
     if start is not None:
         if start <= now:

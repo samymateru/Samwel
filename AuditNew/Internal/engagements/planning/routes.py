@@ -1,6 +1,6 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, Form, UploadFile, File, Query
+from fastapi import APIRouter, Depends, UploadFile, File, Query
 from utils import  get_async_db_connection
 from AuditNew.Internal.engagements.planning.databases import *
 from schema import ResponseMessage
@@ -115,37 +115,34 @@ async def create_new_prcm(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/summary_audit_program/{prcm_id}", response_model=ResponseMessage)
+@router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
 async def create_new_summary_of_audit_program(
-        prcm_id: str,
-        procedure_id: str = Query(...),
-        reference: str = Query(...),
+        engagement_id: str,
+        work_program: PlanningWorkProgram,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await add_summary_audit_program(
+        await work_program_(
             connection=db,
-            procedure_id=procedure_id,
-            prcm_id=prcm_id,
-            reference=reference)
+            work_program=work_program,
+            engagement_id=engagement_id
+            )
         return ResponseMessage(detail="Audit program added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/summary_audit_program/{summary_audit_program_id}")
+@router.put("/summary_audit_program")
 async def updating_summary_audit_finding(
-        summary_audit_program_id: str,
-        summary: SummaryAuditProgram,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await edit_summary_audit_finding(connection=db, summary=summary, summary_audit_program_id=summary_audit_program_id)
+        await edit_summary_audit_finding(connection=db)
         return ResponseMessage(detail="Audit program updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
