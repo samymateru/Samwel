@@ -19,7 +19,7 @@ async def fetch_engagements(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_engagements(connection=db, annual_id=annual_id, user_id=user.user_id)
+        data = await get_engagements(connection=db, annual_id=annual_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -46,7 +46,9 @@ async def create_new_engagement(
             connection=db,
             engagement=engagement,
             plan_id=annual_id,
-            code=engagement_code)
+            code=engagement_code,
+            module_id=user.module_id
+        )
         asyncio.create_task(set_engagement_templates(engagement_id=engagement_id))
         return ResponseMessage(detail="Engagement successfully created")
     except HTTPException as e:

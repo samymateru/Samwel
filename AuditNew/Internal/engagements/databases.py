@@ -50,6 +50,10 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
             ))
             engagement_id = await cursor.fetchone()
             users = await get_module_users(connection=connection, module_id=module_id)
+
+            if not any(user.get("role") == "Head of Audit" for user in users):
+                raise HTTPException(status_code=400, detail="Head of Audit required")
+
             for user in users:
                 if user.get("role") == "Head of Audit":
                     head = Staff(
@@ -104,7 +108,7 @@ async def remove_engagements(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail=f"Error deleting engagement {e}")
 
 
-async def get_engagements(connection: AsyncConnection, annual_id: str, user_id: str):
+async def get_engagements(connection: AsyncConnection, annual_id: str):
     query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s")
 
     try:
