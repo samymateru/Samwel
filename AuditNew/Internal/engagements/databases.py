@@ -14,18 +14,13 @@ from Management.users.databases import get_module_users
 from utils import get_unique_key, check_row_exists
 
 
-async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str):
+async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str, module_id: str):
     query = sql.SQL(
         """
         INSERT INTO public.engagements (id, plan_id, code, name, risk, type, status, leads, stage, department,
         sub_departments, quarter, start_date, end_date, created_at)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
-
-    query_module_id = sql.SQL(
-        """
-        SELECT module FROM annual_plans WHERE id = {plan_id}
-        """).format(plan_id=sql.Literal(plan_id))
 
     try:
         async with connection.cursor() as cursor:
@@ -54,11 +49,7 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
                engagement.created_at
             ))
             engagement_id = await cursor.fetchone()
-            await cursor.execute(query_module_id)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            module_id = [dict(zip(column_names, row_)) for row_ in rows]
-            users = await get_module_users(connection=connection, module_id=module_id[0].get("module"))
+            users = await get_module_users(connection=connection, module_id=module_id)
             for user in users:
                 if user.get("role") == "Head of Audit":
                     head = Staff(
