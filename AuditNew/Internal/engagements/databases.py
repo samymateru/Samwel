@@ -51,8 +51,8 @@ async def add_new_engagement(connection: AsyncConnection, engagement: Engagement
             engagement_id = await cursor.fetchone()
             users = await get_module_users(connection=connection, module_id=module_id)
 
-            if not any(user.get("role") == "Head of Audit" for user in users):
-                raise HTTPException(status_code=400, detail="Head of Audit required")
+            # if not any(user.get("role") == "Head of Audit" for user in users):
+            #     raise HTTPException(status_code=400, detail="Head of Audit required")
 
             for user in users:
                 if user.get("role") == "Head of Audit":
