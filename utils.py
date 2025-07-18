@@ -492,7 +492,7 @@ def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime])
     now = datetime.now(timezone.utc)
 
     if start is not None:
-        if start <= now:
+        if start < now:
             raise HTTPException(status_code=400, detail="Start time must be in the future.")
 
     if start is not None and end is not None:
