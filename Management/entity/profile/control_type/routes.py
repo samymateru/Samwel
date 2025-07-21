@@ -37,8 +37,8 @@ async def fetch_company_control_type(
 @router.put("/{control_type_id}", response_model=ResponseMessage)
 def update_control_type(
         control_type_id: int,
-        db: Depends(get_async_db_connection),
         control_type: ControlType,
+        db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
