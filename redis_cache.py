@@ -3,11 +3,18 @@ import json
 import pickle
 from functools import wraps
 from fastapi import HTTPException
-
+import os
+from dotenv import load_dotenv
 import asyncio
 import redis.asyncio as redis
 from redis.asyncio import Redis
 from typing import Optional
+
+
+load_dotenv()
+
+redis_host = os.getenv("REDIS_HOST", "redis")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
 
 redis_queue: Optional[asyncio.Queue] = None
 
@@ -58,8 +65,8 @@ def cached(ttl: int = 300, prefix: str = "cache"):
 
 async def create_redis_connection() -> Redis:
     return redis.Redis(
-        host="127.0.0.1",
-        port=6379,
+        host=redis_host,
+        port=redis_port,
         decode_responses=False,
         socket_timeout = 2
     )
