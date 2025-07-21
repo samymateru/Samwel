@@ -6,18 +6,17 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
-from Management.roles.schemas import Roles, Permission, Permissions, RolesSections
+from Management.roles.schemas import Roles, Permissions, RolesSections
 from commons import  get_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
-from schema import CurrentUser, RoleActions
+from schema import CurrentUser
 import secrets
 import string
 from psycopg import  sql
@@ -44,16 +43,6 @@ roles_map = {
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-connection_pool = pool.SimpleConnectionPool(
-            minconn=1,  # Minimum number of connections
-            maxconn=100,  # Maximum number of connections
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            database=os.getenv("DB_NAME")
-        )
 
 connection_pool_async = AsyncConnectionPool(
     conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
@@ -114,12 +103,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.InvalidTokenError:
         return CurrentUser(status_code=401, description="invalid token")
 
-def get_db_connection():
-    connection = connection_pool.getconn()
-    try:
-        yield connection
-    finally:
-        connection_pool.putconn(connection)
 
 def generated_password() -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation
