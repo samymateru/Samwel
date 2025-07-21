@@ -1,6 +1,4 @@
 from fastapi import Depends, APIRouter
-
-from Management.entity.profile.impact_category.schemas import CombinedImpactCategory
 from schema import CurrentUser
 from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.risk_category.databases import *

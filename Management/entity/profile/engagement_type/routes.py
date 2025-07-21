@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.engagement_type.databases import *
 from typing import List
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/profile/engagement_type")
 @router.post("/", response_model=ResponseMessage)
 def create_engagement_type(
         engagement_type: EngagementType,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -41,7 +41,7 @@ async def fetch_company_engagement_type(
 def update_control_weakness_rating(
         engagement_type_id: int,
         engagement_type: EngagementType,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -59,7 +59,7 @@ def update_control_weakness_rating(
 @router.delete("/{engagement_type_id}", response_model=ResponseMessage)
 def remove_engagement_type(
         engagement_type_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

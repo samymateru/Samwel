@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schema import ResponseMessage, CurrentUser
-from utils import get_db_connection, get_current_user, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.issue_source.databases import *
 from Management.entity.profile.issue_source.schemas import *
 
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/profile/issue_source")
 @router.post("/", response_model=ResponseMessage)
 def create_issue_source(
         issue_source: IssueSource,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -45,7 +45,7 @@ async def fetch_company_issue_source(
 def update_issue_source(
         issue_source_id: int,
         issue_source: IssueSource,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -62,7 +62,7 @@ def update_issue_source(
 @router.delete("/{issue_source_id}", response_model=ResponseMessage)
 def remove_issue_source(
         issue_source_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends
 from Management.entity.profile.risk_rating.databases import *
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user, get_async_db_connection
-from typing import List
+from utils import get_current_user, get_async_db_connection
 
 router = APIRouter(prefix="/profile/risk_rating")
 
 @router.post("/", response_model=ResponseMessage)
 def create_risk_rating(
         risk_rating: RiskRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -43,7 +42,7 @@ async def fetch_company_risk_rating(
 def update_risk_rating(
         risk_rating_id: int,
         risk_rating: RiskRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -60,7 +59,7 @@ def update_risk_rating(
 @router.delete("/{risk_rating_id}", response_model=ResponseMessage)
 def remove_risk_rating(
         risk_rating_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from utils import get_current_user, get_db_connection, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.entity.profile.impact_category.databases import *
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/profile")
 def create_new_impact_category(
         company_id: int,
         impact_category: NewImpactCategory,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
     if user.status_code != 200:
@@ -23,7 +23,7 @@ def create_new_impact_category(
 def create_new_impact_sub_category(
         impact_category_id: int,
         impact_sub_category: NewImpactSubCategory,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
     if user.status_code != 200:
@@ -51,7 +51,7 @@ async def fetch_combined_impact_category(
 @router.get("/impact_sub_category/{impact_category_id}", response_model=List[NewImpactSubCategory])
 def fetch_impact_sub_category(
         impact_category_id: int,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
     ):
     if user.status_code != 200:
@@ -65,7 +65,7 @@ def fetch_impact_sub_category(
 def update_impact_category(
         impact_category_id: int,
         impact_category: NewImpactCategory,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -79,7 +79,7 @@ def update_impact_category(
 def update_impact_sub_category(
         impact_sub_category_id: int,
         impact_sub_category: NewImpactSubCategory,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -92,7 +92,7 @@ def update_impact_sub_category(
 @router.delete("/impact_category/{impact_category_id}")
 def delete_business_process(
         impact_category_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -105,7 +105,7 @@ def delete_business_process(
 @router.delete("/impact_sub_category/{impact_sub_category_id}")
 def delete_impact_sub_category(
         impact_sub_category_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

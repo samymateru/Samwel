@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Query
-from Management.users.schemas import __User__
-from utils import get_db_connection, get_async_db_connection
+from utils import get_async_db_connection
 from Management.users.databases import *
 from Management.users.schemas import *
 from utils import get_current_user
@@ -102,7 +101,7 @@ async def update_user(
 @router.delete("/{user_id}")
 def delete_user(
         user_id: int,
-        db = Depends(get_db_connection),
+        db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schema import ResponseMessage, CurrentUser
-from utils import get_db_connection, get_current_user, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.opinion_rating.databases import *
 from typing import List
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/profile/opinion_rating")
 @router.post("/", response_model=ResponseMessage)
 def create_opinion_rating(
         opinion_rating: OpinionRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -43,7 +43,7 @@ async def fetch_company_opinion_rating(
 def update_opinion_rating(
         opinion_rating_id: int,
         opinion_rating: OpinionRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -60,7 +60,7 @@ def update_opinion_rating(
 @router.delete("/{opinion_rating_id}", response_model=ResponseMessage)
 def remove_opinion_rating(
         opinion_rating_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

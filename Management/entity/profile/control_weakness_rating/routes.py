@@ -3,7 +3,6 @@ from schema import CurrentUser, ResponseMessage
 from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.control_weakness_rating.databases import *
 from Management.entity.profile.control_weakness_rating.schemas import *
-from typing import List
 
 router = APIRouter(prefix="/profile/control_weakness_rating")
 

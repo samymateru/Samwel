@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends
 from schema import CurrentUser, ResponseMessage
-from utils import get_db_connection, get_current_user, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.control_effectiveness_rating.databases import *
-from typing import List
 
 router = APIRouter(prefix="/profile/control_effectiveness_rating")
 
 @router.post("/", response_model=ResponseMessage)
 def create_control_effectiveness_rating(
         control_effectiveness_rating: ControlEffectivenessRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -41,7 +40,7 @@ async def fetch_company_control_effectiveness_rating(
 def update_control_weakness_rating(
         control_effectiveness_rating_id: int,
         control_effectiveness_rating: ControlEffectivenessRating,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
@@ -59,7 +58,7 @@ def update_control_weakness_rating(
 @router.delete("/{control_effectiveness_rating_id}", response_model=ResponseMessage)
 def remove_control_weakness_rating(
         control_effectiveness_rating_id: int,
-        db=Depends(get_db_connection),
+        db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:

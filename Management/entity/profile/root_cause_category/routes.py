@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from schema import CurrentUser
 from Management.entity.profile.root_cause_category.databases import *
-from utils import get_db_connection, get_current_user, get_async_db_connection
+from utils import get_current_user, get_async_db_connection
 
 router = APIRouter(prefix="/profile")
 

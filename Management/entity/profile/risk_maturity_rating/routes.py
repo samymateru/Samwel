@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from Management.entity.profile.risk_maturity_rating.databases import *
 from schema import CurrentUser, ResponseMessage
 from utils import get_current_user, get_async_db_connection
-from typing import List
 
 
 router = APIRouter(prefix="/profile/risk_maturity_rating")

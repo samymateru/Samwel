@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from schema import CurrentUser, ResponseMessage
 from utils import get_current_user, get_async_db_connection
 from Management.entity.profile.control_type.databases import *
-from typing import List
 
 router = APIRouter(prefix="/profile/control_type")
 
@@ -38,6 +37,7 @@ async def fetch_company_control_type(
 @router.put("/{control_type_id}", response_model=ResponseMessage)
 def update_control_type(
         control_type_id: int,
+        db: Depends(get_async_db_connection),
         control_type: ControlType,
         user: CurrentUser = Depends(get_current_user)
 ):
