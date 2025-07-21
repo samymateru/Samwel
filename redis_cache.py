@@ -58,7 +58,7 @@ def cached(ttl: int = 300, prefix: str = "cache"):
 
 async def create_redis_connection() -> Redis:
     return redis.Redis(
-        host="localhost",
+        host="127.0.0.1",
         port=6379,
         decode_responses=False,
         socket_timeout = 2
