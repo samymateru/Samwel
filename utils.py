@@ -114,12 +114,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.InvalidTokenError:
         return CurrentUser(status_code=401, description="invalid token")
 
-def get_db_connection():
-    connection = connection_pool.getconn()
-    try:
-        yield connection
-    finally:
-        connection_pool.putconn(connection)
+# def get_db_connection():
+#     connection = connection_pool.getconn()
+#     try:
+#         yield connection
+#     finally:
+#         connection_pool.putconn(connection)
 
 def generated_password() -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation
