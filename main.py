@@ -45,7 +45,7 @@ from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, redis_queue, return_redis_connection
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
-    update_user_password, generate_user_token
+    update_user_password, generate_user_token, connection_pool_async_
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
 from Management.entity.databases import get_entities, get_entities_by_email
@@ -101,8 +101,9 @@ async def catch_exceptions_middleware(request: Request, call_next):
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 @app.get("/")
-async def home():
-    return "hello"
+async def home(db=Depends(get_async_db_connection)):
+    print(db)
+    return ""
 
 @app.post("/testing/{company_id}")
 async def tester(
