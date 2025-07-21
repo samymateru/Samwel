@@ -1,11 +1,20 @@
 version: '1.0.0'
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   backend:
     image: backend
     container_name: backend
     restart: always
     ports:
       - "8000:8001"
+    depends_on:
+      - redis
     env_file:
       - .env
