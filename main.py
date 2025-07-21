@@ -1,8 +1,10 @@
 import time
 import traceback
+import uuid
+from urllib.parse import urlencode
 
 from fastapi import FastAPI, Depends, Form, Response, Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
@@ -40,7 +42,7 @@ from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-from redis_cache import init_redis_pool, close_redis_pool
+from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, redis_queue, return_redis_connection
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
     update_user_password, generate_user_token
@@ -116,6 +118,47 @@ async def tester(
         "time_taken": end - start
     }
 
+@app.get("/session/{module_id}", tags=["Authentication"])
+async def module_redirection(
+        module_id: str,
+        request: Request,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+    token: str = create_jwt_token(data.model_dump())
+    session_code = str(uuid.uuid4())
+
+    # Store in Redis with 5-minute expiry
+    redis_conn = await get_redis_connection()
+    try:
+        await redis_conn.set(session_code, token, ex=300)  # ex = seconds
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
+    finally:
+        await return_redis_connection(redis_conn) # Return to pool
+
+    # Redirect with session_code
+    redirect_url = f"https://{request.url.hostname}/auth?session_code={session_code}"
+    return RedirectResponse(url=redirect_url)
+
+
+@app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)
+async def refresh_token(
+        session_code: str,
+):
+    redis_conn = await get_redis_connection()
+    try:
+        token = await redis_conn.get(session_code)
+        await redis_conn.delete(session_code)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
+    finally:
+        await return_redis_connection(redis_conn)  # Return to pool
+    return TokenResponse(token=token)
+
 @app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
 async def get_token(
         module_id: str,
@@ -170,7 +213,6 @@ async def login(
             organizations= organizations,
             token=token
         )
-
         return login_response
     else:
         raise HTTPException(detail="Invalid password", status_code=400)

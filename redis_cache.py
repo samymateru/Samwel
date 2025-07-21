@@ -10,7 +10,9 @@ from redis.asyncio import Redis
 from typing import Optional
 
 redis_queue: Optional[asyncio.Queue] = None
+
 redis_client: Optional[Redis] = None
+
 REDIS_POOL_SIZE = 100
 
 def safe_serialize(obj):
@@ -58,7 +60,8 @@ async def create_redis_connection() -> Redis:
     return redis.Redis(
         host="localhost",
         port=6379,
-        decode_responses=False
+        decode_responses=False,
+        socket_timeout = 2
     )
 
 async def init_redis_pool():
