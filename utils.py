@@ -6,7 +6,6 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-from psycopg2 import pool
 import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
@@ -44,16 +43,6 @@ roles_map = {
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-connection_pool = pool.SimpleConnectionPool(
-            minconn=1,  # Minimum number of connections
-            maxconn=100,  # Maximum number of connections
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            database=os.getenv("DB_NAME")
-        )
 
 connection_pool_async = AsyncConnectionPool(
     conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
