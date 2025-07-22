@@ -3,7 +3,7 @@ import traceback
 import uuid
 from urllib.parse import urlencode
 
-from fastapi import FastAPI, Depends, Form, Response, Request
+from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from starlette.responses import JSONResponse, RedirectResponse
 
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
@@ -123,8 +123,9 @@ async def tester(
 async def module_redirection(
         module_id: str,
         request: Request,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        sub_domain: str = Query(...),
+        user: CurrentUser = Depends(get_current_user),
+        db = Depends(get_async_db_connection)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
@@ -142,7 +143,7 @@ async def module_redirection(
         await return_redis_connection(redis_conn) # Return to pool
 
     # Redirect with session_code
-    redirect_url = f"https://{request.url.hostname}/auth?session_code={session_code}"
+    redirect_url = f"https://{sub_domain}.{request.url.hostname}/auth?session_code={session_code}"
     return RedirectResponse(url=redirect_url)
 
 
