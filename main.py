@@ -43,7 +43,7 @@ from AuditNew.Internal.engagements.attachments.routes import router as attachmen
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, redis_queue, return_redis_connection
-from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse
+from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
     update_user_password, generate_user_token, connection_pool_async_
 from Management.users.databases import get_user_by_email
@@ -119,7 +119,7 @@ async def tester(
         "time_taken": end - start
     }
 
-@app.get("/session/{module_id}", tags=["Authentication"])
+@app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
         module_id: str,
         request: Request,
@@ -144,7 +144,7 @@ async def module_redirection(
 
     # Redirect with session_code
     redirect_url = f"https://{sub_domain}.{request.url.hostname}/auth?session_code={session_code}"
-    return RedirectResponse(url=redirect_url)
+    return RedirectUrl(redirect_url=redirect_url)
 
 
 @app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)

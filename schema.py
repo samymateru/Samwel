@@ -64,6 +64,9 @@ class LoginResponse(BaseModel):
     owner: bool
     organizations: List[Organization]
 
+class RedirectUrl(BaseModel):
+    redirect_url: str
+
 class RoleActions(str, Enum):
     VIEW = "view"
     CREATE = "create"
