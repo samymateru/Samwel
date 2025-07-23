@@ -154,7 +154,6 @@ async def refresh_token(
     redis_conn = await get_redis_connection()
     try:
         token = await redis_conn.get(session_code)
-        await redis_conn.delete(session_code)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
     finally:
