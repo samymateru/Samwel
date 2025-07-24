@@ -494,7 +494,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         async with connection.cursor() as cursor:
             await cursor.execute(query_current_plan_engagements, (
                 module_id,
-                str(datetime.now().year + 1)
+                str(datetime.now().year)
             ))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -558,17 +558,16 @@ def separate_engagements_and_issues(rows):
 
 
 def count_engagement_statuses(rows):
-    print(rows)
     status_counter = Counter()
 
     for row in rows:
         status = row['engagement_status']
         if status:
             status_counter[status] += 1
+
     return _EngagementStatus_(
         total=sum(status_counter.values()),
         pending=status_counter.get("Pending", 0),
         ongoing=status_counter.get("Ongoing", 0),
         completed=status_counter.get("Completed", 0)
-
     )
