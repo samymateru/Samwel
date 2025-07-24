@@ -12,7 +12,7 @@ from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 from psycopg_pool import AsyncConnectionPool
 import uuid
 from Management.roles.schemas import Roles, Permissions, RolesSections
-from commons import  get_role
+from commons import get_role, get_engagement_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
@@ -191,6 +191,31 @@ async def get_role_from_token(token: str = Depends(oauth2_scheme)):
         async for connection in get_async_db_connection():
             if user.module_id is not None and user.role is not None:
                 role_data = await get_role(connection=connection, name=user.role, module_id=user.module_id)
+                roles: List[Roles] = [Roles(**role_dict) for role_dict in role_data]
+                if roles.__len__() != 0:
+                    return roles[0]
+                else:
+                    return roles_map.get(user.role)
+            else:
+                raise HTTPException(status_code=400, detail="Invalid token make sure to re-authorize")
+
+    except jwt.ExpiredSignatureError:
+        return CurrentUser(status_code=401, description="token expired")
+    except jwt.InvalidTokenError:
+        return CurrentUser(status_code=401, description="invalid token")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
+
+async def get_role_from_engagement(engagement_id: str, user: CurrentUser):
+    try:
+        async for connection in get_async_db_connection():
+            if user.module_id is not None and user.role is not None:
+                engagement_role = await get_engagement_role(connection=connection, engagement_id=engagement_id, user_email=user.user_email)
+                if engagement_role.__len__() == 0:
+                    raise HTTPException(status_code=400, detail="Oops sorry role unavailable on the engagement")
+                role_data = await get_role(connection=connection, name=engagement_role[0], module_id=user.module_id)
                 roles: List[Roles] = [Roles(**role_dict) for role_dict in role_data]
                 if roles.__len__() != 0:
                     return roles[0]

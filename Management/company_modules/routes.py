@@ -24,6 +24,7 @@ async def fetch_organization_modules(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @router.get("/{organization_id}", response_model=List[Module])
 async def fetch_users_modules(
         organization_id: str,
@@ -86,6 +87,3 @@ async def create_new_organization_module(
         return ResponseMessage(detail="Organization module create successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-

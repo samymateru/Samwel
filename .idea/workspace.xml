@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/company_modules/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Management/company_modules/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/commons.py" beforeDir="false" afterPath="$PROJECT_DIR$/commons.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/x.py" beforeDir="false" afterPath="$PROJECT_DIR$/x.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,6 +88,7 @@
     &quot;Python.maze.executor&quot;: &quot;Run&quot;,
     &quot;Python.pdf.executor&quot;: &quot;Run&quot;,
     &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
+    &quot;Python.redis_cache.executor&quot;: &quot;Run&quot;,
     &quot;Python.roles.executor&quot;: &quot;Run&quot;,
     &quot;Python.routes.executor&quot;: &quot;Run&quot;,
     &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
@@ -128,14 +138,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00547" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1752577546067</created>
-      <option name="number" value="00547" />
-      <option name="presentableId" value="LOCAL-00547" />
-      <option name="project" value="LOCAL" />
-      <updated>1752577546067</updated>
     </task>
     <task id="LOCAL-00548" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -521,7 +523,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753173551614</updated>
     </task>
-    <option name="localTasksCounter" value="596" />
+    <task id="LOCAL-00596" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1753249917983</created>
+      <option name="number" value="00596" />
+      <option name="presentableId" value="LOCAL-00596" />
+      <option name="project" value="LOCAL" />
+      <updated>1753249917983</updated>
+    </task>
+    <option name="localTasksCounter" value="597" />
     <servers />
   </component>
   <component name="UnknownFeatures">

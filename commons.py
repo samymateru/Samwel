@@ -51,3 +51,15 @@ async def get_role(connection: AsyncConnection, name: str, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying roles {e}")
+
+async def get_engagement_role(connection: AsyncConnection, engagement_id: str, user_email: str):
+    query = sql.SQL("SELECT * FROM public.staff WHERE engagement = %s AND email = %s")
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (engagement_id, user_email))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            return [dict(zip(column_names, row_)) for row_ in rows]
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying engagement roles {e}")

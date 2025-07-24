@@ -1,5 +1,9 @@
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
+from datetime import datetime
+
+from AuditNew.Internal.dashboards.schemas import _Engagement_, ModuleHomeDashboard, _Issue_
+
 
 async def query_annual_plans_summary(
         connection: AsyncConnection,
@@ -448,7 +452,6 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             if root_cause_rating_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="No data found")
 
-
             return {
                 "procedure_summary": engagement_data,
                 "issue_details": root_cause_rating_data[0],
@@ -457,3 +460,93 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
+
+async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
+    query_current_plan_engagements = sql.SQL(
+        """
+        SELECT
+        eng.id AS engagement_id,
+        eng.name AS engagement_name,
+        eng.code AS engagement_code,
+        eng.status AS engagement_status,
+        eng.type AS engagement_type,
+        eng.start_date AS engagement_start_date,
+        eng.end_date AS engagement_end_date,
+        eng.stage AS engagement_stage,
+        
+        isu.id AS issue_id,
+        isu.ref AS issue_reference,
+        isu.title AS issue_title,
+        isu.finding AS issue_finding,
+        isu.risk_rating AS issue_rating,
+        isu.process AS issue_process
+        
+        FROM public.annual_plans pln
+        JOIN public.engagements eng ON pln.id = eng.plan_id
+        LEFT JOIN public.issue isu ON eng.id = isu.engagement
+        WHERE pln.module = %s AND pln.year = %s
+        ORDER BY eng.id, isu.id
+        LIMIT 5;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_current_plan_engagements, (
+                module_id,
+                str(datetime.now().year + 1)
+            ))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            dashboard_data = separate_engagements_and_issues(data)
+
+            engagements = [_Engagement_(**eng) for eng in dashboard_data.get("engagements", [])]
+            issues = [_Issue_(**eng) for eng in dashboard_data.get("issues", [])]
+
+            final_data = ModuleHomeDashboard(
+                engagements=engagements,
+                issues=issues
+            )
+
+            return final_data
+
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying module home dashboard {e}")
+
+
+def separate_engagements_and_issues(rows):
+    engagements_dict = {}
+    issues_dict = {}
+
+    for row in rows:
+        # Extract engagement fields
+        engagement_id = row['engagement_id']
+        if engagement_id not in engagements_dict:
+            engagements_dict[engagement_id] = {
+                'id': engagement_id,
+                'name': row['engagement_name'],
+                'code': row['engagement_code'],
+                'status': row['engagement_status'],
+                'type': row['engagement_type'],
+                'start_date': row['engagement_start_date'],
+                'end_date': row['engagement_end_date'],
+                'stage': row['engagement_stage'],
+            }
+
+        # Extract issue fields
+        issue_id = row['issue_id']
+        if issue_id and issue_id not in issues_dict:
+            issues_dict[issue_id] = {
+                'id': issue_id,
+                'reference': row['issue_reference'],
+                'title': row['issue_title'],
+                'finding': row['issue_finding'],
+                'risk_rating': row['issue_rating'],
+                'process': row['issue_process'],
+                'engagement': engagement_id
+            }
+
+    return {
+        "engagements": list(engagements_dict.values()),
+        "issues": list(issues_dict.values())
+    }
