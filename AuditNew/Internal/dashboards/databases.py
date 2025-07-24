@@ -1,8 +1,10 @@
+from collections import Counter
+
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from datetime import datetime
 
-from AuditNew.Internal.dashboards.schemas import _Engagement_, ModuleHomeDashboard, _Issue_
+from AuditNew.Internal.dashboards.schemas import _Engagement_, ModuleHomeDashboard, _Issue_, _EngagementStatus_
 
 
 async def query_annual_plans_summary(
@@ -497,14 +499,17 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
+
             dashboard_data = separate_engagements_and_issues(data)
+            engagements_metrics = count_engagement_statuses(data)
 
             engagements = [_Engagement_(**eng) for eng in dashboard_data.get("engagements", [])]
             issues = [_Issue_(**eng) for eng in dashboard_data.get("issues", [])]
 
             final_data = ModuleHomeDashboard(
                 engagements=engagements,
-                issues=issues
+                engagements_metrics=engagements_metrics,
+                issues=issues,
             )
 
             return final_data
@@ -550,3 +555,20 @@ def separate_engagements_and_issues(rows):
         "engagements": list(engagements_dict.values()),
         "issues": list(issues_dict.values())
     }
+
+
+def count_engagement_statuses(rows):
+    print(rows)
+    status_counter = Counter()
+
+    for row in rows:
+        status = row['engagement_status']
+        if status:
+            status_counter[status] += 1
+    return _EngagementStatus_(
+        total=sum(status_counter.values()),
+        pending=status_counter.get("Pending", 0),
+        ongoing=status_counter.get("Ongoing", 0),
+        completed=status_counter.get("Completed", 0)
+
+    )

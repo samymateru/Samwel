@@ -8,6 +8,17 @@ class PlanDetails(BaseModel):
     pending: Optional[int] = 0
     ongoing: Optional[int] = 0
 
+class _EngagementStatus_(BaseModel):
+    total: int
+    pending: int
+    ongoing: int
+    completed: int
+
+class _IssueStatus_(BaseModel):
+    pending: int
+    ongoing: int
+    completed: int
+
 class _Engagement_(BaseModel):
     id: str
     name: str
@@ -17,7 +28,6 @@ class _Engagement_(BaseModel):
     start_date: Optional[datetime]
     end_date: Optional[datetime]
     stage: Optional[str]
-
 
 class _Issue_(BaseModel):
     id: str
@@ -30,6 +40,7 @@ class _Issue_(BaseModel):
 
 class ModuleHomeDashboard(BaseModel):
     engagements: List[_Engagement_]
+    engagements_metrics: _EngagementStatus_
     issues: List[_Issue_]
 
 
