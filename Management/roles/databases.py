@@ -4,7 +4,7 @@ from typing import Union
 from fastapi import HTTPException
 from Management.roles.schemas import *
 from psycopg import AsyncConnection, sql
-from utils import  get_unique_key
+from utils import get_unique_key, get_latest_reference_number
 
 
 async def get_roles(connection: AsyncConnection, module_id: str):

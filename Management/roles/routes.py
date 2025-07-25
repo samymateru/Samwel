@@ -49,7 +49,7 @@ async def add_roles(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/", response_model=ResponseMessage)
-async def add_roles(
+async def edit_roles(
         name: str,
         role: Category,
         db = Depends(get_async_db_connection),
