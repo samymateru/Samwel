@@ -91,10 +91,10 @@ async def edit_entity_organization(
 async def remove_entity_organization(
         organization_id: str,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await trash_organizations(connection=db, organization_id=organization_id)
         return ResponseMessage(detail="Organization deleted successfully")

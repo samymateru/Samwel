@@ -1342,31 +1342,15 @@ async def add_engagement_profile(connection: AsyncConnection, engagement_id: str
         values = (
             get_unique_key_(),
             engagement_id,
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            json.dumps({
-                "value": ""
-            }),
-            [],
-            json.dumps({
-                "value": ""
-            })
+            json.dumps({}),  # audit_background
+            json.dumps({}),  # audit_objectives
+            json.dumps({}),  # key_legislations
+            json.dumps({}),  # relevant_systems
+            json.dumps({}),  # key_changes
+            json.dumps({}),  # reliance
+            json.dumps({}),  # scope_exclusion
+            [],              # core risks
+            json.dumps({})   # estimated_dates
         )
         async with connection.cursor() as cursor:
             await cursor.execute(query, values)
