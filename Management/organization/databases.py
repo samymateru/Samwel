@@ -6,8 +6,8 @@ from fastapi import HTTPException
 async def create_organization(connection: AsyncConnection, organization: Organization,  entity_id: str, user_id: str):
     query = sql.SQL(
         """
-        INSERT INTO public.organizations (id, entity, name, email, telephone, "default", type, status, website, created_at) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        INSERT INTO public.organizations (id, entity, name, email, telephone, "default", type, status, state, website, created_at) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
 
     try:
@@ -29,6 +29,7 @@ async def create_organization(connection: AsyncConnection, organization: Organiz
             organization.default,
             organization.type,
             "Opened",
+            "active",
             organization.website,
             datetime.now()
             ))
