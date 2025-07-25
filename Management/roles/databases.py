@@ -60,7 +60,6 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
             column_names = [desc[0] for desc in cursor.description]
             references_data =[dict(zip(column_names, row_)) for row_ in rows]
             reference = int(get_latest_reference_number(references_data=references_data))
-            print(reference)
             if reference == 0:
                 reference = reference + 10
             else:

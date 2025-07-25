@@ -1,9 +1,9 @@
 from psycopg import AsyncConnection, sql
-from utils import get_unique_key, check_row_exists
+from utils import check_row_exists, check_row_count, check_if_entity_administrator
 from Management.organization.schemas import *
 from fastapi import HTTPException
 
-async def create_organization(connection: AsyncConnection, organization: Organization,  entity_id: str):
+async def create_organization(connection: AsyncConnection, organization: Organization,  entity_id: str, user_id: str):
     query = sql.SQL(
         """
         INSERT INTO public.organizations (id, entity, name, email, telephone, "default", type, status, website, created_at) 
@@ -18,6 +18,8 @@ async def create_organization(connection: AsyncConnection, organization: Organiz
             })
             if exists:
                 raise HTTPException(status_code=400, detail="Organization exists")
+
+            await check_if_entity_administrator(connection=connection, user_id=user_id)
             await cursor.execute(query, (
             organization.id,
             entity_id,
@@ -56,7 +58,7 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
         org_user.owner
         FROM public.organizations_users as org_user
         JOIN organizations org ON org.id = org_user.organization_id
-        WHERE user_id = %s;
+        WHERE user_id = %s AND org.state = 'active';
         """)
     try:
         async with connection.cursor() as cursor:
@@ -116,3 +118,24 @@ async def get_organization_data(connection: AsyncConnection, organization_id: st
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error organization data {e}")
+
+async def trash_organizations(connection: AsyncConnection, organization_id: str):
+    query = sql.SQL(
+        """
+        UPDATE public.organizations
+        SET 
+        state = 'inactive'
+        WHERE id = %s;
+        """)
+
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query=query, params=(organization_id,))
+            await check_row_count(cursor=cursor, detail="Error organization not found")
+            await connection.commit()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error deleting organization {e}")

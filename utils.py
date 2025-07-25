@@ -19,7 +19,7 @@ from s3 import upload_file
 from schema import CurrentUser, RoleActions
 import secrets
 import string
-from psycopg import  sql
+from psycopg import sql, AsyncCursor
 from psycopg.errors import UniqueViolation, UndefinedColumn, UndefinedFunction
 from typing import List
 import redis.asyncio as redis
@@ -103,13 +103,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except jwt.InvalidTokenError:
         return CurrentUser(status_code=401, description="invalid token")
 
-# def get_db_connection():
-#     connection = connection_pool.getconn()
-#     try:
-#         yield connection
-#     finally:
-#         connection_pool.putconn(connection)
-
 def generated_password() -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation
     password = ''.join(secrets.choice(alphabet) for _ in range(16))
@@ -179,9 +172,6 @@ async def get_reference(connection: AsyncConnection, resource: str, id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
-async def get_next_issue_id():
-    pass
-
 async def get_role_from_token(token: str = Depends(oauth2_scheme)):
     if not token:
         return CurrentUser(status_code=401, description="auth token not provided")
@@ -232,14 +222,6 @@ async def get_role_from_engagement(engagement_id: str, user: CurrentUser):
         raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
-
-def authorize(user_roles: list, module: str, required_permission: str) -> bool:
-    for role in user_roles:
-        permissions = role.get("permissions", {})
-        if module in permissions:
-            if required_permission in permissions[module]:
-                return True
-    return False
 
 def check_permission(section: RolesSections, action: Permissions):
     def inner(role: Roles = Depends(get_role_from_token)):
@@ -512,3 +494,34 @@ def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime])
     if start is not None and end is not None:
         if end <= start:
             raise HTTPException(status_code=400, detail="End date must be after start time.")
+
+
+async def check_row_count(cursor: AsyncCursor, detail: str):
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=400, detail=detail)
+
+async  def check_if_organization_admin_owner(user_id: str, organization: str):
+    query = sql.SQL(
+        """
+        SELECT id, administrator, owner FROM public.users WHERE id = %s;
+        """)
+    pass
+
+async def check_if_entity_administrator(connection: AsyncConnection, user_id: id):
+    query = sql.SQL(
+        """
+        SELECT id, administrator, owner FROM public.users WHERE id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (user_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if user_data[0].get("administrator", False):
+                return True
+            else:
+                raise HTTPException(status_code=403, detail="Access denied your not entity admin")
+    except HTTPException as e:
+        await connection.rollback()
+        raise HTTPException(status_code=e.status_code, detail=e.detail)

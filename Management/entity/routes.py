@@ -42,8 +42,14 @@ async def create_entity(
             entity_id=entity_id
         )
 
-        organization_id = await create_organization(connection=db_async, organization=organization, entity_id=entity_id)
         user_id = await create_new_user(connection=db_async, new_user=new_user)
+
+        organization_id = await create_organization(
+            connection=db_async,
+            organization=organization,
+            entity_id=entity_id,
+            user_id=user_id
+        )
 
         attach_data = OrganizationsUsers(
             organization_id=organization_id,

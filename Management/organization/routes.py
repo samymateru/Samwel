@@ -4,7 +4,7 @@ from Management.users.databases import attach_user_to_organization
 from Management.users.schemas import OrganizationsUsers
 from schema import ResponseMessage, CurrentUser
 from Management.organization.databases import *
-from utils import get_async_db_connection, get_current_user
+from utils import get_async_db_connection, get_current_user, get_unique_key
 from typing import List
 
 router = APIRouter(prefix="/organization")
@@ -28,7 +28,7 @@ async def create_new_organization(
             website=new_organization.website,
         )
 
-        organization_id = await create_organization(db, organization=organization, entity_id=entity_id)
+        organization_id = await create_organization(db, organization=organization, entity_id=entity_id, user_id=user.user_id)
 
         attach_data = OrganizationsUsers(
             organization_id=organization_id,
@@ -84,5 +84,19 @@ async def edit_entity_organization(
     try:
         await update_organization(connection=db, organization=organization, organization_id=organization_id)
         return ResponseMessage(detail="Organization updated successfully")
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.delete("/{organization_id}", response_model=ResponseMessage)
+async def remove_entity_organization(
+        organization_id: str,
+        db=Depends(get_async_db_connection),
+        #user: CurrentUser  = Depends(get_current_user)
+    ):
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        await trash_organizations(connection=db, organization_id=organization_id)
+        return ResponseMessage(detail="Organization deleted successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
