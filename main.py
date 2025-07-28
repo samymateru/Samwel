@@ -142,10 +142,15 @@ async def module_redirection(
     finally:
         await return_redis_connection(redis_conn) # Return to pool
 
-    domain: str = request.headers.get("origin")
+    origin: str = request.headers.get("origin")
+    referer = request.headers.get("referer")
+
+    frontend_domain = origin or (referer and referer.split('/')[2])
+
+    print(frontend_domain)
 
     # Redirect with session_code
-    redirect_url = f"https://{sub_domain}.{domain}/auth?session_code={session_code}"
+    redirect_url = f"https://{sub_domain}.{frontend_domain}/auth?session_code={session_code}"
     return RedirectUrl(redirect_url=redirect_url)
 
 
