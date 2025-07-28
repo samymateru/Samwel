@@ -137,7 +137,7 @@ async def module_redirection(
         await return_redis_connection(redis_conn) # Return to pool
 
     # Redirect with session_code
-    redirect_url = f"https://{sub_domain}.{urlparse(request.headers.get("origin")).hostname}/auth?session_code={session_code}"
+    redirect_url = f"https://{sub_domain}.{urlparse(request.headers.get('origin')).hostname}/auth?session_code={session_code}"
     return RedirectUrl(redirect_url=redirect_url)
 
 
