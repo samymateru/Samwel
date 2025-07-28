@@ -124,19 +124,19 @@ async def module_redirection(
         module_id: str,
         request: Request,
         sub_domain: str = Query(...),
-        #user: CurrentUser = Depends(get_current_user),
+        user: CurrentUser = Depends(get_current_user),
         db = Depends(get_async_db_connection)
 ):
-   # if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
-    #data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
-    #token: str = create_jwt_token(data.model_dump())
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+    token: str = create_jwt_token(data.model_dump())
     session_code = str(uuid.uuid4())
 
     # Store in Redis with 5-minute expiry
     redis_conn = await get_redis_connection()
     try:
-        await redis_conn.set(session_code, "token", ex=300)  # ex = seconds
+        await redis_conn.set(session_code, token, ex=300)  # ex = seconds
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
     finally:
