@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,14 +131,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00557" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1752659253726</created>
-      <option name="number" value="00557" />
-      <option name="presentableId" value="LOCAL-00557" />
-      <option name="project" value="LOCAL" />
-      <updated>1752659253726</updated>
     </task>
     <task id="LOCAL-00558" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -526,7 +516,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753681896566</updated>
     </task>
-    <option name="localTasksCounter" value="606" />
+    <task id="LOCAL-00606" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1753687093547</created>
+      <option name="number" value="00606" />
+      <option name="presentableId" value="LOCAL-00606" />
+      <option name="project" value="LOCAL" />
+      <updated>1753687093547</updated>
+    </task>
+    <option name="localTasksCounter" value="607" />
     <servers />
   </component>
   <component name="UnknownFeatures">

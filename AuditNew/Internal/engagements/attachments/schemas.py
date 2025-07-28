@@ -4,11 +4,11 @@ from enum import Enum
 from datetime import datetime
 
 class AttachmentSections(str, Enum):
-    PLANNING = "Planning"
-    FINALIZATION = "Finalization"
-    REPORTING = "Reporting"
-    PROCEDURE = "Program"
-    PROGRAM = "Program"
+    PLANNING = "planning"
+    FINALIZATION = "finalization"
+    REPORTING = "reporting"
+    PROCEDURE = "procedure"
+    PROGRAM = "procedure"
     DRAFT_ENGAGEMENT = "draft_engagement"
     FINAL_ENGAGEMENT = "final_engagement"
 
