@@ -109,14 +109,8 @@ async def tester(
         db=Depends(get_async_db_connection),
         #user: CurrentUser = Depends(get_current_user)
 ):
-    print(f"headers: {request.headers.get("origin")}" )
-    start = time.perf_counter()
-    data = await get_entities(connection=db, entity_id=company_id)
-    end = time.perf_counter()
-    return {
-        "data": data,
-        "time_taken": end - start
-    }
+    return request.headers.get("origin")
+
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
