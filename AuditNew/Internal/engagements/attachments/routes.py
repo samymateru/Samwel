@@ -134,10 +134,26 @@ async def fetch_procedure_attachment(
         engagement_id: str,
         procedure_id: str = Query(...),
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        user: CurrentUser  = Depends(get_current_user)
     ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_procedure_attachment(connection=db, engagement_id=engagement_id, procedure_id=procedure_id)
+        return data
+    except HTTPException:
+        raise
+
+
+@router.get("/{engagement_id}", response_model=List[Attachment])
+async def fetch_procedure_attachment(
+        engagement_id: str,
+        procedure_id: str = Query(...),
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+    ):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_procedure_attachment(connection=db, engagement_id=engagement_id, procedure_id=procedure_id)
         return data
