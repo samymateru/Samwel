@@ -1,11 +1,8 @@
 import time
-import traceback
 import uuid
-from urllib.parse import urlencode
-
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from starlette.responses import JSONResponse, RedirectResponse
-
+from urllib.parse import urlparse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -108,9 +105,11 @@ async def home(db=Depends(get_async_db_connection)):
 @app.post("/testing/{company_id}")
 async def tester(
         company_id: str,
+        request: Request,
         db=Depends(get_async_db_connection),
         #user: CurrentUser = Depends(get_current_user)
 ):
+    print(f"headers: {request.headers.get("origin")}" )
     start = time.perf_counter()
     data = await get_entities(connection=db, entity_id=company_id)
     end = time.perf_counter()
@@ -142,15 +141,8 @@ async def module_redirection(
     finally:
         await return_redis_connection(redis_conn) # Return to pool
 
-    origin: str = request.headers.get("origin")
-    referer = request.headers.get("referer")
-
-    frontend_domain = origin or (referer and referer.split('/')[2])
-
-    print(frontend_domain)
-
     # Redirect with session_code
-    redirect_url = f"https://{sub_domain}.{frontend_domain}/auth?session_code={session_code}"
+    redirect_url = f"https://{sub_domain}.{urlparse(request.headers.get("origin")).hostname}/auth?session_code={session_code}"
     return RedirectUrl(redirect_url=redirect_url)
 
 
