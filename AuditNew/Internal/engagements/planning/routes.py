@@ -1,3 +1,5 @@
+from AuditNew.Internal.engagements.attachments.databases import add_procedure_attachment
+from AuditNew.Internal.engagements.attachments.schemas import Attachment, AttachmentSections
 from utils import get_current_user
 from schema import CurrentUser
 from fastapi import APIRouter, Depends, UploadFile, File, Query
@@ -82,6 +84,7 @@ async def fetch_engagement_letter(
 @router.put("/engagement_letter/{engagement_id}", response_model=ResponseMessage)
 async def create_new_engagement_letter(
         engagement_id: str,
+        procedure_id: str = Query(...),
         attachment: UploadFile = File(...),
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
@@ -89,13 +92,21 @@ async def create_new_engagement_letter(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        letter = EngagementLetter(
+        attachment = Attachment(
+            id=get_unique_key(),
+            engagement=engagement_id,
+            procedure=procedure_id,
             name=attachment.filename,
-            value="",
+            type=attachment.content_type.split("/")[1],
             size=attachment.size,
-            extension=attachment.content_type
+            section=AttachmentSections.FINAL_ENGAGEMENT,
+            creator_name=user.user_name,
+            creator_email=user.user_email,
+            created_at=datetime.now(),
+            url=""
         )
-        await add_engagement_letter(db, letter=letter, engagement_id=engagement_id)
+
+        await add_procedure_attachment(connection=db, attachment=attachment)
         return ResponseMessage(detail="Letter added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

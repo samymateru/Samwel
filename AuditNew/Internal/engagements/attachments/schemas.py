@@ -7,7 +7,10 @@ class AttachmentSections(str, Enum):
     PLANNING = "Planning"
     FINALIZATION = "Finalization"
     REPORTING = "Reporting"
+    PROCEDURE = "Program"
     PROGRAM = "Program"
+    DRAFT_ENGAGEMENT = "draft_engagement"
+    FINAL_ENGAGEMENT = "final_engagement"
 
 class Attachment(BaseModel):
     id: Optional[str] = None
