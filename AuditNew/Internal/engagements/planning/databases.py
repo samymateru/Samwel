@@ -1,3 +1,4 @@
+from AuditNew.Internal.engagements.attachments.schemas import Attachment
 from AuditNew.Internal.engagements.planning.schemas import *
 from utils import get_next_reference
 from AuditNew.Internal.engagements.work_program.databases import *
@@ -10,32 +11,49 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
 
-async def add_engagement_letter(connection: AsyncConnection, letter: EngagementLetter, engagement_id: str):
+async def add_engagement_letter(connection: AsyncConnection, attachment: Attachment, engagement_id: str):
     query = sql.SQL(
         """
-            UPDATE public.engagement_letter
-            SET 
-            name = %s,
-            value = %s,
-            size = %s,
-            extension = %s
-            WHERE engagement = %s AND type = %s; 
-
+        INSERT INTO public.attachments 
+        (
+        id,
+        engagement,
+        procedure,
+        url,
+        name,
+        size,
+        type,
+        section,
+        creator_name,
+        creator_email,
+        created_at
+        )
+        VALUES 
+        (
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+        );
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (
-                letter.name,
-                letter.value,
-                letter.size,
-                letter.extension,
-                engagement_id,
-                "final"
+            await cursor.execute(query,(
+                attachment.id,
+                attachment.engagement,
+                attachment.procedure,
+                attachment.url,
+                attachment.name,
+                attachment.size,
+                attachment.type,
+                attachment.section,
+                attachment.creator_name,
+                attachment.creator_email,
+                attachment.created_at
             ))
-        await connection.commit()
+            await connection.commit()
+    except HTTPException:
+        raise
     except Exception as e:
         await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error adding engagement letter {e}")
+        raise HTTPException(status_code=400, detail=f"Error adding engagement attachment {e}")
 
 async def add_engagement_prcm(connection: AsyncConnection, prcm: PRCM, engagement_id: str):
     query = sql.SQL(
@@ -238,8 +256,7 @@ async def get_prcm(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail=f"Error fetching engagement PRCM {e}")
 
 async def get_engagement_letter(connection: AsyncConnection, engagement_id: str):
-    query = sql.SQL("SELECT * from public.engagement_letter WHERE engagement = %s")
-
+    query = sql.SQL("SELECT * from public.attachments WHERE engagement = %s AND section ='final_engagement'")
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (engagement_id,))
@@ -249,6 +266,37 @@ async def get_engagement_letter(connection: AsyncConnection, engagement_id: str)
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching engagement letter {e}")
+
+async def edit_engagement_letter(connection: AsyncConnection, engagement_id: str, attachment: Attachment):
+    query = sql.SQL(
+        """
+        UPDATE public.attachments 
+        SET
+        url = %s
+        name = %s
+        size = %s
+        type = %s
+        creator_name = %s
+        creator_email = %s 
+        WHERE engagement = %s and section = 'final_engagement';      
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query,(
+                attachment.url,
+                attachment.name,
+                attachment.size,
+                attachment.type,
+                attachment.creator_name,
+                attachment.creator_email,
+                engagement_id
+            ))
+            await connection.commit()
+    except HTTPException:
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding procedure attachment {e}")
 
 async def get_summary_audit_program(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL(

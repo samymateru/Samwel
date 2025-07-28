@@ -44,6 +44,9 @@ async def add_procedure_attachment(connection: AsyncConnection, attachment: Atta
             await connection.commit()
     except HTTPException:
         raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error adding procedure attachment {e}")
 
 async def get_procedure_attachment(connection: AsyncConnection, engagement_id: str, procedure_id: str):
     query = sql.SQL(

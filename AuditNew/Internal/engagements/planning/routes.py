@@ -1,5 +1,4 @@
-from AuditNew.Internal.engagements.attachments.databases import add_procedure_attachment
-from AuditNew.Internal.engagements.attachments.schemas import Attachment, AttachmentSections
+from AuditNew.Internal.engagements.attachments.schemas import AttachmentSections
 from utils import get_current_user
 from schema import CurrentUser
 from fastapi import APIRouter, Depends, UploadFile, File, Query
@@ -67,7 +66,7 @@ async def fetch_summary_of_audit_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/engagement_letter/{engagement_id}", response_model=List[EngagementLetter])
+@router.get("/engagement_letter/{engagement_id}")
 async def fetch_engagement_letter(
         engagement_id: str,
         db=Depends(get_async_db_connection),
@@ -106,8 +105,15 @@ async def create_new_engagement_letter(
             url=""
         )
 
-        await add_procedure_attachment(connection=db, attachment=attachment)
-        return ResponseMessage(detail="Letter added successfully")
+        engagement_letter = await get_engagement_letter(connection=db, engagement_id=engagement_id)
+        if engagement_letter.__len__() == 0:
+            await add_engagement_letter(connection=db, attachment=attachment, engagement_id=engagement_id)
+            return ResponseMessage(detail="Letter added successfully")
+
+        else:
+            await edit_engagement_letter(connection=db, attachment=attachment, engagement_id = engagement_id)
+            return ResponseMessage(detail="Letter added successfully")
+
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
