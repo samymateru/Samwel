@@ -272,13 +272,13 @@ async def edit_engagement_letter(connection: AsyncConnection, engagement_id: str
         """
         UPDATE public.attachments 
         SET
-        url = %s
-        name = %s
-        size = %s
-        type = %s
-        creator_name = %s
+        url = %s,
+        name = %s,
+        size = %s,
+        type = %s,
+        creator_name = %s,
         creator_email = %s 
-        WHERE engagement = %s and section = 'final_engagement';      
+        WHERE engagement = %s AND section = 'final_engagement';      
         """)
     try:
         async with connection.cursor() as cursor:
