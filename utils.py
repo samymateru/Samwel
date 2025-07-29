@@ -1,7 +1,6 @@
 import shutil
 import tempfile
-from typing import Optional, Union
-from contextlib import asynccontextmanager
+from typing import Optional, Union, cast, Protocol, runtime_checkable
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -9,7 +8,6 @@ from dotenv import load_dotenv
 import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
-from psycopg_pool import AsyncConnectionPool
 import uuid
 from Management.roles.schemas import Roles, Permissions, RolesSections
 from commons import get_role, get_engagement_role
@@ -29,6 +27,12 @@ from psycopg.rows import dict_row
 from psycopg.sql import SQL, Identifier, Placeholder, Composed
 from services.connections.database_connections import AsyncDBPoolSingleton
 
+
+@runtime_checkable
+class SupportsWrite(Protocol):
+    def write(self, b: bytes) -> int:
+        ...
+
 roles_map = {
     "Administrator": administrator,
     "Head of Audit": head_of_audit,
@@ -44,39 +48,8 @@ roles_map = {
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-connection_pool_async = AsyncConnectionPool(
-    conninfo=(
-        f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-        f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-        f"?application_name=fastapi-appi"
-    ),
-    min_size=1,
-    max_size=10,
-    open=False  # prevent auto-opening (this removes the warning)
-)
-
-connection_pool_async_: Optional[AsyncConnectionPool] = None
 redis_client: Optional[Redis] = None
 
-
-@asynccontextmanager
-async def get_db_connection_async():
-    global connection_pool_async_
-    if not connection_pool_async_:
-        connection_pool_async_ = AsyncConnectionPool(
-            conninfo=(
-                f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-                f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-                f"?application_name=fastapi-appi"
-            ),
-            min_size=1,
-            max_size=10,
-            open=False,  # IMPORTANT: prevent auto-opening
-        )
-        await connection_pool_async.open()  # Manually open it
-
-    async with connection_pool_async.connection() as conn:
-        yield conn
 
 
 async def get_database_connection():
@@ -88,10 +61,6 @@ async def get_async_db_connection():
     pool = await AsyncDBPoolSingleton.get_instance().get_pool()
     async with pool.connection() as conn:
         yield conn
-
-# async def get_async_db_connection():
-#     async with get_db_connection_async() as conn:
-#         yield conn
 
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -157,7 +126,7 @@ async def get_next_reference(connection: AsyncConnection, resource: str, engagem
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
-async def get_reference(connection: AsyncConnection, resource: str, id: str):
+async def get_reference(connection: AsyncConnection, resource: str, __id__: str):
     if resource == "review_comment":
         start: str = "RC"
         relation: str = "engagement"
@@ -179,7 +148,7 @@ async def get_reference(connection: AsyncConnection, resource: str, id: str):
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (id,))
+            await cursor.execute(query, (__id__,))
             result = await cursor.fetchone()
             if result is None:
                 return f"{start}-0001"
@@ -262,14 +231,14 @@ def get_unique_key():
     key = uuid_str[0] + uuid_str[1]
     return key
 
-async def is_data_exist(connection: AsyncConnection, table: str, column: str, id: str):
+async def is_data_exist(connection: AsyncConnection, table: str, column: str, __id__: str):
     query = sql.SQL("SELECT {column} FROM {table} WHERE id = %s").format(
         column=sql.Identifier(column),
         table=sql.Identifier('public', table)
     )
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (id,))
+            await cursor.execute(query, (__id__,))
             rows = await cursor.fetchone()
             if rows is not None:
                 raise UniqueViolation()
@@ -431,7 +400,8 @@ def upload_attachment(
     try:
         key: str = f"{user.entity_name}/{uuid.uuid4()}-{attachment.filename}"
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            shutil.copyfileobj(attachment.file, tmp)
+            tmp_writer = cast(SupportsWrite[bytes], tmp)
+            shutil.copyfileobj(attachment.file, tmp_writer)
             temp_path = tmp.name
 
         background_tasks.add_task(upload_file, temp_path, key)
@@ -518,13 +488,6 @@ def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime])
 async def check_row_count(cursor: AsyncCursor, detail: str):
     if cursor.rowcount == 0:
         raise HTTPException(status_code=400, detail=detail)
-
-async  def check_if_organization_admin_owner(user_id: str, organization: str):
-    query = sql.SQL(
-        """
-        SELECT id, administrator, owner FROM public.users WHERE id = %s;
-        """)
-    pass
 
 async def check_if_entity_administrator(connection: AsyncConnection, user_id: id):
     query = sql.SQL(

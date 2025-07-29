@@ -1,9 +1,7 @@
-import time
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from psycopg import AsyncConnection
-from starlette.responses import JSONResponse, RedirectResponse
-from urllib.parse import urlparse
+from starlette.responses import JSONResponse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
 from AuditNew.Internal.engagements.routes import router as engagements_router
@@ -40,19 +38,19 @@ from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, redis_queue, return_redis_connection
+from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, return_redis_connection
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from services.connections.database_connections import AsyncDBPoolSingleton
-from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
-    update_user_password, generate_user_token, connection_pool_async_, get_database_connection
+from services.logging.logger import LoggerSingleton
+from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
+    update_user_password, generate_user_token
 from Management.users.databases import get_user_by_email
-from fastapi.middleware.cors import CORSMiddleware
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
-
+from starlette.middleware.cors import CORSMiddleware
 load_dotenv()
 
 
@@ -60,13 +58,18 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
+global_logger = (
+    LoggerSingleton("fast-api")
+          .add_console_handler()
+          .get_logger()
+    )
+
 @asynccontextmanager
-async def lifespan(api: FastAPI):
+async def lifespan(_api: FastAPI):
     try:
         pool_instance = AsyncDBPoolSingleton.get_instance()
         await pool_instance.get_pool()
         await init_redis_pool()
-        await connection_pool_async.open()
     except Exception as e:
         print(e)
 
@@ -74,19 +77,18 @@ async def lifespan(api: FastAPI):
 
     try:
         await close_redis_pool()
-        await connection_pool_async.close()
         pool_instance = AsyncDBPoolSingleton.get_instance()
         if pool_instance:
             await pool_instance.close_pool()
     except Exception as e:
         print(e)
 
-
 app = FastAPI(lifespan=lifespan)
 
+# noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with specific domains in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -96,10 +98,22 @@ app.add_middleware(
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
+    except HTTPException as h:
+        global_logger.error(h)
     except Exception as e:
-        return JSONResponse(status_code=500, content={"detail": f"{e}"})
+        global_logger.error(e)
+        return JSONResponse(status_code=500, content={"detail": str(e)})
 
+# noinspection PyTypeChecker
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
 
 async def db_test(conn: AsyncConnection):
     async with conn.cursor() as cursor:
@@ -116,8 +130,12 @@ async def home(db=Depends(get_async_db_connection)):
 
 @app.post("/testing")
 async def tester(request: Request):
-    return request.headers.get("origin").split("//")[1]
+    try:
+        raise HTTPException(status_code=400, detail="Http error")
+    except HTTPException:
+        raise
 
+    #return request.headers.get("origin").split("//")[1]
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
@@ -144,7 +162,7 @@ async def module_redirection(
         await return_redis_connection(redis_conn) # Return to pool
 
     # Redirect with session_code
-    redirect_url = f"https://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
+    redirect_url = f"http://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
     return RedirectUrl(redirect_url=redirect_url)
 
 
