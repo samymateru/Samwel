@@ -1,6 +1,7 @@
 import time
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
+from psycopg import AsyncConnection
 from starlette.responses import JSONResponse, RedirectResponse
 from urllib.parse import urlparse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
@@ -41,11 +42,11 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, redis_queue, return_redis_connection
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from services.connections.database_connections import AsyncDBPoolSingleton
 from utils import verify_password, create_jwt_token, get_async_db_connection, connection_pool_async, get_current_user, \
-    update_user_password, generate_user_token, connection_pool_async_
+    update_user_password, generate_user_token, connection_pool_async_, get_database_connection
 from Management.users.databases import get_user_by_email
 from fastapi.middleware.cors import CORSMiddleware
-from Management.entity.databases import get_entities, get_entities_by_email
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
@@ -58,13 +59,14 @@ load_dotenv()
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+
 @asynccontextmanager
 async def lifespan(api: FastAPI):
     try:
-        #asyncio.create_task(smtp_worker())
+        pool_instance = AsyncDBPoolSingleton.get_instance()
+        await pool_instance.get_pool()
         await init_redis_pool()
         await connection_pool_async.open()
-        print("System booted successfully")
     except Exception as e:
         print(e)
 
@@ -73,7 +75,9 @@ async def lifespan(api: FastAPI):
     try:
         await close_redis_pool()
         await connection_pool_async.close()
-        print("System shutdown successfully")
+        pool_instance = AsyncDBPoolSingleton.get_instance()
+        if pool_instance:
+            await pool_instance.close_pool()
     except Exception as e:
         print(e)
 
@@ -97,18 +101,21 @@ async def catch_exceptions_middleware(request: Request, call_next):
 
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
+async def db_test(conn: AsyncConnection):
+    async with conn.cursor() as cursor:
+        await cursor.execute("SELECT * FROM public.entities")
+        rows = await cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        data = [dict(zip(column_names, row_)) for row_ in rows]
+        return data
+
 @app.get("/")
 async def home(db=Depends(get_async_db_connection)):
-    print(db)
-    return ""
+    data = await db_test(conn=db)
+    return data
 
-@app.post("/testing/{company_id}")
-async def tester(
-        company_id: str,
-        request: Request,
-        db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
-):
+@app.post("/testing")
+async def tester(request: Request):
     return request.headers.get("origin").split("//")[1]
 
 

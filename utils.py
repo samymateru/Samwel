@@ -16,7 +16,7 @@ from commons import get_role, get_engagement_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
-from schema import CurrentUser, RoleActions
+from schema import CurrentUser
 import secrets
 import string
 from psycopg import sql, AsyncCursor
@@ -27,7 +27,7 @@ from redis.asyncio import Redis
 from psycopg import AsyncConnection
 from psycopg.rows import dict_row
 from psycopg.sql import SQL, Identifier, Placeholder, Composed
-
+from services.connections.database_connections import AsyncDBPoolSingleton
 
 roles_map = {
     "Administrator": administrator,
@@ -45,7 +45,11 @@ load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 connection_pool_async = AsyncConnectionPool(
-    conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+    conninfo=(
+        f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+        f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+        f"?application_name=fastapi-appi"
+    ),
     min_size=1,
     max_size=10,
     open=False  # prevent auto-opening (this removes the warning)
@@ -60,7 +64,11 @@ async def get_db_connection_async():
     global connection_pool_async_
     if not connection_pool_async_:
         connection_pool_async_ = AsyncConnectionPool(
-            conninfo=f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+            conninfo=(
+                f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+                f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+                f"?application_name=fastapi-appi"
+            ),
             min_size=1,
             max_size=10,
             open=False,  # IMPORTANT: prevent auto-opening
@@ -70,9 +78,20 @@ async def get_db_connection_async():
     async with connection_pool_async.connection() as conn:
         yield conn
 
-async def get_async_db_connection():
-    async with get_db_connection_async() as conn:
+
+async def get_database_connection():
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+    async with pool.connection() as conn:
         yield conn
+
+async def get_async_db_connection():
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+    async with pool.connection() as conn:
+        yield conn
+
+# async def get_async_db_connection():
+#     async with get_db_connection_async() as conn:
+#         yield conn
 
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
