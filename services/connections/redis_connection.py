@@ -4,6 +4,13 @@ from typing import AsyncGenerator, Optional
 import json
 from functools import wraps
 from typing import Callable, Awaitable
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+redis_host = os.getenv("REDIS_HOST", "redis")
+redis_port = int(os.getenv("REDIS_PORT", 6379))
 
 class RedisSingleton:
     _client: Optional[Redis] = None
@@ -16,7 +23,7 @@ class RedisSingleton:
                 # Double-checked locking to prevent race conditions
                 if cls._client is None:
                     pool = ConnectionPool.from_url(
-                        "redis://localhost:6379",
+                        f"redis://{redis_host}:{redis_port}",
                         max_connections=20,
                         decode_responses=True
                     )
