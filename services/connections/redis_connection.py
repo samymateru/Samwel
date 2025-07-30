@@ -1,23 +1,31 @@
+import asyncio
 from redis.asyncio import Redis, ConnectionPool
-from typing import AsyncGenerator
-
-redis_pool: ConnectionPool = ConnectionPool.from_url(
-    "redis://localhost:6379",
-    max_connections=20,
-    decode_responses=True
-)
-
-redis_client: Redis = Redis(connection_pool=redis_pool)
-
-async def get_redis() -> AsyncGenerator[Redis, None]:
-    yield redis_client
-
-
-
-
+from typing import AsyncGenerator, Optional
 import json
 from functools import wraps
 from typing import Callable, Awaitable
+
+class RedisSingleton:
+    _client: Optional[Redis] = None
+    _lock = asyncio.Lock()
+
+    @classmethod
+    async def get_client(cls) -> Redis:
+        if cls._client is None:
+            async with cls._lock:
+                # Double-checked locking to prevent race conditions
+                if cls._client is None:
+                    pool = ConnectionPool.from_url(
+                        "redis://localhost:6379",
+                        max_connections=20,
+                        decode_responses=True
+                    )
+                    cls._client = Redis(connection_pool=pool)
+        return cls._client
+
+async def get_redis() -> AsyncGenerator[Redis, None]:
+    client = await RedisSingleton.get_client()
+    yield client
 
 def redis_cache(key_builder: Callable[..., str], expire: int = 60):
     def decorator(func: Callable[..., Awaitable]):

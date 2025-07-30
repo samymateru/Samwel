@@ -1,6 +1,7 @@
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from psycopg import AsyncConnection
+from redis.asyncio import Redis
 from starlette.responses import JSONResponse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
 from Management.entity.routes import router as entity
@@ -38,9 +39,10 @@ from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
-from redis_cache import init_redis_pool, close_redis_pool, get_redis_connection, return_redis_connection
+from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from services.connections.database_connections import AsyncDBPoolSingleton
+from services.connections.redis_connection import get_redis
 from services.logging.logger import LoggerSingleton
 from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token
@@ -68,6 +70,7 @@ global_logger = (
 async def lifespan(_api: FastAPI):
     try:
         pool_instance = AsyncDBPoolSingleton.get_instance()
+
         await pool_instance.get_pool()
         await init_redis_pool()
     except Exception as e:
@@ -94,6 +97,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
@@ -108,7 +112,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+async def http_exception_handler(exc: HTTPException):
     global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
     return JSONResponse(
         status_code=exc.status_code,
@@ -130,12 +134,7 @@ async def home(db=Depends(get_async_db_connection)):
 
 @app.post("/testing")
 async def tester(request: Request):
-    try:
-        raise HTTPException(status_code=400, detail="Http error")
-    except HTTPException:
-        raise
-
-    #return request.headers.get("origin").split("//")[1]
+    return request.headers.get("origin").split("//")[1]
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
@@ -143,23 +142,19 @@ async def module_redirection(
         request: Request,
         sub_domain: str = Query(...),
         user: CurrentUser = Depends(get_current_user),
-        db = Depends(get_async_db_connection)
+        db = Depends(get_async_db_connection),
+        redis: Redis = Depends(get_redis)
 ):
-
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
     token: str = create_jwt_token(data.model_dump())
     session_code = str(uuid.uuid4())
 
-    # Store in Redis with 5-minute expiry
-    redis_conn = await get_redis_connection()
     try:
-        await redis_conn.set(session_code, token, ex=300)  # ex = seconds
+        await redis.set(session_code, token, ex=300)  # ex = seconds
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
-    finally:
-        await return_redis_connection(redis_conn) # Return to pool
 
     # Redirect with session_code
     redirect_url = f"http://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
@@ -169,14 +164,12 @@ async def module_redirection(
 @app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)
 async def refresh_token(
         session_code: str,
+        redis: Redis = Depends(get_redis)
 ):
-    redis_conn = await get_redis_connection()
     try:
-        token = await redis_conn.get(session_code)
+        token = await redis.get(session_code)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while retrieving session code {e}")
-    finally:
-        await return_redis_connection(redis_conn)  # Return to pool
     return TokenResponse(token=token)
 
 @app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)

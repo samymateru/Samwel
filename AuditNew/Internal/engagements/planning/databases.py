@@ -1,4 +1,3 @@
-from AuditNew.Internal.engagements.attachments.schemas import Attachment
 from AuditNew.Internal.engagements.planning.schemas import *
 from utils import get_next_reference
 from AuditNew.Internal.engagements.work_program.databases import *
