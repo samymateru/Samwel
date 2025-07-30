@@ -58,9 +58,3 @@ def redis_cache(key_builder: Callable[..., str], expire: int = 60):
 
         return wrapper
     return decorator
-
-
-#
-# @redis_cache(
-#     key_builder=lambda user_id, include_sensitive=False, **_: f"user:{user_id}:sensitive:{include_sensitive}"
-# )

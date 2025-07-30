@@ -24,7 +24,7 @@ async def raise_task(connection: AsyncConnection, task: NewTask, engagement_id: 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
-        reference = await get_reference(connection=connection, resource="task", id=engagement_id)
+        reference = await get_reference(connection=connection, resource="task", __id__=engagement_id)
         async with connection.cursor() as cursor:
             exists = await check_row_exists(connection=connection, table_name="task", filters={
                 "title": task.title,

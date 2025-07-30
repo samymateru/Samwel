@@ -1,3 +1,5 @@
+import threading
+import time
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from psycopg import AsyncConnection
@@ -41,9 +43,11 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from services.connections.caching import cache
 from services.connections.database_connections import AsyncDBPoolSingleton
 from services.connections.redis_connection import get_redis
 from services.logging.logger import LoggerSingleton
+from services.notifications.notifications_service import EmailNotification, NotificationManager, PushNotification
 from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token
 from Management.users.databases import get_user_by_email
@@ -59,6 +63,9 @@ load_dotenv()
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+email_notification = EmailNotification()
+
+
 
 global_logger = (
     LoggerSingleton("fast-api")
@@ -70,7 +77,6 @@ global_logger = (
 async def lifespan(_api: FastAPI):
     try:
         pool_instance = AsyncDBPoolSingleton.get_instance()
-
         await pool_instance.get_pool()
         await init_redis_pool()
     except Exception as e:
@@ -119,7 +125,8 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-async def db_test(conn: AsyncConnection):
+@cache(identifier="user_id")
+async def db_test(conn: AsyncConnection, user_id: str):
     async with conn.cursor() as cursor:
         await cursor.execute("SELECT * FROM public.entities")
         rows = await cursor.fetchall()
@@ -129,11 +136,15 @@ async def db_test(conn: AsyncConnection):
 
 @app.get("/")
 async def home(db=Depends(get_async_db_connection)):
-    data = await db_test(conn=db)
+    data = await db_test(conn=db, user_id="12345")
     return data
 
-@app.post("/testing")
-async def tester(request: Request):
+@app.post("/testing/{message}")
+async def tester(request: Request, message: str):
+    #notification = NotificationManager()
+
+    #notification.set_strategy(email_notification)
+    #notification.notify("sm", message=message)
     return request.headers.get("origin").split("//")[1]
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

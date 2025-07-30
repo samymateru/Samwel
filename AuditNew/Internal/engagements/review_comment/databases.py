@@ -1,7 +1,5 @@
 import json
 from fastapi import HTTPException
-from psycopg2.extensions import connection as Connection
-from psycopg2.extensions import cursor as Cursor
 from AuditNew.Internal.engagements.review_comment.schemas import *
 from utils import get_reference, get_unique_key, check_row_exists
 from psycopg import AsyncConnection, sql
@@ -36,7 +34,7 @@ async def raise_review_comment_(connection: AsyncConnection, review_comment: New
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """)
     try:
-        reference: str = await get_reference(connection=connection, resource="review_comment", id=engagement_id)
+        reference: str = await get_reference(connection=connection, resource="review_comment", __id__=engagement_id)
         async with connection.cursor() as cursor:
             exists = await check_row_exists(connection=connection, table_name="review_comment", filters={
                 "title": review_comment.title,
