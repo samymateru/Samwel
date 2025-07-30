@@ -112,7 +112,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(exc: HTTPException):
+async def http_exception_handler(_request: Request, exc: HTTPException):
     global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
     return JSONResponse(
         status_code=exc.status_code,
