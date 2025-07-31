@@ -29,7 +29,7 @@ class User(BaseModel):
 
 class PreparedReviewedBy(BaseModel):
     name: Optional[str]
-    email: Optional[str]
+    email: Optional[str] = None
     date_issued: Optional[datetime] = datetime.now()
 
 class PRCM(BaseModel):
