@@ -39,3 +39,4 @@ async def smtp_worker():
             email_queue.task_done()
     finally:
         await smtp.quit()
+

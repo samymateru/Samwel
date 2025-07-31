@@ -5,13 +5,13 @@ from threading import Lock
 class LoggerSingleton:
     _instance = None
     _lock = Lock()
+    _initialized = False
 
     def __new__(cls, name="app_logger", level=logging.DEBUG):
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
-                    cls._instance._initialized = False
         return cls._instance
 
     def __init__(self, name="app_logger", level=logging.DEBUG):
@@ -59,3 +59,11 @@ class LoggerSingleton:
 
     def get_logger(self) -> logging.Logger:
         return self.logger
+
+
+
+global_logger = (
+    LoggerSingleton("fast-api")
+          .add_console_handler()
+          .get_logger()
+    )

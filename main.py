@@ -1,5 +1,3 @@
-import threading
-import time
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
 from psycopg import AsyncConnection
@@ -46,8 +44,7 @@ from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, R
 from services.connections.caching import cache
 from services.connections.database_connections import AsyncDBPoolSingleton
 from services.connections.redis_connection import get_redis
-from services.logging.logger import LoggerSingleton
-from services.notifications.notifications_service import EmailNotification, NotificationManager, PushNotification
+from services.logging.logger import global_logger
 from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token
 from Management.users.databases import get_user_by_email
@@ -62,16 +59,6 @@ load_dotenv()
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-email_notification = EmailNotification()
-
-
-
-global_logger = (
-    LoggerSingleton("fast-api")
-          .add_console_handler()
-          .get_logger()
-    )
 
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
@@ -126,7 +113,7 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 @cache(identifier="user_id")
-async def db_test(conn: AsyncConnection, user_id: str):
+async def db_test(conn: AsyncConnection, _user_id: str):
     async with conn.cursor() as cursor:
         await cursor.execute("SELECT * FROM public.entities")
         rows = await cursor.fetchall()
@@ -140,11 +127,7 @@ async def home(db=Depends(get_async_db_connection)):
     return data
 
 @app.post("/testing/{message}")
-async def tester(request: Request, message: str):
-    #notification = NotificationManager()
-
-    #notification.set_strategy(email_notification)
-    #notification.notify("sm", message=message)
+async def tester(request: Request):
     return request.headers.get("origin").split("//")[1]
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, Form, UploadFile, File, BackgroundTasks
 from AuditNew.Internal.annual_plans.databases import *
 from Management.roles.schemas import Permissions, RolesSections
-from utils import get_async_db_connection, check_permission, validate_start_end_dates
+from utils import get_async_db_connection, check_permission
 from AuditNew.Internal.annual_plans.schemas import *
 from typing import List
 from utils import get_current_user
@@ -66,7 +66,6 @@ async def create_new_annual_plan(
         dep: bool = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.CREATE))
 ):
     try:
-        validate_start_end_dates(start=start, end=end)
         if user.status_code != 200 and dep:
             raise HTTPException(status_code=user.status_code, detail=user.description)
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
