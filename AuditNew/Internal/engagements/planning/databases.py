@@ -296,14 +296,6 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
             prepared_by = %s::jsonb,
             reviewed_by = %s::jsonb  WHERE id = %s; 
         """)
-
-    update_procedure_status = sql.SQL(
-        """
-        UPDATE public.std_template
-        SET 
-        status = %s
-        WHERE id = %s; 
-        """)
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query, (
@@ -318,15 +310,10 @@ async def edit_planning_procedure(connection: AsyncConnection, std_template: Sta
                 procedure_id
             ))
             await connection.commit()
-            if std_template.reviewed_by.id == "0" or std_template.reviewed_by.name == "":
-                await cursor.execute(update_procedure_status, ("In progress", procedure_id))
-            else:
-                await cursor.execute(update_procedure_status, ("Completed", procedure_id))
-            await connection.commit()
 
-    except UniqueViolation:
+    except ForeignKeyViolation:
         await connection.rollback()
-        raise HTTPException(status_code=409, detail="Planning procedure already exist")
+        raise HTTPException(status_code=409, detail="Invalid procedure id passe")
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating planning procedure {e}")
