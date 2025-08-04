@@ -1,6 +1,5 @@
 import uuid
 from fastapi import FastAPI, Depends, Form, Response, Request, Query
-from psycopg import AsyncConnection
 from redis.asyncio import Redis
 from starlette.responses import JSONResponse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
@@ -41,7 +40,6 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
-from services.connections.caching import cache
 from services.connections.database_connections import AsyncDBPoolSingleton
 from services.connections.redis_connection import get_redis
 from services.logging.logger import global_logger
@@ -112,19 +110,22 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-@cache(identifier="user_id")
-async def db_test(conn: AsyncConnection, _user_id: str):
-    async with conn.cursor() as cursor:
-        await cursor.execute("SELECT * FROM public.entities")
-        rows = await cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        data = [dict(zip(column_names, row_)) for row_ in rows]
-        return data
-
 @app.get("/")
 async def home(db=Depends(get_async_db_connection)):
-    data = await db_test(conn=db, user_id="12345")
-    return data
+    # qb = InsertQueryBuilder(connection=db)
+    # new_plan = NewAnnualPlan(name="ptr")
+    # audit_plan = AnnualPlan(
+    #     **new_plan.model_dump(),
+    #     id="loo",
+    #     start=datetime.now(),
+    #     end=datetime.now(),
+    #     attachment="url"
+    # )
+    # data = await qb.into_table("annual_plans").values(
+    #     audit_plan
+    # ).returning("id", "name").execute()
+
+    return "data"
 
 @app.post("/testing/{message}")
 async def tester(request: Request):

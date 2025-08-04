@@ -15,7 +15,7 @@ class AnnualPlan(BaseModel):
     reference: Optional[str] = None
     module: Optional[str] = None
     name: str
-    year: Optional[str] = datetime.now().year
+    year: Optional[str] = str(datetime.now().year)
     status: AnnualPlansStatus = AnnualPlansStatus.PENDING
     start: Optional[datetime] = None
     end: Optional[datetime] = None
@@ -24,12 +24,7 @@ class AnnualPlan(BaseModel):
 
 class NewAnnualPlan(BaseModel):
     name: str
-    year: Optional[str] = datetime.now().year
-    status: AnnualPlansStatus = AnnualPlansStatus.PENDING
-    start: Optional[datetime] = None
-    end: Optional[datetime] = None
-    file: str
-    created_at: Optional[datetime] = datetime.now()
+    year: Optional[str] = str(datetime.now().year)
 
 class DeleteAnnualPlan(BaseModel):
     plan_id: List[int]
