@@ -45,12 +45,11 @@ roles_map = {
     "Compliance Manager": compliance_manager
 }
 
+
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 redis_client: Optional[Redis] = None
-
-
 
 async def get_database_connection():
     pool = await AsyncDBPoolSingleton.get_instance().get_pool()

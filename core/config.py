@@ -1,13 +1,13 @@
-# app/core/config.py
+from typing import Optional
 import pydantic.v1
 from pydantic import Field
 
 class Settings(pydantic.v1.BaseSettings):
-    DB_HOST: str = Field(...)
-    DB_PORT: int = Field(...)
-    DB_USER: str = Field(...)
-    DB_PASSWORD: str = Field(...)
-    DB_NAME: str = Field(...)
+    DB_HOST: Optional[str] = Field(default="localhost")
+    DB_PORT: int = Field(default=5432)
+    DB_USER: str = Field(default="postgres")
+    DB_PASSWORD: str = Field(default="postgres")
+    DB_NAME: str = Field(default="postgres")
 
     SECRET_KEY: str = Field(...)
 
@@ -24,6 +24,4 @@ class Settings(pydantic.v1.BaseSettings):
         env_file_encoding = 'utf-8'
 
 
-settings = Settings(
-
-)
+settings = Settings()

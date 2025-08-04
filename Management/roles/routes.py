@@ -1,12 +1,23 @@
 from fastapi import APIRouter, Depends
-from constants import head_of_audit, audit_reviewer, audit_lead, audit_member, business_manager, risk_manager, \
-    compliance_manager
 from services.connections.query_builder import QueryBuilder
 from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.roles.databases import *
 from Management.roles.schemas import *
+from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
+    risk_manager, compliance_manager
 
+roles_map = {
+    "Administrator": administrator,
+    "Head of Audit": head_of_audit,
+    "Member": member,
+    "Audit Lead": audit_lead,
+    "Audit Reviewer": audit_reviewer,
+    "Audit Member": audit_member,
+    "Business Manager": business_manager,
+    "Risk Manager": risk_manager,
+    "Compliance Manager": compliance_manager
+}
 
 router = APIRouter(prefix="/roles")
 
@@ -42,9 +53,14 @@ async def fetch_role(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+        for role_value in roles_map.items():
+            if role_value[1].id == role_id:
+                return role_value[1]
+
         qb = await (QueryBuilder(connection=db)
                     .from_table("roles")
                     .where("id", role_id)).fetch_one()
+
         if qb is None:
             raise HTTPException(status_code=404, detail="Role not found")
         return qb
