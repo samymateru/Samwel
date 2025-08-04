@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from typing import List
 from constants import head_of_audit, audit_reviewer, audit_lead, audit_member, business_manager, risk_manager, \
     compliance_manager
+from services.connections.query_builder import QueryBuilder
 from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.roles.databases import *
@@ -30,6 +30,24 @@ async def fetch_roles(
         ]
         data = await get_roles(connection=db, module_id=module_id)
         return roles + data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@router.get("/role/{role_id}", response_model=Roles)
+async def fetch_role(
+        role_id: str,
+        db = Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        qb = await (QueryBuilder(connection=db)
+                    .from_table("roles")
+                    .where("id", role_id)).fetch_one()
+        if qb is None:
+            raise HTTPException(status_code=404, detail="Role not found")
+        return qb
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

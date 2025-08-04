@@ -111,21 +111,9 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 @app.get("/")
-async def home(db=Depends(get_async_db_connection)):
-    # qb = InsertQueryBuilder(connection=db)
-    # new_plan = NewAnnualPlan(name="ptr")
-    # audit_plan = AnnualPlan(
-    #     **new_plan.model_dump(),
-    #     id="loo",
-    #     start=datetime.now(),
-    #     end=datetime.now(),
-    #     attachment="url"
-    # )
-    # data = await qb.into_table("annual_plans").values(
-    #     audit_plan
-    # ).returning("id", "name").execute()
+async def home():
+    return "Hello world"
 
-    return "data"
 
 @app.post("/testing/{message}")
 async def tester(request: Request):
