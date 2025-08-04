@@ -71,7 +71,7 @@ async def fetch_entity_by_id(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_entities_by_id(db, user_id=user.user_id)
+        data = await get_entities_by_id(db, user_id=user.entity_id)
         if data.__len__() == 0:
             raise HTTPException(status_code=400, detail="No data found")
         return data[0]
