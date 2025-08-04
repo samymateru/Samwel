@@ -88,3 +88,20 @@ class Roles(BaseModel):
     un_archive_audit: Archive = Archive.NO
     others: List[Permissions]  = Field(default_factory=list)
     created_at: Optional[datetime] = datetime.now()
+
+class EditRole(BaseModel):
+    name: Optional[str]
+    section: Optional[Section] = Section.E_AUDIT
+    type: Type
+    settings: List[Permissions] = Field(default_factory=list)
+    audit_plans: List[Permissions] = Field(default_factory=list)
+    administration: List[Permissions] = Field(default_factory=list)
+    planning: List[Permissions] = Field(default_factory=list)
+    fieldwork: List[Permissions] = Field(default_factory=list)
+    reporting: List[Permissions] = Field(default_factory=list)
+    audit_program: List[Permissions] = Field(default_factory=list)
+    follow_up: List[Permissions] = Field(default_factory=list)
+    issue_management: List[Permissions] = Field(default_factory=list)
+    archive_audit: Archive = Archive.NO
+    un_archive_audit: Archive = Archive.NO
+    others: List[Permissions] = Field(default_factory=list)

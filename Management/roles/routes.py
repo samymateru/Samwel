@@ -82,18 +82,18 @@ async def add_roles(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/", response_model=ResponseMessage)
+@router.put("/{role_id}", response_model=ResponseMessage)
 async def edit_roles(
-        name: str,
-        role: Category,
+        role_id: str,
+        role: EditRole,
         db = Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await edit_role(db, company_id=user.company_id, role=role, name=name)
-        return ResponseMessage(detail="Role added successfully")
+        await edit_role(db, role=role, role_id=role_id, module_id=user.module_id)
+        return ResponseMessage(detail="Role edited successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

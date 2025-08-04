@@ -90,25 +90,50 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error creating role {e}")
 
-async def edit_role(connection: AsyncConnection, role: Category, company_id: str, name: str):
-    query = sql.SQL("""
-                   UPDATE roles
-                   SET roles = %s::jsonb
-                   WHERE company = %s;
-                 """)
+async def edit_role(connection: AsyncConnection, role: EditRole, role_id: str, module_id: str):
+    query = sql.SQL(
+        """
+        UPDATE public.roles
+        SET 
+        name = %s,
+        section = %s,
+        type = %s,
+        settings = %s,
+        audit_plans = %s,
+        administration = %s,
+        planning = %s,
+        fieldwork = %s,
+        reporting = %s,
+        audit_program = %s,
+        follow_up = %s,
+        issue_management = %s,
+        archive_audit = %s,
+        un_archive_audit = %s,
+        others = %s
+        WHERE id = %s AND module = %s;
+    """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute("SELECT roles FROM roles WHERE company = %s;", (company_id,))
-            result = await cursor.fetchone()
-            if not result:
-                raise HTTPException(status_code=203, detail="No roles")
-            roles = result[0]
-            for role_ in roles:
-                if role_["name"] == name:
-                    role_["name"] = role.name  # Update the role name
-                    role_["permissions"] = role.permissions.model_dump()  # Update permissions
-                    break
-            await cursor.execute(query, (json.dumps(roles), company_id,))
+            await cursor.execute(query, (
+                role.name,
+                role.section,
+                role.type,
+                role.settings,
+                role.audit_plans,
+                role.administration,
+                role.planning,
+                role.fieldwork,
+                role.reporting,
+                role.audit_program,
+                role.follow_up,
+                role.issue_management,
+                role.archive_audit,
+                role.un_archive_audit,
+                role.others,
+                role_id,
+                module_id
+            ))
+
         await connection.commit()
     except Exception as e:
         await connection.rollback()
