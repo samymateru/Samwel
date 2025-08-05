@@ -17,7 +17,7 @@ class Entity(BaseModel):
     owner: str
     email: str
     telephone: str
-    status: str
+    status: bool
     created_at: datetime
 
 class NewEntity(BaseModel):
