@@ -15,7 +15,7 @@ class Organization(BaseModel):
     telephone: Optional[str] = None
     default: bool = Field(default=False)
     type: str
-    status: Optional[OrganizationStatus] = Field(default=OrganizationStatus.OPENED)
+    status: Optional[bool] = True
     website: Optional[str] = None
     administrator: Optional[bool] = False
     owner: Optional[bool] = False

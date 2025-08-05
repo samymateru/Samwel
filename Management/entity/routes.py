@@ -24,7 +24,6 @@ async def create_entity(
             telephone=entity.telephone,
             type=entity.type,
             website=entity.website,
-            status=OrganizationStatus.OPENED.value,
             default=True,
             created_at=datetime.now()
         )

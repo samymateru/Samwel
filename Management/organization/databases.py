@@ -28,7 +28,7 @@ async def create_organization(connection: AsyncConnection, organization: Organiz
             organization.telephone,
             organization.default,
             organization.type,
-            "Opened",
+            organization.status,
             "active",
             organization.website,
             datetime.now()
