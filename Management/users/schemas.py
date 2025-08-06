@@ -25,7 +25,7 @@ class __User__(BaseModel):
     id: Optional[str] = None
     name: str
     email: str
-    telephone: str
+    telephone:  Optional[str] = None
     role: Optional[str] = None
     type: Optional[str] = None
     title: Optional[str]= None
@@ -37,7 +37,7 @@ class User(BaseModel):
     entity_id: str
     name: str
     email: str
-    telephone: str
+    telephone: Optional[str] = None
     password: str
     administrator: bool = Field(default=False)
     owner: bool = Field(default=False)
@@ -52,7 +52,7 @@ class EntityUser(BaseModel):
     entity: str
     name: str
     email: str
-    telephone: str
+    telephone: Optional[str] = None
     administrator: bool = Field(default=False)
     owner: bool = Field(default=False)
     created_at: datetime = datetime.now()
@@ -71,7 +71,7 @@ class OrganizationUser(BaseModel):
     organization: str
     name: str
     email: str
-    telephone: str
+    telephone: Optional[str] = None
     administrator: bool = Field(default=False)
     owner: bool = Field(default=False)
     modules: List[ModuleSection]
@@ -83,7 +83,7 @@ class ModuleUser(BaseModel):
     module: str
     name: str
     email: str
-    telephone: str
+    telephone: Optional[str] = None
     title: str
     role: str
     type: Optional[str] = None
