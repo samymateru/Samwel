@@ -347,3 +347,55 @@ async def remove_module(connection: AsyncConnection, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error deleting module {e}")
+
+async def update_module_user(connection: AsyncConnection, user: UpdateModuleUser, user_id: str, module_id: str):
+    update_user_query = sql.SQL(
+        """
+        UPDATE public.users
+        SET 
+        name = %s,
+        email = %s,
+        telephone = %s
+        WHERE id = %s RETURNING id;
+        """)
+
+    update_module_user_query = sql.SQL(
+        """
+        UPDATE public.modules_users
+        SET 
+        role = %s,
+        title = %s,
+        type = %s
+        WHERE user_id = %s AND module_id = %s RETURNING user_id;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(update_user_query,(
+                user.name,
+                user.email,
+                user.telephone,
+                user_id
+                ))
+            return_user_id = await cursor.fetchone()
+            if return_user_id is None:
+                HTTPException(status_code=400, detail="Error updating user entry not found")
+
+            await cursor.execute(update_module_user_query,(
+                user.role,
+                user.title,
+                user.type,
+                user_id,
+                module_id
+                ))
+
+            return_user_id = await cursor.fetchone()
+            if return_user_id is None:
+                HTTPException(status_code=400, detail="Error updating module user entry not found")
+
+            await connection.commit()
+    except HTTPException:
+        await connection.rollback()
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error updating module {e}")

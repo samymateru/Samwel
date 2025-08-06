@@ -114,4 +114,12 @@ class ModulesUsers(BaseModel):
     type: str
     created_at: datetime = Field(default=datetime.now())
 
+class UpdateModuleUser(BaseModel):
+    name: str
+    email: str
+    telephone: Optional[str] = None
+    role: str
+    title: str
+    type: str
+
 

@@ -543,14 +543,12 @@ values = [
 
 ]
 
-
 data_roles = {
     "name": "name",
     "permission": [
         {"name": [""]}
     ]
 }
-
 
 roles_ = {
     "name": "Owner",
@@ -560,7 +558,6 @@ roles_ = {
         {"subscription": ["create", "view", "delete", "update", "assign", "approve"]}
     ]
 }
-
 
 
 value = [

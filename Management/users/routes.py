@@ -87,13 +87,14 @@ async def invite_user_to_module(
 @router.put("/{user_id}")
 async def update_user(
         user_id: str,
-        user: User,
+        user: UpdateModuleUser,
         db = Depends(get_async_db_connection),
         current_user: CurrentUser = Depends(get_current_user)
     ):
     if current_user.status_code != 200:
         return HTTPException(status_code=current_user.status_code, detail=current_user.description)
     try:
+        await update_module_user(connection=db, user=user, user_id=user_id, module_id=current_user.module_id)
         return ResponseMessage(detail="user successfully updated")
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
@@ -112,6 +113,3 @@ def delete_user(
         pass
     except HTTPException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-
