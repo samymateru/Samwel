@@ -1,4 +1,3 @@
-from AuditNew.Internal.engagements.issue.schemas import Issue_
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
 from fastapi import APIRouter, Depends

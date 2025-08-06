@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -135,14 +133,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00587" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1753090599400</created>
-      <option name="number" value="00587" />
-      <option name="presentableId" value="LOCAL-00587" />
-      <option name="project" value="LOCAL" />
-      <updated>1753090599400</updated>
     </task>
     <task id="LOCAL-00588" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -528,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754472151062</updated>
     </task>
-    <option name="localTasksCounter" value="636" />
+    <task id="LOCAL-00636" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1754473822449</created>
+      <option name="number" value="00636" />
+      <option name="presentableId" value="LOCAL-00636" />
+      <option name="project" value="LOCAL" />
+      <updated>1754473822449</updated>
+    </task>
+    <option name="localTasksCounter" value="637" />
     <servers />
   </component>
   <component name="UnknownFeatures">
