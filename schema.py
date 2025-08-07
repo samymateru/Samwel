@@ -59,7 +59,7 @@ class LoginResponse(BaseModel):
     entity_id: str
     name: str
     email: str
-    telephone: str = None
+    telephone: Optional[str] = None
     administrator: bool
     owner: bool
     organizations: List[Organization]
