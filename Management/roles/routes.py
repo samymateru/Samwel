@@ -33,6 +33,8 @@ async def fetch_roles(
         roles : List[Roles] = [
             head_of_audit,
             audit_lead,
+            administrator,
+            member,
             audit_reviewer,
             audit_member,
             business_manager,

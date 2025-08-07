@@ -1,6 +1,3 @@
-import json
-from typing import Union
-
 from fastapi import HTTPException
 from Management.roles.schemas import *
 from psycopg import AsyncConnection, sql
