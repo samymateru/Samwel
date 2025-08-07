@@ -20,8 +20,8 @@ class _IssueStatus_(BaseModel):
     completed: int
 
 class _Engagement_(BaseModel):
-    id: str
-    name: str
+    id: Optional[str]
+    name: Optional[str]
     code: Optional[str]
     status: Optional[str]
     type: Optional[str]
@@ -30,13 +30,13 @@ class _Engagement_(BaseModel):
     stage: Optional[str]
 
 class _Issue_(BaseModel):
-    id: str
+    id: Optional[str]
     reference: Optional[str]
     title: Optional[str]
     finding: Optional[str]
     risk_rating: Optional[str]
     process: Optional[str]
-    engagement: int  # Foreign key to engagement.id
+    engagement: str
 
 class ModuleHomeDashboard(BaseModel):
     engagements: List[_Engagement_]
