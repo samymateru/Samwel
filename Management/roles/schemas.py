@@ -37,6 +37,7 @@ class Permissions(str, Enum):
     EDIT = "edit"
     DELETE = "delete"
     APPROVE = "approve"
+    REVIEW = "review"
 
 class RolesSections(str, Enum):
     SETTINGS = "settings"

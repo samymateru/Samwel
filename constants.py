@@ -12,69 +12,78 @@ head_of_audit = Roles(
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
-        Permissions.APPROVE
+        Permissions.APPROVE,
     ],
     audit_plans=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     engagements=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     administration=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     planning=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     fieldwork=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     reporting=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     audit_program=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     follow_up=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     issue_management=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     others=[Permissions.VIEW],
     archive_audit=Archive.YES,
@@ -178,50 +187,57 @@ audit_lead = Roles(
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     planning=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     fieldwork=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     reporting=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     audit_program=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     follow_up=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     issue_management=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
-    others=[Permissions.VIEW],
+    others=[Permissions.VIEW, Permissions.REVIEW],
     archive_audit=Archive.NO,
     un_archive_audit=Archive.NO,
     created_at=datetime.now() + timedelta(seconds=1)
@@ -243,21 +259,26 @@ audit_reviewer = Roles(
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     planning=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     fieldwork=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
-        Permissions.APPROVE],
+        Permissions.APPROVE,
+        Permissions.REVIEW
+    ],
+
     reporting=[
         Permissions.VIEW,
         Permissions.CREATE,
