@@ -77,6 +77,7 @@ class Roles(BaseModel):
     type: Type
     settings: List[Permissions] = Field(default_factory=list)
     audit_plans: List[Permissions] = Field(default_factory=list)
+    engagements: List[Permissions] = Field(default_factory=list)
     administration: List[Permissions]  = Field(default_factory=list)
     planning: List[Permissions]  = Field(default_factory=list)
     fieldwork: List[Permissions]  = Field(default_factory=list)
@@ -95,6 +96,7 @@ class EditRole(BaseModel):
     type: Type
     settings: List[Permissions] = Field(default_factory=list)
     audit_plans: List[Permissions] = Field(default_factory=list)
+    engagements: List[Permissions] = Field(default_factory=list)
     administration: List[Permissions] = Field(default_factory=list)
     planning: List[Permissions] = Field(default_factory=list)
     fieldwork: List[Permissions] = Field(default_factory=list)

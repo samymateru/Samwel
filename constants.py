@@ -20,6 +20,13 @@ head_of_audit = Roles(
         Permissions.EDIT,
         Permissions.APPROVE
     ],
+    engagements=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE
+    ],
     administration=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -88,61 +95,15 @@ administrator = Roles(
         Permissions.EDIT,
         Permissions.APPROVE
     ],
-    audit_plans=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.APPROVE
-    ],
-    administration=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    planning=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    fieldwork=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    reporting=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    audit_program=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    follow_up=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    issue_management=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
+    audit_plans=[Permissions.VIEW],
+    engagements=[Permissions.VIEW],
+    administration=[Permissions.VIEW],
+    planning=[Permissions.VIEW],
+    fieldwork=[Permissions.VIEW],
+    reporting=[Permissions.VIEW],
+    audit_program=[Permissions.VIEW],
+    follow_up=[Permissions.VIEW],
+    issue_management=[Permissions.VIEW],
     others=[Permissions.VIEW],
     archive_audit=Archive.YES,
     un_archive_audit=Archive.YES,
@@ -162,33 +123,12 @@ member = Roles(
         Permissions.EDIT,
         Permissions.APPROVE
     ],
-    audit_plans=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.APPROVE
+    audit_plans=[Permissions.VIEW],
+    engagements=[Permissions.VIEW],
+    administration=[Permissions.VIEW
     ],
-    administration=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    planning=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
-    fieldwork=[
-        Permissions.VIEW,
-        Permissions.CREATE,
-        Permissions.EDIT,
-        Permissions.DELETE,
-        Permissions.APPROVE
-    ],
+    planning=[Permissions.VIEW],
+    fieldwork=[Permissions.VIEW],
     reporting=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -232,6 +172,7 @@ audit_lead = Roles(
     type=Type.AUDIT,
     settings=[Permissions.VIEW],
     audit_plans=[Permissions.VIEW],
+    engagements=[Permissions.VIEW],
     administration=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -296,6 +237,7 @@ audit_reviewer = Roles(
     type=Type.AUDIT,
     settings=[Permissions.VIEW],
     audit_plans=[Permissions.VIEW],
+    engagements=[Permissions.VIEW],
     administration=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -359,6 +301,7 @@ audit_member = Roles(
     type=Type.AUDIT,
     settings=[Permissions.VIEW],
     audit_plans=[Permissions.VIEW],
+    engagements=[Permissions.VIEW],
     administration=[Permissions.VIEW],
     planning=[
         Permissions.VIEW,
@@ -416,6 +359,7 @@ business_manager = Roles(
     type=Type.BUSINESS,
     settings=[],
     audit_plans=[],
+    engagements=[],
     administration=[],
     planning=[],
     fieldwork=[],
@@ -442,6 +386,7 @@ risk_manager = Roles(
     type=Type.BUSINESS,
     settings=[],
     audit_plans=[],
+    engagements=[],
     administration=[],
     planning=[],
     fieldwork=[],
@@ -468,6 +413,7 @@ compliance_manager = Roles(
     type=Type.BUSINESS,
     settings=[],
     audit_plans=[],
+    engagements=[],
     administration=[],
     planning=[],
     fieldwork=[],
