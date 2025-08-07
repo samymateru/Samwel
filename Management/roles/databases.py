@@ -35,6 +35,7 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
         administration,
         planning,
         fieldwork,
+        finalization,
         reporting,
         audit_program,
         follow_up,
@@ -44,7 +45,7 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
         others,
         created_at
     ) VALUES (
-        %s, %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s, %s
     );
@@ -78,6 +79,7 @@ async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
                 role.administration,
                 role.planning,
                 role.fieldwork,
+                role.finalization,
                 role.reporting,
                 role.audit_program,
                 role.follow_up,
@@ -106,6 +108,7 @@ async def edit_role(connection: AsyncConnection, role: EditRole, role_id: str, m
         administration = %s,
         planning = %s,
         fieldwork = %s,
+        finalization = %s,
         reporting = %s,
         audit_program = %s,
         follow_up = %s,
@@ -127,6 +130,7 @@ async def edit_role(connection: AsyncConnection, role: EditRole, role_id: str, m
                 role.administration,
                 role.planning,
                 role.fieldwork,
+                role.finalization,
                 role.reporting,
                 role.audit_program,
                 role.follow_up,
