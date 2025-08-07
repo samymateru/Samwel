@@ -61,6 +61,14 @@ head_of_audit = Roles(
         Permissions.APPROVE,
         Permissions.REVIEW
     ],
+    finalization=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE,
+        Permissions.REVIEW
+    ],
     audit_program=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -110,6 +118,7 @@ administrator = Roles(
     planning=[Permissions.VIEW],
     fieldwork=[Permissions.VIEW],
     reporting=[Permissions.VIEW],
+    finalization=[Permissions.VIEW],
     audit_program=[Permissions.VIEW],
     follow_up=[Permissions.VIEW],
     issue_management=[Permissions.VIEW],
@@ -145,6 +154,7 @@ member = Roles(
         Permissions.DELETE,
         Permissions.APPROVE
     ],
+    finalization=[Permissions.VIEW],
     audit_program=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -182,6 +192,14 @@ audit_lead = Roles(
     settings=[Permissions.VIEW],
     audit_plans=[Permissions.VIEW],
     engagements=[Permissions.VIEW],
+    finalization=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE,
+        Permissions.REVIEW
+    ],
     administration=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -278,13 +296,20 @@ audit_reviewer = Roles(
         Permissions.APPROVE,
         Permissions.REVIEW
     ],
-
     reporting=[
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
         Permissions.DELETE,
         Permissions.APPROVE
+    ],
+    finalization=[
+        Permissions.VIEW,
+        Permissions.CREATE,
+        Permissions.EDIT,
+        Permissions.DELETE,
+        Permissions.APPROVE,
+        Permissions.REVIEW
     ],
     audit_program=[
         Permissions.VIEW,
@@ -344,6 +369,7 @@ audit_member = Roles(
         Permissions.DELETE,
         Permissions.APPROVE
     ],
+    finalization=[Permissions.VIEW],
     audit_program=[
         Permissions.VIEW,
         Permissions.CREATE,
@@ -385,6 +411,7 @@ business_manager = Roles(
     planning=[],
     fieldwork=[],
     reporting=[],
+    finalization=[Permissions.VIEW],
     audit_program=[],
     follow_up=[],
     issue_management=[
@@ -412,6 +439,7 @@ risk_manager = Roles(
     planning=[],
     fieldwork=[],
     reporting=[],
+    finalization=[Permissions.VIEW],
     audit_program=[],
     follow_up=[],
     issue_management=[
@@ -439,6 +467,7 @@ compliance_manager = Roles(
     planning=[],
     fieldwork=[],
     reporting=[],
+    finalization=[Permissions.VIEW],
     audit_program=[],
     follow_up=[],
     issue_management=[
