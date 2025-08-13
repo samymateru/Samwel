@@ -61,9 +61,6 @@ class LoggerSingleton:
         return self.logger
 
 
-
-global_logger = (
-    LoggerSingleton("fast-api")
-          .add_console_handler()
-          .get_logger()
-    )
+global_logger = (LoggerSingleton(level=logging.DEBUG)
+              .add_console_handler()
+              .get_logger())

@@ -109,7 +109,11 @@ async def remove_engagements(connection: AsyncConnection, engagement_id: str):
 
 
 async def get_engagements(connection: AsyncConnection, annual_id: str):
-    query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s")
+    query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s AND id = ANY(%s);")
+    query_engagements = sql.SQL(
+        """
+        SELECT engagement FROM public.staff WHERE email = %s;
+        """)
 
     try:
         async with connection.cursor() as cursor:

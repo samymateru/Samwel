@@ -128,6 +128,7 @@ async def module_redirection(
         db = Depends(get_async_db_connection),
         redis: Redis = Depends(get_redis)
 ):
+
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)

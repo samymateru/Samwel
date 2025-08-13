@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 schema_type = TypeVar("schema_type", bound=BaseModel)
 
-class QueryBuilder:
+class ReadBuilder:
     def __init__(self, connection: AsyncConnection):
         self.connection: AsyncConnection = connection
         self._order_by_fields = []
