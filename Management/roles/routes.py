@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
-from services.connections.query_builder import QueryBuilder
+
+from services.connections.query_builder import ReadBuilder
 from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.roles.databases import *
@@ -59,7 +60,7 @@ async def fetch_role(
             if role_value[1].id == role_id:
                 return role_value[1]
 
-        qb = await (QueryBuilder(connection=db)
+        qb = await (ReadBuilder(connection=db)
                     .from_table("roles")
                     .where("id", role_id)).fetch_one()
 
