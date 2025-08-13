@@ -108,7 +108,7 @@ async def remove_engagements(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail=f"Error deleting engagement {e}")
 
 
-async def get_engagements(connection: AsyncConnection, annual_id: str):
+async def get_engagements(connection: AsyncConnection, annual_id: str, email: str):
     query = sql.SQL("SELECT * FROM public.engagements WHERE plan_id = %s AND id = ANY(%s);")
     query_engagements = sql.SQL(
         """
@@ -117,7 +117,12 @@ async def get_engagements(connection: AsyncConnection, annual_id: str):
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query=query, params=(annual_id,))
+            await cursor.execute(query=query_engagements, params=(email,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            engagement_ids = [dict(zip(column_names, row_)) for row_ in rows]
+            engagement_list = [item['engagement'] for item in engagement_ids]
+            await cursor.execute(query=query, params=(annual_id, engagement_list))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             return [dict(zip(column_names, row_)) for row_ in rows]

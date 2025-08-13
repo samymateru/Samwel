@@ -19,7 +19,7 @@ async def fetch_engagements(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_engagements(connection=db, annual_id=annual_id)
+        data = await get_engagements(connection=db, annual_id=annual_id, email=user.user_email)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
