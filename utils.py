@@ -79,16 +79,19 @@ def create_jwt_token(data: dict, expiration_time: int = 2) -> str:
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     if not token:
-        return CurrentUser(status_code=401, description="auth token not provided")
+        raise HTTPException(status_code=401, detail="auth token not provided")
     try:
+        secret_key = os.getenv("SECRET_KEY")
+        if not secret_key:
+            raise RuntimeError("SECRET_KEY not set in environment")
         decoded_token = jwt.decode(token, key=os.getenv("SECRET_KEY"), algorithms=["HS256"])
         decoded_token["status_code"] = 200
         decoded_token["description"] = "success"
         return CurrentUser(**decoded_token)
     except jwt.ExpiredSignatureError:
-        return CurrentUser(status_code=401, description="token expired")
+        raise HTTPException(status_code=401, detail="auth token expired")
     except jwt.InvalidTokenError:
-        return CurrentUser(status_code=401, description="invalid token")
+        raise HTTPException(status_code=401, detail="auth token is invalid")
 
 def generated_password() -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation

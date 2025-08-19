@@ -571,3 +571,6 @@ def count_engagement_statuses(rows):
         ongoing=status_counter.get("Ongoing", 0),
         completed=status_counter.get("Completed", 0)
     )
+
+
+

@@ -15,6 +15,7 @@ class NewBusinessSubProcess(BaseModel):
     name: str
 
 class CombinedBusinessProcess(BaseModel):
+    id: Optional[str] = None
     process_name: str
     code: str
     sub_process_name: List[str]

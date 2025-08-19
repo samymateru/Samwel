@@ -9,6 +9,7 @@ async def get_combined_business_process(connection: AsyncConnection, company_id:
     query = sql.SQL(
         """
             SELECT
+            bp.id as id,
             bp.name AS process_name,
             bp.code,
             ARRAY_AGG(sub.value) AS sub_process_name

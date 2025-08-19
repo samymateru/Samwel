@@ -6,7 +6,7 @@ from pydantic import BaseModel
 schema_type = TypeVar("schema_type", bound=BaseModel)
 
 class ReadBuilder:
-    def __init__(self, connection: AsyncConnection):
+    def __init__(self, connection: AsyncConnection = None):
         self.connection: AsyncConnection = connection
         self._order_by_fields = []
         self._group_by_fields = []
@@ -18,6 +18,24 @@ class ReadBuilder:
         self._limit = None
         self._offset = None
         self._params = {}
+        self._joins = []
+        self._table_alias = None
+
+    def join(self, join_type: str, table: str, on: str, alias: Optional[str] = None):
+        """
+        join_type: 'INNER', 'LEFT', 'RIGHT', 'FULL'
+        table: table to join
+        alias: optional alias for joined table
+        on: join condition as a string, e.g. 'a.b_id = b.id'
+        """
+        join_clause = {
+            "type": join_type.upper(),
+            "table": table,
+            "alias": alias,
+            "on": on
+        }
+        self._joins.append(join_clause)
+        return self
 
     def build_group_by_clause(self):
         if self._group_by_fields:
@@ -29,12 +47,16 @@ class ReadBuilder:
         self._select = list(columns.model_fields.keys())
         return self
 
-    def select_fields(self, *fields: str):
-        self._select = list(set(self._select + list(fields)))
+    def select_fields(self, *fields: str, alias_map: Optional[dict[str, str]] = None):
+        alias_map = alias_map or {}
+        for field in fields:
+            alias = alias_map.get(field)
+            self._select.append((field, alias))
         return self
 
-    def from_table(self, table: str):
+    def from_table(self, table: str, alias: Optional[str] = None):
         self._table = table
+        self._table_alias = alias
         return self
 
     def where(self, column: str, value):
@@ -73,12 +95,37 @@ class ReadBuilder:
         if not self._select:
             select_clause = sql.SQL("*")
         else:
-            select_clause = sql.SQL(", ").join(map(sql.Identifier, self._select))
+            select_parts = []
+            for col, alias in self._select:
+                column_sql = sql.Identifier(col)
+                if self._table_alias:
+                    column_sql = sql.SQL("{}.{}").format(sql.Identifier(self._table_alias), sql.Identifier(col))
+                if alias:
+                    select_parts.append(sql.SQL("{} AS {}").format(column_sql, sql.Identifier(alias)))
+                else:
+                    select_parts.append(column_sql)
 
-        query = sql.SQL("SELECT {} FROM {}").format(
-            select_clause,
-            sql.Identifier(self._table)
-        )
+            select_clause = sql.SQL(", ").join(select_parts)
+
+        from_clause = sql.SQL("FROM {}").format(sql.SQL("{} AS {}").format(sql.Identifier(self._table), sql.Identifier(self._table_alias)) if self._table_alias else sql.Identifier(self._table))
+
+        # Add JOINs
+        join_clauses = []
+        for join in self._joins:
+            join_type = sql.SQL(join["type"] + " JOIN")
+            table_id = sql.Identifier(join["table"])
+            alias = sql.Identifier(join["alias"]) if join["alias"] else None
+            on_clause = sql.SQL(join["on"])  # Keep raw string — if safe
+            alias_sql = sql.SQL("AS ") + alias if alias else sql.SQL("")
+            join_clause = sql.SQL(" {} {} {} ON {}").format(
+                join_type,
+                table_id,
+                alias_sql,
+                on_clause
+            )
+            join_clauses.append(join_clause)
+
+        query = sql.SQL("SELECT {} ").format(select_clause) + from_clause + sql.SQL("").join(join_clauses)
 
         if self._where:
             where_clause = sql.SQL(" WHERE ") + sql.SQL(" AND ").join(
@@ -147,5 +194,3 @@ class ReadBuilder:
             get_model_field_name(AnnualPlan, "fake")  ➜ None
         """
         return field_name if field_name in model.model_fields else None
-
-
