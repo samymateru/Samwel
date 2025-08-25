@@ -35,10 +35,10 @@ def create_new_business_sub_process(
 async def fetch_combined_business_process(
         entity_id: str,
         db = Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
     ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    #if user.status_code != 200:
+        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_combined_business_process(db, company_id=entity_id)
         return data
