@@ -69,7 +69,8 @@ class AsyncDBPoolSingleton:
 
             try:
                 await self._pool.open()
-                print("✅ Connection pool successfully opened.")
+                print("Returning async DB pool instance")
+                print("Pool status before use:", self._pool.get_stats())
             except Exception as e:
                 print("❌ Failed to open connection pool.")
                 print("🔍 Error type:", type(e).__name__)
