@@ -52,6 +52,9 @@ import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
 from starlette.middleware.cors import CORSMiddleware
+
+from x import test_direct_connection
+
 load_dotenv()
 
 
@@ -61,8 +64,7 @@ if sys.platform == "win32":
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
-        pool_instance = AsyncDBPoolSingleton.get_instance()
-        await pool_instance.get_pool()
+        await test_direct_connection()
         await init_redis_pool()
     except Exception as e:
         print(e)
@@ -195,7 +197,8 @@ async def get_token(
 async def login(
           email: str = Form(...),
           password: str = Form(...),
-          db=Depends(get_async_db_connection)):
+          db=Depends(get_async_db_connection)
+):
     user_data  = await get_user_by_email(connection=db, email=email)
     if user_data.__len__() == 0:
         raise HTTPException(status_code=400, detail="User doesn't exists")

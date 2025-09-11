@@ -54,6 +54,7 @@ class AsyncDBPoolSingleton:
         Returns:
             AsyncConnectionPool: The active asynchronous connection pool.
         """
+
         if self._pool is None:
             self._pool = AsyncConnectionPool(
                 conninfo=(
@@ -65,7 +66,16 @@ class AsyncDBPoolSingleton:
                 max_size=100,
                 open=False,  # Prevent automatic opening; open manually.
             )
-            await self._pool.open()
+
+            try:
+                await self._pool.open()
+                print("✅ Connection pool successfully opened.")
+            except Exception as e:
+                print("❌ Failed to open connection pool.")
+                print("🔍 Error type:", type(e).__name__)
+                print("🧨 Error message:", str(e))
+                raise  # Re-raise to fail fast or let the caller handle it
+
         return self._pool
 
     async def close_pool(self):

@@ -40,6 +40,7 @@ class OrganizationModule(BaseModel):
 
 class NewModule(BaseModel):
     name: ModuleName
+    licence_id: str
 
 
 

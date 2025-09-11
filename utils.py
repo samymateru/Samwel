@@ -4,6 +4,7 @@ from typing import Optional, Union, cast, Protocol, runtime_checkable
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
+import psycopg
 from dotenv import load_dotenv
 import os
 from fastapi.security import OAuth2PasswordBearer
@@ -57,10 +58,19 @@ async def get_database_connection():
         yield conn
 
 async def get_async_db_connection():
-    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
-    async with pool.connection() as conn:
-        yield conn
+    try:
+        pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+        async with pool.connection() as conn:
+            yield conn
 
+    except psycopg.OperationalError as e:
+        # Specific database-related errors (e.g., bad password, network)
+        print("❌ OperationalError:", e)
+        raise
+    except Exception as e:
+        # Catch anything else
+        print("❌ General DB error:", e)
+        raise
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode(), salt).decode()
