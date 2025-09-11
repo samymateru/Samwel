@@ -1,11 +1,15 @@
 import asyncio
 import os
+import sys
+
 from dotenv import load_dotenv
 import psycopg
 
 load_dotenv()
 
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 async def test_direct_connection():
     conn_str = (
         f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
