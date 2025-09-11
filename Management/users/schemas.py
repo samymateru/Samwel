@@ -18,7 +18,7 @@ class UserType(BaseModel):
     id: str
     type: str
     role: str
-    title: str
+    title: Optional[str]
     engagements: List[str]
 
 class __User__(BaseModel):
@@ -42,7 +42,7 @@ class User(BaseModel):
     administrator: bool = Field(default=False)
     owner: bool = Field(default=False)
     role: Optional[str] = None
-    title: str = None
+    title: Optional[str] = None
     module: Optional[str] = None
     type: Optional[str] = None
     created_at: datetime = datetime.now()
@@ -62,7 +62,7 @@ class ModuleSection(BaseModel):
     id: str
     name: str
     role: str
-    title: str
+    title: Optional[str]
     type: Optional[str] = None
 
 class OrganizationUser(BaseModel):
@@ -84,7 +84,7 @@ class ModuleUser(BaseModel):
     name: str
     email: str
     telephone: Optional[str] = None
-    title: str
+    title: Optional[str] = None
     role: str
     type: Optional[str] = None
     created_at: datetime = datetime.now()
@@ -94,7 +94,7 @@ class NewUser(BaseModel):
     name: str = Field(default="")
     telephone: str =  Field(default="")
     email: str
-    title: str
+    title: Optional[str]
     role: str
     type: str
     module_id: str
@@ -109,9 +109,10 @@ class OrganizationsUsers(BaseModel):
 class ModulesUsers(BaseModel):
     module_id: str
     user_id: str
-    title: str
+    title: Optional[str] = None
     role: str
     type: str
+    status: Optional[str] = None
     created_at: datetime = Field(default=datetime.now())
 
 class UpdateModuleUser(BaseModel):
@@ -119,7 +120,7 @@ class UpdateModuleUser(BaseModel):
     email: str
     telephone: Optional[str] = None
     role: str
-    title: str
+    title: Optional[str]
     type: str
 
 

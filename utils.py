@@ -475,6 +475,54 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error generating token {e}")
 
+
+async def generate_risk_user_token(connection: AsyncConnection, module_id: str, user_id: str):
+    print(module_id)
+    print(user_id)
+    query_module_data = sql.SQL(
+        """
+        SELECT 
+        usr.id,
+        usr.name,
+        usr.email,
+        usr.entity,
+        mod.organization,
+        mod_usr.module_id,
+        mod.name as module_name,
+        mod_usr.role,
+        mod_usr.type
+        FROM risk_module_users mod_usr
+        JOIN users usr ON usr.id = mod_usr.user_id
+        JOIN modules mod ON mod.id = mod_usr.module_id
+        WHERE mod_usr.module_id = %s  AND mod_usr.user_id = %s
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_module_data, (module_id, user_id))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            data = [dict(zip(column_names, row_)) for row_ in rows]
+            print(data)
+            if data.__len__ == 0:
+                raise HTTPException(status_code=400, detail="User Not Found")
+            current_user = CurrentUser(
+                user_id=data[0].get("id"),
+                user_name=data[0].get("name"),
+                user_email=data[0].get("email"),
+                entity_id=data[0].get("entity"),
+                organization_id=data[0].get("organization"),
+                module_id=data[0].get("module_id"),
+                module_name=data[0].get("module_name"),
+                role=data[0].get("role"),
+                title=data[0].get("title", ""),
+                type=data[0].get("type"),
+            )
+            return current_user
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error generating token {e}")
+
+
 def validate_start_end_dates(start: Optional[datetime], end: Optional[datetime]) -> None:
     now = datetime.now(timezone.utc)
 

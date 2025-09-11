@@ -16,8 +16,9 @@ async def create_new_user(connection: AsyncConnection, new_user: User):
          password_hash,
          administrator,
          owner,
+         status,
          created_at
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """)
     try:
         async with connection.cursor() as cursor:
@@ -35,6 +36,7 @@ async def create_new_user(connection: AsyncConnection, new_user: User):
                 new_user.password,
                 new_user.administrator,
                 new_user.owner,
+                "Active",
                 new_user.created_at
             ))
             user_id = await cursor.fetchone()
@@ -118,6 +120,44 @@ async def attach_user_to_module(connection: AsyncConnection, attach_data: Module
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error attaching user to the module {e}")
+
+async def attach_risk_user_to_module(connection: AsyncConnection, attach_data: ModulesUsers):
+    query = sql.SQL(
+        """
+        INSERT INTO public.risk_module_users
+        (
+         risk_user_id,
+         module_id,
+         user_id,
+         role,
+         type,
+         created_at
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            exists = await check_row_exists(connection=connection, table_name="modules_users", filters={
+                "module_id": attach_data.module_id,
+                "user_id": attach_data.user_id
+            })
+            if exists:
+                return
+            await cursor.execute(query=query, params=(
+                get_unique_key(),
+                attach_data.module_id,
+                attach_data.user_id,
+                attach_data.role,
+                attach_data.type,
+                attach_data.created_at
+            ))
+            await connection.commit()
+    except HTTPException:
+        await connection.rollback()
+        raise
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error attaching user to the module {e}")
+
 
 async def invite_user(connection: AsyncConnection, entity_id: str, organization_id: str, new_user: NewUser):
     check_user = sql.SQL(

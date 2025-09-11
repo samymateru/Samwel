@@ -59,7 +59,7 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
         org_user.owner
         FROM public.organizations_users as org_user
         JOIN organizations org ON org.id = org_user.organization_id
-        WHERE user_id = %s AND org.state = 'active';
+        WHERE user_id = %s;
         """)
     try:
         async with connection.cursor() as cursor:

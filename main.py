@@ -44,7 +44,7 @@ from services.connections.database_connections import AsyncDBPoolSingleton
 from services.connections.redis_connection import get_redis
 from services.logging.logger import global_logger
 from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
-    update_user_password, generate_user_token
+    update_user_password, generate_user_token, generate_risk_user_token
 from Management.users.databases import get_user_by_email
 from Management.templates.databases import *
 from dotenv import load_dotenv
@@ -131,7 +131,16 @@ async def module_redirection(
 
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
-    data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+
+    data: CurrentUser = None
+    if sub_domain == "eaudit":
+        data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+    if sub_domain == "eRisk":
+        data: CurrentUser = await generate_risk_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+
+    if data is None:
+        raise HTTPException(status_code=400, detail="Unknown sub-domain")
+
     token: str = create_jwt_token(data.model_dump())
     session_code = str(uuid.uuid4())
 
@@ -140,9 +149,12 @@ async def module_redirection(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
 
-    # Redirect with session_code
-    redirect_url = f"http://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
-    return RedirectUrl(redirect_url=redirect_url)
+    if sub_domain == "eRisk":
+        redirect_url = f"http://{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
+        return RedirectUrl(redirect_url=redirect_url)
+    else:
+        redirect_url = f"http://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
+        return RedirectUrl(redirect_url=redirect_url)
 
 
 @app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)

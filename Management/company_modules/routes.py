@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
-
-from Management.users.databases import attach_user_to_module, remove_module
+from Management.users.databases import attach_user_to_module, remove_module, attach_risk_user_to_module
 from Management.users.schemas import ModulesUsers
 from utils import get_async_db_connection
 from Management.company_modules.databases import *
@@ -34,8 +33,9 @@ async def fetch_users_modules(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        data = await get_users_modules(connection=db, user_id=user.user_id, organization_id=organization_id)
-        return data
+        risk = await get_risk_module_users(connection=db, user_id=user.user_id, organization_id=organization_id)
+        eaudit = await get_users_modules(connection=db, user_id=user.user_id, organization_id=organization_id)
+        return risk + eaudit
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
@@ -63,27 +63,41 @@ async def create_new_organization_module(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        module = Module(
-            id=get_unique_key(),
-            name=new_module.name
-        )
+        if new_module.name == "eAuditNext" or new_module.name == "eRisk":
+            module = Module(
+                id=get_unique_key(),
+                name=new_module.name
+            )
 
-        module_id = await add_new_organization_module(
-            connection=db,
-            module=module,
-            organization_id=organization_id
-        )
+            module_id = await add_new_organization_module(
+                connection=db,
+                module=module,
+                organization_id=organization_id
+            )
 
-        attach_data = ModulesUsers(
-            module_id=module_id,
-            user_id=user.user_id,
-            title="Administrator",
-            role="Administrator",
-            type="audit",
-        )
+            if new_module.name == "eAuditNext":
+                attach_data = ModulesUsers(
+                    module_id=module_id,
+                    user_id=user.user_id,
+                    title="Administrator",
+                    role="Administrator",
+                    type="audit",
+                )
 
-        await attach_user_to_module(connection=db, attach_data=attach_data)
+                await attach_user_to_module(connection=db, attach_data=attach_data)
 
-        return ResponseMessage(detail="Organization module create successfully")
+            if new_module.name == "eRisk":
+                attach_data = ModulesUsers(
+                    module_id=module_id,
+                    user_id=user.user_id,
+                    role="Administrator",
+                    type="Risk",
+                    status="Active"
+                )
+                await attach_risk_user_to_module(connection=db, attach_data=attach_data)
+
+            return ResponseMessage(detail="Organization module create successfully")
+        else:
+            raise HTTPException(status_code=400, detail="Module Not Ready Yet")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

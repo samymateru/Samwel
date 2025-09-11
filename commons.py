@@ -1,6 +1,7 @@
 from psycopg import AsyncConnection, sql
 from fastapi import HTTPException
 
+
 async def get_module_user(connection: AsyncConnection, module_id: str, user_id: str):
     query = sql.SQL("""
         SELECT

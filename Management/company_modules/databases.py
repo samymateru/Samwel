@@ -76,6 +76,33 @@ async def get_users_modules(connection: AsyncConnection, user_id: str, organizat
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")
 
+async def get_risk_module_users(connection: AsyncConnection, user_id: str, organization_id: str):
+    query = sql.SQL(
+        """
+        SELECT
+        mod.id, 
+        mod.name,
+        mod.purchase_date,
+        mod.status,
+        mod_usr.role,
+        mod_usr.type
+        FROM modules mod
+        JOIN organizations org ON mod.organization = org.id
+        JOIN risk_module_users mod_usr ON mod.id = mod_usr.module_id
+        WHERE mod_usr.user_id = %s AND org.id = %s;
+        """)
+    try:
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (user_id, organization_id))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            modules_data = [dict(zip(column_names, row_)) for row_ in rows]
+            return modules_data
+    except Exception as e:
+        await connection.rollback()
+        raise HTTPException(status_code=400, detail=f"Error querying company modules {e}")
+
+
 async def get_organization_modules(connection: AsyncConnection, organization_id: str):
     query = sql.SQL(
         """
