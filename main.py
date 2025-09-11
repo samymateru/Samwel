@@ -32,6 +32,7 @@ from AuditNew.Internal.engagements.planning.routes import router as planning_rou
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
+from Management.subscriptions.routes import router as subcriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from Management.organization.routes import router as organization
@@ -281,6 +282,8 @@ app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 app.include_router(attachments, tags=["Attachments"])
+app.include_router(subcriptions, tags=["Subscriptions"])
+
 
 if __name__ == "__main__":
     import uvicorn
