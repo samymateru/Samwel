@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +23,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -135,22 +138,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00600" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1753420754807</created>
-      <option name="number" value="00600" />
-      <option name="presentableId" value="LOCAL-00600" />
-      <option name="project" value="LOCAL" />
-      <updated>1753420754807</updated>
-    </task>
-    <task id="LOCAL-00601" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1753437015976</created>
-      <option name="number" value="00601" />
-      <option name="presentableId" value="LOCAL-00601" />
-      <option name="project" value="LOCAL" />
-      <updated>1753437015977</updated>
     </task>
     <task id="LOCAL-00602" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -528,7 +515,23 @@
       <option name="project" value="LOCAL" />
       <updated>1755604744802</updated>
     </task>
-    <option name="localTasksCounter" value="649" />
+    <task id="LOCAL-00649" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1757583828792</created>
+      <option name="number" value="00649" />
+      <option name="presentableId" value="LOCAL-00649" />
+      <option name="project" value="LOCAL" />
+      <updated>1757583828792</updated>
+    </task>
+    <task id="LOCAL-00650" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1757584042582</created>
+      <option name="number" value="00650" />
+      <option name="presentableId" value="LOCAL-00650" />
+      <option name="project" value="LOCAL" />
+      <updated>1757584042582</updated>
+    </task>
+    <option name="localTasksCounter" value="651" />
     <servers />
   </component>
   <component name="UnknownFeatures">

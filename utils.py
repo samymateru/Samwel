@@ -71,6 +71,7 @@ async def get_async_db_connection():
         # Catch anything else
         print("❌ General DB error:", e)
         raise
+
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode(), salt).decode()
