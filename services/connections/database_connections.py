@@ -62,8 +62,8 @@ class AsyncDBPoolSingleton:
                     f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
                     f"?application_name=fastapi-app"
                 ),
-                min_size=10,
-                max_size=100,
+                min_size=1,
+                max_size=5,
                 open=False,  # Prevent automatic opening; open manually.
             )
 
