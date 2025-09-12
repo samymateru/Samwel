@@ -74,5 +74,4 @@ boto3>=1.37.14
 redis>=6.1.0
 PyPDF2~=3.0.1
 aiosmtplib>=4.0.1
-psycopg2>=2.9.10
 python-docx>=1.2.0
