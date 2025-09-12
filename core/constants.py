@@ -9,7 +9,7 @@ plans = {
         business_staff=4,
         engagements_count=5,
         issues_count=20,
-        email_count=20,
+        emails_count=20,
         follow_up=False,
         price = 10000
     ),
@@ -21,7 +21,7 @@ plans = {
         business_staff=10,
         engagements_count=20,
         issues_count=300,
-        email_count=100,
+        emails_count=100,
         follow_up=False,
         price=250
     ),
@@ -32,7 +32,7 @@ plans = {
         business_staff=20,
         engagements_count=40,
         issues_count=1000,
-        email_count=2000,
+        emails_count=2000,
         follow_up=False,
         price=430
     ),
@@ -43,7 +43,7 @@ plans = {
         business_staff=10000,
         engagements_count=10000,
         issues_count=10000,
-        email_count=10000,
+        emails_count=10000,
         follow_up=False,
         price=10000
     )
@@ -58,7 +58,7 @@ licences = [
         business_staff=4,
         engagements_count=5,
         issues_count=20,
-        email_count=20,
+        emails_count=20,
         follow_up=False,
         price=0
     ),
@@ -69,7 +69,7 @@ licences = [
         business_staff=10,
         engagements_count=20,
         issues_count=300,
-        email_count=100,
+        emails_count=100,
         follow_up=False,
         price=250
     ),
@@ -80,7 +80,7 @@ licences = [
         business_staff=20,
         engagements_count=40,
         issues_count=1000,
-        email_count=2000,
+        emails_count=2000,
         follow_up=False,
         price=430
     ),
@@ -91,7 +91,7 @@ licences = [
         business_staff=10000,
         engagements_count=10000,
         issues_count=100000,
-        email_count=10000,
+        emails_count=10000,
         follow_up=False,
         price=10000
     )

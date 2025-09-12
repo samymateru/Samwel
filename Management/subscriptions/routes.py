@@ -3,8 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from Management.subscriptions.schemas import EAuditLicence
 from core.constants import licences
 
-
-
 router = APIRouter(prefix="/subscriptions")
 
 @router.get("/", response_model=List[EAuditLicence])

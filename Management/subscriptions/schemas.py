@@ -7,7 +7,7 @@ class EAuditLicence(BaseModel):
     business_staff: int
     engagements_count: int
     issues_count: int
-    email_count: int
+    emails_count: int
     follow_up: bool
     price: int
 
@@ -20,3 +20,7 @@ class ERiskLicence(BaseModel):
     issues_count: int
     email_count: int
     follow_up: bool
+
+
+class CreateLicence(EAuditLicence):
+    module_id: str

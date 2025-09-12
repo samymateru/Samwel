@@ -121,6 +121,7 @@ async def attach_user_to_module(connection: AsyncConnection, attach_data: Module
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error attaching user to the module {e}")
 
+
 async def attach_risk_user_to_module(connection: AsyncConnection, attach_data: ModulesUsers):
     query = sql.SQL(
         """

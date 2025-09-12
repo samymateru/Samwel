@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
+from Management.subscriptions.databases import attach_licence_to_module
 from Management.users.databases import attach_user_to_module, remove_module, attach_risk_user_to_module
 from Management.users.schemas import ModulesUsers
+from core.constants import plans
 from utils import get_async_db_connection
 from Management.company_modules.databases import *
 from typing import List
@@ -69,6 +71,10 @@ async def create_new_organization_module(
                 name=new_module.name
             )
 
+            licence = plans.get(new_module.licence_id)
+            if licence is None:
+                raise HTTPException(status_code=400, detail="Unknown Licence")
+
             module_id = await add_new_organization_module(
                 connection=db,
                 module=module,
@@ -85,6 +91,7 @@ async def create_new_organization_module(
                 )
 
                 await attach_user_to_module(connection=db, attach_data=attach_data)
+                await attach_licence_to_module(connection=db, licence=plans.get(new_module.licence_id), module_id=module_id)
 
             if new_module.name == "eRisk":
                 attach_data = ModulesUsers(
