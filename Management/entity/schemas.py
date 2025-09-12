@@ -24,7 +24,7 @@ class NewEntity(BaseModel):
     name: str
     owner: str
     email: str
-    telephone: str
+    telephone: Optional[str] = ""
     type: str
-    website: str
+    website: Optional[str] = ""
     password: str

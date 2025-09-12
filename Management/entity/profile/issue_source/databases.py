@@ -22,8 +22,8 @@ def new_issue_source(connection: Connection, issue_source: IssueSource, company_
 
 def delete_issue_source(connection: Connection, issue_source_id: int):
     query: str = """
-                        DELETE FROM public.issue_source
-                        WHERE id = %s
+                    DELETE FROM public.issue_source
+                    WHERE id = %s
                      """
     try:
         with connection.cursor() as cursor:
