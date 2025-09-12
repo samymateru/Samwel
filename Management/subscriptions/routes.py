@@ -4,7 +4,7 @@ from core.constants import eaudit, plans
 
 router = APIRouter(prefix="/subscriptions")
 
-@router.get("/")
+@router.get("/", response_model=ReadLicences)
 async def fetch_subscriptions():
     try:
         return {

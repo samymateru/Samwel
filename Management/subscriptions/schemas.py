@@ -27,4 +27,4 @@ class CreateLicence(EAuditLicence):
     module_id: str
 
 class ReadLicences(BaseModel):
-    module: List[EAuditLicence]
+    eAuditNext: List[EAuditLicence]
