@@ -62,7 +62,6 @@ argon2-cffi==25.1.0
 supabase==2.10.0
 supafunc==0.7.0
 typer==0.13.1
-psycopg2-binary>=2.9.10
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.5.0
