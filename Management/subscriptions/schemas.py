@@ -25,6 +25,7 @@ class ERiskLicence(BaseModel):
 
 class CreateLicence(EAuditLicence):
     module_id: str
+    plan_id: str
 
 class ReadLicences(BaseModel):
     eAuditNext: List[EAuditLicence]
