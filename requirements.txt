@@ -62,6 +62,7 @@ argon2-cffi==25.1.0
 supabase==2.10.0
 supafunc==0.7.0
 typer==0.13.1
+psycopg2-binary>=2.9.10
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.5.0
@@ -74,4 +75,5 @@ boto3>=1.37.14
 redis>=6.1.0
 PyPDF2~=3.0.1
 aiosmtplib>=4.0.1
+psycopg2>=2.9.10
 python-docx>=1.2.0
