@@ -26,7 +26,7 @@ async def fetch_organization_modules(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/{organization_id}", response_model=List[Module])
+@router.get("/{organization_id}", response_model=List[ReadModule])
 async def fetch_users_modules(
         organization_id: str,
         db = Depends(get_async_db_connection),

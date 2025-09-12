@@ -59,10 +59,19 @@ async def get_users_modules(connection: AsyncConnection, user_id: str, organizat
         mod.status,
         mod_usr.role,
         mod_usr.title,
-        mod_usr.type
+        mod_usr.type,
+        aud_lic.licence_id,
+        aud_lic.name as licence_name,
+        aud_lic.audit_staff,
+        aud_lic.business_staff,
+        aud_lic.engagements_count,
+        aud_lic.issues_count,
+        aud_lic.emails_count,
+        aud_lic.follow_up
         FROM modules mod
         JOIN organizations org ON mod.organization = org.id
         JOIN modules_users mod_usr ON mod.id = mod_usr.module_id
+        JOIN audit_licences aud_lic ON aud_lic.module_id = mod.id
         WHERE mod_usr.user_id = %s AND org.id = %s;
         """)
     try:
