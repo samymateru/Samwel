@@ -50,7 +50,7 @@ plans = {
 }
 
 
-licences = [
+eaudit = [
     EAuditLicence(
         licence_id="cb67a203f8da",
         name="Free Plan",

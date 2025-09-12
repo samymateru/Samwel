@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class EAuditLicence(BaseModel):
     licence_id: str
@@ -24,3 +25,6 @@ class ERiskLicence(BaseModel):
 
 class CreateLicence(EAuditLicence):
     module_id: str
+
+class ReadLicences(BaseModel):
+    module: List[EAuditLicence]

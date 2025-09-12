@@ -1,15 +1,16 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from Management.subscriptions.schemas import EAuditLicence
-from core.constants import licences, plans
+from fastapi import APIRouter, HTTPException
+from Management.subscriptions.schemas import EAuditLicence, ReadLicences
+from core.constants import eaudit, plans
 
 router = APIRouter(prefix="/subscriptions")
 
-@router.get("/", response_model=List[EAuditLicence])
+@router.get("/")
 async def fetch_subscriptions():
     try:
-        return licences
-    except Exception as e:
+        return {
+            "eAuditNext": eaudit
+        }
+    except Exception:
         raise HTTPException(status_code=400, detail="System Error")
 
 
@@ -22,5 +23,5 @@ async def fetch_subscriptions(
         if licence is None:
             raise HTTPException(status_code=400, detail="Unknown Licence")
         return licence
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=400, detail="System Error")
