@@ -95,3 +95,15 @@ async def fetch_completed_engagements(
         data = await get_completed_engagement(connection=db, module_id=module_id)
         return data
 
+
+@router.put("/complete/{engagement_id}", response_model=ResponseMessage)
+async def mark_engagement_as_complete(
+        engagement_id: str,
+        db = Depends(get_async_db_connection),
+        #user: CurrentUser  = Depends(get_current_user)
+):
+    with exception_response():
+        data = await complete_engagement(connection=db, engagement_id=engagement_id)
+        if data is None:
+            raise HTTPException(status_code=400, detail="Unknown Engagement")
+        return ResponseMessage(detail="Engagement Successfully Completed")

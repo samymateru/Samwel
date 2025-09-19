@@ -8,7 +8,7 @@ class EngagementStatus(str, Enum):
     PENDING = "Pending"
     NOT_STARTED = "Not started"
     OPEN = "Open"
-    COMPLETE = "Completed"
+    COMPLETED = "Completed"
     CLOSED = "Closed"
     ONGOING = "Ongoing"
 
@@ -64,6 +64,9 @@ class UpdateEngagement(BaseModel):
 
 class DeleteEngagements(BaseModel):
     engagement_id: List[str]
+
+class UpdateEngagementStatus(BaseModel):
+    status: str
 
 
 class Rating(BaseModel):

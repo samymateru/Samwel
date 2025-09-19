@@ -5,13 +5,14 @@ from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from AuditNew.Internal.engagements.administration.databases import add_engagement_staff
 from AuditNew.Internal.engagements.administration.schemas import Staff
-from AuditNew.Internal.engagements.schemas import Engagement, UpdateEngagement
+from AuditNew.Internal.engagements.schemas import Engagement, UpdateEngagement, UpdateEngagementStatus, EngagementStatus
 import json
 from psycopg import AsyncConnection
 from psycopg import sql
 
 from Management.users.databases import get_module_users
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import get_unique_key, check_row_exists, exception_response
 
 
@@ -205,6 +206,24 @@ async def get_completed_engagement(connection: AsyncConnection, module_id: str):
             .where("module", module_id)
             .where("engagement.status", "Completed")
             .fetch_all()
+        )
+        return builder
+
+
+async def complete_engagement(connection: AsyncConnection, engagement_id: str):
+    with exception_response():
+        __engagement_status__ = UpdateEngagementStatus(
+            status=EngagementStatus.COMPLETED
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table("engagements")
+            .values(__engagement_status__)
+            .where({"id": engagement_id})
+            .check_exists({"id": engagement_id})
+            .returning("name")
+            .execute()
         )
         return builder
 
