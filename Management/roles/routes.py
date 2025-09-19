@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from services.connections.query_builder import ReadBuilder
+from services.connections.postgres.read import ReadBuilder
 from utils import get_current_user, get_async_db_connection
 from schema import *
 from Management.roles.databases import *

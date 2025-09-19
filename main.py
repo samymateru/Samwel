@@ -1,5 +1,7 @@
 import uuid
-from fastapi import FastAPI, Depends, Form, Response, Request, Query
+from typing import Optional
+
+from fastapi import FastAPI, Depends, Form, Response, Request, Query, BackgroundTasks
 from redis.asyncio import Redis
 from starlette.responses import JSONResponse
 from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
@@ -32,7 +34,7 @@ from AuditNew.Internal.engagements.planning.routes import router as planning_rou
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
-from Management.subscriptions.routes import router as subcriptions
+from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
 from Management.users.routes import router as users_router
 from Management.organization.routes import router as organization
@@ -41,9 +43,8 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
-from services.connections.database_connections import AsyncDBPoolSingleton
-from services.connections.redis_connection import get_redis
 from services.logging.logger import global_logger
+from services.notifications.notifications_service import NotificationManager
 from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token
 from Management.users.databases import get_user_by_email
@@ -53,18 +54,25 @@ import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
 from starlette.middleware.cors import CORSMiddleware
-
 from x import test_direct_connection
+from core.datastructures.pop_dict import PopDict
+from AuditNew.Internal.follow_up.routes import router as follow_up
+
 
 load_dotenv()
 
+notification_manager = NotificationManager()
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+session_storage = PopDict()
+
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
+        await notification_manager.start_worker()
+        await notification_manager.connect()
         await test_direct_connection()
         await init_redis_pool()
     except Exception as e:
@@ -74,9 +82,6 @@ async def lifespan(_api: FastAPI):
 
     try:
         await close_redis_pool()
-        pool_instance = AsyncDBPoolSingleton.get_instance()
-        if pool_instance:
-            await pool_instance.close_pool()
     except Exception as e:
         print(e)
 
@@ -114,7 +119,8 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 @app.get("/")
-async def home():
+async def home(background_tasks: BackgroundTasks):
+
     return "Hello world"
 
 
@@ -129,13 +135,12 @@ async def module_redirection(
         sub_domain: str = Query(...),
         user: CurrentUser = Depends(get_current_user),
         db = Depends(get_async_db_connection),
-        redis: Redis = Depends(get_redis)
 ):
 
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
 
-    data: CurrentUser = None
+    data: Optional[CurrentUser] = None
     if sub_domain == "eaudit":
         data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
     if sub_domain == "eRisk":
@@ -148,7 +153,7 @@ async def module_redirection(
     session_code = str(uuid.uuid4())
 
     try:
-        await redis.set(session_code, token, ex=300)  # ex = seconds
+        session_storage.put(session_code, token)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
 
@@ -163,36 +168,40 @@ async def module_redirection(
 @app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)
 async def refresh_token(
         session_code: str,
-        redis: Redis = Depends(get_redis)
 ):
     try:
-        token = await redis.get(session_code)
+        token = session_storage.get(session_code)
+        if token is None:
+            raise HTTPException(status_code=400, detail=f"Unknown Session Code")
+
+        return TokenResponse(token=token)
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while retrieving session code {e}")
-    return TokenResponse(token=token)
 
-@app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
-async def get_token(
-        module_id: str,
-        response: Response,
-        request: Request,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
-    token: str = create_jwt_token(data.model_dump())
-    response.set_cookie(
-        key="refresh_token",
-        value=token,
-        httponly=True,
-        max_age=3600,
-        secure=True,
-        samesite="lax",
-        domain=request.url.hostname
-    )
-    return TokenResponse(token=token)
+
+# @app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
+# async def get_token(
+#         module_id: str,
+#         response: Response,
+#         request: Request,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
+#     token: str = create_jwt_token(data.model_dump())
+#     response.set_cookie(
+#         key="refresh_token",
+#         value=token,
+#         httponly=True,
+#         max_age=3600,
+#         secure=True,
+#         samesite="lax",
+#         domain=request.url.hostname
+#     )
+#     return TokenResponse(token=token)
 
 @app.post("/login", tags=["Authentication"], response_model=LoginResponse)
 async def login(
@@ -282,7 +291,9 @@ app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 app.include_router(attachments, tags=["Attachments"])
-app.include_router(subcriptions, tags=["Subscriptions"])
+app.include_router(subscriptions, tags=["Subscriptions"])
+app.include_router(follow_up, tags=["Follow Up"])
+
 
 
 if __name__ == "__main__":

@@ -17,12 +17,3 @@ class PopDict:
 
     def __repr__(self):
         return f"{self._store}"
-
-
-d = PopDict()
-d.put("a", 100)
-d.put("b", 200)
-
-print(d.get("a"))   # 100 (and removes 'a')
-print(d.get("a"))   # None (already removed)
-print(d)

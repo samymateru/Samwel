@@ -3,10 +3,13 @@ from typing import Optional
 from enum import Enum
 from datetime import datetime
 
+
+
 class OrganizationStatus(str, Enum):
     ACTIVE = "Active"
-    IN_ACTIVE = "In active"
-    OPENED = "Opened"
+    IN_ACTIVE = "Pending"
+    EXPIRED = "Expired"
+
 
 class Organization(BaseModel):
     id: str
@@ -34,5 +37,4 @@ class NewOrganization(BaseModel):
     telephone: Optional[str] = None
     website: Optional[str] = None
     type: str
-
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from Management.organization.databases import create_organization
-from Management.organization.schemas import Organization, OrganizationStatus
+from Management.organization.schemas import Organization
 from Management.users.databases import create_new_user, attach_user_to_organization
 from Management.users.schemas import OrganizationsUsers, User
 from utils import get_async_db_connection, generate_hash_password, get_current_user

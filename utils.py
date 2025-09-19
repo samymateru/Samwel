@@ -27,7 +27,7 @@ from redis.asyncio import Redis
 from psycopg import AsyncConnection
 from psycopg.rows import dict_row
 from psycopg.sql import SQL, Identifier, Placeholder, Composed
-from services.connections.database_connections import AsyncDBPoolSingleton
+from services.connections.postgres.connections import AsyncDBPoolSingleton
 
 
 @runtime_checkable
@@ -82,7 +82,7 @@ def verify_password(stored_hash: bytes, password: str) -> bool:
     return stored_hash == bcrypt.hashpw(password.encode(), stored_hash)
 
 
-def create_jwt_token(data: dict, expiration_time: int = 2) -> str:
+def create_jwt_token(data: dict, expiration_time: int = 7) -> str:
     payload = data.copy()
     expiration = datetime.now(timezone.utc) + timedelta(days=expiration_time)
     payload.update({"exp": int(expiration.timestamp())})

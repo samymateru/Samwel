@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 from enum import Enum
-from  utils import get_unique_key
+
+
 
 class Module(BaseModel):
     id: Optional[int] = None
@@ -28,3 +29,10 @@ class NewEntity(BaseModel):
     type: str
     website: Optional[str] = ""
     password: str
+
+
+
+#----------------------------------------------------------------------------#
+
+
+#-------------------------------------------------------------------------------

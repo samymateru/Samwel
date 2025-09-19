@@ -1,6 +1,6 @@
 from psycopg import AsyncConnection
 from Management.subscriptions.schemas import EAuditLicence, CreateLicence
-from services.connections.insert_builder import InsertQueryBuilder
+from services.connections.postgres.insert import InsertQueryBuilder
 from utils import exception_response, get_unique_key
 
 
