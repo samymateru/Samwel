@@ -80,3 +80,7 @@ class RiskMaturityRating(BaseModel):
     market_risk: Rating
     overall: Rating
 
+
+#------------------------------------------------------------------
+class NewEngagement(BaseModel):
+    pass
