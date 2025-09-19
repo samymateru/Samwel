@@ -89,7 +89,7 @@ async def delete_engagement(
 async def fetch_completed_engagements(
         module_id: str,
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        _: CurrentUser  = Depends(get_current_user)
 ):
     with exception_response():
         data = await get_completed_engagement(connection=db, module_id=module_id)
@@ -100,7 +100,7 @@ async def fetch_completed_engagements(
 async def mark_engagement_as_complete(
         engagement_id: str,
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        _: CurrentUser  = Depends(get_current_user)
 ):
     with exception_response():
         data = await complete_engagement(connection=db, engagement_id=engagement_id)

@@ -295,7 +295,6 @@ app.include_router(subscriptions, tags=["Subscriptions"])
 app.include_router(follow_up, tags=["Follow Up"])
 
 
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
