@@ -89,7 +89,7 @@ async def delete_engagement(
 async def fetch_completed_engagements(
         module_id: str,
         db = Depends(get_async_db_connection),
-        user: CurrentUser  = Depends(get_current_user)
+        #user: CurrentUser  = Depends(get_current_user)
 ):
     with exception_response():
         data = await get_completed_engagement(connection=db, module_id=module_id)
