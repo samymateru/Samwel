@@ -84,3 +84,14 @@ async def delete_engagement(
         return HTTPException(status_code=e.status_code, detail=e.detail)
 
 
+
+@router.get("/completed/{module_id}", response_model=List[Engagement])
+async def fetch_completed_engagements(
+        module_id: str,
+        db = Depends(get_async_db_connection),
+        user: CurrentUser  = Depends(get_current_user)
+):
+    with exception_response():
+        data = await get_completed_engagement(connection=db, module_id=module_id)
+        return data
+

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
 from enum import  Enum
 from typing import Optional, List
@@ -40,7 +40,5 @@ class UpdateAnnualPlan(BaseModel):
     end_date: Optional[datetime] = None
 
 
-#---------------------------------------------------------------
-class NewAnnualPlan_(BaseModel):
-    pass
+
 

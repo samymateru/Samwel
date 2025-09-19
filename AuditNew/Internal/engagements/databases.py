@@ -11,7 +11,8 @@ from psycopg import AsyncConnection
 from psycopg import sql
 
 from Management.users.databases import get_module_users
-from utils import get_unique_key, check_row_exists
+from services.connections.postgres.read import ReadBuilder
+from utils import get_unique_key, check_row_exists, exception_response
 
 
 async def add_new_engagement(connection: AsyncConnection, engagement: Engagement, plan_id: str, code: str, module_id: str):
@@ -187,3 +188,23 @@ async def edit_engagement(connection: AsyncConnection, engagement: UpdateEngagem
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error updating engagement {e}")
+
+
+async def get_completed_engagement(connection: AsyncConnection, module_id: str):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table("annual_plans", alias="ap")
+            .join(
+                "LEFT",
+                on="ap.id = engagement.plan_id",
+                table="engagements",
+                alias="engagement",
+                use_prefix=True
+            )
+            .where("module", module_id)
+            .where("engagement.status", "Completed")
+            .fetch_all()
+        )
+        return builder
+

@@ -83,4 +83,30 @@ class RiskMaturityRating(BaseModel):
 
 #------------------------------------------------------------------
 class NewEngagement(BaseModel):
-    pass
+    name: str
+    type: str
+    risk: str
+    leads: List[str]
+    department: str
+    sub_department: List[str]
+    start_date: datetime
+    end_date: datetime
+
+class CreateEngagement(BaseModel):
+    id: str
+    plan_id: str
+    name: str
+    code: str
+    type: str
+    risk: str
+    department: str
+    sub_department: List[str]
+    start_date: datetime
+    end_date: datetime
+    status: EngagementStatus
+    stage: EngagementStage
+    created_by: Optional[str] = None
+    created_at: datetime
+
+
+
