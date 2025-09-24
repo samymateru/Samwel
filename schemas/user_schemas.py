@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from datetime import datetime
 
@@ -98,6 +98,17 @@ class ReadModuleUsers(BaseUser):
     role: str
     title: Optional[str] = None
 
+class UserModuleSection(BaseModel):
+    id: str
+    title: str
+    role: str
+    type: str
+    name: str
+
+
+class ReadOrganizationUser(BaseUser):
+    modules: List[UserModuleSection]
+
 class UpdateModuleUser(BaseModel):
     title: str
     role: str
@@ -106,6 +117,6 @@ class UpdateModuleUser(BaseModel):
 
 class UpdateEntityUser(BaseModel):
     name: str
-    telephone: str
+    telephone: Optional[str]
 
 

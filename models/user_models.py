@@ -1,5 +1,5 @@
 from datetime import datetime
-from psycopg import AsyncConnection
+from psycopg import AsyncConnection, sql
 from core.tables import Tables
 from schemas.user_schemas import NewUser, CreateUser, UserStatus, UserColumns, CreateOrganizationUser, \
     OrganizationUserColumns, CreateModuleUser, ModuleUserColumns, UpdateModuleUser, UpdateEntityUser
@@ -138,22 +138,59 @@ async def get_organization_users(
         connection: AsyncConnection,
         organization_id: str,
 ):
-    with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ORGANIZATIONS_USERS.value, alias="org_usr")
-            .join(
-                "LEFT",
-                Tables.USERS,
-                "usr.id = org_usr.user_id",
-                "usr",
-                use_prefix=False
-            )
-            .where("org_usr."+OrganizationUserColumns.ORGANIZATION_ID, organization_id)
-            .fetch_all()
-        )
+    query = sql.SQL("""
+        SELECT 
+          usr.id,
+          usr.entity,
+          org_usr.organization_id AS organization,
+          usr.name,
+          usr.status,
+          usr.image,
+          usr.email,
+          usr.telephone,
+          usr.created_at,
+          org_usr.administrator,
+          org_usr.owner,
+          COALESCE(
+            JSON_AGG(
+              JSON_BUILD_OBJECT(
+                'id',    mod.id,
+                'title', mod_usr.title,
+                'role',  mod_usr.role,
+                'type',  mod_usr.type,
+                'name',  mod.name
+              )
+            ) FILTER (WHERE mod_usr.module_id IS NOT NULL),
+            '[]'::json
+          ) AS modules
+        FROM public.organizations_users org_usr
+        JOIN public.users usr 
+          ON usr.id = org_usr.user_id
+        LEFT JOIN public.modules_users mod_usr 
+          ON mod_usr.user_id = usr.id
+        LEFT JOIN public.modules mod 
+          ON mod.id = mod_usr.module_id
+        WHERE org_usr.organization_id = %(org_id)s
+        GROUP BY 
+          usr.id,
+          usr.entity,
+          org_usr.organization_id,
+          usr.name,
+          usr.image,
+          usr.status,
+          usr.email,
+          usr.telephone,
+          usr.created_at,
+          org_usr.administrator,
+          org_usr.owner
+    """)
 
-        return builder
+    async with connection.cursor() as cursor:
+        await cursor.execute(query, {"org_id": organization_id})
+        rows = await cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        result = [dict(zip(column_names, row)) for row in rows]
+        return result
 
 
 async def get_entity_users(

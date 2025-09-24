@@ -4,7 +4,8 @@ from models.user_models import register_new_user, create_new_organization_user, 
     get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
     edit_entity_user, edit_module_user
 from schema import ResponseMessage, CurrentUser
-from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser
+from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
+ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -79,7 +80,7 @@ async def fetch_entity_users(
         return data
 
 
-@router.get("/organization/{organization_id}", response_model=List[BaseUser])
+@router.get("/organization/{organization_id}", response_model=List[ReadOrganizationUser])
 async def fetch_organization_users(
         organization_id: Optional[str] = None,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
