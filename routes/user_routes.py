@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
     get_module_users, get_organization_users, get_entity_users, get_module_user_details
 from schema import ResponseMessage, CurrentUser
-from schemas.user_schemas import NewUser, UserTypes
+from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -64,7 +64,7 @@ async def create_new_user(
             )
 
 
-@router.get("/entity/{entity_id}")
+@router.get("/entity/{entity_id}", response_model=List[BaseUser])
 async def fetch_entity_users(
         entity_id: Optional[str] = None,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -78,7 +78,7 @@ async def fetch_entity_users(
         return data
 
 
-@router.get("/organization/{organization_id}")
+@router.get("/organization/{organization_id}", response_model=List[BaseUser])
 async def fetch_organization_users(
         organization_id: Optional[str] = None,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -92,7 +92,7 @@ async def fetch_organization_users(
         return data
 
 
-@router.get("/module/{module_id}")
+@router.get("/module/{module_id}", response_model=List[ReadModuleUsers])
 async def fetch_module_users(
         module_id: Optional[str] = None,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),

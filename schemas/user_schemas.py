@@ -43,7 +43,6 @@ class UserTypes(str, Enum):
     AUDIT = "Audit"
     BUSINESS = "Business"
 
-
 class NewUser(BaseModel):
     name: Optional[str]
     email: str
@@ -65,7 +64,6 @@ class CreateUser(BaseModel):
     image: str
     created_at: datetime
 
-
 class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
@@ -73,7 +71,6 @@ class CreateOrganizationUser(BaseModel):
     administrator: bool
     owner: bool
     created_at: datetime
-
 
 class CreateModuleUser(BaseModel):
     module_user_id: str
@@ -83,6 +80,24 @@ class CreateModuleUser(BaseModel):
     role: str
     type: str
     created_at: datetime
+
+
+class BaseUser(BaseModel):
+    id: str
+    entity: str
+    name: Optional[str] = None
+    email: str
+    telephone: Optional[str] = None
+    status: UserStatus
+    administrator: bool
+    owner: bool
+    image: str
+    created_at: datetime
+
+class ReadModuleUsers(BaseUser):
+    type: str
+    role: str
+    title: Optional[str] = None
 
 
 
