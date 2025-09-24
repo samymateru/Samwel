@@ -81,7 +81,6 @@ class CreateModuleUser(BaseModel):
     type: str
     created_at: datetime
 
-
 class BaseUser(BaseModel):
     id: str
     entity: str
@@ -99,5 +98,14 @@ class ReadModuleUsers(BaseUser):
     role: str
     title: Optional[str] = None
 
+class UpdateModuleUser(BaseModel):
+    title: str
+    role: str
+    type: str
+
+
+class UpdateEntityUser(BaseModel):
+    name: str
+    telephone: str
 
 

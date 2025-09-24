@@ -2,9 +2,11 @@ from datetime import datetime
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.user_schemas import NewUser, CreateUser, UserStatus, UserColumns, CreateOrganizationUser, \
-    OrganizationUserColumns, CreateModuleUser, ModuleUserColumns
+    OrganizationUserColumns, CreateModuleUser, ModuleUserColumns, UpdateModuleUser, UpdateEntityUser
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from services.security.security import hash_password
 from utils import exception_response, get_unique_key
 
@@ -207,3 +209,60 @@ async def get_entity_user_details_by_mail(
 
         return builder
 
+
+async def delete_user_in_module(
+        connection: AsyncConnection,
+        user_id: str,
+        module_id: str,
+):
+    with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.MODULES_USERS.value)
+            .check_exists({ModuleUserColumns.USER_ID.value: user_id})
+            .where({
+                ModuleUserColumns.USER_ID.value: user_id,
+                ModuleUserColumns.MODULE_ID.value: module_id
+            })
+            .returning(ModuleUserColumns.USER_ID.value)
+            .execute()
+        )
+
+        return  builder
+
+async def edit_module_user(
+        connection: AsyncConnection,
+        user: UpdateModuleUser,
+        user_id: str,
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.MODULES_USERS.value)
+            .values(user)
+            .check_exists({ModuleUserColumns.USER_ID.value: user_id})
+            .where({ModuleUserColumns.USER_ID.value: user_id})
+            .returning(ModuleUserColumns.USER_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def edit_entity_user(
+        connection: AsyncConnection,
+        user: UpdateEntityUser,
+        user_id: str,
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.USERS.value)
+            .values(user)
+            .check_exists({UserColumns.ID.value: user_id})
+            .where({UserColumns.ID.value: user_id})
+            .returning(UserColumns.ID.value)
+            .execute()
+        )
+
+        return builder

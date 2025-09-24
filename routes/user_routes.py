@@ -1,9 +1,10 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
-    get_module_users, get_organization_users, get_entity_users, get_module_user_details
+    get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
+    edit_entity_user, edit_module_user
 from schema import ResponseMessage, CurrentUser
-from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers
+from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -106,7 +107,7 @@ async def fetch_module_users(
         return data
 
 
-@router.get("/module/user/{module_id}")
+@router.get("/module/user/{module_id}", response_model=ReadModuleUsers)
 async def fetch_module_user_details(
         module_id: Optional[str] = None,
         user_id: str = Query(...),
@@ -120,33 +121,69 @@ async def fetch_module_user_details(
         )
         if data is None:
             raise HTTPException(status_code=404, detail="User Not Found")
+        return data
 
 
 @router.put("/entity_user/{user_id}")
-async def updating_basic_user_details(
-        user_id: Optional[str] = None,
+async def updating_entity_user_details(
+        user_id: str,
+        user: UpdateEntityUser,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        result = edit_entity_user(
+            connection=connection,
+            user=user,
+            user_id=user_id
+        )
+
+        return await return_checker(
+            data=result,
+            passed="Entity User Successfully Updated",
+            failed="Failed Updating  Entity User"
+        )
+
 
 
 @router.put("/module_user/{user_id}")
 async def updating_module_user_details(
-        user_id: Optional[str] = None,
+        user_id: str,
+        user: UpdateModuleUser,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        result = edit_module_user(
+            connection=connection,
+            user=user,
+            user_id=user_id
+        )
+
+        return await return_checker(
+            data=result,
+            passed="Module User Successfully Updated",
+            failed="Failed Updating  Module User"
+        )
 
 
 @router.delete("/module/{module_id}")
 async def remove_user_in_module(
-        module_id: Optional[str] = None,
+        module_id: str ,
+        user_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        results = await delete_user_in_module(
+            connection=connection,
+            module_id=module_id,
+            user_id=user_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="User Successfully Deleted",
+            failed="Failed Deleting  User"
+        )
+
 
 
 
