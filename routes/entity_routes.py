@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details, \
-    delete_entity_completely
+    delete_entity_completely, edit_entity_data
 from models.organization_models import register_new_organization
 from models.user_models import register_new_user, create_new_organization_user
 from schema import ResponseMessage
@@ -119,3 +119,22 @@ async def remove_entity(
             failed="Failed Deleting  Entity"
         )
 
+
+@router.put("/{entity_id}", )
+async def update_entity_data(
+        entity_id: str,
+        entity: UpdateEntity,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await edit_entity_data(
+            connection=connection,
+            entity=entity,
+            entity_id=entity_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Entity Successfully Updated",
+            failed="Failed Updating  Entity"
+        )

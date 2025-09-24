@@ -33,6 +33,18 @@ class EngagementStage(str, Enum):
     FINALIZATION = "Finalization"
 
 
+class Risk(BaseModel):
+    name: str
+    magnitude: int
+
+
+class Lead(BaseModel):
+    id: str
+    name: str
+    email: str
+    role: str
+
+
 class Department(BaseModel):
     name: str
     code: str
@@ -41,8 +53,8 @@ class Department(BaseModel):
 class NewEngagement(BaseModel):
     name: str
     type: str
-    risk: str
-    leads: List[str]
+    risk: Risk
+    leads: List[Lead]
     department: Department
     sub_departments: List[str]
     start_date: datetime
@@ -62,13 +74,35 @@ class CreateEngagement(BaseModel):
     sub_departments: List[str]
     status: EngagementStatus
     stage: EngagementStage
+    archived: bool
     start_date: datetime
     end_date: datetime
     created_at: datetime
 
 
+#--------------------------------------------------------------
+
+
+class UpdateEngagement_(BaseModel):
+    name: str
+    type: str
+    risk: Risk
+    department: Department
+    sub_departments: List[str]
+    start_date: datetime
+    end_date: datetime
+
 class UpdateEngagement(BaseModel):
-    pass
+    name: str
+    type: str
+    risk: str
+    department: Department
+    sub_departments: List[str]
+    start_date: datetime
+    end_date: datetime
+
+
+#---------------------------------------------------------------
 
 
 class AddOpinionRating(BaseModel):

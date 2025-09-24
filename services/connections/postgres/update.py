@@ -1,6 +1,8 @@
 from psycopg import sql, AsyncConnection
 from pydantic import BaseModel
 from typing import TypeVar, Optional, Union
+from psycopg.types.json import Json
+
 
 schema_type = TypeVar("schema_type", bound=BaseModel)
 
@@ -86,6 +88,16 @@ class UpdateQueryBuilder:
         """
         self._data = data
         return self
+
+    def _convert_params(self, params: dict) -> dict:
+        """
+        Convert unsupported Python types (like dict) into PostgreSQL-compatible types.
+        Dicts are wrapped in psycopg's Json for JSONB insertion.
+        """
+        for k, v in params.items():
+            if isinstance(v, dict):
+                params[k] = Json(v)
+        return params
 
     def where(self, conditions: dict[str, any]) -> "UpdateQueryBuilder":
         """
@@ -259,6 +271,7 @@ class UpdateQueryBuilder:
             )
 
         query, params = self.build()
+        params = self._convert_params(params)
         try:
             async with self.connection.cursor() as cursor:
                 await cursor.execute(query, params)

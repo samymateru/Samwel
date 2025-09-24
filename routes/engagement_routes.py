@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
-    complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating
+    complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
+    update_engagement_data
 from schema import ResponseMessage
-from schemas.engagement_schemas import NewEngagement, Engagement, ReadEngagement, UpdateEngagement, ArchiveEngagement, \
-    AddOpinionRating
+from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
+    AddOpinionRating, UpdateEngagement_
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -33,7 +34,6 @@ async def create_new_engagement(
         )
 
 
-
 @router.get("/{annual_plan_id}", response_model=List[ReadEngagement])
 async def fetch_all_annual_plan_engagements(
         annual_plan_id: str,
@@ -48,7 +48,7 @@ async def fetch_all_annual_plan_engagements(
         return data
 
 
-@router.get("/{engagement_id}", response_model=ReadEngagement)
+@router.get("/engagement_data/{engagement_id}", response_model=ReadEngagement)
 async def fetch_single_engagement_details(
         engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -67,11 +67,21 @@ async def fetch_single_engagement_details(
 @router.put("/{engagement_id}")
 async def update_engagement_details(
         engagement_id: str,
-        engagement: UpdateEngagement,
+        engagement: UpdateEngagement_,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await update_engagement_data(
+            connection=connection,
+            engagement=engagement,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Updated",
+            failed="Failed Updating  Engagement"
+        )
 
 
 @router.put("/archive/{engagement_id}")

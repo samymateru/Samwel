@@ -1,10 +1,11 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.entity_schemas import NewEntity, CreateEntity, EntitiesColumns
+from schemas.entity_schemas import NewEntity, CreateEntity, EntitiesColumns, UpdateEntity
 from schemas.organization_schemas import OrganizationsColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
@@ -83,3 +84,23 @@ async def delete_entity_completely(
         )
 
         return builder
+
+
+async def edit_entity_data(
+        connection: AsyncConnection,
+        entity: UpdateEntity,
+        entity_id: str
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENTITIES.value)
+            .values(entity)
+            .check_exists({EntitiesColumns.ID.value: entity_id})
+            .where({EntitiesColumns.ID.value: entity_id})
+            .returning(EntitiesColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+

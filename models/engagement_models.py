@@ -1,7 +1,8 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, CompleteEngagement, EngagementStatus, \
-    DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating
+    DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
+    UpdateEngagement_
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -24,9 +25,10 @@ async def register_new_engagement(
             type=engagement.type,
             department=engagement.department,
             sub_departments=engagement.sub_departments,
-            risk=engagement.risk,
+            risk=engagement.risk.name,
             status=EngagementStatus.PENDING,
             stage=EngagementStage.PENDING,
+            archived=False,
             start_date=engagement.start_date,
             end_date=engagement.end_date,
             created_at=datetime.now(),
@@ -162,11 +164,39 @@ async def update_engagement_opinion_rating(
         engagement_id: str
 ):
     with exception_response():
-
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.ENGAGEMENTS.value)
             .values(opinion_rating)
+            .check_exists({EngagementColumns.ID.value: engagement_id})
+            .where({EngagementColumns.ID.value: engagement_id})
+            .returning(EngagementColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def update_engagement_data(
+        connection: AsyncConnection,
+        engagement: UpdateEngagement_,
+        engagement_id: str
+):
+    with exception_response():
+        __engagement__ = UpdateEngagement(
+            name=engagement.name,
+            type=engagement.type,
+            risk=engagement.risk.name,
+            department=engagement.department,
+            sub_departments=engagement.sub_departments,
+            start_date=engagement.start_date,
+            end_date=engagement.end_date
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENTS.value)
+            .values(__engagement__)
             .check_exists({EngagementColumns.ID.value: engagement_id})
             .where({EngagementColumns.ID.value: engagement_id})
             .returning(EngagementColumns.ID.value)

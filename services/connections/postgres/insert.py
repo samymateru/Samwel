@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from psycopg import sql, AsyncConnection
 from pydantic import BaseModel
 from typing import TypeVar, Optional, Union
+from psycopg.types.json import Json
 
 schema_type = TypeVar("schema_type", bound=BaseModel)
 
@@ -80,6 +81,16 @@ class InsertQueryBuilder:
         self._throw_error_on_exists = value
         return self
 
+    def _convert_params(self, params: dict) -> dict:
+        """
+        Convert unsupported Python types (like dict) into PostgreSQL-compatible types.
+        Dicts are wrapped in psycopg's Json for JSONB insertion.
+        """
+        for k, v in params.items():
+            if isinstance(v, dict):
+                params[k] = Json(v)
+        return params
+
 
     def values(self, data: schema_type) -> "InsertQueryBuilder":
         """
@@ -134,6 +145,7 @@ class InsertQueryBuilder:
 
         self._check_exists.update(conditions)
         return self
+
     def build(self):
         """
         Construct the SQL INSERT statement and associated parameter values.
@@ -248,6 +260,7 @@ class InsertQueryBuilder:
                 raise Exception(f"Failed to check record existence: {e}")
 
         query, params = self.build()
+        params = self._convert_params(params)
         try:
             async with self.connection.cursor() as cursor:
                 await cursor.execute(query, params)
