@@ -239,7 +239,9 @@ async def change_password(
             connection=db,
             user_id=user.user_id,
             old_password=old_password,
-            new_password=new_password)
+            new_password=new_password
+
+        )
         return ResponseMessage(detail="Password updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
@@ -274,14 +276,12 @@ app.include_router(attachments, tags=["Attachments"])
 app.include_router(subscriptions, tags=["Subscriptions"])
 app.include_router(follow_up, tags=["Follow Up"])
 
-
 app.include_router(entity_routes, tags=["Entity Routes"])
 app.include_router(organization_routes, tags=["Organization Routes"])
 app.include_router(module_routes, tags=["Module Routes"])
 app.include_router(user_routes, tags=["User Routes"])
 app.include_router(annual_plan_routes, tags=["Annual Plans Routes"])
 app.include_router(engagement_routes, tags=["Engagements Routes"])
-
 
 
 app.include_router(issue_routes, tags=["Issue Routes"])

@@ -11,17 +11,18 @@ from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/modules")
 
-@router.post("/", status_code=201, response_model=ResponseMessage)
+@router.post("/{organization_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_module(
+        organization_id: str,
         module: NewModule,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
     ):
     with exception_response():
         results = await register_new_module(
             connection=connection,
             module=module,
-            organization_id=auth.organization_id
+            organization_id=organization_id
         )
 
         if results is None:

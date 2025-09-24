@@ -471,6 +471,7 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
         JOIN modules mod ON mod.id = mod_usr.module_id
         WHERE mod_usr.module_id = %s  AND mod_usr.user_id = %s
         """)
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query_module_data, (module_id, user_id))

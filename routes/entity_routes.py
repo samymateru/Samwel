@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from models.entity_models import register_new_entity, get_entity_details
+from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details
 from models.organization_models import register_new_organization
 from models.user_models import register_new_user, create_new_organization_user
 from schema import ResponseMessage
@@ -91,7 +91,13 @@ async def fetch_organization_entity_data(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await get_organization_entity_details(
+            connection=connection,
+            organization_id=organization_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="Organization Entity Not Found")
+        return data
 
 
 @router.put("/{entity_id}")
