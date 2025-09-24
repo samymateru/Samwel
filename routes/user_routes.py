@@ -1,6 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
-from models.user_models import register_new_user, create_new_organization_user, create_new_module_user
+from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
+    get_module_users, get_organization_users, get_entity_users, get_module_user_details
 from schema import ResponseMessage, CurrentUser
 from schemas.user_schemas import NewUser, UserTypes
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -63,38 +64,77 @@ async def create_new_user(
             )
 
 
-
 @router.get("/entity/{entity_id}")
-async def fetch_entity_users_(
+async def fetch_entity_users(
         entity_id: Optional[str] = None,
-        _ = Depends(AsyncDBPoolSingleton.get_db_connection),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        data = await get_entity_users(
+            connection=connection,
+            entity_id=entity_id
+        )
+
+        return data
 
 
 @router.get("/organization/{organization_id}")
-async def fetch_organization_users_(
+async def fetch_organization_users(
         organization_id: Optional[str] = None,
-        _ = Depends(AsyncDBPoolSingleton.get_db_connection),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        data = await get_organization_users(
+            connection=connection,
+            organization_id=organization_id
+        )
+
+        return data
 
 
 @router.get("/module/{module_id}")
-async def fetch_module_users_(
+async def fetch_module_users(
         module_id: Optional[str] = None,
-        _ = Depends(AsyncDBPoolSingleton.get_db_connection),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
-        pass
+        data = await get_module_users(
+            connection=connection,
+            module_id=module_id
+        )
+
+        return data
 
 
 @router.get("/module/user/{module_id}")
 async def fetch_module_user_details(
         module_id: Optional[str] = None,
-        _ = Depends(AsyncDBPoolSingleton.get_db_connection),
+        user_id: str = Query(...),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+    ):
+    with exception_response():
+        data = await get_module_user_details(
+            connection=connection,
+            module_id=module_id,
+            user_id=user_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="User Not Found")
+
+
+@router.put("/entity_user/{user_id}")
+async def updating_basic_user_details(
+        user_id: Optional[str] = None,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+    ):
+    with exception_response():
+        pass
+
+
+@router.put("/module_user/{user_id}")
+async def updating_module_user_details(
+        user_id: Optional[str] = None,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
         pass
@@ -103,9 +143,12 @@ async def fetch_module_user_details(
 @router.delete("/module/{module_id}")
 async def remove_user_in_module(
         module_id: Optional[str] = None,
-        _ = Depends(AsyncDBPoolSingleton.get_db_connection),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
         pass
+
+
+
 
 

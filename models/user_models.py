@@ -110,9 +110,92 @@ async def create_new_module_user(
         return builder
 
 
-async def get_user_details(
+async def get_module_users(
         connection: AsyncConnection,
-        email: str,
+        module_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.MODULES_USERS.value, alias="mod_usr")
+            .join(
+                "LEFT",
+                Tables.USERS,
+                "usr.id = mod_usr.user_id",
+                "usr",
+                use_prefix=False
+            )
+            .where("mod_usr."+ModuleUserColumns.MODULE_ID, module_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+async def get_organization_users(
+        connection: AsyncConnection,
+        organization_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ORGANIZATIONS_USERS.value, alias="org_usr")
+            .join(
+                "LEFT",
+                Tables.USERS,
+                "usr.id = org_usr.user_id",
+                "usr",
+                use_prefix=False
+            )
+            .where("org_usr."+OrganizationUserColumns.ORGANIZATION_ID, organization_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+async def get_entity_users(
+        connection: AsyncConnection,
+        entity_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.USERS.value)
+            .where(UserColumns.ENTITY.value, entity_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+async def get_module_user_details(
+        connection: AsyncConnection,
+        module_id: str,
+        user_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.MODULES_USERS.value, alias="mod_usr")
+            .join(
+                "LEFT",
+                Tables.USERS,
+                "usr.id = mod_usr.user_id",
+                "usr",
+                use_prefix=False
+            )
+            .where("mod_usr."+ModuleUserColumns.MODULE_ID.value, module_id)
+            .where("usr."+UserColumns.ID.value, user_id)
+            .fetch_one()
+        )
+
+        return builder
+
+
+async def get_entity_user_details_by_mail(
+        connection: AsyncConnection,
+        email: str
 ):
     with exception_response():
         builder = await (
@@ -123,3 +206,4 @@ async def get_user_details(
         )
 
         return builder
+

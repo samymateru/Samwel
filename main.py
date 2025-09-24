@@ -33,7 +33,7 @@ from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 
 from models.organization_models import get_user_organizations
-from models.user_models import get_user_details
+from models.user_models import get_entity_user_details_by_mail
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
@@ -183,7 +183,7 @@ async def login(
           connection=Depends(get_async_db_connection)
 ):
     with exception_response():
-        user_data  = await get_user_details(
+        user_data  = await get_entity_user_details_by_mail(
             connection=connection,
             email=email
         )

@@ -65,6 +65,7 @@ class CreateUser(BaseModel):
     image: str
     created_at: datetime
 
+
 class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
