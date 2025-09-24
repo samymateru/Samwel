@@ -59,7 +59,6 @@ async def fetch_single_plan_data(
             raise HTTPException(status_code=404, detail="Annual Plan Not Found")
         return data
 
-
 @router.put("/{annual_plan_id}", response_model=ResponseMessage)
 async def update_annual_plan_data(
         annual_plan_id: str,
