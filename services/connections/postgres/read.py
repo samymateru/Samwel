@@ -78,9 +78,14 @@ class ReadBuilder:
     def where(self, column: str, value):
         if column is None:
             raise ValueError("Value of column can't be None")
-        condition = f"{column} = %({column})s"
+
+        if isinstance(value, (list, tuple, set)):
+            condition = f"{column} = ANY(%({column})s)"
+        else:
+            condition = f"{column} = %({column})s"
+
         self._where.append(condition)
-        self._params[column] = value
+        self._params[column] = list(value) if isinstance(value, set) else value
         return self
 
     def where_raw(self, condition: str, params: Optional[dict] = None):

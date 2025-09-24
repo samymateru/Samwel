@@ -1,16 +1,12 @@
 import uuid
 from typing import Optional
-
-from fastapi import FastAPI, Depends, Form, Response, Request, Query, BackgroundTasks
-from redis.asyncio import Redis
+from fastapi import FastAPI, Depends, Form, Request, Query
 from starlette.responses import JSONResponse
-from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-from Management.entity.routes import router as entity
-from AuditNew.Internal.engagements.routes import router as engagements_router
-from Management.organization.databases import get_user_organizations
-from Management.organization.schemas import Organization
+#from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
+#from Management.entity.routes import router as entity
+#from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
-from Management.company_modules.routes import router as company_modules_router
+#from Management.company_modules.routes import router as company_modules_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
 from Management.entity.profile.issue_source.routes import router as issue_source
@@ -36,18 +32,21 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
-from Management.users.routes import router as users_router
-from Management.organization.routes import router as organization
+#from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
+
+from models.organization_models import get_user_organizations
+from models.user_models import get_user_details
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from schemas.organization_schemas import ReadOrganization
 from services.logging.logger import global_logger
 from services.notifications.notifications_service import NotificationManager
-from utils import verify_password, create_jwt_token, get_async_db_connection, get_current_user, \
-    update_user_password, generate_user_token, generate_risk_user_token
-from Management.users.databases import get_user_by_email
+from services.security.security import verify_password
+from utils import create_jwt_token, get_async_db_connection, get_current_user, \
+    update_user_password, generate_user_token, generate_risk_user_token, exception_response
 from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
@@ -57,6 +56,19 @@ from starlette.middleware.cors import CORSMiddleware
 from x import test_direct_connection
 from core.datastructures.pop_dict import PopDict
 from AuditNew.Internal.follow_up.routes import router as follow_up
+from routes.issue_routes import router as issue_routes
+from routes.library_routes import router as library_routes
+from routes.notification_routes import router as notification_routes
+from routes.work_program_routes import router as work_program_routes
+from routes.entity_routes import router as entity_routes
+from routes.organization_routes import router as organization_routes
+from routes.module_routes import router as module_routes
+from routes.user_routes import router as user_routes
+from routes.annual_plan_routes import router as annual_plan_routes
+from routes.engagement_routes import router as engagement_routes
+
+
+from routes.engegement_administration_profile_routes import router as engagement_administration_profile_routes
 
 
 load_dotenv()
@@ -118,15 +130,6 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-@app.get("/")
-async def home(background_tasks: BackgroundTasks):
-
-    return "Hello world"
-
-
-@app.post("/testing/{message}")
-async def tester(request: Request):
-    return request.headers.get("origin").split("//")[1]
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
@@ -207,37 +210,48 @@ async def refresh_token(
 async def login(
           email: str = Form(...),
           password: str = Form(...),
-          db=Depends(get_async_db_connection)
+          connection=Depends(get_async_db_connection)
 ):
-    user_data  = await get_user_by_email(connection=db, email=email)
-    if user_data.__len__() == 0:
-        raise HTTPException(status_code=400, detail="User doesn't exists")
-    password_hash: bytes = user_data[0].get("password_hash").encode()
-    if verify_password(password_hash, password):
-        user_ = CurrentUser(
-            user_id = user_data[0].get("id"),
-            user_name=user_data[0].get("name"),
-            user_email=user_data[0].get("email"),
-            entity_id=user_data[0].get("entity")
+    with exception_response():
+        user_data  = await get_user_details(
+            connection=connection,
+            email=email
         )
-        data = await get_user_organizations(connection=db, user_id=user_data[0].get("id"))
-        organizations = [Organization(**p) for p in data]
-        token = create_jwt_token(user_.model_dump())
+        if user_data is None:
+            raise HTTPException(status_code=404, detail="User doesn't exists")
 
-        login_response = LoginResponse (
-            user_id=user_data[0].get("id"),
-            entity_id=user_data[0].get("entity"),
-            name= user_data[0].get("name"),
-            email= user_data[0].get("email"),
-            telephone=user_data[0].get("telephone"),
-            administrator=user_data[0].get("administrator"),
-            owner=user_data[0].get("owner"),
-            organizations= organizations,
-            token=token
-        )
-        return login_response
-    else:
-        raise HTTPException(detail="Invalid password", status_code=400)
+        password_hash = user_data.get("password_hash")
+        if verify_password(password_hash, password):
+            user_ = CurrentUser(
+                user_id = user_data.get("id"),
+                user_name=user_data.get("name"),
+                user_email=user_data.get("email"),
+                entity_id=user_data.get("entity")
+            )
+
+            data = await get_user_organizations(
+                connection=connection,
+                user_id=user_data.get("id")
+            )
+
+            organizations = [ReadOrganization(**p) for p in data]
+
+            token = create_jwt_token(user_.model_dump())
+
+            login_response = LoginResponse (
+                user_id=user_data.get("id"),
+                entity_id=user_data.get("entity"),
+                name= user_data.get("name"),
+                email= user_data.get("email"),
+                telephone=user_data.get("telephone"),
+                administrator=user_data.get("administrator"),
+                owner=user_data.get("owner"),
+                organizations= organizations,
+                token=token
+            )
+            return login_response
+        else:
+            raise HTTPException(detail="Invalid password", status_code=400)
 
 @app.put("/change_password", tags=["Authentication"])
 async def change_password(
@@ -258,12 +272,11 @@ async def change_password(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-app.include_router(entity, tags=["Entity"])
-app.include_router(organization, tags=["Organization"])
-app.include_router(company_modules_router, tags=["Modules"])
-app.include_router(users_router,tags=["User"])
-app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
-app.include_router(engagements_router, tags=["Engagements"])
+#app.include_router(entity, tags=["Entity"])
+#app.include_router(organization, tags=["Organization"])
+#app.include_router(company_modules_router, tags=["Modules"])
+#app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
+#app.include_router(engagements_router, tags=["Engagements"])
 app.include_router(administration_router, tags=["Engagement Administration"])
 app.include_router(planning_router, tags=["Engagement Planning"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
@@ -293,6 +306,22 @@ app.include_router(reports, tags=["System Reports"])
 app.include_router(attachments, tags=["Attachments"])
 app.include_router(subscriptions, tags=["Subscriptions"])
 app.include_router(follow_up, tags=["Follow Up"])
+
+
+app.include_router(entity_routes, tags=["Entity Routes"])
+app.include_router(organization_routes, tags=["Organization Routes"])
+app.include_router(module_routes, tags=["Module Routes"])
+app.include_router(user_routes, tags=["User Routes"])
+app.include_router(annual_plan_routes, tags=["Annual Plans Routes"])
+app.include_router(engagement_routes, tags=["Engagements Routes"])
+
+
+
+app.include_router(issue_routes, tags=["Issue Routes"])
+app.include_router(notification_routes, tags=["Notification Routes"])
+app.include_router(library_routes, tags=["Library Routes"])
+app.include_router(work_program_routes, tags=["Work Program Routes"])
+app.include_router(engagement_administration_profile_routes, tags=["Engagement Administration Profile  Routes"])
 
 
 if __name__ == "__main__":

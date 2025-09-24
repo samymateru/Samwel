@@ -43,7 +43,7 @@ class Engagement(BaseModel):
     name: Optional[str]
     type: Optional[str]
     code: Optional[str] = None
-    risk: Optional[Risk]
+    risk: str
     leads: Optional[List[Lead]]
     quarter: Optional[str] = None
     department: Optional[Department]

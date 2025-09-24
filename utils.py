@@ -1,7 +1,7 @@
 import shutil
 import tempfile
 from contextlib import contextmanager
-from typing import Optional, Union, cast, Protocol, runtime_checkable
+from typing import Optional, Union, cast, Protocol, runtime_checkable, Any
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -16,7 +16,7 @@ from commons import get_role, get_engagement_role
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
 from s3 import upload_file
-from schema import CurrentUser
+from schema import CurrentUser, ResponseMessage
 import secrets
 import string
 from psycopg import sql, AsyncCursor
@@ -72,6 +72,13 @@ async def get_async_db_connection():
         # Catch anything else
         print("❌ General DB error:", e)
         raise
+
+async def return_checker(data: Any, passed: str, failed: str):
+    if data is None:
+        raise HTTPException(status_code=400, detail=failed)
+    else:
+        return ResponseMessage(detail=passed)
+
 
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -595,5 +602,4 @@ def exception_response():
     except HTTPException:
         raise
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail=str(e))

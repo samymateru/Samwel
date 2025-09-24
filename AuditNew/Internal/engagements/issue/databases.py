@@ -5,7 +5,10 @@ from AuditNew.Internal.engagements.issue.schemas import *
 from datetime import datetime
 from psycopg import AsyncConnection, AsyncCursor, sql
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
-from utils import get_unique_key
+
+from services.connections.postgres.read import ReadBuilder
+from utils import get_unique_key, exception_response
+
 
 def safe_json_dump(obj):
     return obj.model_dump_json() if obj is not None else '{}'
@@ -845,4 +848,33 @@ async def request_extension_time(connection: AsyncConnection, revise: Revise, is
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error request extension time {e}")
 
+async def get_implemented_issues(connection: AsyncConnection, module_id: str, status: List[str]):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table("modules", alias="md")
+            .join(
+                "LEFT",
+                "annual_plans",
+                "md.id = ap.module",
+                "ap",
+            )
+            .join(
+                "LEFT",
+                "engagements",
+                "ap.id = eng.plan_id",
+                "eng",
+            )
+            .join(
+                "LEFT",
+                "issue",
+                "eng.id = iss.engagement",
+                "iss",
+            )
+            .where("iss.status", status)
+            .where("md.id", module_id)
+            .fetch_all()
+
+        )
+        return builder
 

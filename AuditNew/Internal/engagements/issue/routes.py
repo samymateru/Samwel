@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, BackgroundTasks
 from pydantic_core import ValidationError
 from s3 import upload_file
-from utils import  get_async_db_connection
+from utils import get_async_db_connection
 from utils import get_current_user
 from schema import CurrentUser
 from schema import ResponseMessage
@@ -79,7 +79,6 @@ async def send_issue_for_implementation(
 @router.put("/save_implementation/{issue_id}", response_model=ResponseMessage)
 async def save_issue_implementation(
         issue_id: str,
-        implementer_name: str = Form(...),
         notes: str = Form(...),
         attachment: Optional[UploadFile] = File(None),
         db=Depends(get_async_db_connection),
@@ -335,4 +334,17 @@ async def report_issue(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
+
+#---------------------------------------
+@router.get("/follow_up/{module_id}")
+async def follow_up_issues(
+        module_id: str,
+        status: str = Query(...),
+        db=Depends(get_async_db_connection),
+        #_: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        data = await get_implemented_issues(connection=db, module_id=module_id, status=[status])
+        return data
 

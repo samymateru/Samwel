@@ -3,6 +3,9 @@ from enum import Enum
 from typing import Optional, List, Dict
 from datetime import datetime
 
+from AuditNew.Internal.engagements.reporting.schemas import LOD2Feedback
+
+
 class User(BaseModel):
     name: Optional[str]
     email: Optional[str]
@@ -32,7 +35,7 @@ class ResponseActors(str, Enum):
     COMPLIANCE_OFFICER = "lod2_compliance_officer"
     AUDIT_MANAGER = "lod3_audit_manager"
 
-class LOD2Feedback(str, Enum):
+class IssueLOD2Feedback(str, Enum):
     CLOSED_VERIFIED_BY_RISK = "Closed -> verified by risk"
     CLOSED_RISK_NA = "Closed -> risk N/A"
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"

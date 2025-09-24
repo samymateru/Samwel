@@ -1,9 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Optional, List
 from enum import Enum
-
-from Management.organization.schemas import Organization
 from Management.roles.schemas import Roles
+from schemas.organization_schemas import ReadOrganization
 
 
 class Endpoints(BaseModel):
@@ -62,7 +61,7 @@ class LoginResponse(BaseModel):
     telephone: Optional[str] = None
     administrator: bool
     owner: bool
-    organizations: List[Organization]
+    organizations: List[ReadOrganization]
 
 class RedirectUrl(BaseModel):
     redirect_url: str

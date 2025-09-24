@@ -1,0 +1,148 @@
+from fastapi import APIRouter, Depends, HTTPException, Query
+from typing import List
+from models.engagement_models import register_new_engagement, \
+    get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
+    complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating
+from schema import ResponseMessage
+from schemas.engagement_schemas import NewEngagement, Engagement, ReadEngagement, UpdateEngagement, ArchiveEngagement, \
+    AddOpinionRating
+from services.connections.postgres.connections import AsyncDBPoolSingleton
+from utils import exception_response, return_checker
+
+router = APIRouter(prefix="/engagements")
+
+@router.post("/{annual_plan_id}", status_code=201, response_model=ResponseMessage)
+async def create_new_engagement(
+        annual_plan_id: str,
+        engagement: NewEngagement,
+        module_id: str = Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await register_new_engagement(
+            connection=connection,
+            engagement=engagement,
+            annual_plan_id=annual_plan_id,
+            module_id=module_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Created",
+            failed="Failed Creating  Engagement"
+        )
+
+
+
+@router.get("/{annual_plan_id}", response_model=List[ReadEngagement])
+async def fetch_all_annual_plan_engagements(
+        annual_plan_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_all_annual_plan_engagement(
+            connection=connection,
+            annual_plan_id=annual_plan_id
+        )
+
+        return data
+
+
+@router.get("/{engagement_id}", response_model=ReadEngagement)
+async def fetch_single_engagement_details(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_single_engagement_details(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        if data is None:
+            raise HTTPException(status_code=404, detail="Engagement Not Found")
+        return data
+
+
+@router.put("/{engagement_id}")
+async def update_engagement_details(
+        engagement_id: str,
+        engagement: UpdateEngagement,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
+@router.put("/archive/{engagement_id}")
+async def archive_engagement(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await archive_annual_plan_engagement(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Archived",
+            failed="Failed Archiving  Engagement"
+        )
+
+
+@router.put("/complete/{engagement_id}")
+async def complete_engagement(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await complete_annual_plan_engagement(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Completed",
+            failed="Failed Completing  Engagement"
+        )
+
+
+@router.delete("/{engagement_id}")
+async def delete_engagement_data_partially(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await remove_engagement_partially(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Deleted",
+            failed="Failed Deleting  Engagement"
+        )
+
+
+@router.put("/opinion_rating/{engagement_id}")
+async def edit_engagement_opinion_rating(
+        engagement_id: str,
+        opinion_rating: AddOpinionRating,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await update_engagement_opinion_rating(
+            connection=connection,
+            opinion_rating=opinion_rating,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Opinion Rating Updated",
+            failed="Failed Updating Opinion Rating"
+        )

@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from psycopg import sql, AsyncConnection
 from pydantic import BaseModel
 from typing import TypeVar, Optional, Union
@@ -41,6 +42,8 @@ class InsertQueryBuilder:
         self._check_exists: Optional[dict[str, any]] = None
         self._raw_query: Optional[sql.SQL] = None
         self._raw_params: Optional[dict] = None
+        self._throw_error_on_exists: bool = True
+
 
 
     def into_table(self, table: str) -> "InsertQueryBuilder":
@@ -70,6 +73,11 @@ class InsertQueryBuilder:
         """
         self._raw_query = raw_query
         self._raw_params = params
+        return self
+
+    def throw_error_on_exists(self, value: bool) -> "InsertQueryBuilder":
+        """Enable throwing an error instead of returning early when a record exists."""
+        self._throw_error_on_exists = value
         return self
 
 
@@ -121,9 +129,11 @@ class InsertQueryBuilder:
             .check_exists({"email": "user@example.com"})
             .check_exists({"id": 5, "name": "Alice"})
         """
-        self._check_exists = conditions
-        return self
+        if self._check_exists is None:
+            self._check_exists = {}
 
+        self._check_exists.update(conditions)
+        return self
     def build(self):
         """
         Construct the SQL INSERT statement and associated parameter values.
@@ -206,6 +216,36 @@ class InsertQueryBuilder:
                     return None
             except Exception as e:
                 raise Exception(f"Failed to execute raw SQL: {e}")
+
+        if self._check_exists:
+            where_clause = sql.SQL(" AND ").join(
+                sql.SQL("{} = {}").format(sql.Identifier(k), sql.Placeholder(k))
+                for k in self._check_exists.keys()
+            )
+            # Instead of SELECT 1, select all columns
+            exists_query = sql.SQL("SELECT * FROM {} WHERE {} LIMIT 1").format(
+                sql.Identifier(self._table),
+                where_clause
+            )
+
+            try:
+                async with self.connection.cursor() as cursor:
+                    await cursor.execute(exists_query, self._check_exists)
+                    row = await cursor.fetchone()
+                    if row:
+                        if self._throw_error_on_exists:
+                            raise HTTPException(
+                                status_code=409,
+                                detail=f"Record already exists in {self._table.replace('Tables', '')}"
+                            )
+                        # ✅ Return existing record as dict
+                        col_names = [desc.name for desc in cursor.description]
+                        return dict(zip(col_names, row))
+
+            except HTTPException:
+                raise
+            except Exception as e:
+                raise Exception(f"Failed to check record existence: {e}")
 
         query, params = self.build()
         try:

@@ -1,0 +1,123 @@
+from datetime import datetime
+from psycopg import AsyncConnection
+from core.tables import Tables
+from schemas.user_schemas import NewUser, CreateUser, UserStatus, UserColumns, CreateOrganizationUser, \
+    OrganizationUserColumns, CreateModuleUser, ModuleUserColumns
+from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.read import ReadBuilder
+from services.security.security import hash_password
+from utils import exception_response, get_unique_key
+
+
+async def register_new_user(
+        connection: AsyncConnection,
+        user: NewUser,
+        entity_id: str,
+        check_if_exist: bool = True,
+        password: str = "123456"
+):
+    with exception_response():
+        __user__ = CreateUser(
+            id=get_unique_key(),
+            entity=entity_id,
+            name=user.name,
+            email=user.email,
+            telephone=user.telephone,
+            status=UserStatus.NEW,
+            administrator=False,
+            owner=False,
+            image="",
+            password_hash=hash_password(password),
+            created_at=datetime.now()
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.USERS)
+            .values(__user__)
+            .check_exists({UserColumns.EMAIL.value: user.email})
+            .throw_error_on_exists(check_if_exist)
+            .returning(UserColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def create_new_organization_user(
+        connection: AsyncConnection,
+        organization_id: str,
+        user_id: str,
+        administrator: bool = False,
+        owner: bool = False,
+        check_exists: bool = False
+):
+    with exception_response():
+        __organization_user__ = CreateOrganizationUser(
+            organization_user_id=get_unique_key(),
+            organization_id=organization_id,
+            user_id=user_id,
+            administrator=administrator,
+            owner=owner,
+            created_at=datetime.now()
+        )
+
+        builder =  await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ORGANIZATIONS_USERS.value)
+            .values(__organization_user__)
+            .check_exists({OrganizationUserColumns.USER_ID.value: user_id})
+            .check_exists({OrganizationUserColumns.ORGANIZATION_ID.value: organization_id})
+            .throw_error_on_exists(check_exists)
+            .returning(OrganizationUserColumns.ORGANIZATION_USER_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def create_new_module_user(
+        connection: AsyncConnection,
+        module_id: str,
+        user_id: str,
+        user: NewUser,
+        check_exists: bool = True
+):
+    with exception_response():
+        __module_user__ = CreateModuleUser(
+            module_user_id=get_unique_key(),
+            module_id=module_id,
+            user_id=user_id,
+            role=user.role,
+            title=user.title,
+            type=user.type,
+            created_at=datetime.now()
+        )
+
+        builder =  await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.MODULES_USERS.value)
+            .values(__module_user__)
+            .check_exists({ModuleUserColumns.USER_ID.value: user_id})
+            .check_exists({ModuleUserColumns.MODULE_ID.value: module_id})
+            .throw_error_on_exists(check_exists)
+            .returning(ModuleUserColumns.MODULE_USER_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def get_user_details(
+        connection: AsyncConnection,
+        email: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.USERS.value)
+            .where(UserColumns.EMAIL.value, email)
+            .fetch_one()
+        )
+
+        return builder
