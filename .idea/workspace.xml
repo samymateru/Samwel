@@ -7,8 +7,9 @@
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/user_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/entity_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/entity_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/user_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/user_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,14 +141,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00635" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1754472151062</created>
-      <option name="number" value="00635" />
-      <option name="presentableId" value="LOCAL-00635" />
-      <option name="project" value="LOCAL" />
-      <updated>1754472151062</updated>
     </task>
     <task id="LOCAL-00636" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -533,7 +526,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758731118113</updated>
     </task>
-    <option name="localTasksCounter" value="684" />
+    <task id="LOCAL-00684" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1758732887261</created>
+      <option name="number" value="00684" />
+      <option name="presentableId" value="LOCAL-00684" />
+      <option name="project" value="LOCAL" />
+      <updated>1758732887262</updated>
+    </task>
+    <option name="localTasksCounter" value="685" />
     <servers />
   </component>
   <component name="UnknownFeatures">

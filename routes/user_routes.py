@@ -145,7 +145,6 @@ async def updating_entity_user_details(
         )
 
 
-
 @router.put("/module_user/{user_id}")
 async def updating_module_user_details(
         user_id: str,
@@ -184,7 +183,6 @@ async def remove_user_in_module(
             passed="User Successfully Deleted",
             failed="Failed Deleting  User"
         )
-
 
 
 

@@ -1,5 +1,9 @@
+import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List
+
+from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
@@ -26,6 +30,11 @@ async def create_new_engagement(
             annual_plan_id=annual_plan_id,
             module_id=module_id
         )
+
+        if results is None:
+            raise HTTPException(status_code=400, detail="Failed To Create Engagement")
+        asyncio.create_task(set_engagement_templates(engagement_id=results.get("id")))
+
 
         return await return_checker(
             data=results,
@@ -76,6 +85,8 @@ async def update_engagement_details(
             engagement=engagement,
             engagement_id=engagement_id
         )
+
+
 
         return await return_checker(
             data=results,

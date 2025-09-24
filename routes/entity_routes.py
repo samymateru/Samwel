@@ -1,4 +1,8 @@
+import asyncio
+
 from fastapi import APIRouter, Depends, HTTPException
+
+from background import set_company_profile
 from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details, \
     delete_entity_completely, edit_entity_data
 from models.organization_models import register_new_organization
@@ -64,6 +68,8 @@ async def create_new_entity(
             administrator=True,
             owner=True
         )
+
+        asyncio.create_task(set_company_profile(company_id=entity_data.get("id")))
 
         return await return_checker(
             data=organization_user_data,

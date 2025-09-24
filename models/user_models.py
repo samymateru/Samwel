@@ -267,6 +267,7 @@ async def delete_user_in_module(
 
         return  builder
 
+
 async def edit_module_user(
         connection: AsyncConnection,
         user: UpdateModuleUser,
