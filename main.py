@@ -246,6 +246,7 @@ async def change_password(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 app.include_router(administration_router, tags=["Engagement Administration"])
 app.include_router(planning_router, tags=["Engagement Planning"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])

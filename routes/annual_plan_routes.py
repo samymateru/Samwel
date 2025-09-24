@@ -43,7 +43,7 @@ async def fetch_all_module_annual_plans(
         return data
 
 
-@router.get("/{annual_plan_id}", response_model=ReadAnnualPlan)
+@router.get("/single_plan/{annual_plan_id}", response_model=ReadAnnualPlan)
 async def fetch_single_plan_data(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -53,6 +53,7 @@ async def fetch_single_plan_data(
             connection=connection,
             annual_plan_id=annual_plan_id
         )
+
         if data is None:
             raise HTTPException(status_code=404, detail="Annual Plan Not Found")
         return data

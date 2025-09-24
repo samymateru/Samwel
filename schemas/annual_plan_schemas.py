@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
 from enum import Enum
 
@@ -28,8 +27,8 @@ class AnnualPlanColumns(str, Enum):
 class NewAnnualPlan(BaseModel):
     name: str
     year: str
-    start: str
-    end: str
+    start: datetime
+    end: datetime
 
 
 class CreateAnnualPlan(NewAnnualPlan):
@@ -52,8 +51,8 @@ class ReadAnnualPlan(AnnualPlan):
 class UpdateAnnualPlan(BaseModel):
     name: str
     year: str
-    start: str
-    end: str
+    start: datetime
+    end: datetime
 
 class RemoveAnnualPlanPartially(BaseModel):
     status: AnnualPlanStatus

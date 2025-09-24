@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details
+from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details, \
+    delete_entity_completely
 from models.organization_models import register_new_organization
 from models.user_models import register_new_user, create_new_organization_user
 from schema import ResponseMessage
@@ -32,7 +33,9 @@ async def create_new_entity(
             connection=connection,
             user=user,
             entity_id=entity_data.get("id"),
-            password=entity.password
+            password=entity.password,
+            administrator=True,
+            owner=True
         )
 
         if user_data is None:
@@ -61,7 +64,6 @@ async def create_new_entity(
             administrator=True,
             owner=True
         )
-
 
         return await return_checker(
             data=organization_user_data,
@@ -100,20 +102,20 @@ async def fetch_organization_entity_data(
         return data
 
 
-@router.put("/{entity_id}")
-async def edit_entity_data(
-        entity_id: str,
-        entity: UpdateEntity,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
-
 @router.delete("/{entity_id}", )
 async def remove_entity(
         entity_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await delete_entity_completely(
+            connection=connection,
+            entity_id=entity_id
+        )
+
+        return await return_checker(
+            data=data,
+            passed="Entity Successfully Deleted",
+            failed="Failed Deleting  Entity"
+        )
+

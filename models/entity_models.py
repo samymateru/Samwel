@@ -2,6 +2,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.entity_schemas import NewEntity, CreateEntity, EntitiesColumns
 from schemas.organization_schemas import OrganizationsColumns
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response, get_unique_key
@@ -53,7 +54,6 @@ async def get_organization_entity_details(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.ORGANIZATIONS.value, alias="org")
-            .where(OrganizationsColumns.ID.value, organization_id)
             .join(
                 "LEFT",
                 Tables.ENTITIES.value,
@@ -61,7 +61,25 @@ async def get_organization_entity_details(
                 alias="enty",
                 use_prefix=False
             )
+            .where("org."+OrganizationsColumns.ID.value, organization_id)
             .fetch_one()
+        )
+
+        return builder
+
+
+async def delete_entity_completely(
+        connection: AsyncConnection,
+        entity_id: str
+):
+    with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.ENTITIES.value)
+            .check_exists({EntitiesColumns.ID.value: entity_id})
+            .where({EntitiesColumns.ID.value: entity_id})
+            .returning(EntitiesColumns.ID.value)
+            .execute()
         )
 
         return builder

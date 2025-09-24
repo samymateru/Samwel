@@ -14,7 +14,9 @@ async def register_new_user(
         user: NewUser,
         entity_id: str,
         check_if_exist: bool = True,
-        password: str = "123456"
+        password: str = "123456",
+        administrator = False,
+        owner = False
 ):
     with exception_response():
         __user__ = CreateUser(
@@ -24,8 +26,8 @@ async def register_new_user(
             email=user.email,
             telephone=user.telephone,
             status=UserStatus.NEW,
-            administrator=False,
-            owner=False,
+            administrator=administrator,
+            owner=owner,
             image="",
             password_hash=hash_password(password),
             created_at=datetime.now()
