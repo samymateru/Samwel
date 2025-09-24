@@ -9,7 +9,7 @@ from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
-router = APIRouter(prefix="/module")
+router = APIRouter(prefix="/modules")
 
 @router.post("/", status_code=201, response_model=ResponseMessage)
 async def create_new_module(

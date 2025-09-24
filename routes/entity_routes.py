@@ -11,6 +11,7 @@ from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/entity")
 
+
 @router.post("/", status_code=201, response_model=ResponseMessage)
 async def create_new_entity(
         entity: NewEntity,
