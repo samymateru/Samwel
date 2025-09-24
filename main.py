@@ -2,11 +2,7 @@ import uuid
 from typing import Optional
 from fastapi import FastAPI, Depends, Form, Request, Query
 from starlette.responses import JSONResponse
-#from AuditNew.Internal.annual_plans.routes import router as annual_plans_router
-#from Management.entity.routes import router as entity
-#from AuditNew.Internal.engagements.routes import router as engagements_router
 from Management.roles.routes import router as roles_router
-#from Management.company_modules.routes import router as company_modules_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
 from Management.entity.profile.issue_source.routes import router as issue_source
@@ -32,7 +28,6 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
-#from Management.organization.routes import router as organization
 from AuditNew.Internal.engagements.attachments.routes import router as attachments
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -183,29 +178,6 @@ async def refresh_token(
         raise HTTPException(status_code=400, detail=f"Error while retrieving session code {e}")
 
 
-# @app.get("/token/{module_id}", tags=["Authentication"], response_model=TokenResponse)
-# async def get_token(
-#         module_id: str,
-#         response: Response,
-#         request: Request,
-#         db=Depends(get_async_db_connection),
-#         user: CurrentUser = Depends(get_current_user)
-# ):
-#     if user.status_code != 200:
-#         raise HTTPException(status_code=user.status_code, detail=user.description)
-#     data: CurrentUser = await generate_user_token(connection=db, module_id=module_id, user_id=user.user_id)
-#     token: str = create_jwt_token(data.model_dump())
-#     response.set_cookie(
-#         key="refresh_token",
-#         value=token,
-#         httponly=True,
-#         max_age=3600,
-#         secure=True,
-#         samesite="lax",
-#         domain=request.url.hostname
-#     )
-#     return TokenResponse(token=token)
-
 @app.post("/login", tags=["Authentication"], response_model=LoginResponse)
 async def login(
           email: str = Form(...),
@@ -272,11 +244,6 @@ async def change_password(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-#app.include_router(entity, tags=["Entity"])
-#app.include_router(organization, tags=["Organization"])
-#app.include_router(company_modules_router, tags=["Modules"])
-#app.include_router(annual_plans_router, tags=["Annual Audit Plans"])
-#app.include_router(engagements_router, tags=["Engagements"])
 app.include_router(administration_router, tags=["Engagement Administration"])
 app.include_router(planning_router, tags=["Engagement Planning"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])

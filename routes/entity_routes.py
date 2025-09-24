@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from models.entity_models import register_new_entity
+from models.entity_models import register_new_entity, get_entity_details
 from models.organization_models import register_new_organization
 from models.user_models import register_new_user, create_new_organization_user
 from schema import ResponseMessage
@@ -9,7 +9,7 @@ from schemas.user_schemas import NewUser, UserTypes
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
-router = APIRouter(prefix="/entities")
+router = APIRouter(prefix="/entity")
 
 @router.post("/", status_code=201, response_model=ResponseMessage)
 async def create_new_entity(
@@ -75,12 +75,18 @@ async def fetch_entity_data(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await get_entity_details(
+            connection=connection,
+            entity_id=entity_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="Entity Not Found")
+        return data
 
 
 @router.get("/organization/{organization_id}", response_model=ReadEntity)
 async def fetch_organization_entity_data(
-        entity_id: str,
+        organization_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
