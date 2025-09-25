@@ -1,8 +1,10 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.sub_program_schemas import NewSubProgram, UpdateSubProgram, CreateSubProgram, SubProgramColumns
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 
 async def create_new_sub_program_model(
@@ -61,7 +63,14 @@ async def fetch_single_sub_program_model(
         sub_program_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.SUB_PROGRAM.value)
+            .where(SubProgramColumns.ID.value, sub_program_id)
+            .fetch_one()
+        )
+
+        return builder
 
 
 async def update_sub_program_model(
@@ -70,7 +79,18 @@ async def update_sub_program_model(
         sub_program_id: str
 ):
     with exception_response():
-        pass
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .values(sub_program)
+            .into_table(Tables.SUB_PROGRAM.value)
+            .check_exists({SubProgramColumns.ID.value: sub_program_id})
+            .where({SubProgramColumns.ID.value: sub_program_id})
+            .returning(SubProgramColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 async def delete_sub_program_model(
@@ -78,7 +98,15 @@ async def delete_sub_program_model(
         sub_program_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.SUB_PROGRAM.value)
+            .check_exists({SubProgramColumns.ID.value: sub_program_id})
+            .where({SubProgramColumns.ID.value: sub_program_id})
+            .execute()
+        )
+
+        return builder
 
 
 async def export_sub_program_to_lib_model(

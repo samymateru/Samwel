@@ -4,6 +4,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating, \
     CreateMainProgram, MainProgramColumns
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -22,6 +23,7 @@ async def create_new_main_audit_program_model(
             name=main_program.name,
             created_at=datetime.now()
         )
+
         builder = await (
             InsertQueryBuilder(connection=connection)
             .values(__main__program__)
@@ -33,15 +35,6 @@ async def create_new_main_audit_program_model(
         )
 
         return builder
-
-
-async def export_main_audit_program_to_library_model(
-        connection: AsyncConnection,
-        data: Dict,
-        module_id: str
-):
-    with exception_response():
-        pass
 
 
 async def fetch_main_programs_models(
@@ -92,7 +85,18 @@ async def update_main_audit_program_process_rating_model(
         program_id: str
 ):
     with exception_response():
-        pass
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.MAIN_PROGRAM.value)
+            .values(main_program)
+            .check_exists({MainProgramColumns.ID.value: program_id })
+            .where({MainProgramColumns.ID.value: program_id})
+            .returning(MainProgramColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -101,4 +105,22 @@ async def delete_main_audit_program_model(
         program_id: str
 ):
     with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.MAIN_PROGRAM.value)
+            .check_exists({MainProgramColumns.ID.value: program_id})
+            .where({MainProgramColumns.ID.value: program_id})
+            .execute()
+        )
+
+        return builder
+
+
+async def export_main_audit_program_to_library_model(
+        connection: AsyncConnection,
+        data: Dict,
+        module_id: str
+):
+    with exception_response():
         pass
+

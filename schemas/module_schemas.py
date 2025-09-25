@@ -96,3 +96,7 @@ class BaseModule(CreateModule):
 
 class ReadModule(BaseModule):
     pass
+
+
+class DeleteModuleTemporarily(BaseModel):
+    status: ModuleStatus

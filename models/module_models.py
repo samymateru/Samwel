@@ -1,7 +1,7 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.module_schemas import NewModule, CreateModule, ModuleStatus, ModulesColumns, CreateModuleActivation, \
-    ActivationColumns, ActivateModule, CreateAuditLicence, AuditLicenceColumns, EAuditLicence
+    ActivationColumns, ActivateModule, CreateAuditLicence, AuditLicenceColumns, EAuditLicence, DeleteModuleTemporarily
 from schemas.user_schemas import ModuleUserColumns
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -194,6 +194,28 @@ async def get_module_licence_data(
             .from_table(Tables.AUDIT_LICENCES.value)
             .where(AuditLicenceColumns.MODULE_ID.value, module_id)
             .fetch_one()
+        )
+
+        return builder
+
+
+async def delete_module_temporarily_model(
+        connection: AsyncConnection,
+        module_id: str
+):
+    with exception_response():
+        __module__ = DeleteModuleTemporarily(
+            status=ModuleStatus.CLOSED
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.MODULES.value)
+            .values(__module__)
+            .check_exists({ModulesColumns.ID.value: module_id})
+            .where({ModulesColumns.ID.value: module_id})
+            .returning(ModulesColumns.ID.value)
+            .execute()
         )
 
         return builder

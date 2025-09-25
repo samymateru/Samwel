@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from core.constants import plans
 from models.module_models import register_new_module, get_user_modules, get_organization_modules, get_module_details, \
-    generate_module_activation_data, get_activation_data, activate_module, add_licence_to_module
+    generate_module_activation_data, get_activation_data, activate_module, add_licence_to_module, \
+    delete_module_temporarily_model
 from schema import ResponseMessage, CurrentUser
 from schemas.module_schemas import NewModule, ReadModule
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -125,4 +126,23 @@ async def activate_module_licence(
             data=results,
             passed="Module Activation Succeed",
             failed="Failed Activating  Module"
+        )
+
+
+@router.delete("/delete_temp/{module_id}", response_model=ResponseMessage)
+async def delete_module_temporarily(
+        module_id: str,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        #_: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        results = await delete_module_temporarily_model(
+            connection=connection,
+            module_id=module_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Module Successfully Deleted",
+            failed="Failed Deleting  Module"
         )
