@@ -40,7 +40,8 @@ async def create_new_user(
             user_id=new_user_data.get("id"),
             administrator=False,
             owner=False,
-            category="Management" if user.category == "Management" else "Module"
+            category="Management" if user.category == "Management" else "Module",
+            management_title=user.title
         )
 
         if organization_user_data is None:

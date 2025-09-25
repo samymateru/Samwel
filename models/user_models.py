@@ -52,10 +52,12 @@ async def create_new_organization_user(
         connection: AsyncConnection,
         organization_id: str,
         user_id: str,
+        management_title: str,
         administrator: bool = False,
         owner: bool = False,
         check_exists: bool = False,
         category: str = "Module"
+
 ):
     with exception_response():
         __organization_user__ = CreateOrganizationUser(
@@ -63,6 +65,7 @@ async def create_new_organization_user(
             organization_id=organization_id,
             user_id=user_id,
             category=category,
+            management_title=management_title,
             administrator=administrator,
             owner=owner,
             created_at=datetime.now()
@@ -152,6 +155,8 @@ async def get_organization_users(
           usr.telephone,
           usr.created_at,
           org_usr.administrator,
+          org_usr.management_title,
+          org_usr.category,
           org_usr.owner,
           COALESCE(
             JSON_AGG(

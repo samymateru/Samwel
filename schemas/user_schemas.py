@@ -70,6 +70,7 @@ class CreateOrganizationUser(BaseModel):
     organization_id: str
     user_id: str
     category: str
+    management_title: str
     administrator: bool
     owner: bool
     created_at: datetime
@@ -109,6 +110,8 @@ class UserModuleSection(BaseModel):
 
 
 class ReadOrganizationUser(BaseUser):
+    management_title: str
+    category: str
     modules: List[UserModuleSection]
 
 class UpdateModuleUser(BaseModel):
