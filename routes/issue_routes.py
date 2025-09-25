@@ -1,10 +1,11 @@
 from typing import Optional
+from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
 
-from fastapi import APIRouter, Depends, Query, Form, UploadFile, File
+from models.issue_models import create_new_issue_model, fetch_single_issue_item_model
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response
+from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/issues")
 
@@ -12,11 +13,24 @@ router = APIRouter(prefix="/issues")
 async def create_new_issue(
         issue: NewIssue,
         sub_program_id: str,
+        module_id: str = Query(...),
         engagement_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        print(issue)
+        results = await create_new_issue_model(
+            connection=connection,
+            module_id=module_id,
+            engagement_id=engagement_id,
+            sub_program_id=sub_program_id,
+            issue=issue
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Successfully Created",
+            failed="Failed Creating  Issue"
+        )
 
 
 @router.get("/{module_id}")
@@ -36,7 +50,14 @@ async def fetch_single_issue_item(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="Issue Not Found")
+        return data
+
 
 
 @router.get("/user/{user_id}")

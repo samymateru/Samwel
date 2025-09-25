@@ -4,12 +4,20 @@ from datetime import datetime
 from enum import Enum
 
 
-
 class User(BaseModel):
     id: str
     name: Optional[str] = None
     email: Optional[str] = None
     date_issued: Optional[datetime] = None
+
+class IssueColumns(str, Enum):
+    ID = "id"
+    TITLE = "title"
+    STATUS = "status"
+    ENGAGEMENT = "engagement"
+    SUB_PROGRAM = "sub_program"
+    REF = "ref"
+
 
 class IssueActors(str, Enum):
     IMPLEMENTER = "lod1_implementer"
@@ -72,13 +80,15 @@ class NewIssue(BaseModel):
     lod3_audit_manager: List[User] = None
 
 
-class CreateIssue(BaseModel):
+class CreateIssue(NewIssue):
     id: str
     module_id: str
     ref: str
+    engagement: str
     created_at: datetime
     status: IssueStatus
     reportable: Optional[bool] = False
+
 
 class SendIssueImplementor(BaseModel):
     issue_ids: List[str]

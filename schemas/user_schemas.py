@@ -38,6 +38,14 @@ class UserStatus(str, Enum):
     ACTIVE = "Active"
     IN_ACTIVE = "In Active"
 
+
+class User(BaseModel):
+    id: str
+    name: Optional[str] = None
+    email: Optional[str] = None
+    date_issued: Optional[datetime] = None
+
+
 class UserTypes(str, Enum):
     MANAGEMENT = "Management"
     AUDIT = "Audit"
