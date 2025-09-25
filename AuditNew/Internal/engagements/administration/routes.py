@@ -34,10 +34,10 @@ async def update_business_contact(
         engagement_id: str,
         business_contacts: BusinessContact,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        user: CurrentUser = Depends(get_current_user)
 ):
-    # if user.status_code != 200:
-    #     raise HTTPException(status_code=user.status_code, detail=user.description)
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await edit_business_contact(db, business_contact=business_contacts, engagement_id=engagement_id)
         return ResponseMessage(detail="Business contact updated successfully")
