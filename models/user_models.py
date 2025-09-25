@@ -52,7 +52,7 @@ async def create_new_organization_user(
         connection: AsyncConnection,
         organization_id: str,
         user_id: str,
-        management_title: str,
+        management_title: str = "Management Title Not Set",
         administrator: bool = False,
         owner: bool = False,
         check_exists: bool = False,
@@ -189,6 +189,8 @@ async def get_organization_users(
           usr.telephone,
           usr.created_at,
           org_usr.administrator,
+          org_usr.management_title,
+          org_usr.category,
           org_usr.owner
     """)
 

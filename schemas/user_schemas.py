@@ -110,8 +110,8 @@ class UserModuleSection(BaseModel):
 
 
 class ReadOrganizationUser(BaseUser):
-    management_title: str
-    category: str
+    management_title: Optional[str] = None
+    category: Optional[str] = None
     modules: List[UserModuleSection]
 
 class UpdateModuleUser(BaseModel):
