@@ -26,3 +26,5 @@ class CreateRiskControl(NewRiskControl):
     sub_program: str
     created_at: datetime
 
+class UpdateRiskControl(NewRiskControl):
+    pass

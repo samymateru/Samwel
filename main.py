@@ -61,9 +61,8 @@ from routes.follow_up_routes import router as follow_up_routes
 from routes.main_program_routes import router as main_program_routes
 from routes.sub_program_routes import router as sub_program_routes
 from routes.engagement_staff_routes import router as engagement_staff_routes
-from routes.engegement_administration_profile_routes import router as engegement_administration_profile_routes
-
 from routes.engegement_administration_profile_routes import router as engagement_administration_profile_routes
+from routes.risk_control_routes import router as risk_control_routes
 
 
 load_dotenv()
@@ -285,6 +284,7 @@ app.include_router(engagement_routes, tags=["Engagements Routes"])
 app.include_router(engagement_administration_profile_routes, tags=["Engagement Administration Profile  Routes"])
 app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])
+app.include_router(risk_control_routes, tags=["Risk Control Routes"])
 app.include_router(notification_routes, tags=["Notification Routes"])
 app.include_router(library_routes, tags=["Library Routes"])
 app.include_router(main_program_routes, tags=["Main Program Routes"])

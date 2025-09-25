@@ -1,38 +1,105 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+
+from models.risk_control_models import create_new_risk_control_on_sub_program_model, \
+    fetch_all_risk_control_on_sub_program_model, fetch_single_risk_control_on_sub_program_model, \
+    edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model
 from schema import ResponseMessage
-from schemas.risk_contol_schemas import NewRiskControl
+from schemas.risk_contol_schemas import NewRiskControl, UpdateRiskControl
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response
+from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/risk_controls")
 
 @router.post("/{sub_program_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_risk_control_on_sub_program(
-        entity: NewRiskControl,
+        risk_control: NewRiskControl,
+        sub_program_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await create_new_risk_control_on_sub_program_model(
+            connection=connection,
+            risk_control=risk_control,
+            sub_program_id=sub_program_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Created",
+            failed="Failed Creating  Risk Control"
+        )
 
 
 @router.get("/{sub_program_id}")
 async def fetch_all_risk_control_on_sub_program(
+        sub_program_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await fetch_all_risk_control_on_sub_program_model(
+            connection=connection,
+            sub_program_id=sub_program_id
+        )
+        return data
 
 
-@router.get("/single/{sub_program_id}")
+@router.get("/single/{risk_control_id}")
 async def fetch_single_risk_control_on_sub_program(
+        risk_control_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await fetch_single_risk_control_on_sub_program_model(
+            connection=connection,
+            risk_control_id=risk_control_id
+        )
+
+        if data is None:
+            raise HTTPException(status_code=404, detail="Risk Control Not Found")
+        return data
 
 
 @router.put("/{risk_control_id}")
 async def edit_risk_control_on_sub_program(
+        risk_control_id: str,
+        risk_control: UpdateRiskControl,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await edit_risk_control_on_sub_program_model(
+            connection=connection,
+            risk_control=risk_control,
+            risk_control_id=risk_control_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Updated",
+            failed="Failed Updating  Risk Control"
+        )
+
+
+@router.delete("/{risk_control_id}")
+async def delete_risk_control_on_sub_program(
+        risk_control_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await delete_risk_control_on_sub_program_model(
+            connection=connection,
+            risk_control_id=risk_control_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Deleted",
+            failed="Failed Deleting  Risk Control"
+        )
+
+
+
+@router.put("/export/{risk_control_id}")
+async def export_risk_control_to_library(
         risk_control_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -40,8 +107,9 @@ async def edit_risk_control_on_sub_program(
         pass
 
 
-@router.delete("/{risk_control_id}")
-async def delete_risk_control_on_sub_program(
+
+@router.put("/import/{risk_control_id}")
+async def import_risk_control_to_sub_program(
         risk_control_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):

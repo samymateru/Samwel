@@ -97,13 +97,13 @@ async def add_new_business_contact(connection: AsyncConnection, engagement_id: s
                 get_unique_key(),
                 engagement_id,
                 json.dumps([]),
-                "action"
+                "Action"
             ))
             await cursor.execute(query, (
                 get_unique_key(),
                 engagement_id,
                 json.dumps([]),
-                "info"
+                "Information"
             ))
         await connection.commit()
     except ForeignKeyViolation:
