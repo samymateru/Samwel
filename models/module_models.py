@@ -1,3 +1,5 @@
+from typing import Any
+
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.module_schemas import NewModule, CreateModule, ModuleStatus, ModulesColumns, CreateModuleActivation, \
@@ -219,3 +221,22 @@ async def delete_module_temporarily_model(
         )
 
         return builder
+
+
+async def increment_module_reference(
+        connection: AsyncConnection,
+        module_id: str,
+        value: Any
+):
+    with exception_response():
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.MODULES.value)
+            .values(value)
+            .check_exists({ModulesColumns.ID.value: module_id})
+            .where({ModulesColumns.ID.value: module_id})
+            .execute()
+        )
+        return builder
+

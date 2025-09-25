@@ -33,6 +33,7 @@ async def create_new_engagement_staff_model(
             .values(__staff__)
             .check_exists({EngagementStaffColumns.NAME.value: staff.name})
             .check_exists({EngagementStaffColumns.ROLE.value: staff.role})
+            .check_exists({EngagementStaffColumns.ENGAGEMENT.value: engagement_id})
             .returning(EngagementStaffColumns.ID.value)
             .execute()
         )

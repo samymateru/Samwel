@@ -5,7 +5,7 @@ from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
-    update_engagement_data
+    update_engagement_data, generate_engagement_code
 from models.engagement_staff_models import create_new_engagement_staff_model
 from schema import ResponseMessage
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
@@ -25,11 +25,18 @@ async def create_new_engagement(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+        code = await generate_engagement_code(
+            connection=connection,
+            annual_plan_id=annual_plan_id,
+            code=engagement.department.code
+        )
+
         results = await register_new_engagement(
             connection=connection,
             engagement=engagement,
             annual_plan_id=annual_plan_id,
-            module_id=module_id
+            module_id=module_id,
+            code=code
         )
 
         if results is None:

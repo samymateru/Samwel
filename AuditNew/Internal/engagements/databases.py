@@ -146,7 +146,6 @@ async def get_engagement_code(connection: AsyncConnection, annual_id: str):
     except Exception as e:
         await connection.rollback()
         print(e)
-        #raise HTTPException(status_code=400, detail=f"Error fetching engagement code {e}")
         return []
 
 async def edit_engagement(connection: AsyncConnection, engagement: UpdateEngagement, engagement_id: str):

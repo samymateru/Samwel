@@ -1,6 +1,9 @@
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, User
+from models.module_models import increment_module_reference
+from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns
+from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response, get_unique_key
@@ -70,3 +73,48 @@ async def fetch_single_issue_item_model(
 
         return builder
 
+
+async def generate_issue_reference(
+        connection: AsyncConnection,
+        module_id: str,
+        source: str
+):
+    with exception_response():
+        builder = (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.MODULES.value)
+            .where(ModulesColumns.ID.value, module_id)
+            .fetch_one()
+        )
+        if builder is None:
+            raise HTTPException(status_code=404, detail="Error While Generating Issue Reference, Module Not Found")
+        if source == "Internal Audit":
+            internal = builder.get("internal_issues") + 1
+            reference = f"IA-{internal:05d}"
+
+            internal_increment = IncrementInternalIssues(
+                internal_issues=internal
+            )
+
+            results = increment_module_reference(
+                connection=connection,
+                module_id=module_id,
+                value=internal_increment
+            )
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Incrementing Internal Issue Reference")
+            return reference
+        else:
+            external = builder.get("external_issues") + 1
+            reference = f"EA-{external:05d}"
+            external_increment = IncrementExternalIssues(
+                external_issues=external
+            )
+            results = increment_module_reference(
+                connection=connection,
+                module_id=module_id,
+                value=external_increment
+            )
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Incrementing External Issue Reference")
+            return reference

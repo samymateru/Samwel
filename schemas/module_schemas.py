@@ -97,6 +97,17 @@ class BaseModule(CreateModule):
 class ReadModule(BaseModule):
     pass
 
+class IncrementInternalIssues(BaseModel):
+    internal_issues: int
+
+class IncrementExternalIssues(BaseModel):
+    external_issues: int
+
+class IncrementPlanReferences(BaseModel):
+    plan_reference: int
+
+class IncrementProcedureReferences(BaseModel):
+    procedure_reference: int
 
 class DeleteModuleTemporarily(BaseModel):
     status: ModuleStatus

@@ -14,7 +14,8 @@ async def register_new_engagement(
         connection: AsyncConnection,
         engagement: NewEngagement,
         annual_plan_id: str,
-        module_id: str
+        module_id: str,
+        code: str = ""
 ):
     with exception_response():
         __engagement__ = CreateEngagement(
@@ -32,7 +33,7 @@ async def register_new_engagement(
             start_date=engagement.start_date,
             end_date=engagement.end_date,
             created_at=datetime.now(),
-            code="",
+            code=code,
             quarter="Q1",
         )
 
@@ -243,3 +244,29 @@ async def update_engagement_data(
         )
 
         return builder
+
+
+async def generate_engagement_code(
+        connection: AsyncConnection,
+        code: str,
+        annual_plan_id: str
+):
+    with exception_response():
+        code_list = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENTS)
+            .select_fields("code")
+            .where(EngagementColumns.PLAN_ID.value, annual_plan_id)
+            .fetch_all()
+        )
+        max_ = 0
+
+        codes = [item['code'] for item in code_list]
+        for data in codes:
+            code_ = data.split("-")
+            if code == code_[0]:
+                if int(code_[1]) >= max_:
+                    max_ = int(code_[1])
+        return code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
+
+
