@@ -1,36 +1,46 @@
-from fastapi import APIRouter, Depends, Query
-from schemas.engagement_administration_profile_schemas import NewEngagementAdministrationProfile
+from fastapi import APIRouter, Depends, HTTPException
+from models.engagement_administration_profile_models import update_engagement_profile_model, \
+    fetch_engagement_administration_profile_model
+from schemas.engagement_administration_profile_schemas import NewEngagementAdministrationProfile, \
+    ReadEngagementAdministrationProfile
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response
+from utils import exception_response, return_checker
 
-router = APIRouter(prefix="/engagement_administration_profile")
+router = APIRouter(prefix="/engagements")
 
-@router.post("/{engagement_id}")
-async def create_new_engagement_administration_profile(
+
+@router.get("/profile/{engagement_id}", response_model=ReadEngagementAdministrationProfile)
+async def get_engagement_profile(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await fetch_engagement_administration_profile_model(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="Engagement Profile Not Found")
+        return data
+
+
+@router.put("/profile/{engagement_id}")
+async def put_engagement_profile(
         profile: NewEngagementAdministrationProfile,
         engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        print(profile)
+        results = await update_engagement_profile_model(
+            connection=connection,
+            profile=profile,
+            engagement_id=engagement_id
+        )
 
-
-@router.get("/{engagement_id}")
-async def fetch_engagement_administration_profile(
-        module_id: str,
-        filters: str =  Query(...),
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
-
-@router.get("/{profile_id}")
-async def update_engagement_administration_profile(
-        profile_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
+        return await return_checker(
+            data=results,
+            passed="Engagement Profile Successfully Updated",
+            failed="Failed Updating  Engagement Profile"
+        )
 
 

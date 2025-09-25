@@ -1,5 +1,4 @@
 from psycopg import AsyncConnection
-
 from core.tables import Tables
 from schemas.annual_plan_schemas import NewAnnualPlan, CreateAnnualPlan, AnnualPlanStatus, AnnualPlanColumns, \
     UpdateAnnualPlan, RemoveAnnualPlanPartially

@@ -9,9 +9,14 @@ class NewEngagementAdministrationProfile(BaseModel):
     key_changes: Dict
     reliance: Dict
     scope_exclusion: Dict
-    core_risk: Optional[List[str]]
+    core_risk: Optional[List[str]] = None
+
 
 class CreateEngagementAdministrationProfile(NewEngagementAdministrationProfile):
     id: str
     engagement: str
     created_at: str
+
+
+class ReadEngagementAdministrationProfile(CreateEngagementAdministrationProfile):
+    pass

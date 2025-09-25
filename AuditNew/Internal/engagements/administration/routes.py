@@ -45,37 +45,39 @@ async def update_business_contact(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/profile/{engagement_id}", response_model=EngagementProfile)
-async def fetch_engagement_profile(
-        engagement_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = await get_engagement_profile(connection=db, engagement_id=engagement_id)
-        if data.__len__() == 0:
-            raise HTTPException(status_code=400, detail="Engagement profile not found")
 
-        return data[0]
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+# @router.get("/profile/{engagement_id}", response_model=EngagementProfile)
+# async def fetch_engagement_profile(
+#         engagement_id: str,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         data = await get_engagement_profile(connection=db, engagement_id=engagement_id)
+#         if data.__len__() == 0:
+#             raise HTTPException(status_code=400, detail="Engagement profile not found")
+#
+#         return data[0]
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
+#
+# @router.put("/profile/{engagement_id}", response_model=ResponseMessage)
+# async def update_profile(
+#         engagement_id: str,
+#         profile: EngagementProfile,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         await edit_engagement_profile(db, profile=profile, engagement_id=engagement_id)
+#         return ResponseMessage(detail="Profile updated successfully")
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/profile/{engagement_id}", response_model=ResponseMessage)
-async def update_profile(
-        engagement_id: str,
-        profile: EngagementProfile,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await edit_engagement_profile(db, profile=profile, engagement_id=engagement_id)
-        return ResponseMessage(detail="Profile updated successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.put("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
 async def update_engagement_process(

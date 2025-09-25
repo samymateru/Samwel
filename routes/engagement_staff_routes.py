@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
     update_staff_model, delete_staff_model
@@ -28,7 +30,7 @@ async def create_new_engagement_staff(
         )
 
 
-@router.get("/staff/{engagement_id}", response_model=ResponseMessage)
+@router.get("/staff/{engagement_id}", response_model=List[ResponseMessage])
 async def fetch_engagement_staff(
         engagement_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
