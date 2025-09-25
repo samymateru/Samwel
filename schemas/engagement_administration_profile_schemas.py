@@ -1,5 +1,20 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, List
+from enum import Enum
+
+
+class EngagementProfileColumns(str, Enum):
+    ID = "id"
+    ENGAGEMENT = "engagement"
+    AUDIT_BACKGROUND = "audit_background"
+    AUDIT_OBJECTIVES = "audit_objectives"
+    KEY_LEGISLATIONS = "key_legislations"
+    RELEVANT_SYSTEMS = "relevant_systems"
+    KEY_CHANGES = "key_changes"
+    RELIANCE = "reliance"
+    SCOPE_EXCLUSION = "scope_exclusion"
+    CORE_RISK = "core_risk"
+
 
 class NewEngagementAdministrationProfile(BaseModel):
     audit_background: Dict
@@ -15,7 +30,6 @@ class NewEngagementAdministrationProfile(BaseModel):
 class CreateEngagementAdministrationProfile(NewEngagementAdministrationProfile):
     id: str
     engagement: str
-    created_at: str
 
 
 class ReadEngagementAdministrationProfile(CreateEngagementAdministrationProfile):

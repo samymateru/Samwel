@@ -23,7 +23,7 @@ class NewEngagementStaff(BaseModel):
     role: str
     start_date: datetime
     end_date: datetime
-    tasks: str
+    tasks: Optional[str] = None
 
 
 class CreateEngagementStaff(NewEngagementStaff):
@@ -45,4 +45,4 @@ class UpdateStaff(BaseModel):
     role: str
     start_date: datetime
     end_date: datetime
-    tasks: datetime
+    tasks: Optional[str] = None

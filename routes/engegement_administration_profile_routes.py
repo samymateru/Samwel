@@ -19,6 +19,7 @@ async def fetch_engagement_administration_profile(
             connection=connection,
             engagement_id=engagement_id
         )
+        print(data)
         if data is None:
             raise HTTPException(status_code=404, detail="Engagement Profile Not Found")
         return data
