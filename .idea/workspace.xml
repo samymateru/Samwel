@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change afterPath="$PROJECT_DIR$/models/engagement_administration_profile_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/annual_plan_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/annual_plan_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/engegement_administration_profile_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engegement_administration_profile_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/engagement_administration_profile_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_administration_profile_schemas.py" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -143,14 +135,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00654" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1757660571010</created>
-      <option name="number" value="00654" />
-      <option name="presentableId" value="LOCAL-00654" />
-      <option name="project" value="LOCAL" />
-      <updated>1757660571011</updated>
     </task>
     <task id="LOCAL-00655" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -536,7 +520,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758803904245</updated>
     </task>
-    <option name="localTasksCounter" value="703" />
+    <task id="LOCAL-00703" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1758806389183</created>
+      <option name="number" value="00703" />
+      <option name="presentableId" value="LOCAL-00703" />
+      <option name="project" value="LOCAL" />
+      <updated>1758806389183</updated>
+    </task>
+    <option name="localTasksCounter" value="704" />
     <servers />
   </component>
   <component name="UnknownFeatures">

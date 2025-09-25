@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
@@ -32,7 +34,11 @@ class CreateEngagementStaff(NewEngagementStaff):
     role: str
     start_date: datetime
     end_date: datetime
-    tasks: str
+    tasks: Optional[str] = None
+
+
+class ReadEngagementStaff(CreateEngagementStaff):
+    pass
 
 
 class UpdateStaff(BaseModel):

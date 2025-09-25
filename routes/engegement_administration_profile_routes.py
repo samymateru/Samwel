@@ -10,7 +10,7 @@ router = APIRouter(prefix="/engagements")
 
 
 @router.get("/profile/{engagement_id}", response_model=ReadEngagementAdministrationProfile)
-async def get_engagement_profile(
+async def fetch_engagement_administration_profile(
         engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -25,7 +25,7 @@ async def get_engagement_profile(
 
 
 @router.put("/profile/{engagement_id}")
-async def put_engagement_profile(
+async def update_engagement_administration_profile(
         profile: NewEngagementAdministrationProfile,
         engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

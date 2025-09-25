@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
     update_staff_model, delete_staff_model
 from schema import ResponseMessage
-from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff
+from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, ReadEngagementStaff
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -30,7 +30,7 @@ async def create_new_engagement_staff(
         )
 
 
-@router.get("/staff/{engagement_id}", response_model=List[ResponseMessage])
+@router.get("/staff/{engagement_id}", response_model=List[ReadEngagementStaff])
 async def fetch_engagement_staff(
         engagement_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
