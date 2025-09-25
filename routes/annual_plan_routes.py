@@ -1,22 +1,36 @@
-from fastapi import APIRouter, Depends, HTTPException
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 from models.annual_plan_models import register_new_annual_plan, get_module_annual_plans, get_annual_plan_details, \
     remove_annual_plan_partially, edit_annual_plan_details
 from schema import ResponseMessage
 from schemas.annual_plan_schemas import NewAnnualPlan, ReadAnnualPlan, UpdateAnnualPlan
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
+from datetime import datetime
+from typing import List
 
 router = APIRouter(prefix="/annual_plans")
 
 
-@router.post("/create/{module_id}", status_code=201, response_model=ResponseMessage)
+@router.post("/{module_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_annual_plan(
         module_id: str,
-        annual_plan: NewAnnualPlan,
+        name: str = Form(...),
+        year: str = Form(...),
+        start: datetime = Form(...),
+        end: datetime = Form(...),
+        attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+
+        annual_plan = NewAnnualPlan(
+            name=name,
+            year=year,
+            start=start,
+            end=end,
+            attachment=attachment.filename
+        )
+
         results = await register_new_annual_plan(
             connection=connection,
             annual_plan=annual_plan,

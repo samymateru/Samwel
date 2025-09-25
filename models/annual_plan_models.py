@@ -21,6 +21,7 @@ async def register_new_annual_plan(
             reference="",
             name=annual_plan.name,
             year=annual_plan.year,
+            attachment=annual_plan.attachment,
             start=annual_plan.start,
             end=annual_plan.end,
             status=AnnualPlanStatus.PENDING,

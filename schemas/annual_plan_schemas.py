@@ -29,6 +29,7 @@ class NewAnnualPlan(BaseModel):
     year: str
     start: datetime
     end: datetime
+    attachment: str
 
 
 class CreateAnnualPlan(NewAnnualPlan):
@@ -37,6 +38,7 @@ class CreateAnnualPlan(NewAnnualPlan):
     reference: str
     status: AnnualPlanStatus
     creator: str
+    attachment: str
     created_at: datetime
 
 
