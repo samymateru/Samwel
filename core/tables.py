@@ -12,6 +12,8 @@ class Tables(str, Enum):
     MODULES_USERS = "modules_users"
     ACTIVATIONS = "activations"
     AUDIT_LICENCES = "audit_licences"
+    MAIN_PROGRAM = "main_program"
+    SUB_PROGRAM = "sub_program"
     ISSUES = "issues"
     RISK_CONTROL = "risk_control"
     FOLLOW_UP = "follow_up"

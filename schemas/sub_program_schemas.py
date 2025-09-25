@@ -6,6 +6,7 @@ from datetime import datetime
 
 class SubProgramColumns(str, Enum):
     ID = "id"
+    PROGRAM = "program"
     REFERENCE = "reference"
     TITLE = "title"
     BRIEF_DESCRIPTION = "brief_description"

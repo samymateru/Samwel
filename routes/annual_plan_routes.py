@@ -10,7 +10,7 @@ from utils import exception_response, return_checker
 router = APIRouter(prefix="/annual_plans")
 
 
-@router.post("/{module_id}", status_code=201, response_model=ResponseMessage)
+@router.post("/create/{module_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_annual_plan(
         module_id: str,
         annual_plan: NewAnnualPlan,

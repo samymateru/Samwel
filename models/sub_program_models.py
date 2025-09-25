@@ -1,7 +1,9 @@
 from psycopg import AsyncConnection
-from schemas.sub_program_schemas import NewSubProgram, UpdateSubProgram
-from utils import exception_response
-
+from core.tables import Tables
+from schemas.sub_program_schemas import NewSubProgram, UpdateSubProgram, CreateSubProgram, SubProgramColumns
+from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.read import ReadBuilder
+from utils import exception_response, get_unique_key
 
 async def create_new_sub_program_model(
         connection: AsyncConnection,
@@ -9,7 +11,34 @@ async def create_new_sub_program_model(
         program_id: str
 ):
     with exception_response():
-        pass
+        __sub__program__ = CreateSubProgram(
+            id=get_unique_key(),
+            title=sub_program.title,
+            observation="",
+            brief_description="",
+            audit_objective="",
+            test_description="",
+            test_type="",
+            sampling_approach="",
+            results_of_test="",
+            extended_testing=False,
+            extended_procedure="",
+            extended_results="",
+            effectiveness="",
+            conclusion=""
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .values(__sub__program__)
+            .into_table(Tables.SUB_PROGRAM.value)
+            .check_exists({SubProgramColumns.TITLE.value: sub_program.title})
+            .check_exists({SubProgramColumns.PROGRAM.value: program_id})
+            .returning(SubProgramColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 async def fetch_all_sub_program_model(
@@ -17,7 +46,14 @@ async def fetch_all_sub_program_model(
         program_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.SUB_PROGRAM.value)
+            .where(SubProgramColumns.PROGRAM.value, program_id)
+            .fetch_all()
+        )
+
+        return builder
 
 
 async def fetch_single_sub_program_model(
