@@ -67,7 +67,8 @@ async def create_new_entity(
             organization_id=organization_data.get("id"),
             user_id=user_data.get("id"),
             administrator=True,
-            owner=True
+            owner=True,
+            category="Module"
         )
 
         asyncio.create_task(set_company_profile(company_id=entity_data.get("id")))

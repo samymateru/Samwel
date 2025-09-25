@@ -47,6 +47,7 @@ class NewUser(BaseModel):
     name: Optional[str]
     email: str
     type: UserTypes
+    category: Optional[str] = None
     telephone: Optional[str] = None
     role: Optional[str] = None
     title: Optional[str] = None
@@ -68,6 +69,7 @@ class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
     user_id: str
+    category: str
     administrator: bool
     owner: bool
     created_at: datetime

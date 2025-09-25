@@ -319,48 +319,8 @@ async def delete_regulation(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/staff/{engagement_id}", response_model=List[__Staff__])
-async def fetch_staff(
-        engagement_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = await get_engagement_staff(connection=db, engagement_id=engagement_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/staff/{engagement_id}", response_model=ResponseMessage)
-async def create_engagement_staff(
-        engagement_id: str,
-        staff: Staff,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await add_engagement_staff(db, staff=staff, engagement_id=engagement_id)
-        return ResponseMessage(detail="Staff added successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/context/staff/{staff_id}", response_model=ResponseMessage)
-async def delete_staff(
-        staff_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await remove_staff(connection=db, staff_id=staff_id)
-        return ResponseMessage(detail= "Staff deleted successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 

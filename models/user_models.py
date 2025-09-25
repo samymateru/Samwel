@@ -54,13 +54,15 @@ async def create_new_organization_user(
         user_id: str,
         administrator: bool = False,
         owner: bool = False,
-        check_exists: bool = False
+        check_exists: bool = False,
+        category: str = "Module"
 ):
     with exception_response():
         __organization_user__ = CreateOrganizationUser(
             organization_user_id=get_unique_key(),
             organization_id=organization_id,
             user_id=user_id,
+            category=category,
             administrator=administrator,
             owner=owner,
             created_at=datetime.now()
