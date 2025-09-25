@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 class Rating(BaseModel):
-    id: str
+    id: Optional[str] = None
     name: Optional[str]
     magnitude: Optional[int]
 
