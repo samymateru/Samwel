@@ -55,7 +55,8 @@ async def create_new_entity(
             connection=connection,
             organization=organization,
             entity_id=entity_data.get("id"),
-            creator=user_data.get("id")
+            creator=user_data.get("id"),
+            default=True
         )
 
         if organization_data is None:
