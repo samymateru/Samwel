@@ -17,7 +17,7 @@ router = APIRouter(prefix="/users")
 async def create_new_user(
         organization_id: str,
         user: NewUser,
-        module_id: str = Query(...),
+        module_id: str = Query(None),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user)
 ):
@@ -45,6 +45,8 @@ async def create_new_user(
             raise HTTPException(status_code=400, detail="Failed To Attach User To Organization")
 
         if user.type != UserTypes.MANAGEMENT:
+            if module_id is None:
+                raise HTTPException(status_code=400, detail="Module ID Needed")
             module_user_data = await create_new_module_user(
                 connection=connection,
                 user=user,
