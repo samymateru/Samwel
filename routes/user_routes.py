@@ -29,6 +29,7 @@ async def create_new_user(
             check_if_exist=False
         )
 
+
         if new_user_data is None:
             raise HTTPException(status_code=400, detail="Failed To Create New User")
 
