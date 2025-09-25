@@ -1,5 +1,12 @@
 from psycopg import AsyncConnection
-from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, CreateEngagementStaff
+
+from core.tables import Tables
+from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, CreateEngagementStaff, \
+    EngagementStaffColumns
+from services.connections.postgres.delete import DeleteQueryBuilder
+from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 
 
@@ -20,8 +27,17 @@ async def create_new_engagement_staff_model(
             tasks=staff.tasks
         )
 
-        builder = ""
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENT_STAFF.value)
+            .values(__staff__)
+            .check_exists({EngagementStaffColumns.NAME.value: staff.name})
+            .check_exists({EngagementStaffColumns.ROLE.value: staff.role})
+            .returning(EngagementStaffColumns.ID.value)
+            .execute()
+        )
 
+        return builder
 
 
 async def fetch_engagement_staff_model(
@@ -29,7 +45,14 @@ async def fetch_engagement_staff_model(
         engagement_id: str,
 ):
     with exception_response():
-        pass
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENT_STAFF.value)
+            .where(EngagementStaffColumns.ENGAGEMENT.value, engagement_id)
+            .fetch_all()
+        )
+
+        return builder
 
 
 async def update_staff_model(
@@ -38,7 +61,17 @@ async def update_staff_model(
         staff_id: str,
 ):
     with exception_response():
-        pass
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENT_STAFF.value)
+            .values(staff)
+            .check_exists({EngagementStaffColumns.ID.value: staff_id})
+            .where({EngagementStaffColumns.ID.value: staff_id})
+            .returning(EngagementStaffColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 async def delete_staff_model(
@@ -46,4 +79,13 @@ async def delete_staff_model(
         staff_id: str,
 ):
     with exception_response():
-        pass
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENT_STAFF.value)
+            .check_exists({EngagementStaffColumns.ID.value: staff_id})
+            .where({EngagementStaffColumns.ID.value: staff_id})
+            .returning(EngagementStaffColumns.ID.value)
+            .execute()
+        )
+
+        return builder

@@ -6,11 +6,14 @@ from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
     update_engagement_data
+from models.engagement_staff_models import create_new_engagement_staff_model
 from schema import ResponseMessage
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
     AddOpinionRating, UpdateEngagement_
+from schemas.engagement_staff_schemas import NewEngagementStaff
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
+from datetime import datetime
 
 router = APIRouter(prefix="/engagements")
 
@@ -31,6 +34,23 @@ async def create_new_engagement(
 
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Create Engagement")
+
+        for lead in engagement.leads:
+            staff = NewEngagementStaff(
+                name=lead.name,
+                role="Audit Lead",
+                email=lead.email,
+                start_date=datetime.now(),
+                end_date=datetime.now(),
+                tasks=""
+            )
+
+            await create_new_engagement_staff_model(
+                connection=connection,
+                staff=staff,
+                engagement_id=results.get("id")
+            )
+
         asyncio.create_task(set_engagement_templates(engagement_id=results.get("id")))
 
 

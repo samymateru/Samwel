@@ -3,14 +3,22 @@ from enum import Enum
 from datetime import datetime
 
 
-class EngagementRoles(str, Enum):
-    pass
+class EngagementStaffColumns(str, Enum):
+    ID = "id"
+    ENGAGEMENT = "engagement"
+    NAME = "name"
+    EMAIL = "email"
+    ROLE = "role"
+    START_DATE = "start_date"
+    END_DATE = "end_date"
+    TASKS = "tasks"
+
 
 
 class NewEngagementStaff(BaseModel):
     name:  str
     email: str
-    role: EngagementRoles
+    role: str
     start_date: datetime
     end_date: datetime
     tasks: str
@@ -21,7 +29,7 @@ class CreateEngagementStaff(NewEngagementStaff):
     engagement: str
     name:  str
     email: str
-    role: EngagementRoles
+    role: str
     start_date: datetime
     end_date: datetime
     tasks: str

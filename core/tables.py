@@ -14,6 +14,7 @@ class Tables(str, Enum):
     AUDIT_LICENCES = "audit_licences"
     MAIN_PROGRAM = "main_program"
     SUB_PROGRAM = "sub_program"
+    ENGAGEMENT_STAFF = "staff"
     ISSUES = "issues"
     RISK_CONTROL = "risk_control"
     FOLLOW_UP = "follow_up"

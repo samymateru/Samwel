@@ -124,4 +124,4 @@ class Engagement(CreateEngagement):
     pass
 
 class ReadEngagement(Engagement):
-    pass
+    leads: List[Lead]

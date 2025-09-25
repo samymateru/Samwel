@@ -1,4 +1,4 @@
-from psycopg import AsyncConnection
+from psycopg import AsyncConnection, sql
 from core.tables import Tables
 from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, CompleteEngagement, EngagementStatus, \
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
@@ -42,7 +42,7 @@ async def register_new_engagement(
             .values(__engagement__)
             .check_exists({EngagementColumns.PLAN_ID.value: annual_plan_id})
             .check_exists({EngagementColumns.NAME.value: engagement.name})
-            .returning(EngagementColumns.ID.value)
+            .returning(EngagementColumns.ID.value, EngagementColumns.CODE.value)
             .execute()
         )
 
@@ -53,14 +53,53 @@ async def get_all_annual_plan_engagement(
         annual_plan_id: str
 ):
     with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ENGAGEMENTS.value)
-            .where(EngagementColumns.PLAN_ID.value, annual_plan_id)
-            .fetch_all()
-        )
+        query = sql.SQL(
+            """
+            SELECT 
+            eng.id,
+            eng.plan_id,
+            eng.module_id,
+            eng.name,
+            eng.type,
+            eng.code,
+            eng.status,
+            eng.stage,
+            eng.opinion_rating,
+            eng.quarter,
+            eng.sub_departments,
+            eng.archived,
+            eng.created_at,
+            eng.department,
+            eng.risk,
+            eng.start_date,
+            eng.end_date,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'id', stf.id,
+                        'name', stf.name,
+                        'email', stf.email,
+                        'role', stf.role,
+                        'start_date', stf.start_date,
+                        'end_date', stf.end_date,
+                        'tasks', stf.tasks
+                    )
+                ) FILTER (WHERE stf.id IS NOT NULL AND stf.role = 'Audit Lead'),
+                '[]'::json
+            ) AS leads
+            FROM engagements eng
+            LEFT JOIN staff stf 
+                ON stf.engagement = eng.id
+            WHERE eng.plan_id = %s
+            GROUP BY eng.id, eng.plan_id, eng.name, eng.start_date, eng.end_date;
+            """)
 
-        return builder
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (annual_plan_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            result = [dict(zip(column_names, row)) for row in rows]
+            return result
 
 
 async def get_all_module_engagement(
