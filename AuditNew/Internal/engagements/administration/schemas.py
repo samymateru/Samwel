@@ -1,9 +1,13 @@
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional, List, Dict
+from enum import Enum
 
-class Section(BaseModel):
-    value: str
+
+class BusinessUserType(str, Enum):
+    ACTION = "Action"
+    INFORMATION = "Information"
+
 
 class EngagementProfile(BaseModel):
     id: Optional[str] = None
@@ -63,4 +67,4 @@ class User(BaseModel):
 class BusinessContact(BaseModel):
     id: Optional[str] = None
     user: List[User]
-    type: Optional[str]
+    type: Optional[BusinessUserType]
