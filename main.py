@@ -102,7 +102,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.middleware("http")
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
