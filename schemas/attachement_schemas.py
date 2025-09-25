@@ -1,0 +1,30 @@
+from pydantic import BaseModel
+from typing import Optional
+from enum import Enum
+from datetime import datetime
+
+class AttachmentCategory(str, Enum):
+    PLANNING = "planning"
+    FINALIZATION = "finalization"
+    REPORTING = "reporting"
+    PROCEDURE = "procedure"
+    PROGRAM = "procedure"
+    DRAFT_ENGAGEMENT = "draft_engagement"
+    FINAL_ENGAGEMENT = "final_engagement"
+    ANNUAL_PLAN = "annual_plan"
+    ISSUE_IMPLEMENTATION = "issue_implementation"
+    ENGAGEMENT_ADMINISTRATION = "engagement_administration"
+
+
+class Attachment(BaseModel):
+    id: Optional[str] = None
+    engagement: str
+    procedure: str
+    name: str
+    url: str
+    size: int
+    type: str
+    section: AttachmentSections
+    creator_name: Optional[str] = None
+    creator_email: Optional[str] = None
+    created_at: datetime = datetime.now()

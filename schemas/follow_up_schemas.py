@@ -19,13 +19,20 @@ class FollowUpColumns(str, Enum):
     REVIEWED_BY = "reviewed_by"
     CREATED_AT = "created_at"
 
+class FollowUpTestColumns(str, Enum):
+    TEST_ID = "test_id"
+    FOLLOW_UP_ID = "follow_up_id"
+    NAME = "name"
+    OBJECTIVE = "objective"
+    OUTCOME = "outcome"
+    CREATED_AT = "created_at"
+
 
 class NewFollowUp(BaseModel):
     name: str
     issue_ids: Optional[List[str]] = None
     engagement_ids: Optional[List[str]] = None
     attachment: Optional[str] = None
-
 
 class CreateFollowUp(BaseModel):
     follow_up_id: str
@@ -36,3 +43,39 @@ class CreateFollowUp(BaseModel):
     created_by: str
     reviewed_by: Optional[str] = None
     created_at: datetime
+
+
+class UpdateFollowUp(BaseModel):
+    name: str
+    attachment: Optional[str] = None
+
+
+class NewFollowUpTest(BaseModel):
+    name: str
+    description: Optional[str] = None
+    outcome: Optional[str] = None
+
+
+
+class UpdateFollowUpTest(BaseModel):
+    name: str
+    description: Optional[str] = None
+    outcome: Optional[str] = None
+
+
+class CreateFollowUpTest(NewFollowUpTest):
+    created_at: datetime
+
+
+class ReviewFollowUp(BaseModel):
+    status: FollowUpStatus
+    reviewed_by: str
+
+
+class DisApproveFollowUp(BaseModel):
+    status: FollowUpStatus
+    reviewed_by: str
+
+
+class CompleteFollowUp(BaseModel):
+    status: FollowUpStatus

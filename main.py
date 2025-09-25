@@ -50,17 +50,18 @@ from rate_limiter import RateLimiterMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from x import test_direct_connection
 from core.datastructures.pop_dict import PopDict
-from AuditNew.Internal.follow_up.routes import router as follow_up
 from routes.issue_routes import router as issue_routes
 from routes.library_routes import router as library_routes
 from routes.notification_routes import router as notification_routes
-from routes.work_program_routes import router as work_program_routes
 from routes.entity_routes import router as entity_routes
 from routes.organization_routes import router as organization_routes
 from routes.module_routes import router as module_routes
 from routes.user_routes import router as user_routes
 from routes.annual_plan_routes import router as annual_plan_routes
 from routes.engagement_routes import router as engagement_routes
+from routes.follow_up_routes import router as follow_up_routes
+from routes.main_program_routes import router as main_program_routes
+from routes.sub_program_routes import router as sub_program_routes
 from routes.engegement_administration_profile_routes import router as engagement_administration_profile_routes
 
 
@@ -250,7 +251,6 @@ app.include_router(planning_router, tags=["Engagement Planning"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
 app.include_router(finalization_router, tags=["Engagement Finalization"])
 app.include_router(reporting_router, tags=["Engagement Reporting"])
-app.include_router(work_program_router, tags=["Engagement Work Program"])
 app.include_router(roles_router, tags=["Roles"])
 app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
 app.include_router(control_weakness, tags=["Control Weakness Rating"])
@@ -276,7 +276,6 @@ app.include_router(reports, tags=["System Reports"])
 
 app.include_router(attachments, tags=["Attachments"])
 app.include_router(subscriptions, tags=["Subscriptions"])
-app.include_router(follow_up, tags=["Follow Up"])
 app.include_router(entity_routes, tags=["Entity Routes"])
 app.include_router(organization_routes, tags=["Organization Routes"])
 app.include_router(module_routes, tags=["Module Routes"])
@@ -286,7 +285,10 @@ app.include_router(engagement_routes, tags=["Engagements Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])
 app.include_router(notification_routes, tags=["Notification Routes"])
 app.include_router(library_routes, tags=["Library Routes"])
-app.include_router(work_program_routes, tags=["Work Program Routes"])
+app.include_router(main_program_routes, tags=["Main Program Routes"])
+app.include_router(sub_program_routes, tags=["Sub Program Routes"])
+app.include_router(follow_up_routes, tags=["Follow Routes"])
+
 app.include_router(engagement_administration_profile_routes, tags=["Engagement Administration Profile  Routes"])
 
 

@@ -1,8 +1,6 @@
 import asyncio
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List
-
 from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \

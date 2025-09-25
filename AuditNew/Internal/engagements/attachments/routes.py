@@ -7,7 +7,7 @@ from AuditNew.Internal.engagements.attachments.schemas import Attachment, Attach
 from schema import CurrentUser, ResponseMessage
 from utils import get_async_db_connection, get_current_user, get_unique_key
 
-router = APIRouter(prefix="/attachments")
+router = APIRouter(prefix="/attachment")
 
 
 @router.post("/planning/{engagement_id}", response_model=ResponseMessage)
