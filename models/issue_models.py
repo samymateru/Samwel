@@ -3,7 +3,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from models.module_models import increment_module_reference
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
-    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails
+    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -21,6 +21,7 @@ async def create_new_issue_model(
     with exception_response():
         __issue__ = CreateIssue(
             id=get_unique_key(),
+            sub_program=sub_program_id,
             module_id=module_id,
             title=issue.title,
             ref=get_unique_key(),
@@ -74,6 +75,66 @@ async def fetch_single_issue_item_model(
         )
 
         return builder
+
+
+async def mark_issue_reportable_model(
+        connection: AsyncConnection,
+        issue_id: str
+):
+    with exception_response():
+        __issue__ = MarkIssueReportable(
+            reportable=True
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+            .values(__issue__)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+
+async def save_issue_responses(
+        connection: AsyncConnection,
+        response: NewIssueResponse,
+        issue_id: str,
+):
+    with exception_response():
+        __response__ = CreateIssueResponses(
+            id=get_unique_key(),
+            type=response.type,
+            issued_by=response.issued_by,
+            issue=issue_id,
+            created_at=datetime.now(),
+            notes=response.notes if response.notes is  not None else "",
+            attachments=response.attachments
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUE_RESPONSES.value)
+            .values(__response__)
+            .returning(IssueResponseColumns.ID.value)
+            .execute()
+        )
+        return builder
+
+
+
+
+
+async def set_issue_dates(
+        connection: AsyncConnection,
+        issue_id: str
+):
+    with exception_response():
+        pass
 
 
 
@@ -143,31 +204,6 @@ async def change_issue_status(
         )
         return builder
 
-
-async def save_issue_responses(
-        connection: AsyncConnection,
-        response: NewIssueResponse,
-        issue_id: str,
-):
-    with exception_response():
-        __response__ = CreateIssueResponses(
-            id=get_unique_key(),
-            type=response.type,
-            issued_by=response.issued_by,
-            issue=issue_id,
-            created_at=datetime.now(),
-            notes=response.notes if response.notes is  not None else "",
-            attachments=response.attachments
-        )
-
-        builder = await (
-            InsertQueryBuilder(connection=connection)
-            .into_table(Tables.ISSUE_RESPONSES.value)
-            .values(__response__)
-            .returning(IssueResponseColumns.ID.value)
-            .execute()
-        )
-        return builder
 
 
 async def update_issue_details_model(

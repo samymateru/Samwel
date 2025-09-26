@@ -103,6 +103,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
@@ -112,6 +113,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
     except Exception as e:
         global_logger.error(e)
         return JSONResponse(status_code=500, content={"detail": str(e)})
+
 
 # noinspection PyTypeChecker
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
@@ -224,6 +226,7 @@ async def login(
         else:
             raise HTTPException(detail="Invalid password", status_code=400)
 
+
 @app.put("/change_password", tags=["Authentication"])
 async def change_password(
         old_password: str = Form(...),
@@ -271,7 +274,6 @@ app.include_router(risk_, tags=["Engagement Risk"])
 app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
-
 
 
 app.include_router(attachments, tags=["Attachments"])

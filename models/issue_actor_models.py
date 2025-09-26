@@ -1,6 +1,8 @@
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.issue_actor_schemas import CreateIssueActor, IssueActors, IssueActorColumns
+from schemas.issue_schemas import NewIssue
 from schemas.user_schemas import User
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -30,8 +32,9 @@ async def assign_issue_actor(
             InsertQueryBuilder(connection=connection)
             .into_table(Tables.ISSUE_ACTORS.value)
             .values(__user__)
-            .check_exists({IssueActorColumns.ISSUE_ID.value: issue_id})
+            .check_exists({IssueActorColumns.ROLE.value: role.value})
             .check_exists({IssueActorColumns.USER_ID.value: user.id})
+            .check_exists({IssueActorColumns.ISSUE_ID.value: issue_id})
             .throw_error_on_exists(False)
             .returning(IssueActorColumns.ISSUE_ACTOR_ID.value)
             .execute()
@@ -93,3 +96,103 @@ async def remove_issue_actor_model(
         )
 
         return builder
+
+
+async def initialize_issue_actors(
+        connection: AsyncConnection,
+        issue_id: str,
+        issue: NewIssue,
+):
+    with exception_response():
+
+        for user in issue.lod1_owner:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.OWNER,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        for user in issue.lod1_implementer:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.IMPLEMENTER,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        for user in issue.lod2_risk_manager:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.RISK_MANAGER,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        for user in issue.lod2_compliance_officer:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.COMPLIANCE_OFFICER,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        for user in issue.lod3_audit_manager:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.AUDIT_MANAGER,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        for user in issue.observers:
+            result = await assign_issue_actor(
+                connection=connection,
+                user=User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    date_issued=datetime.now()
+                ),
+                role=IssueActors.OBSERVERS,
+                issue_id=issue_id
+            )
+            if result is None:
+                raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
+
+        return True

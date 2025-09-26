@@ -16,9 +16,10 @@ class Tables(str, Enum):
     SUB_PROGRAM = "sub_program"
     ENGAGEMENT_STAFF = "staff"
     ENGAGEMENT_PROFILE = "profile"
-    ISSUES = "issues"
+    ISSUES = "issue"
     ISSUE_ACTORS = "issue_actors"
     ISSUE_RESPONSES = "implementation_details"
     RISK_CONTROL = "PRCM"
     LIBRARY = "library"
     FOLLOW_UP = "follow_up"
+

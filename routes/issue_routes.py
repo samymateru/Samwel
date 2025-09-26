@@ -1,16 +1,18 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
 
+from models.issue_actor_models import initialize_issue_actors
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
-    delete_issue_details_model, issue_accept_model, change_issue_status
+    delete_issue_details_model, issue_accept_model, mark_issue_reportable_model
+from schema import ResponseMessage
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
-    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus
+    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/issues")
 
-@router.post("/{sub_program_id}")
+@router.post("/{sub_program_id}", response_model=ResponseMessage)
 async def create_new_issue(
         issue: NewIssue,
         sub_program_id: str,
@@ -19,11 +21,21 @@ async def create_new_issue(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        results = await create_new_issue_model(
+
+        data = await create_new_issue_model(
             connection=connection,
             module_id=module_id,
             engagement_id=engagement_id,
             sub_program_id=sub_program_id,
+            issue=issue
+        )
+
+        if data is None:
+            raise HTTPException(status_code=400, detail="Error While Creating New Issue")
+
+        results = await initialize_issue_actors(
+            connection=connection,
+            issue_id=data.get("id"),
             issue=issue
         )
 
@@ -34,18 +46,7 @@ async def create_new_issue(
         )
 
 
-@router.get("/{module_id}")
-async def fetch_all_module_issues_filtered(
-        module_id: str,
-        filters: str =  Query(...),
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
-
-
-@router.get("/{issue_id}")
+@router.get("/single/{issue_id}", response_model=ReadIssues)
 async def fetch_single_issue_item(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -58,6 +59,56 @@ async def fetch_single_issue_item(
         if data is None:
             raise HTTPException(status_code=404, detail="Issue Not Found")
         return data
+
+
+@router.put("/reportable/{issue_id}", response_model=ResponseMessage)
+async def mark_issue_reportable(
+        issue_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await mark_issue_reportable_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Marked Reportable Successfully",
+            failed="Failed Mark Issue Reportable"
+        )
+
+
+
+@router.put("/revise/{issue_id}",)
+async def request_issue_revise(
+        issue_id: str,
+        revised_date: str = Form(...),
+        reason: str = Form(...),
+        attachment: UploadFile = File(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
+@router.put("/revise/response/{issue_id}",)
+async def request_issue_revise(
+        issue_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+@router.get("/{module_id}")
+async def fetch_all_module_issues_filtered(
+        module_id: str,
+        filters: str =  Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
 
 
 

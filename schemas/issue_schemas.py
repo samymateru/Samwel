@@ -37,6 +37,7 @@ class IssueActors(str, Enum):
     IMPLEMENTER = "lod1_implementer"
     OWNER = "lod1_owner"
     RISK_MANAGER = "lod2_risk_manager"
+    OBSERVERS = "observers"
     COMPLIANCE_OFFICER = "lod2_compliance_officer"
     AUDIT_MANAGER = "lod3_audit_manager"
 
@@ -98,6 +99,7 @@ class NewIssue(BaseModel):
 class CreateIssue(NewIssue):
     id: str
     module_id: str
+    sub_program: str
     ref: str
     engagement: str
     created_at: datetime
@@ -141,15 +143,60 @@ class NewIssueResponse(BaseModel):
     type: IssueResponseTypes
     issued_by: str
 
-
 class CreateIssueResponses(NewIssueResponse):
     id: str
     issue: str
     created_at: datetime
-
 
 class UpdateIssueStatus(BaseModel):
     status: IssueStatus
 
 class UpdateIssueDetails(BaseModel):
     pass
+
+class ReadIssues(BaseModel):
+    id: str
+    module_id: str
+    sub_program: str
+    ref: str
+    engagement: str
+    created_at: datetime
+    status: IssueStatus
+    reportable: Optional[bool] = False
+    title: str
+    criteria: Dict | str
+    finding: Dict | str
+    risk_rating: str
+    source: str
+    process: str
+    sub_process: str
+    root_cause: str
+    sub_root_cause: str
+    risk_category: str
+    sub_risk_category: str
+    impact_category: str
+    impact_sub_category: str
+    root_cause_description: Dict | str
+    impact_description: Dict | str
+    recommendation: Dict | str
+    regulatory: bool
+    estimated_implementation_date: datetime
+    sdi_name: Optional[str] = None
+    recurring_status: Optional[bool] = False
+    management_action_plan: Optional[Dict] | Optional[str] = None
+
+
+class MarkIssueReportable(BaseModel):
+    reportable: bool
+
+
+class SetRevisedDate(BaseModel):
+    date_revised: bool
+
+
+class SetOpenDate(BaseModel):
+    date_opened: bool
+
+
+class SetClosedDate(BaseModel):
+    date_opened: bool

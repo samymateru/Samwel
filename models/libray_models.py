@@ -39,13 +39,15 @@ async def create_new_libray_entry_model(
 
 async def get_module_library_entry_model(
         connection: AsyncConnection,
-        module_id: str
+        module_id: str,
+        category: LibraryCategory
 ):
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.LIBRARY.value)
             .where(LibraryColumns.MODULE_ID.value, module_id)
+            .where(LibraryColumns.CATEGORY.value, category.value)
             .fetch_all()
         )
 
