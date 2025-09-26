@@ -129,6 +129,7 @@ async def delete_sub_program_model(
             .from_table(Tables.SUB_PROGRAM.value)
             .check_exists({SubProgramColumns.ID.value: sub_program_id})
             .where({SubProgramColumns.ID.value: sub_program_id})
+            .returning(SubProgramColumns.ID.value)
             .execute()
         )
 

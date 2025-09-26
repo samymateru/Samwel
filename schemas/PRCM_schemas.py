@@ -12,7 +12,7 @@ class PRCMColumns(str, Enum):
     CONTROL = "control"
     CONTROL_OBJECTIVE = "control_objective"
     CONTROL_TYPE = "control_type"
-    RESIDUAL_RISK = "residual_risk"
+    RESIDUAL_RISK = "residue_risk"
     TYPE = "type"
     SUMMARY_AUDIT_PROGRAM = "summary_audit_program"
     CREATED_AT = "created_at"

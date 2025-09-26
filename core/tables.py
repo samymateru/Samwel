@@ -20,4 +20,5 @@ class Tables(str, Enum):
     ISSUE_ACTORS = "issue_actors"
     ISSUE_RESPONSES = "implementation_details"
     RISK_CONTROL = "PRCM"
+    LIBRARY = "library"
     FOLLOW_UP = "follow_up"
