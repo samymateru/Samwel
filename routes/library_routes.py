@@ -29,10 +29,8 @@ async def fetch_all_library_items(
             category=category
         )
 
-        if data.__len__() == 0:
-            raise HTTPException(status_code=404, detail="Library Is Empty")
+        return data
 
-        return data[0]
 
 
 @router.get("/{libray_item_id}")

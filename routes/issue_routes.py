@@ -1,12 +1,14 @@
+from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
 
 from models.issue_actor_models import initialize_issue_actors
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
-    delete_issue_details_model, issue_accept_model, mark_issue_reportable_model
+    delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
+    revise_issue_model, generate_issue_reference, change_issue_status
 from schema import ResponseMessage
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
-    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues
+    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -21,13 +23,19 @@ async def create_new_issue(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+        reference = await generate_issue_reference(
+            connection=connection,
+            module_id=module_id,
+            source=issue.source
+        )
 
         data = await create_new_issue_model(
             connection=connection,
             module_id=module_id,
             engagement_id=engagement_id,
             sub_program_id=sub_program_id,
-            issue=issue
+            issue=issue,
+            reference=reference
         )
 
         if data is None:
@@ -46,6 +54,7 @@ async def create_new_issue(
         )
 
 
+
 @router.get("/single/{issue_id}", response_model=ReadIssues)
 async def fetch_single_issue_item(
         issue_id: str,
@@ -59,6 +68,7 @@ async def fetch_single_issue_item(
         if data is None:
             raise HTTPException(status_code=404, detail="Issue Not Found")
         return data
+
 
 
 @router.put("/reportable/{issue_id}", response_model=ResponseMessage)
@@ -83,22 +93,96 @@ async def mark_issue_reportable(
 @router.put("/revise/{issue_id}",)
 async def request_issue_revise(
         issue_id: str,
-        revised_date: str = Form(...),
+        revised_date: datetime = Form(...),
         reason: str = Form(...),
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        response_result = await save_issue_responses(
+            connection=connection,
+            response=NewIssueResponse(
+            notes=reason,
+            attachments=attachment.filename,
+            type=IssueResponseTypes.REVISE,
+            issued_by=""
+            ),
+            issue_id=issue_id
+        )
 
 
-@router.put("/revise/response/{issue_id}",)
-async def request_issue_revise(
-        issue_id: str,
+        if response_result is None:
+            raise HTTPException(status_code=400, detail="Failed To Save Response While Revise Issue")
+
+        results = await revise_issue_model(
+            connection=connection,
+            revised_date=revised_date,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Successfully Revise Issue",
+            failed="Fail Revising Issue"
+        )
+
+
+
+@router.put("/send_implementor")
+async def send_issue_for_implementation(
+        issue_ids: SendIssueImplementor,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        for issue_id in issue_ids.issue_ids:
+            await change_issue_status(
+                connection=connection,
+                issue_id=issue_id,
+                issue_status=IssueStatus.OPEN,
+            )
+
+        return await return_checker(
+            data=True,
+            passed="Successfully Send Issue",
+            failed="Fail Sending Issue"
+        )
+
+
+
+@router.put("/save_implementation/{issue_id}")
+async def save_issue_implementation(
+        issue_id: str,
+        notes: str = Form(...),
+        attachment: UploadFile = File(None),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await save_issue_responses(
+            connection=connection,
+            response=NewIssueResponse(
+            notes=notes,
+            attachments=attachment.filename if attachment is not None else None,
+            type=IssueResponseTypes.SAVE,
+            issued_by=""
+            ),
+            issue_id=issue_id
+        )
+
+        if results is None:
+            raise HTTPException(status_code=400, detail="While Save Issue Implementation Failed To Save")
+
+        results = await change_issue_status(
+            connection=connection,
+            issue_id=issue_id,
+            issue_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Successfully Save Issue Implementation",
+            failed="Fail Save Issue Implementation"
+        )
+
 
 @router.get("/{module_id}")
 async def fetch_all_module_issues_filtered(
@@ -119,27 +203,6 @@ async def fetch_all_user_issues(
 ):
     with exception_response():
         pass
-
-
-@router.put("/save_implementation/{issue_id}")
-async def save_issue_implementation(
-        issue_id: str,
-        notes: str = Form(...),
-        attachment: UploadFile = File(None),
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
-
-@router.put("/send_implementor")
-async def send_issue_to_implementor(
-        issue: SendIssueImplementor,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
 
 
 @router.put("/send_owner/{issue_id}")

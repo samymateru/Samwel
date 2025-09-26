@@ -3,7 +3,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from models.module_models import increment_module_reference
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
-    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable
+    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -16,7 +16,8 @@ async def create_new_issue_model(
         issue: NewIssue,
         module_id: str,
         engagement_id: str,
-        sub_program_id: str
+        sub_program_id: str,
+        reference: str
 ):
     with exception_response():
         __issue__ = CreateIssue(
@@ -24,7 +25,7 @@ async def create_new_issue_model(
             sub_program=sub_program_id,
             module_id=module_id,
             title=issue.title,
-            ref=get_unique_key(),
+            ref=reference,
             criteria=issue.criteria,
             finding=issue.finding,
             source=issue.source,
@@ -62,6 +63,7 @@ async def create_new_issue_model(
         return builder
 
 
+
 async def fetch_single_issue_item_model(
         connection: AsyncConnection,
         issue_id: str
@@ -75,6 +77,7 @@ async def fetch_single_issue_item_model(
         )
 
         return builder
+
 
 
 async def mark_issue_reportable_model(
@@ -127,14 +130,36 @@ async def save_issue_responses(
 
 
 
-
-
-async def set_issue_dates(
+async def revise_issue_model(
         connection: AsyncConnection,
-        issue_id: str
+        revised_date: datetime,
+        issue_id: str,
 ):
     with exception_response():
-        pass
+        issue_data = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        count = int(issue_data.get("revised_count") or 0) + 1
+
+        __revise__ = ReviseIssue(
+            date_revised=revised_date,
+            revised_status=True,
+            revised_count=count
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+            .values(__revise__)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -144,7 +169,7 @@ async def generate_issue_reference(
         source: str
 ):
     with exception_response():
-        builder = (
+        builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.MODULES.value)
             .where(ModulesColumns.ID.value, module_id)
@@ -152,6 +177,7 @@ async def generate_issue_reference(
         )
         if builder is None:
             raise HTTPException(status_code=404, detail="Error While Generating Issue Reference, Module Not Found")
+
         if source == "Internal Audit":
             internal = builder.get("internal_issues") + 1
             reference = f"IA-{internal:05d}"
@@ -160,28 +186,33 @@ async def generate_issue_reference(
                 internal_issues=internal
             )
 
-            results = increment_module_reference(
+            results = await increment_module_reference(
                 connection=connection,
                 module_id=module_id,
                 value=internal_increment
             )
+
+
             if results is None:
                 raise HTTPException(status_code=400, detail="Error Incrementing Internal Issue Reference")
             return reference
         else:
             external = builder.get("external_issues") + 1
             reference = f"EA-{external:05d}"
+
             external_increment = IncrementExternalIssues(
                 external_issues=external
             )
-            results = increment_module_reference(
+            results = await increment_module_reference(
                 connection=connection,
                 module_id=module_id,
                 value=external_increment
             )
+
             if results is None:
                 raise HTTPException(status_code=400, detail="Error Incrementing External Issue Reference")
             return reference
+
 
 
 async def change_issue_status(
@@ -191,17 +222,19 @@ async def change_issue_status(
 ):
     with exception_response():
         __issue__ = UpdateIssueStatus(
-            status=issue_status
+            status=issue_status.value
         )
 
         builder = await (
             UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
             .values(__issue__)
             .check_exists({IssueColumns.ID.value: issue_id})
             .where({IssueColumns.ID.value: issue_id})
             .returning(IssueColumns.ID.value)
             .execute()
         )
+
         return builder
 
 
@@ -215,12 +248,14 @@ async def update_issue_details_model(
         pass
 
 
+
 async def delete_issue_details_model(
         connection: AsyncConnection,
         issue_id: str,
 ):
     with exception_response():
         pass
+
 
 
 async def issue_accept_model(

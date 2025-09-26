@@ -8,6 +8,7 @@ class IssueResponseTypes(str, Enum):
     ACCEPT = "Accept"
     DECLINE = "Decline"
     SEND = "Send"
+    REVISE = "Revise"
 
 class User(BaseModel):
     id: str
@@ -190,8 +191,10 @@ class MarkIssueReportable(BaseModel):
     reportable: bool
 
 
-class SetRevisedDate(BaseModel):
-    date_revised: bool
+class ReviseIssue(BaseModel):
+    date_revised: datetime
+    revised_status: bool
+    revised_count: int
 
 
 class SetOpenDate(BaseModel):
