@@ -15,6 +15,7 @@ async def create_new_sub_program_model(
     with exception_response():
         __sub__program__ = CreateSubProgram(
             id=get_unique_key(),
+            program=program_id,
             title=sub_program.title,
             observation="",
             brief_description="",

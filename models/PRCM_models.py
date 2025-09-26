@@ -65,8 +65,12 @@ async def get_summary_audit_program_model(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.RISK_CONTROL.value)
-            .where(PRCMColumns.ENGAGEMENT.value, engagement_id)
-            .where_raw("summary_audit_program IS NOT NULL")
+            .where_raw(
+                "summary_audit_program IS NOT NULL AND engagement = %(engagement_id)s",
+                {
+                "engagement_id": engagement_id
+                }
+            )
             .fetch_all()
         )
 
@@ -104,7 +108,6 @@ async def delete_prcm_model(
             .where({PRCMColumns.ID.value: prcm_id})
             .returning(PRCMColumns.ID.value)
             .execute()
-
         )
 
         return builder

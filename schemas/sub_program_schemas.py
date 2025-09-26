@@ -37,6 +37,7 @@ class ReviewPrepareUser(BaseModel):
 
 class CreateSubProgram(NewSubProgram):
     id: str = None
+    program: str
     reference: str = None
     title: str
     brief_description: str

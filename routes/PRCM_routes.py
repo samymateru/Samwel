@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from models.PRCM_models import create_new_prcm_model, get_prcm_model, update_prcm_model, delete_prcm_model, \
-    get_summary_audit_program_model
+    get_summary_audit_program_model, remove_prcm_to_program_model
 from schema import ResponseMessage
 from schemas.PRCM_schemas import NewPRCM, UpdatePRCM
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -80,7 +80,7 @@ async def update_engagement_prcm(
 
 
 @router.delete("/PRCM/{prcm_id}")
-async def update_engagement_prcm(
+async def delete_engagement_prcm(
         prcm_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -102,11 +102,15 @@ async def delete_summary_audit_program(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        data = await get_summary_audit_program_model(
+        results = await remove_prcm_to_program_model(
             connection=connection,
-            engagement_id=engagement_id
+            prcm_id=summary_audit_program_id
         )
 
-        return data
+        return await return_checker(
+            data=results,
+            passed="Summary Audit Program Successfully Deleted",
+            failed="Failed Deleting Summary Audit Program"
+        )
 
 
