@@ -7,6 +7,7 @@ from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
+from core.queries import risk_control_fetch
 
 async def create_new_risk_control_on_sub_program_model(
         connection: AsyncConnection,
@@ -100,4 +101,17 @@ async def delete_risk_control_on_sub_program_model(
         )
 
         return builder
+
+
+async def export_risk_control_to_library_model(
+        connection: AsyncConnection,
+        risk_control_id: str
+):
+    with exception_response():
+        async with connection.cursor() as cursor:
+            await cursor.execute(risk_control_fetch, (risk_control_id,))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            result = [dict(zip(column_names, row)) for row in rows]
+            return result[0]
 

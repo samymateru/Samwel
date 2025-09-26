@@ -15,7 +15,6 @@ class LibraryColumns(str, Enum):
     CREATED_AT = "created_at"
 
 
-
 class LibraryCategory(str, Enum):
     MAIN_PROGRAM = "Main Program"
     SUB_PROGRAM = "Sub Program"
@@ -30,4 +29,4 @@ class CreateLibraryEntry(BaseModel):
     category: LibraryCategory
     data: Dict
     created_by: str
-    created_at: datetime.now()
+    created_at: datetime

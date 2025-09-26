@@ -112,8 +112,9 @@ async def export_main_audit_program_to_library_model(
     with exception_response():
         async with connection.cursor() as cursor:
             await cursor.execute(querying_main_program_data, (program_id, ))
-            rows = await cursor.fetchone()
-            print(rows)
-            return rows
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            result = [dict(zip(column_names, row)) for row in rows]
+            return result[0]
 
 

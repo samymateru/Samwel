@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, Query
 
+from models.libray_models import create_new_libray_entry_model
 from models.main_program_models import create_new_main_audit_program_model, export_main_audit_program_to_library_model, \
     fetch_main_programs_models, update_main_audit_program_models, \
     update_main_audit_program_process_rating_model, delete_main_audit_program_model
 from schema import ResponseMessage
+from schemas.library_schemas import LibraryCategory
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
@@ -33,13 +35,21 @@ async def create_new_main_audit_program(
 @router.post("/main_program/export/{program_id}", response_model=ResponseMessage)
 async def export_main_audit_program_to_library(
         program_id: str,
-        #module_id: str = Query(...),
+        module_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        results = await export_main_audit_program_to_library_model(
+        library = await export_main_audit_program_to_library_model(
             connection=connection,
             program_id=program_id
+        )
+
+        results = await create_new_libray_entry_model(
+            connection=connection,
+            library=library,
+            category=LibraryCategory.MAIN_PROGRAM,
+            module_id=module_id,
+            user_id=""
         )
 
         return await return_checker(

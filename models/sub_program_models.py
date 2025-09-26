@@ -9,7 +9,7 @@ from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
-
+from core.queries import sub_program_fetch
 
 async def create_new_sub_program_model(
         connection: AsyncConnection,
@@ -141,4 +141,9 @@ async def export_sub_program_to_lib_model(
         sub_program_id: str
 ):
     with exception_response():
-        pass
+        async with connection.cursor() as cursor:
+            await cursor.execute(sub_program_fetch, (sub_program_id, ))
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            result = [dict(zip(column_names, row)) for row in rows]
+            return result[0]

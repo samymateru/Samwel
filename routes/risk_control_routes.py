@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from models.libray_models import create_new_libray_entry_model
 from models.risk_control_models import create_new_risk_control_on_sub_program_model, \
     fetch_all_risk_control_on_sub_program_model, fetch_single_risk_control_on_sub_program_model, \
-    edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model
+    edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model, \
+    export_risk_control_to_library_model
 from schema import ResponseMessage
+from schemas.library_schemas import LibraryCategory
 from schemas.risk_contol_schemas import NewRiskControl, UpdateRiskControl
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
@@ -97,13 +101,32 @@ async def delete_risk_control_on_sub_program(
 
 
 
-@router.put("/export/{risk_control_id}")
+@router.post("/export/{risk_control_id}")
 async def export_risk_control_to_library(
         risk_control_id: str,
+        module_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        library = await export_risk_control_to_library_model(
+            connection=connection,
+            risk_control_id=risk_control_id
+        )
+
+        results = await create_new_libray_entry_model(
+            connection=connection,
+            library=library,
+            category=LibraryCategory.RISK_CONTROL,
+            module_id=module_id,
+            user_id=""
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Exported",
+            failed="Failed Exporting Risk Control"
+        )
+
 
 
 

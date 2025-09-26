@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from models.libray_models import create_new_libray_entry_model
 from models.sub_program_models import create_new_sub_program_model, fetch_all_sub_program_model, \
     fetch_single_sub_program_model, update_sub_program_model, delete_sub_program_model, export_sub_program_to_lib_model
 from schema import ResponseMessage, CurrentUser
+from schemas.library_schemas import LibraryCategory
 from schemas.sub_program_schemas import UpdateSubProgram, NewSubProgram
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
@@ -44,7 +46,6 @@ async def fetch_all_sub_program(
             program_id=program_id
         )
         return data
-
 
 
 @router.get("/sub_program/single/{sub_program_id}")
@@ -105,16 +106,26 @@ async def delete_sub_program(
 @router.post("/sub_program/export/{sub_program_id}", response_model=ResponseMessage)
 async def export_sub_program_to_lib(
         sub_program_id: str,
+        module_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        results = await export_sub_program_to_lib_model(
+        library = await export_sub_program_to_lib_model(
             connection=connection,
             sub_program_id=sub_program_id
         )
 
+        results = await create_new_libray_entry_model(
+            connection=connection,
+            library=library,
+            category=LibraryCategory.SUB_PROGRAM,
+            module_id=module_id,
+            user_id=""
+        )
+
+
         return await return_checker(
             data=results,
-            passed="Sub Program Successfully Deleted",
-            failed="Failed Deleting  Sub Program"
+            passed="Sub Program Successfully Exported",
+            failed="Failed Exporting  Sub Program"
         )

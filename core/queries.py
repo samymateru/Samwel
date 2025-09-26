@@ -82,6 +82,6 @@ risk_control_fetch = sql.SQL(
         pr.control,
         pr.type,
         pr.control_objective
-    FROM "PRCM" pr;
-    WHERE pr.id = %s
+    FROM "PRCM" pr
+    WHERE pr.id = %s;
     """)
