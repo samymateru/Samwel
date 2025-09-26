@@ -1,6 +1,5 @@
 from typing import Dict
 from psycopg import AsyncConnection
-
 from core.tables import Tables
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating, \
     CreateMainProgram, MainProgramColumns
@@ -9,7 +8,7 @@ from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
-from datetime import datetime
+
 
 async def create_new_main_audit_program_model(
         connection: AsyncConnection,

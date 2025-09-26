@@ -3,6 +3,11 @@ from enum import Enum
 from typing import Optional
 from pydantic import BaseModel
 
+class ModuleDataReference(str, Enum):
+    PROCEDURE_REFERENCE = "procedure_reference"
+    INTERNAL_ISSUES = "internal_issues"
+    EXTERNAL_ISSUES = "external_issues"
+    PLAN_REFERENCE = "plan_reference"
 
 class ModulesColumns(str, Enum):
     ID = "id"

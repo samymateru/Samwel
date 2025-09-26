@@ -3,7 +3,8 @@ from typing import Any
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.module_schemas import NewModule, CreateModule, ModuleStatus, ModulesColumns, CreateModuleActivation, \
-    ActivationColumns, ActivateModule, CreateAuditLicence, AuditLicenceColumns, EAuditLicence, DeleteModuleTemporarily
+    ActivationColumns, ActivateModule, CreateAuditLicence, AuditLicenceColumns, EAuditLicence, DeleteModuleTemporarily, \
+    ModuleDataReference
 from schemas.user_schemas import ModuleUserColumns
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -229,14 +230,30 @@ async def increment_module_reference(
         value: Any
 ):
     with exception_response():
-
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.MODULES.value)
             .values(value)
             .check_exists({ModulesColumns.ID.value: module_id})
             .where({ModulesColumns.ID.value: module_id})
+            .returning(ModulesColumns.ID.value)
             .execute()
         )
         return builder
 
+
+async def get_data_reference_in_module(
+        connection: AsyncConnection,
+        module_id: str,
+        sections: ModuleDataReference
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.MODULES.value)
+            .select_fields(sections.value)
+            .where(ModulesColumns.ID.value, module_id)
+            .fetch_one()
+        )
+
+        return int(builder.get(sections))

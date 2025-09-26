@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from models.sub_program_models import create_new_sub_program_model, fetch_all_sub_program_model, \
     fetch_single_sub_program_model, update_sub_program_model, delete_sub_program_model, export_sub_program_to_lib_model
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.sub_program_schemas import UpdateSubProgram, NewSubProgram
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/engagements")
@@ -15,12 +16,14 @@ async def create_new_sub_program(
         program_id: str,
         sub_program: NewSubProgram,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await create_new_sub_program_model(
             connection=connection,
             sub_program=sub_program,
-            program_id=program_id
+            program_id=program_id,
+            module_id=auth.module_id
         )
 
         return await return_checker(

@@ -1,5 +1,8 @@
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.module_models import get_data_reference_in_module, increment_module_reference
+from schemas.module_schemas import ModuleDataReference, IncrementProcedureReferences
 from schemas.sub_program_schemas import NewSubProgram, UpdateSubProgram, CreateSubProgram, SubProgramColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -7,16 +10,25 @@ from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 
+
 async def create_new_sub_program_model(
         connection: AsyncConnection,
         sub_program: NewSubProgram,
-        program_id: str
+        program_id: str,
+        module_id: str
 ):
     with exception_response():
+        count = await get_data_reference_in_module(
+            connection=connection,
+            module_id=module_id,
+            sections=ModuleDataReference.PROCEDURE_REFERENCE
+        )
+
         __sub__program__ = CreateSubProgram(
             id=get_unique_key(),
             program=program_id,
             title=sub_program.title,
+            reference=f"PROC-{count + 1:04d}",
             observation="",
             brief_description="",
             audit_objective="",
@@ -40,6 +52,19 @@ async def create_new_sub_program_model(
             .returning(SubProgramColumns.ID.value)
             .execute()
         )
+
+        if builder is not None:
+            value = IncrementProcedureReferences(
+                procedure_reference=count + 1
+            )
+
+            results = await increment_module_reference(
+                connection=connection,
+                module_id=module_id,
+                value=value
+            )
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error While Incrementing Procedure Reference")
 
         return builder
 
