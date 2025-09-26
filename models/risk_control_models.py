@@ -16,14 +16,15 @@ async def create_new_risk_control_on_sub_program_model(
     with exception_response():
         __risk_control__ = CreateRiskControl(
             id=get_unique_key(),
-            sub_program=sub_program_id,
+            summary_audit_program=sub_program_id,
             risk=risk_control.risk,
             risk_rating=risk_control.risk_rating,
             control=risk_control.control,
             control_objective=risk_control.control_objective,
             control_type=risk_control.control_type,
             residual_risk=risk_control.residual_risk,
-            created_at=datetime.now()
+            created_at=datetime.now(),
+            type="Program"
         )
 
         builder = await (
@@ -31,7 +32,8 @@ async def create_new_risk_control_on_sub_program_model(
             .into_table(Tables.RISK_CONTROL.value)
             .values(__risk_control__)
             .check_exists({RiskControlColumns.RISK.value: risk_control.risk})
-            .check_exists({RiskControlColumns.SUB_PROGRAM.value: sub_program_id})
+            .check_exists({RiskControlColumns.CONTROL.value: risk_control.control})
+            .check_exists({RiskControlColumns.SUMMARY_AUDIT_PROGRAM.value: sub_program_id})
             .returning(RiskControlColumns.ID.value)
             .execute()
         )
@@ -47,7 +49,7 @@ async def fetch_all_risk_control_on_sub_program_model(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.RISK_CONTROL.value)
-            .where(RiskControlColumns.SUB_PROGRAM.value, sub_program_id)
+            .where(RiskControlColumns.SUMMARY_AUDIT_PROGRAM.value, sub_program_id)
             .fetch_all()
         )
         return builder
@@ -75,6 +77,7 @@ async def edit_risk_control_on_sub_program_model(
             .into_table(Tables.RISK_CONTROL.value)
             .values(risk_control)
             .check_exists({RiskControlColumns.ID.value: risk_control_id})
+            .where({RiskControlColumns.ID.value: risk_control_id})
             .returning(RiskControlColumns.ID.value)
             .execute()
         )

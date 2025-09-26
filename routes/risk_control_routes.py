@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-
 from models.risk_control_models import create_new_risk_control_on_sub_program_model, \
     fetch_all_risk_control_on_sub_program_model, fetch_single_risk_control_on_sub_program_model, \
     edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model

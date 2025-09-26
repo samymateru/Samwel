@@ -2,10 +2,12 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from models.module_models import increment_module_reference
-from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns
+from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
+    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
@@ -74,6 +76,7 @@ async def fetch_single_issue_item_model(
         return builder
 
 
+
 async def generate_issue_reference(
         connection: AsyncConnection,
         module_id: str,
@@ -118,3 +121,85 @@ async def generate_issue_reference(
             if results is None:
                 raise HTTPException(status_code=400, detail="Error Incrementing External Issue Reference")
             return reference
+
+
+async def change_issue_status(
+        connection: AsyncConnection,
+        issue_id: str,
+        issue_status: IssueStatus,
+):
+    with exception_response():
+        __issue__ = UpdateIssueStatus(
+            status=issue_status
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .values(__issue__)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+        return builder
+
+
+async def save_issue_responses(
+        connection: AsyncConnection,
+        response: NewIssueResponse,
+        issue_id: str,
+):
+    with exception_response():
+        __response__ = CreateIssueResponses(
+            id=get_unique_key(),
+            type=response.type,
+            issued_by=response.issued_by,
+            issue=issue_id,
+            created_at=datetime.now(),
+            notes=response.notes if response.notes is  not None else "",
+            attachments=response.attachments
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUE_RESPONSES.value)
+            .values(__response__)
+            .returning(IssueResponseColumns.ID.value)
+            .execute()
+        )
+        return builder
+
+
+async def update_issue_details_model(
+        connection: AsyncConnection,
+        issue: UpdateIssueDetails,
+        issue_id: str,
+):
+    with exception_response():
+        pass
+
+
+async def delete_issue_details_model(
+        connection: AsyncConnection,
+        issue_id: str,
+):
+    with exception_response():
+        pass
+
+
+async def issue_accept_model(
+        connection: AsyncConnection,
+        response: NewIssueResponse,
+        status: IssueStatus,
+        issue_id: str
+):
+    with exception_response():
+
+        results = await change_issue_status(
+            connection=connection,
+            issue_id=issue_id,
+            issue_status=status
+        )
+
+        if results is None:
+            raise HTTPException(status_code=400, detail="Failed Accepting Issue")

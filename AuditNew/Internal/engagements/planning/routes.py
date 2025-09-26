@@ -8,48 +8,48 @@ from schema import ResponseMessage
 
 router = APIRouter(prefix="/engagements")
 
-@router.get("/PRCM/{engagement_id}", response_model=List[PRCM])
-async def fetch_prcm(
-        engagement_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = await get_prcm(connection=db, engagement_id=engagement_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+# @router.get("/PRCM/{engagement_id}", response_model=List[PRCM])
+# async def fetch_prcm(
+#         engagement_id: str,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         data = await get_prcm(connection=db, engagement_id=engagement_id)
+#         return data
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/PRCM/{prcm_id}", response_model=ResponseMessage)
-async def update_prcm(
-        prcm_id: str,
-        prcm: PRCM,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await edit_prcm(connection=db, prcm=prcm, prcm_id=prcm_id)
-        return ResponseMessage(detail="PRCM updated successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+# @router.put("/PRCM/{prcm_id}", response_model=ResponseMessage)
+# async def update_prcm(
+#         prcm_id: str,
+#         prcm: PRCM,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         await edit_prcm(connection=db, prcm=prcm, prcm_id=prcm_id)
+#         return ResponseMessage(detail="PRCM updated successfully")
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.delete("/PRCM/{prcm_id}", response_model=ResponseMessage)
-async def delete_prcm(
-        prcm_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await remove_prcm(connection=db, prcm_id=prcm_id)
-        return ResponseMessage(detail="PRCM deleted successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+# @router.delete("/PRCM/{prcm_id}", response_model=ResponseMessage)
+# async def delete_prcm(
+#         prcm_id: str,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         await remove_prcm(connection=db, prcm_id=prcm_id)
+#         return ResponseMessage(detail="PRCM deleted successfully")
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
 @router.get("/summary_audit_program/{engagement_id}", response_model=List[SummaryAuditProgramResponse])
@@ -66,55 +66,22 @@ async def fetch_summary_of_audit_program(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/engagement_letter/{engagement_id}", response_model=List[EngagementLetter])
-async def fetch_engagement_letter(
-        engagement_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = await get_engagement_letter(db, engagement_id=engagement_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.put("/engagement_letter/{engagement_id}", response_model=ResponseMessage)
-async def create_new_engagement_letter(
-        engagement_id: str,
-        attachment: UploadFile = File(...),
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        letter = EngagementLetter(
-            name=attachment.filename,
-            value="",
-            size=attachment.size,
-            extension=attachment.content_type
-        )
-        await add_engagement_letter(db, letter=letter, engagement_id=engagement_id)
-        return ResponseMessage(detail="Letter added successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+# @router.post("/PRCM/{engagement_id}", response_model=ResponseMessage)
+# async def create_new_prcm(
+#         engagement_id: str,
+#         prcm: PRCM,
+#         db=Depends(get_async_db_connection),
+#         user: CurrentUser = Depends(get_current_user)
+# ):
+#     if user.status_code != 200:
+#         raise HTTPException(status_code=user.status_code, detail=user.description)
+#     try:
+#         await add_engagement_prcm(db, prcm=prcm, engagement_id=engagement_id)
+#         return ResponseMessage(detail="PRCM added successfully")
+#     except HTTPException as e:
+#         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.post("/PRCM/{engagement_id}", response_model=ResponseMessage)
-async def create_new_prcm(
-        engagement_id: str,
-        prcm: PRCM,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await add_engagement_prcm(db, prcm=prcm, engagement_id=engagement_id)
-        return ResponseMessage(detail="PRCM added successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
 async def create_new_summary_of_audit_program(

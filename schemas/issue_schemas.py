@@ -3,6 +3,11 @@ from typing import Optional, List, Dict
 from datetime import datetime
 from enum import Enum
 
+class IssueResponseTypes(str, Enum):
+    SAVE = "Save"
+    ACCEPT = "Accept"
+    DECLINE = "Decline"
+    SEND = "Send"
 
 class User(BaseModel):
     id: str
@@ -17,6 +22,15 @@ class IssueColumns(str, Enum):
     ENGAGEMENT = "engagement"
     SUB_PROGRAM = "sub_program"
     REF = "ref"
+
+class IssueResponseColumns(str, Enum):
+    ID = "id"
+    ISSUE = "issue"
+    NOTES = "notes"
+    ATTACHMENTS = "attachments"
+    ISSUED_BY = "issued_by"
+    TYPE  = "type"
+    CREATED_AT = "created_at"
 
 
 class IssueActors(str, Enum):
@@ -36,6 +50,7 @@ class IssueStatus(str, Enum):
     CLOSED_RISK_NA = "Closed -> risk N/A"
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
     CLOSED_VERIFIED_BY_AUDIT = "Closed -> verified by audit"
+
 
 class IssueResponseActors(str, Enum):
     OWNER = "lod1_owner"
@@ -120,14 +135,21 @@ class IssueAcceptResponse(BaseModel):
         return self
 
 
-
-class CreateIssueResponses(BaseModel):
-    id: str
-    issue: str
+class NewIssueResponse(BaseModel):
     notes: Optional[str] = None
     attachments: Optional[str] = None
+    type: IssueResponseTypes
     issued_by: str
-    type: str
+
+
+class CreateIssueResponses(NewIssueResponse):
+    id: str
+    issue: str
     created_at: datetime
 
 
+class UpdateIssueStatus(BaseModel):
+    status: IssueStatus
+
+class UpdateIssueDetails(BaseModel):
+    pass

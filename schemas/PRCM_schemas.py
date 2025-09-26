@@ -1,10 +1,12 @@
-from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
+from typing import Optional
+from pydantic import BaseModel
 
 
-class RiskControlColumns(str, Enum):
+class PRCMColumns(str, Enum):
     ID = "id"
+    ENGAGEMENT = "engagement"
     RISK = "risk"
     RISK_RATING = "risk_rating"
     CONTROL = "control"
@@ -16,19 +18,26 @@ class RiskControlColumns(str, Enum):
     CREATED_AT = "created_at"
 
 
-class NewRiskControl(BaseModel):
+class NewPRCM(BaseModel):
+    process: str
     risk: str
     risk_rating: str
     control: str
     control_objective: str
     control_type: str
-    residual_risk: str
+    residual_risk: Optional[str] = None
 
-class CreateRiskControl(NewRiskControl):
+
+class CreatePRCM(NewPRCM):
     id: str
     type: str
-    summary_audit_program: str
+    engagement_id: str
     created_at: datetime
 
-class UpdateRiskControl(NewRiskControl):
+
+class UpdatePRCM(NewPRCM):
     pass
+
+
+class AddToAuditProgram(BaseModel):
+    summary_audit_program: Optional[str] = None

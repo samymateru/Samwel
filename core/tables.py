@@ -18,5 +18,6 @@ class Tables(str, Enum):
     ENGAGEMENT_PROFILE = "profile"
     ISSUES = "issues"
     ISSUE_ACTORS = "issue_actors"
-    RISK_CONTROL = "risk_control"
+    ISSUE_RESPONSES = "implementation_details"
+    RISK_CONTROL = "PRCM"
     FOLLOW_UP = "follow_up"
