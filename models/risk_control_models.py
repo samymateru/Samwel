@@ -22,7 +22,7 @@ async def create_new_risk_control_on_sub_program_model(
             control=risk_control.control,
             control_objective=risk_control.control_objective,
             control_type=risk_control.control_type,
-            residual_risk=risk_control.residual_risk,
+            residue_risk=risk_control.residue_risk,
             created_at=datetime.now(),
             type="Program"
         )

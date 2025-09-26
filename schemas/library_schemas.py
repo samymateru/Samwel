@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
-from typing import Dict
+from typing import Dict, Optional
 from datetime import datetime
 
 
@@ -26,7 +26,7 @@ class LibraryCategory(str, Enum):
 class CreateLibraryEntry(BaseModel):
     library_id: str
     module_id: str
-    name: str
+    name: Optional[str]
     category: LibraryCategory
     data: Dict
     created_by: str

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 
 from models.main_program_models import create_new_main_audit_program_model, export_main_audit_program_to_library_model, \
-    fetch_main_programs_models, fetch_main_programs_combine_with_sub_programs_models, update_main_audit_program_models, \
+    fetch_main_programs_models, update_main_audit_program_models, \
     update_main_audit_program_process_rating_model, delete_main_audit_program_model
 from schema import ResponseMessage
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating
@@ -33,14 +33,13 @@ async def create_new_main_audit_program(
 @router.post("/main_program/export/{program_id}", response_model=ResponseMessage)
 async def export_main_audit_program_to_library(
         program_id: str,
-        module_id: str = Query(...),
+        #module_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
         results = await export_main_audit_program_to_library_model(
             connection=connection,
-            data={},
-            module_id=module_id
+            program_id=program_id
         )
 
         return await return_checker(
@@ -60,20 +59,6 @@ async def fetch_all_main_programs(
             connection=connection,
             engagement_id=engagement_id
         )
-        return data
-
-
-@router.get("/main_program/combined/{engagement_id}")
-async def fetch_main_programs_combine_with_sub_programs(
-        engagement_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        data = await fetch_main_programs_combine_with_sub_programs_models(
-            connection=connection,
-            engagement_id=engagement_id
-        )
-
         return data
 
 
