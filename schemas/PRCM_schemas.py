@@ -25,7 +25,7 @@ class NewPRCM(BaseModel):
     control: str
     control_objective: str
     control_type: str
-    residual_risk: Optional[str] = None
+    residue_risk: Optional[str] = None
 
 
 class CreatePRCM(NewPRCM):

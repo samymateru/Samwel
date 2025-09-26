@@ -22,7 +22,7 @@ class NewRiskControl(BaseModel):
     control: str
     control_objective: str
     control_type: str
-    residual_risk: str
+    residue_risk: str
 
 class CreateRiskControl(NewRiskControl):
     id: str
