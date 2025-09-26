@@ -31,7 +31,7 @@ class NewPRCM(BaseModel):
 class CreatePRCM(NewPRCM):
     id: str
     type: str
-    engagement_id: str
+    engagement: str
     created_at: datetime
 
 

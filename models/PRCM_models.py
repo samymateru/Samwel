@@ -16,14 +16,14 @@ async def create_new_prcm_model(
     with exception_response():
         __prcm__ = CreatePRCM(
             id=get_unique_key(),
-            engagement_id=engagement_id,
+            engagement=engagement_id,
             process=prcm.process,
             risk=prcm.risk,
             risk_rating=prcm.risk_rating,
             control=prcm.control,
             control_type=prcm.control_type,
             control_objective=prcm.control_objective,
-            residual_risk=prcm.residual_risk,
+            residue_risk=prcm.residue_risk,
             created_at=datetime.now(),
             type="Planning"
         )
