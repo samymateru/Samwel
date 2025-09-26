@@ -19,7 +19,6 @@ class NewMainProgram(BaseModel):
 class CreateMainProgram(NewMainProgram):
     id: str
     engagement: str
-    created_at: datetime
 
 
 class UpdateMainProgram(NewMainProgram):

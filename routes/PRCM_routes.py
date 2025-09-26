@@ -57,6 +57,8 @@ async def fetch_summary_audit_program(
         return data
 
 
+
+
 @router.put("/PRCM/{prcm_id}")
 async def update_engagement_prcm(
         prcm_id: str,
@@ -94,5 +96,17 @@ async def update_engagement_prcm(
             failed="Failed Deleting  PRCM"
         )
 
+@router.delete("/summary_audit_program/{summary_audit_program_id}")
+async def delete_summary_audit_program(
+        summary_audit_program_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_summary_audit_program_model(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        return data
 
 
