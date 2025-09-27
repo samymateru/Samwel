@@ -11,7 +11,7 @@ from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseA
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
-router = APIRouter(prefix="/issues")
+router = APIRouter(prefix="/issue")
 
 @router.post("/{sub_program_id}", response_model=ResponseMessage)
 async def create_new_issue(
