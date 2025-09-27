@@ -118,3 +118,8 @@ class DisApproveFollowUp(BaseModel):
 
 class CompleteFollowUp(BaseModel):
     status: FollowUpStatus
+
+
+
+class ReadFollowUpData(BaseModel):
+    pass

@@ -39,7 +39,7 @@ async def create_new_follow_up(
             status=FollowUpStatus.DRAFT,
             created_at=datetime.now(),
             reviewed_by=reviewed_by,
-            created_by="",
+            created_by=""
             )
         )
 

@@ -198,6 +198,7 @@ async def add_planning_procedure(connection: AsyncConnection, procedure: NewPlan
                 json.dumps(data["observation"]),
                 data["attachments"],
                 json.dumps(data["conclusion"]),
+                json.dumps(data["objectives"]),
                 data["type"],
                 None,
                 None,

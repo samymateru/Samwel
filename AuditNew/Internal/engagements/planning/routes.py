@@ -9,36 +9,13 @@ from schema import ResponseMessage
 router = APIRouter(prefix="/engagements")
 
 
-@router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
-async def create_new_summary_of_audit_program(
-        engagement_id: str,
-        work_program: PlanningWorkProgram,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await work_program_(
-            connection=db,
-            work_program=work_program,
-            engagement_id=engagement_id
-            )
-        return ResponseMessage(detail="Audit program added successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-
 @router.post("/planning_procedures/{engagement_id}", response_model=ResponseMessage)
 async def create_new_planning_procedure(
         engagement_id: str,
         procedure: NewPlanningProcedure,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         await add_planning_procedure(db, procedure=procedure, engagement_id=engagement_id)
         return ResponseMessage(detail="Planning procedure added successfully")

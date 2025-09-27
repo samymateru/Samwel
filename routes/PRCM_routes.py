@@ -49,7 +49,7 @@ async def fetch_engagement_prcm(
 
 
 
-@router.post("/summary_audit_progrm/{engagement_id}")
+@router.post("/summary_audit_program/{engagement_id}")
 async def add_to_work_program_summary_audit_program_(
         engagement_id: str,
         prcm_program: AddPRCMToWorkProgram,
