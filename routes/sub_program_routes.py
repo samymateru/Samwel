@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from models.libray_models import create_new_libray_entry_model
+from models.libray_models import create_new_libray_entry_model, get_module_library_entry_items
 from models.sub_program_models import create_new_sub_program_model, fetch_all_sub_program_model, \
-    fetch_single_sub_program_model, update_sub_program_model, delete_sub_program_model, export_sub_program_to_lib_model
+    fetch_single_sub_program_model, update_sub_program_model, delete_sub_program_model, export_sub_program_to_lib_model, \
+    import_sub_program_from_library_model
 from schema import ResponseMessage, CurrentUser
 from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.sub_program_schemas import UpdateSubProgram, NewSubProgram
@@ -138,8 +139,25 @@ async def import_sub_program_from_library(
 ):
     with exception_response():
 
+        sub_programs = await get_module_library_entry_items(
+            connection=connection,
+            library_ids=library_ids.library_ids,
+            category=LibraryCategory.SUB_PROGRAM
+        )
+
+        if sub_programs.__len__() == 0:
+            raise HTTPException(status_code=404, detail="Sub Program Item Not Found In Library")
+
+
+        results = await import_sub_program_from_library_model(
+            connection=connection,
+            sub_programs=sub_programs,
+            program_id=program_id,
+            module_id="fe7423f2141d"
+        )
+
         return await return_checker(
-            data="results",
-            passed="Sub Program Successfully Exported",
-            failed="Failed Exporting  Sub Program"
+            data=results,
+            passed="Sub Program Successfully Imported",
+            failed="Failed Importing  Sub Program"
         )

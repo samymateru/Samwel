@@ -17,7 +17,8 @@ from core.queries import risk_control_fetch
 async def create_new_risk_control_on_sub_program_model(
         connection: AsyncConnection,
         risk_control: NewRiskControl,
-        sub_program_id: str
+        sub_program_id: str,
+        throw: bool = True
 ):
     with exception_response():
         __risk_control__ = CreateRiskControl(
@@ -40,6 +41,7 @@ async def create_new_risk_control_on_sub_program_model(
             .check_exists({RiskControlColumns.RISK.value: risk_control.risk})
             .check_exists({RiskControlColumns.CONTROL.value: risk_control.control})
             .check_exists({RiskControlColumns.SUMMARY_AUDIT_PROGRAM.value: sub_program_id})
+            .throw_error_on_exists(throw)
             .returning(RiskControlColumns.ID.value)
             .execute()
         )
@@ -143,7 +145,8 @@ async def import_risk_control_from_library_model(
             results = await create_new_risk_control_on_sub_program_model(
                 connection=connection,
                 risk_control=__risk_control__,
-                sub_program_id=sub_program_id
+                sub_program_id=sub_program_id,
+                throw=False
             )
 
             if results is None:
