@@ -14,8 +14,6 @@ querying_main_program_data = sql.SQL(
               'test_description', sp.test_description,
               'test_type', sp.test_type,
               'sampling_approach', sp.sampling_approach,
-              'results_of_test', sp.results_of_test,
-              'observation', sp.observation,
               'risk_control', COALESCE(
                   (
                     SELECT JSON_AGG(
