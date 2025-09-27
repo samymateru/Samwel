@@ -8,6 +8,7 @@ class EngagementColumns(str, Enum):
     PLAN_ID = "plan_id"
     MODULE_ID = "module_id"
     NAME = "name"
+    STATUS = "status"
     CODE = "code"
     TYPE = "type"
     CREATED_AT = "created_at"

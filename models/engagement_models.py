@@ -103,8 +103,10 @@ async def get_all_annual_plan_engagement(
             return result
 
 
-async def get_all_module_engagement(
+
+async def get_module_engagement_model(
         connection: AsyncConnection,
+        status: EngagementStatus,
         module_id: str
 ):
     with exception_response():
@@ -112,10 +114,12 @@ async def get_all_module_engagement(
             ReadBuilder(connection=connection)
             .from_table(Tables.ENGAGEMENTS.value)
             .where(EngagementColumns.MODULE_ID.value, module_id)
+            .where(EngagementColumns.STATUS.value, status.value)
             .fetch_all()
         )
 
         return builder
+
 
 
 async def get_single_engagement_details(
@@ -131,6 +135,7 @@ async def get_single_engagement_details(
         )
 
         return builder
+
 
 
 async def archive_annual_plan_engagement(
@@ -155,6 +160,7 @@ async def archive_annual_plan_engagement(
         return builder
 
 
+
 async def complete_annual_plan_engagement(
         connection: AsyncConnection,
         engagement_id: str
@@ -177,6 +183,7 @@ async def complete_annual_plan_engagement(
         return builder
 
 
+
 async def remove_engagement_partially(
         connection: AsyncConnection,
         engagement_id: str
@@ -197,6 +204,8 @@ async def remove_engagement_partially(
         )
 
         return builder
+
+
 
 async def update_engagement_opinion_rating(
         connection: AsyncConnection,

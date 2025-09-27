@@ -19,6 +19,7 @@ async def create_new_main_audit_program_model(
             id=get_unique_key(),
             engagement=engagement_id,
             name=main_program.name,
+            description=main_program.description
         )
 
         builder = await (

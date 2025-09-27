@@ -7,6 +7,7 @@ class MainProgramColumns(str, Enum):
     ID = "id"
     ENGAGEMENT = "engagement"
     NAME = "name"
+    DESCRIPTION = "description"
     STATUS = "status"
     PROCESS_RATING = "process_rating"
     CREATED_AT = "created_at"
@@ -14,6 +15,7 @@ class MainProgramColumns(str, Enum):
 
 class NewMainProgram(BaseModel):
     name: str
+    description: str
 
 
 class CreateMainProgram(NewMainProgram):

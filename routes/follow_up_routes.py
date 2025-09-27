@@ -1,8 +1,12 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, Query
+
+from AuditNew.Internal.engagements.schemas import EngagementStatus
+from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model
+from models.issue_models import get_engagement_issues_model
 from schemas.follow_up_schemas import NewFollowUp, UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp
 from schema import ResponseMessage
@@ -88,6 +92,39 @@ async def remove_follow_up_data(
         )
 
 
+@router.get("/engagements/{module_id}")
+async def fetch_all_completed_engagements(
+        module_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_module_engagement_model(
+            connection=connection,
+            module_id=module_id,
+            status=EngagementStatus.COMPLETED
+        )
+
+        return data
+
+
+@router.get("/issues/{module_id}")
+async def fetch_all_issues_on_engagement(
+        module_id: str,
+        engagement_ids: List[str] = Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_engagement_issues_model(
+            connection=connection,
+            engagement_ids=engagement_ids,
+            module_id=module_id
+        )
+
+        return data
+
+
+
+
 
 @router.put("/review/{follow_up_id}", response_model=ResponseMessage)
 async def review_follow_up_data(
@@ -143,6 +180,12 @@ async def complete_follow_up_data(
             passed="Follow Up Successfully Completed",
             failed="Failed Completing  Follow Up"
         )
+
+
+
+
+
+
 
 
 @router.post("/test/{follow_up_id}", response_model=ResponseMessage)

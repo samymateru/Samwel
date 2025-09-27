@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
@@ -238,6 +240,35 @@ async def change_issue_status(
         return builder
 
 
+
+async def get_engagement_issues_model(
+        connection: AsyncConnection,
+        engagement_ids: List[str],
+        module_id: str
+):
+    with exception_response():
+
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value)
+            .where(IssueColumns.ENGAGEMENT.value, engagement_ids)
+            .where(IssueColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+
+
+async def get_module_issues_model(
+        connection: AsyncConnection,
+        issue_id: str,
+        issue_status: IssueStatus,
+):
+    with exception_response():
+        pass
 
 async def update_issue_details_model(
         connection: AsyncConnection,

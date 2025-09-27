@@ -18,6 +18,7 @@ class User(BaseModel):
 
 class IssueColumns(str, Enum):
     ID = "id"
+    MODULE_ID = "module_id"
     TITLE = "title"
     STATUS = "status"
     ENGAGEMENT = "engagement"
