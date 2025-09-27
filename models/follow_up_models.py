@@ -1,9 +1,8 @@
-from typing import List
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
-    UpdateFollowUpTest
+    UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -221,21 +220,59 @@ async def update_follow_up_test_model(
 
 
 
-
-
 async def attach_engagements_to_follow_up(
     connection: AsyncConnection,
-    engagement_ids: List[str]
+    engagement_id: str,
+    follow_up_id: str
 
 ):
     with exception_response():
-        pass
+        __follow_up_engagement__ = CreateFollowUpEngagement(
+            engagement_id=engagement_id,
+            follow_up_id=follow_up_id,
+            follow_up_engagement_id=get_unique_key(),
+            created_at=datetime.now()
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.FOLLOW_ENGAGEMENTS.value)
+            .values(__follow_up_engagement__)
+            .check_exists({FollowUpEngagements.ENGAGEMENT_ID.value: engagement_id})
+            .check_exists({FollowUpEngagements.FOLLOW_UP_ID.value: follow_up_id})
+            .throw_error_on_exists(False)
+            .returning(FollowUpEngagements.FOLLOW_UP_ENGAGEMENT_ID.value)
+            .execute()
+        )
+
+        return builder
+
 
 
 async def attach_issues_to_follow_up(
     connection: AsyncConnection,
-    issue_ids: List[str]
+    issue_id: str,
+    follow_up_id: str
 
 ):
     with exception_response():
-        pass
+
+        __issue_follow_up__ = CreateFollowUpIssue(
+            follow_up_issue_id=get_unique_key(),
+            follow_up_id=follow_up_id,
+            issue_id=issue_id,
+            created_at=datetime.now()
+        )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.FOLLOW_ISSUES.value)
+            .values(__issue_follow_up__)
+            .check_exists({FollowUpIssues.ISSUE_ID.value: issue_id})
+            .check_exists({FollowUpIssues.FOLLOW_UP_ID.value: follow_up_id})
+            .throw_error_on_exists(False)
+            .returning(FollowUpIssues.FOLLOW_UP_ISSUE_ID.value)
+            .execute()
+        )
+
+        return builder

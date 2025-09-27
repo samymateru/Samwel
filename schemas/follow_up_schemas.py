@@ -90,7 +90,7 @@ class CreateFollowUpEngagement(BaseModel):
     follow_up_engagement_id: str
     follow_up_id: str
     engagement_id: str
-    create_id: str
+    created_at: datetime
 
 
 
@@ -98,7 +98,7 @@ class CreateFollowUpIssue(BaseModel):
     follow_up_issue_id: str
     follow_up_id: str
     issue_id: str
-    create_id: str
+    created_at: datetime
 
 
 
@@ -107,9 +107,11 @@ class ReviewFollowUp(BaseModel):
     reviewed_by: str
 
 
+
 class DisApproveFollowUp(BaseModel):
     status: FollowUpStatus
     reviewed_by: str
+
 
 
 class CompleteFollowUp(BaseModel):

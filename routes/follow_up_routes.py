@@ -4,7 +4,8 @@ from AuditNew.Internal.engagements.schemas import EngagementStatus
 from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
-    add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model
+    add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
+    attach_issues_to_follow_up
 from models.issue_models import get_engagement_issues_model
 from schemas.follow_up_schemas import NewFollowUp, UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp
@@ -40,6 +41,27 @@ async def create_new_follow_up(
             )
         )
 
+
+        if data is None:
+            raise HTTPException(status_code=400, detail="Failed To Create Follow Up")
+
+
+        for engagement_id in engagement_ids:
+            await attach_engagements_to_follow_up(
+                connection=connection,
+                follow_up_id=data.get("follow_up_id"),
+                engagement_id=engagement_id
+            )
+
+
+        for issue_id in issue_ids:
+            await attach_issues_to_follow_up(
+                connection=connection,
+                follow_up_id=data.get("follow_up_id"),
+                issue_id=issue_id
+            )
+
+
         return await return_checker(
             data=data,
             passed="Follow Up Successfully Created",
@@ -66,6 +88,7 @@ async def update_follow_up_details(
             ),
             follow_up_id=follow_up_id
         )
+
 
         return await return_checker(
             data=data,
