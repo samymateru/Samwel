@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
@@ -22,7 +24,7 @@ class NewRiskControl(BaseModel):
     control: str
     control_objective: str
     control_type: str
-    residue_risk: str
+    residue_risk: Optional[str] = None
 
 class CreateRiskControl(NewRiskControl):
     id: str

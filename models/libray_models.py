@@ -1,5 +1,5 @@
 from psycopg import AsyncConnection
-from typing import Dict
+from typing import Dict, List
 from core.tables import Tables
 from schemas.library_schemas import LibraryCategory, CreateLibraryEntry, LibraryColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
@@ -53,6 +53,22 @@ async def get_module_library_entry_model(
 
         return builder
 
+
+async def get_module_library_entry_items(
+        connection: AsyncConnection,
+        library_ids: List[str],
+        category: LibraryCategory
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.LIBRARY.value)
+            .where(LibraryColumns.LIBRARY_ID.value, library_ids)
+            .where(LibraryColumns.CATEGORY.value, category.value)
+            .fetch_all()
+        )
+
+        return builder
 
 async def delete_libray_entry_model(
         connection: AsyncConnection,

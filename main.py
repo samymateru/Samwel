@@ -78,8 +78,8 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
-        await notification_manager.start_worker()
-        await notification_manager.connect()
+        #await notification_manager.start_worker()
+        #await notification_manager.connect()
         await test_direct_connection()
         await init_redis_pool()
     except Exception as e:

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from models.libray_models import create_new_libray_entry_model
+from models.libray_models import create_new_libray_entry_model, get_module_library_entry_items
 from models.risk_control_models import create_new_risk_control_on_sub_program_model, \
     fetch_all_risk_control_on_sub_program_model, fetch_single_risk_control_on_sub_program_model, \
     edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model, \
-    export_risk_control_to_library_model
+    export_risk_control_to_library_model, import_risk_control_from_library_model
 from schema import ResponseMessage
 from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.risk_contol_schemas import NewRiskControl, UpdateRiskControl
@@ -128,6 +128,9 @@ async def export_risk_control_to_library(
         )
 
 
+
+
+
 @router.post("/import/{sub_program_id}")
 async def import_risk_control_to_sub_program(
         sub_program_id: str,
@@ -135,4 +138,28 @@ async def import_risk_control_to_sub_program(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        risk_controls = await get_module_library_entry_items(
+            connection=connection,
+            library_ids=library_ids.library_ids,
+            category=LibraryCategory.RISK_CONTROL
+        )
+
+        if risk_controls.__len__() == 0:
+            raise HTTPException(status_code=404, detail="Risk Control Item Not Found In Library")
+
+
+        results = await import_risk_control_from_library_model(
+            connection=connection,
+            risk_controls=risk_controls,
+            sub_program_id=sub_program_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Imported",
+            failed="Failed Importing Risk Control"
+        )
+
+
+
+

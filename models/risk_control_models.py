@@ -1,5 +1,10 @@
+from typing import List
+
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.libray_models import get_module_library_entry_items
+from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.risk_contol_schemas import RiskControlColumns, NewRiskControl, UpdateRiskControl, CreateRiskControl
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -115,3 +120,33 @@ async def export_risk_control_to_library_model(
             result = [dict(zip(column_names, row)) for row in rows]
             return result[0]
 
+
+
+async def import_risk_control_from_library_model(
+        connection: AsyncConnection,
+        risk_controls: List,
+        sub_program_id: str
+):
+    with exception_response():
+
+        for risk_control in risk_controls:
+            __risk_control__ = NewRiskControl(
+                risk=risk_control.get("data").get("risk") or "",
+                risk_rating=risk_control.get("data").get("risk_rating") or "",
+                control=risk_control.get("data").get("control") or "",
+                control_type=risk_control.get("data").get("control_type") or "",
+                control_objective=risk_control.get("data").get("risk_rating") or "",
+                residue_risk=risk_control.get("data").get("residue_risk") or ""
+            )
+
+
+            results = await create_new_risk_control_on_sub_program_model(
+                connection=connection,
+                risk_control=__risk_control__,
+                sub_program_id=sub_program_id
+            )
+
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Occurred While Importing Risk Control")
+
+        return True
