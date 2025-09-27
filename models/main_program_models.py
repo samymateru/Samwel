@@ -137,7 +137,7 @@ async def import_main_audit_program_to_library_model(
 
             __main_program__ = NewMainProgram(
                 name=main_program.get("data").get("program_name") or "",
-                description=main_program.get("data").get("description") or "",
+                description=main_program.get("data").get("program_description") or "",
             )
 
             main_program_data = await create_new_main_audit_program_model(
