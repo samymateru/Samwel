@@ -252,7 +252,9 @@ class InsertQueryBuilder:
                             )
                         # ✅ Return existing record as dict
                         col_names = [desc.name for desc in cursor.description]
-                        return dict(zip(col_names, row))
+                        result = dict(zip(col_names, row))
+                        result["exists"] = True
+                        return result
 
             except HTTPException:
                 raise

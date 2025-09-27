@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from models.module_models import get_data_reference_in_module, increment_module_reference
+from models.risk_control_models import import_risk_control_from_library_model
 from schemas.module_schemas import ModuleDataReference, IncrementProcedureReferences
 from schemas.sub_program_schemas import NewSubProgram, UpdateSubProgram, CreateSubProgram, SubProgramColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
@@ -151,6 +152,8 @@ async def export_sub_program_to_lib_model(
             return result[0]
 
 
+
+
 async def import_sub_program_from_library_model(
         connection: AsyncConnection,
         program_id: str,
@@ -198,7 +201,7 @@ async def import_sub_program_from_library_model(
             )
 
 
-            if builder is not None:
+            if  builder.get("exists") is not True:
                 value = IncrementProcedureReferences(
                     procedure_reference=count + 1
                 )
@@ -210,7 +213,18 @@ async def import_sub_program_from_library_model(
                 )
 
                 if results is None:
-                    raise HTTPException(status_code=400, detail="Error While Import Procedure Incrementing Issue Occurred")
+                    raise HTTPException(status_code=400, detail="Error While Import Procedure Incrementing Reference Failed")
+
+
+            _results_ = await import_risk_control_from_library_model(
+                connection=connection,
+                risk_controls=sub_program.get("data").get("prcm") or [],
+                sub_program_id=builder.get("id")
+            )
+
+
+            if _results_ is None:
+                raise HTTPException(status_code=400, detail="Error While Import Procedure Failed To Attach Risk Control")
 
 
             return True
