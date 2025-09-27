@@ -148,14 +148,19 @@ async def import_risk_control_to_sub_program(
             raise HTTPException(status_code=404, detail="Risk Control Item Not Found In Library")
 
 
-        results = await import_risk_control_from_library_model(
-            connection=connection,
-            risk_controls=risk_controls,
-            sub_program_id=sub_program_id
-        )
+        for risk_control in risk_controls:
+            results = await import_risk_control_from_library_model(
+                connection=connection,
+                risk_control=risk_control,
+                sub_program_id=sub_program_id
+            )
+
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Occurred While Importing Risk Control")
+
 
         return await return_checker(
-            data=results,
+            data=True,
             passed="Risk Control Successfully Imported",
             failed="Failed Importing Risk Control"
         )

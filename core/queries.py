@@ -14,7 +14,7 @@ querying_main_program_data = sql.SQL(
               'test_description', sp.test_description,
               'test_type', sp.test_type,
               'sampling_approach', sp.sampling_approach,
-              'risk_control', COALESCE(
+              'prcm', COALESCE(
                   (
                     SELECT JSON_AGG(
                         JSON_BUILD_OBJECT(
@@ -33,7 +33,7 @@ querying_main_program_data = sql.SQL(
             )
           ) FILTER (WHERE sp.id IS NOT NULL),
           '[]'
-        ) AS subPrograms
+        ) AS sub_programs
         FROM main_program mp
         LEFT JOIN sub_program sp ON sp.program = mp.id
         WHERE mp.id = %s

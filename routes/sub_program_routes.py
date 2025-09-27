@@ -136,6 +136,7 @@ async def import_sub_program_from_library(
         program_id: str,
         library_ids: ImportLibraryItems,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
 
@@ -148,16 +149,19 @@ async def import_sub_program_from_library(
         if sub_programs.__len__() == 0:
             raise HTTPException(status_code=404, detail="Sub Program Item Not Found In Library")
 
+        for sub_program in sub_programs:
+            results = await import_sub_program_from_library_model(
+                connection=connection,
+                sub_program=sub_program,
+                program_id=program_id,
+                module_id=auth.module_id
+            )
 
-        results = await import_sub_program_from_library_model(
-            connection=connection,
-            sub_programs=sub_programs,
-            program_id=program_id,
-            module_id="fe7423f2141d"
-        )
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Occurred While Import Sub Program")
 
         return await return_checker(
-            data=results,
+            data=True,
             passed="Sub Program Successfully Imported",
             failed="Failed Importing  Sub Program"
         )

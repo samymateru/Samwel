@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from fastapi import HTTPException
 from psycopg import AsyncConnection
@@ -157,74 +157,76 @@ async def export_sub_program_to_lib_model(
 async def import_sub_program_from_library_model(
         connection: AsyncConnection,
         program_id: str,
-        sub_programs: List,
+        sub_program: Dict,
         module_id: str
 ):
     with exception_response():
-        for sub_program in sub_programs:
 
-            count = await get_data_reference_in_module(
+        count = await get_data_reference_in_module(
+            connection=connection,
+            module_id=module_id,
+            sections=ModuleDataReference.PROCEDURE_REFERENCE
+        )
+
+
+        __sub__program__ = CreateSubProgram(
+            id=get_unique_key(),
+            program=program_id,
+            title=sub_program.get("title") or "",
+            reference=f"PROC-{count + 1:04d}",
+            observation="",
+            brief_description=sub_program.get("brief_description") or "",
+            audit_objective=sub_program.get("audit_objective") or "",
+            test_description=sub_program.get("test_description") or "",
+            test_type=sub_program.get("test_type") or "",
+            sampling_approach=sub_program.get("sampling_approach") or "",
+            results_of_test="",
+            extended_testing=False,
+            extended_procedure="",
+            extended_results="",
+            effectiveness="",
+            conclusion=""
+        )
+
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .values(__sub__program__)
+            .into_table(Tables.SUB_PROGRAM.value)
+            .check_exists({SubProgramColumns.TITLE.value: sub_program.get("title")})
+            .check_exists({SubProgramColumns.PROGRAM.value: program_id})
+            .throw_error_on_exists(False)
+            .returning(SubProgramColumns.ID.value)
+            .execute()
+        )
+
+
+        if  builder.get("exists") is not True:
+            value = IncrementProcedureReferences(
+                procedure_reference=count + 1
+            )
+
+            results = await increment_module_reference(
                 connection=connection,
                 module_id=module_id,
-                sections=ModuleDataReference.PROCEDURE_REFERENCE
+                value=value
             )
 
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error While Import Procedure Incrementing Reference Failed")
 
-            __sub__program__ = CreateSubProgram(
-                id=get_unique_key(),
-                program=program_id,
-                title=sub_program.get("data").get("title") or "",
-                reference=f"PROC-{count + 1:04d}",
-                observation="",
-                brief_description=sub_program.get("data").get("brief_description") or "",
-                audit_objective=sub_program.get("data").get("audit_objective") or "",
-                test_description=sub_program.get("data").get("test_description") or "",
-                test_type=sub_program.get("data").get("test_type") or "",
-                sampling_approach=sub_program.get("data").get("sampling_approach") or "",
-                results_of_test="",
-                extended_testing=False,
-                extended_procedure="",
-                extended_results="",
-                effectiveness="",
-                conclusion=""
-            )
-
-            builder = await (
-                InsertQueryBuilder(connection=connection)
-                .values(__sub__program__)
-                .into_table(Tables.SUB_PROGRAM.value)
-                .check_exists({SubProgramColumns.TITLE.value: sub_program.get("data").get("title")})
-                .check_exists({SubProgramColumns.PROGRAM.value: program_id})
-                .throw_error_on_exists(False)
-                .returning(SubProgramColumns.ID.value)
-                .execute()
-            )
-
-
-            if  builder.get("exists") is not True:
-                value = IncrementProcedureReferences(
-                    procedure_reference=count + 1
-                )
-
-                results = await increment_module_reference(
+            for risk_control in sub_program.get("prcm"):
+                _results_ = await import_risk_control_from_library_model(
                     connection=connection,
-                    module_id=module_id,
-                    value=value
+                    risk_control=risk_control,
+                    sub_program_id=builder.get("id")
                 )
 
-                if results is None:
-                    raise HTTPException(status_code=400, detail="Error While Import Procedure Incrementing Reference Failed")
+                if _results_ is None:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Error While Import Procedure Failed To Attach Risk Control"
+                    )
 
 
-            _results_ = await import_risk_control_from_library_model(
-                connection=connection,
-                risk_controls=sub_program.get("data").get("prcm") or [],
-                sub_program_id=builder.get("id")
-            )
-
-
-            if _results_ is None:
-                raise HTTPException(status_code=400, detail="Error While Import Procedure Failed To Attach Risk Control")
-
-
-            return True
+        return True

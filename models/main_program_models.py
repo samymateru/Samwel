@@ -1,5 +1,9 @@
+from typing import List
+
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.sub_program_models import import_sub_program_from_library_model
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating, \
     CreateMainProgram, MainProgramColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
@@ -12,7 +16,8 @@ from core.queries import querying_main_program_data
 async def create_new_main_audit_program_model(
         connection: AsyncConnection,
         main_program: NewMainProgram,
-        engagement_id: str
+        engagement_id: str,
+        throw: bool = True
 ):
     with exception_response():
         __main__program__ = CreateMainProgram(
@@ -28,6 +33,7 @@ async def create_new_main_audit_program_model(
             .into_table(Tables.MAIN_PROGRAM.value)
             .check_exists({MainProgramColumns.NAME.value: main_program.name})
             .check_exists({MainProgramColumns.ENGAGEMENT.value: engagement_id})
+            .throw_error_on_exists(throw)
             .returning(MainProgramColumns.ID.value)
             .execute()
         )
@@ -119,3 +125,46 @@ async def export_main_audit_program_to_library_model(
             return result[0]
 
 
+
+async def import_main_audit_program_to_library_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+        module_id: str,
+        main_programs: List
+):
+    with exception_response():
+        for main_program in main_programs:
+
+            __main_program__ = NewMainProgram(
+                name=main_program.get("data").get("program_name") or "",
+                description=main_program.get("data").get("description") or "",
+            )
+
+            main_program_data = await create_new_main_audit_program_model(
+                connection=connection,
+                main_program=__main_program__,
+                engagement_id=engagement_id,
+                throw=False
+            )
+
+
+            if main_program_data.get("exists"):
+                continue
+
+
+            for sub_program in main_program.get("data").get("sub_programs"):
+                results = await import_sub_program_from_library_model(
+                    connection=connection,
+                    program_id=main_program_data.get("id"),
+                    sub_program=sub_program,
+                    module_id=module_id
+                )
+
+                if results is None:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Error While Import Main Program, Attach Sub Program Failed"
+                    )
+
+
+        return True
