@@ -80,7 +80,6 @@ async def import_main_audit_program_to_engagement(
 
 
         for main_program in main_programs:
-            print(main_program)
             results = await import_main_audit_program_to_library_model(
                 connection=connection,
                 engagement_id=engagement_id,
