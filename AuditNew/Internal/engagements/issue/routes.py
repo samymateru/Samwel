@@ -36,7 +36,7 @@ async def submit_issue_to_owner(
 
 
 @router.put("/accept_response/{issue_id}", response_model=ResponseMessage)
-async def issue_accept_response(
+async def issue_accept_response_(
         issue_id: str,
         accept_actor: ResponseActors = Form(...),
         accept_notes: Optional[str] = Form(None),
@@ -79,7 +79,7 @@ async def issue_accept_response(
 
 
 @router.put("/decline_response/{issue_id}", response_model=ResponseMessage)
-async def issue_decline_response(
+async def issue_decline_response_(
         issue_id: str,
         issue: IssueDeclineResponse,
         db=Depends(get_async_db_connection),
