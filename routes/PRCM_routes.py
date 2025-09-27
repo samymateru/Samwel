@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from models.PRCM_models import create_new_prcm_model, get_prcm_model, update_prcm_model, delete_prcm_model, \
-    get_summary_audit_program_model, remove_prcm_to_program_model
+    get_summary_audit_program_model, remove_prcm_to_program_model, add_prcm_to_program_model
+from models.main_program_models import create_new_main_audit_program_model
+from models.sub_program_models import create_new_sub_program_model
 from schema import ResponseMessage
-from schemas.PRCM_schemas import NewPRCM, UpdatePRCM
+from schemas.PRCM_schemas import NewPRCM, UpdatePRCM, AddPRCMToWorkProgram
+from schemas.main_program_schemas import NewMainProgram
+from schemas.sub_program_schemas import NewSubProgram
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -45,6 +49,62 @@ async def fetch_engagement_prcm(
 
 
 
+@router.post("/summary_audit_progrm/{engagement_id}")
+async def add_to_work_program_summary_audit_program_(
+        engagement_id: str,
+        prcm_program: AddPRCMToWorkProgram,
+        prcm_id: str = Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        main_program = NewMainProgram(
+            name=prcm_program.program,
+            description=prcm_program.description
+        )
+
+
+
+        audit_program_data = await create_new_main_audit_program_model(
+            connection=connection,
+            main_program=main_program,
+            engagement_id=engagement_id,
+            throw=False
+        )
+
+
+        if audit_program_data is None:
+            raise HTTPException(status_code=400, detail="Failed To Create Main Program On Planning")
+
+
+        sub_program = NewSubProgram(
+            title=prcm_program.procedure
+        )
+
+
+        sub_program_data = await create_new_sub_program_model(
+            connection=connection,
+            sub_program=sub_program,
+            program_id=audit_program_data.get("id"),
+            module_id="fe7423f2141d",
+            throw=False
+        )
+
+
+        results = await add_prcm_to_program_model(
+            connection=connection,
+            sub_program_id=sub_program_data.get("id"),
+            prcm_id=prcm_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="PRCM Added To Main Program Successfully",
+            failed="Failed Adding  PRCM To Work Program"
+        )
+
+
+
+
 @router.get("/summary_audit_program/{engagement_id}")
 async def fetch_summary_audit_program(
         engagement_id: str,
@@ -80,6 +140,7 @@ async def update_engagement_prcm(
         )
 
 
+
 @router.delete("/PRCM/{prcm_id}")
 async def delete_engagement_prcm(
         prcm_id: str,
@@ -96,6 +157,9 @@ async def delete_engagement_prcm(
             passed="PRCM Successfully Deleted",
             failed="Failed Deleting  PRCM"
         )
+
+
+
 
 @router.delete("/summary_audit_program/{summary_audit_program_id}")
 async def delete_summary_audit_program(

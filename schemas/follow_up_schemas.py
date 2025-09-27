@@ -49,6 +49,8 @@ class NewFollowUp(BaseModel):
     issue_ids: Optional[List[str]] = None
     engagement_ids: Optional[List[str]] = None
     attachment: Optional[str] = None
+    reviewed_by: str
+
 
 class CreateFollowUp(BaseModel):
     follow_up_id: str
@@ -63,8 +65,8 @@ class CreateFollowUp(BaseModel):
 
 class UpdateFollowUp(BaseModel):
     name: str
+    reviewed_by: str
     attachment: Optional[str] = None
-
 
 
 class NewFollowUpTest(BaseModel):

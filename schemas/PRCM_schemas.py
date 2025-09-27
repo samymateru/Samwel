@@ -41,3 +41,9 @@ class UpdatePRCM(NewPRCM):
 
 class AddToAuditProgram(BaseModel):
     summary_audit_program: Optional[str] = None
+
+
+class AddPRCMToWorkProgram(BaseModel):
+    program: str
+    description: str
+    procedure: str

@@ -9,33 +9,26 @@ from schema import ResponseMessage
 router = APIRouter(prefix="/engagements")
 
 
-@router.put("/summary_audit_program")
-async def updating_summary_audit_finding(
+@router.post("/summary_audit_program/{engagement_id}", response_model=ResponseMessage)
+async def create_new_summary_of_audit_program(
+        engagement_id: str,
+        work_program: PlanningWorkProgram,
         db=Depends(get_async_db_connection),
         user: CurrentUser = Depends(get_current_user)
 ):
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        await edit_summary_audit_finding(connection=db)
-        return ResponseMessage(detail="Audit program updated successfully")
+        await work_program_(
+            connection=db,
+            work_program=work_program,
+            engagement_id=engagement_id
+            )
+        return ResponseMessage(detail="Audit program added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.delete("/summary_audit_program/{summary_audit_program_id}", response_model=ResponseMessage)
-async def delete_summary_of_audit_program(
-        summary_audit_program_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await remove_summary_audit_program(connection=db, summary_audit_program_id=summary_audit_program_id)
-        return ResponseMessage(detail="Summary of audit program deleted successfully")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 @router.post("/planning_procedures/{engagement_id}", response_model=ResponseMessage)
 async def create_new_planning_procedure(

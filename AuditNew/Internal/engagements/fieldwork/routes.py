@@ -11,10 +11,10 @@ router = APIRouter(prefix="/engagements")
 async def fetch_summary_procedures(
         engagement_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
+    # if user.status_code != 200:
+    #     raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_summary_procedures(db, engagement_id=engagement_id)
         return data

@@ -1,5 +1,4 @@
-from typing import List, Dict
-
+from typing import Dict
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
@@ -14,11 +13,13 @@ from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from core.queries import sub_program_fetch
 
+
 async def create_new_sub_program_model(
         connection: AsyncConnection,
         sub_program: NewSubProgram,
         program_id: str,
-        module_id: str
+        module_id: str,
+        throw: bool = True
 ):
     with exception_response():
         count = await get_data_reference_in_module(
@@ -52,6 +53,7 @@ async def create_new_sub_program_model(
             .into_table(Tables.SUB_PROGRAM.value)
             .check_exists({SubProgramColumns.TITLE.value: sub_program.title})
             .check_exists({SubProgramColumns.PROGRAM.value: program_id})
+            .throw_error_on_exists(throw)
             .returning(SubProgramColumns.ID.value)
             .execute()
         )

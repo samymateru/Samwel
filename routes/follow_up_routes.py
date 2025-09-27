@@ -7,7 +7,7 @@ from models.follow_up_models import add_new_follow_up, update_follow_up_details_
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
     attach_issues_to_follow_up
 from models.issue_models import get_engagement_issues_model
-from schemas.follow_up_schemas import NewFollowUp, UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
+from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp
 from schema import ResponseMessage
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -24,6 +24,7 @@ async def create_new_follow_up(
         engagement_ids: Optional[List[str]] = Form(None),
         issue_ids: Optional[List[str]] = Form(None),
         attachment: Optional[UploadFile] = File(None),
+        reviewed_by: str = Form(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
@@ -37,6 +38,7 @@ async def create_new_follow_up(
             module_id=module_id,
             status=FollowUpStatus.DRAFT,
             created_at=datetime.now(),
+            reviewed_by=reviewed_by,
             created_by="",
             )
         )
@@ -74,8 +76,7 @@ async def create_new_follow_up(
 async def update_follow_up_details(
         follow_up_id: str,
         name: str = Form(...),
-        engagement_ids: Optional[List[str]] = Form(None),
-        issue_ids: Optional[List[str]] = Form(None),
+        reviewed_by: str = Form(...),
         attachment: Optional[UploadFile] = File(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -85,6 +86,7 @@ async def update_follow_up_details(
             follow_up=UpdateFollowUp(
                 name=name,
                 attachment=attachment.filename if attachment is not None else None,
+                reviewed_by=reviewed_by
             ),
             follow_up_id=follow_up_id
         )
