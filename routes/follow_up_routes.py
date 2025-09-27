@@ -1,11 +1,10 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, Query
-
 from AuditNew.Internal.engagements.schemas import EngagementStatus
 from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
-    approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model
+    approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
+    add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model
 from models.issue_models import get_engagement_issues_model
 from schemas.follow_up_schemas import NewFollowUp, UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp
@@ -48,6 +47,7 @@ async def create_new_follow_up(
         )
 
 
+
 @router.put("/{follow_up_id}", response_model=ResponseMessage)
 async def update_follow_up_details(
         follow_up_id: str,
@@ -74,6 +74,7 @@ async def update_follow_up_details(
         )
 
 
+
 @router.delete("/{follow_up_id}", response_model=ResponseMessage)
 async def remove_follow_up_data(
         follow_up_id: str,
@@ -90,6 +91,7 @@ async def remove_follow_up_data(
             passed="Follow Up Successfully Deleted",
             failed="Failed Deleting  Follow Up"
         )
+
 
 
 @router.get("/engagements/{module_id}")
@@ -124,8 +126,6 @@ async def fetch_all_issues_on_engagement(
 
 
 
-
-
 @router.put("/review/{follow_up_id}", response_model=ResponseMessage)
 async def review_follow_up_data(
         follow_up_id: str,
@@ -146,6 +146,7 @@ async def review_follow_up_data(
         )
 
 
+
 @router.put("/disprove/{follow_up_id}", response_model=ResponseMessage, description="This Endpoint Reverser status to draft")
 async def reset_follow_up_status_to_draft(
         follow_up_id: str,
@@ -162,6 +163,7 @@ async def reset_follow_up_status_to_draft(
             passed="Follow Up Successfully Reset",
             failed="Failed Resetting  Follow Up"
         )
+
 
 
 @router.put("/complete/{follow_up_id}", response_model=ResponseMessage)
@@ -183,9 +185,6 @@ async def complete_follow_up_data(
 
 
 
-
-
-
 @router.post("/test/{follow_up_id}", response_model=ResponseMessage)
 async def create_new_follow_up_test(
         follow_up_id: str,
@@ -193,7 +192,19 @@ async def create_new_follow_up_test(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await add_follow_up_test_model(
+            connection=connection,
+            follow_up_id=follow_up_id,
+            test=test
+        )
+
+
+        return await return_checker(
+            data=results,
+            passed="Follow Up Test Successfully Created",
+            failed="Failed Creating Follow Up Test"
+        )
+
 
 
 @router.put("/test/{test_id}", response_model=ResponseMessage)
@@ -203,7 +214,18 @@ async def update_follow_up_test(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await update_follow_up_test_model(
+            connection=connection,
+            test_id=test_id,
+            test=test
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Follow Up Test Successfully Updated",
+            failed="Failed Updated Follow Up Test"
+        )
+
 
 
 @router.delete("/test/{test_id}", response_model=ResponseMessage)
@@ -212,5 +234,14 @@ async def delete_follow_up_test(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await delete_follow_up_test_model(
+            connection=connection,
+            test_id=test_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Follow Up Test Successfully Deleted",
+            failed="Failed Deleting Follow Up Test"
+        )
 

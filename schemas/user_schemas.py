@@ -47,9 +47,10 @@ class User(BaseModel):
 
 
 class UserTypes(str, Enum):
-    MANAGEMENT = "Management"
-    AUDIT = "Audit"
-    BUSINESS = "Business"
+    MANAGEMENT = "management"
+    AUDIT = "audit"
+    BUSINESS = "business"
+
 
 class NewUser(BaseModel):
     name: Optional[str]
@@ -59,6 +60,7 @@ class NewUser(BaseModel):
     telephone: Optional[str] = None
     role: Optional[str] = None
     title: Optional[str] = None
+
 
 class CreateUser(BaseModel):
     id: str
@@ -73,6 +75,7 @@ class CreateUser(BaseModel):
     image: str
     created_at: datetime
 
+
 class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
@@ -83,6 +86,7 @@ class CreateOrganizationUser(BaseModel):
     owner: bool
     created_at: datetime
 
+
 class CreateModuleUser(BaseModel):
     module_user_id: str
     module_id: str
@@ -91,6 +95,7 @@ class CreateModuleUser(BaseModel):
     role: str
     type: str
     created_at: datetime
+
 
 class BaseUser(BaseModel):
     id: str
@@ -104,10 +109,14 @@ class BaseUser(BaseModel):
     image: str
     created_at: datetime
 
+
+
 class ReadModuleUsers(BaseUser):
     type: str
     role: str
     title: Optional[str] = None
+
+
 
 class UserModuleSection(BaseModel):
     id: str
@@ -121,6 +130,8 @@ class ReadOrganizationUser(BaseUser):
     management_title: Optional[str] = None
     category: Optional[str] = None
     modules: List[UserModuleSection]
+
+
 
 class UpdateModuleUser(BaseModel):
     title: str

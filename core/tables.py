@@ -22,4 +22,5 @@ class Tables(str, Enum):
     RISK_CONTROL = "PRCM"
     LIBRARY = "library"
     FOLLOW_UP = "follow_up"
+    FOLLOW_UP_TESTS = "follow_up_tests"
 

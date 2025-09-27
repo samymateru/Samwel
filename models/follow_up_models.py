@@ -2,9 +2,11 @@ from typing import List
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
-    ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest
+    ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
+    UpdateFollowUpTest
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
@@ -135,6 +137,22 @@ async def complete_follow_up_model(
 
 
 
+async def get_follow_up_test_model(
+        connection: AsyncConnection,
+        follow_up_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_UP_TESTS.value)
+            .where(FollowUpTestColumns.FOLLOW_UP_ID.value,  follow_up_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
 async def add_follow_up_test_model(
         connection: AsyncConnection,
         follow_up_id: str,
@@ -146,9 +164,60 @@ async def add_follow_up_test_model(
             follow_up_id=follow_up_id,
             name=test.name,
             description=test.description,
-            created_at=datetime
-
+            outcome=test.outcome,
+            created_at=datetime.now()
         )
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.FOLLOW_UP_TESTS.value)
+            .values(__test__)
+            .check_exists({FollowUpTestColumns.NAME.value: test.name})
+            .check_exists({FollowUpTestColumns.DESCRIPTION.value: test.description})
+            .check_exists({FollowUpTestColumns.OUTCOME.value: test.outcome})
+            .returning(FollowUpTestColumns.TEST_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+
+async def delete_follow_up_test_model(
+        connection: AsyncConnection,
+        test_id: str
+):
+    with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_UP_TESTS.value)
+            .check_exists({FollowUpTestColumns.TEST_ID.value: test_id})
+            .where({FollowUpTestColumns.TEST_ID.value: test_id})
+            .returning(FollowUpTestColumns.TEST_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+
+async def update_follow_up_test_model(
+        connection: AsyncConnection,
+        test_id: str,
+        test: UpdateFollowUpTest
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.FOLLOW_UP_TESTS.value)
+            .values(test)
+            .check_exists({FollowUpTestColumns.TEST_ID.value: test_id})
+            .where({FollowUpTestColumns.TEST_ID.value: test_id})
+            .returning(FollowUpTestColumns.TEST_ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 

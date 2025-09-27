@@ -19,12 +19,28 @@ class FollowUpColumns(str, Enum):
     REVIEWED_BY = "reviewed_by"
     CREATED_AT = "created_at"
 
+
 class FollowUpTestColumns(str, Enum):
     TEST_ID = "test_id"
     FOLLOW_UP_ID = "follow_up_id"
     NAME = "name"
-    OBJECTIVE = "objective"
+    DESCRIPTION = "description"
     OUTCOME = "outcome"
+    CREATED_AT = "created_at"
+
+
+class FollowUpEngagements(str, Enum):
+    FOLLOW_UP_ENGAGEMENT_ID = "follow_up_engagement_id"
+    FOLLOW_UP_ID = "follow_up_id"
+    ENGAGEMENT_ID = "engagement_id"
+    CREATED_AT = "created_at"
+
+
+
+class FollowUpIssues(str, Enum):
+    FOLLOW_UP_ISSUE_ID = "follow_up_issue_id"
+    FOLLOW_UP_ID = "follow_up_id"
+    ISSUE_ID = "issue_id"
     CREATED_AT = "created_at"
 
 
@@ -50,6 +66,7 @@ class UpdateFollowUp(BaseModel):
     attachment: Optional[str] = None
 
 
+
 class NewFollowUpTest(BaseModel):
     name: str
     description: Optional[str] = None
@@ -57,7 +74,7 @@ class NewFollowUpTest(BaseModel):
 
 
 
-class UpdateFollowUpTest(BaseModel):
+class UpdateFollowUpTest(NewFollowUpTest):
     name: str
     description: Optional[str] = None
     outcome: Optional[str] = None
@@ -67,6 +84,22 @@ class CreateFollowUpTest(NewFollowUpTest):
     test_id: str
     follow_up_id: str
     created_at: datetime
+
+
+class CreateFollowUpEngagement(BaseModel):
+    follow_up_engagement_id: str
+    follow_up_id: str
+    engagement_id: str
+    create_id: str
+
+
+
+class CreateFollowUpIssue(BaseModel):
+    follow_up_issue_id: str
+    follow_up_id: str
+    issue_id: str
+    create_id: str
+
 
 
 class ReviewFollowUp(BaseModel):
