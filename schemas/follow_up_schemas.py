@@ -64,6 +64,8 @@ class UpdateFollowUpTest(BaseModel):
 
 
 class CreateFollowUpTest(NewFollowUpTest):
+    test_id: str
+    follow_up_id: str
     created_at: datetime
 
 

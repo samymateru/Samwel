@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from fastapi import HTTPException
 from psycopg import AsyncConnection
@@ -130,41 +130,39 @@ async def import_main_audit_program_to_library_model(
         connection: AsyncConnection,
         engagement_id: str,
         module_id: str,
-        main_programs: List
+        main_program: Dict
 ):
     with exception_response():
-        for main_program in main_programs:
+        __main_program__ = NewMainProgram(
+            name=main_program.get("program_name") or "",
+            description=main_program.get("program_description") or "",
+        )
 
-            __main_program__ = NewMainProgram(
-                name=main_program.get("data").get("program_name") or "",
-                description=main_program.get("data").get("program_description") or "",
-            )
+        main_program_data = await create_new_main_audit_program_model(
+            connection=connection,
+            main_program=__main_program__,
+            engagement_id=engagement_id,
+            throw=False
+        )
 
-            main_program_data = await create_new_main_audit_program_model(
+
+        if main_program_data.get("exists"):
+            return True
+
+
+        for sub_program in main_program.get("sub_programs"):
+            results = await import_sub_program_from_library_model(
                 connection=connection,
-                main_program=__main_program__,
-                engagement_id=engagement_id,
-                throw=False
+                program_id=main_program_data.get("id"),
+                sub_program=sub_program,
+                module_id=module_id
             )
 
-
-            if main_program_data.get("exists"):
-                continue
-
-
-            for sub_program in main_program.get("data").get("sub_programs"):
-                results = await import_sub_program_from_library_model(
-                    connection=connection,
-                    program_id=main_program_data.get("id"),
-                    sub_program=sub_program,
-                    module_id=module_id
+            if results is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Error While Import Main Program, Attach Sub Program Failed"
                 )
 
-                if results is None:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Error While Import Main Program, Attach Sub Program Failed"
-                    )
-
-
         return True
+

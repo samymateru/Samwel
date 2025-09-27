@@ -186,8 +186,6 @@ async def complete_follow_up_data(
 
 
 
-
-
 @router.post("/test/{follow_up_id}", response_model=ResponseMessage)
 async def create_new_follow_up_test(
         follow_up_id: str,

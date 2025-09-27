@@ -2,11 +2,12 @@ from typing import List
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
-    ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp
+    ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
-from utils import exception_response
+from utils import exception_response, get_unique_key
+from datetime import datetime
 
 
 async def add_new_follow_up(
@@ -22,6 +23,7 @@ async def add_new_follow_up(
             .execute()
         )
         return builder
+
 
 
 async def update_follow_up_details_model(
@@ -42,6 +44,7 @@ async def update_follow_up_details_model(
         return builder
 
 
+
 async def remove_follow_up_data_model(
         connection: AsyncConnection,
         follow_up_id: str
@@ -57,6 +60,7 @@ async def remove_follow_up_data_model(
         )
 
         return builder
+
 
 
 async def approve_follow_up_data_model(
@@ -83,6 +87,7 @@ async def approve_follow_up_data_model(
         return builder
 
 
+
 async def reset_follow_up_status_to_draft_model(
         connection: AsyncConnection,
         follow_up_id: str
@@ -106,6 +111,7 @@ async def reset_follow_up_status_to_draft_model(
         return builder
 
 
+
 async def complete_follow_up_model(
         connection: AsyncConnection,
         follow_up_id: str
@@ -126,6 +132,25 @@ async def complete_follow_up_model(
         )
 
         return builder
+
+
+
+async def add_follow_up_test_model(
+        connection: AsyncConnection,
+        follow_up_id: str,
+        test: NewFollowUpTest
+):
+    with exception_response():
+        __test__ = CreateFollowUpTest(
+            test_id=get_unique_key(),
+            follow_up_id=follow_up_id,
+            name=test.name,
+            description=test.description,
+            created_at=datetime
+
+        )
+
+
 
 
 

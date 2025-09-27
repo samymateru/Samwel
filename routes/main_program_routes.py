@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 
 from models.libray_models import create_new_libray_entry_model, get_module_library_entry_items
 from models.main_program_models import create_new_main_audit_program_model, export_main_audit_program_to_library_model, \
     fetch_main_programs_models, update_main_audit_program_models, \
     update_main_audit_program_process_rating_model, delete_main_audit_program_model, \
     import_main_audit_program_to_library_model
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/engagements")
@@ -67,6 +68,7 @@ async def import_main_audit_program_to_engagement(
         engagement_id: str,
         library_ids: ImportLibraryItems,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
 
@@ -76,16 +78,22 @@ async def import_main_audit_program_to_engagement(
             category=LibraryCategory.MAIN_PROGRAM
         )
 
-        results = await import_main_audit_program_to_library_model(
-            connection=connection,
-            engagement_id=engagement_id,
-            main_programs=main_programs,
-            module_id="fe7423f2141d"
-        )
+
+        for main_program in main_programs:
+            print(main_program)
+            results = await import_main_audit_program_to_library_model(
+                connection=connection,
+                engagement_id=engagement_id,
+                main_program=main_program.get("data"),
+                module_id=auth.module_id
+            )
+
+            if results is None:
+                raise HTTPException(status_code=400, detail="Error Occurred While Import Main Program, Attach Sub Program Failed")
 
 
         return await return_checker(
-            data=results,
+            data=True,
             passed="Main Program Successfully Imported",
             failed="Failed Importing  Main Program"
         )
