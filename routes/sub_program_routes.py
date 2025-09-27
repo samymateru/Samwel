@@ -152,7 +152,7 @@ async def import_sub_program_from_library(
         for sub_program in sub_programs:
             results = await import_sub_program_from_library_model(
                 connection=connection,
-                sub_program=sub_program,
+                sub_program=sub_program.get("data"),
                 program_id=program_id,
                 module_id=auth.module_id
             )
