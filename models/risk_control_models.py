@@ -119,8 +119,6 @@ async def export_risk_control_to_library_model(
             return result[0]
 
 
-
-
 async def import_risk_control_from_library_model(
         connection: AsyncConnection,
         risk_control: Dict,

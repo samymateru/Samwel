@@ -151,7 +151,7 @@ async def import_risk_control_to_sub_program(
         for risk_control in risk_controls:
             results = await import_risk_control_from_library_model(
                 connection=connection,
-                risk_control=risk_control,
+                risk_control=risk_control.get("data"),
                 sub_program_id=sub_program_id
             )
 
