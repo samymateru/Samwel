@@ -4,6 +4,7 @@ querying_main_program_data = sql.SQL(
     """
         SELECT 
         mp.name AS program_name,
+        mp.description as program_description,
         COALESCE(
           JSON_AGG(
             JSON_BUILD_OBJECT(

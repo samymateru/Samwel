@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
-
 from models.issue_actor_models import initialize_issue_actors
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
@@ -184,6 +183,54 @@ async def save_issue_implementation(
         )
 
 
+
+@router.put("/{issue_id}")
+async def update_issue_details(
+        issue_id: str,
+        issue: UpdateIssueDetails,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+
+):
+    with exception_response():
+        results = await update_issue_details_model(
+            connection=connection,
+            issue=issue,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Successfully Updated",
+            failed="Failed Updating  Issue"
+        )
+
+
+
+@router.delete("/{issue_id}")
+async def delete_issue_details(
+        issue_id: str,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await delete_issue_details_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Successfully Deleted",
+            failed="Failed Deleting  Issue"
+        )
+
+
+
+
+
+
+
+
+
 @router.get("/{module_id}")
 async def fetch_all_module_issues_filtered(
         module_id: str,
@@ -294,40 +341,3 @@ async def issue_decline_response(
         )
 
 
-@router.put("/{issue_id}")
-async def update_issue_details(
-        issue_id: str,
-        issue: UpdateIssueDetails,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-
-):
-    with exception_response():
-        results = await update_issue_details_model(
-            connection=connection,
-            issue=issue,
-            issue_id=issue_id
-        )
-
-        return await return_checker(
-            data=results,
-            passed="Issue Successfully Updated",
-            failed="Failed Updating  Issue"
-        )
-
-
-@router.delete("/{issue_id}")
-async def delete_issue_details(
-        issue_id: str,
-        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        results = await delete_issue_details_model(
-            connection=connection,
-            issue_id=issue_id
-        )
-
-        return await return_checker(
-            data=results,
-            passed="Issue Successfully Deleted",
-            failed="Failed Deleting  Issue"
-        )

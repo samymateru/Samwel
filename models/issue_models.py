@@ -7,6 +7,7 @@ from models.module_models import increment_module_reference
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -270,13 +271,28 @@ async def get_module_issues_model(
     with exception_response():
         pass
 
+
+
+
+
+
 async def update_issue_details_model(
         connection: AsyncConnection,
         issue: UpdateIssueDetails,
         issue_id: str,
 ):
     with exception_response():
-        pass
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+            .values(issue)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -285,7 +301,17 @@ async def delete_issue_details_model(
         issue_id: str,
 ):
     with exception_response():
-        pass
+
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
