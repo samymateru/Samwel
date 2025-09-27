@@ -121,5 +121,9 @@ class CompleteFollowUp(BaseModel):
 
 
 
-class ReadFollowUpData(BaseModel):
+class BaseFollowUpData(CreateFollowUp):
+    pass
+
+
+class ReadFollowUpData(CreateFollowUp):
     pass

@@ -279,3 +279,63 @@ async def attach_issues_to_follow_up(
 
 
 
+async def get_all_issues_on_follow_up(
+    connection: AsyncConnection,
+    follow_up_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_ISSUES.value, alias="foll_iss")
+            .join(
+                "LEFT",
+                Tables.ISSUES.value,
+                "iss.id = foll_iss.issue_id",
+                "iss",
+                use_prefix=False
+            )
+            .where(FollowUpColumns.FOLLOW_UP_ID.value, follow_up_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+async def get_all_engagements_on_follow_up(
+    connection: AsyncConnection,
+    follow_up_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_ENGAGEMENTS.value, alias="foll_eng")
+            .join(
+                "LEFT",
+                Tables.ENGAGEMENTS.value,
+                "eng.id = foll_eng.engagement_id",
+                "eng",
+                use_prefix=False
+            )
+            .where(FollowUpColumns.FOLLOW_UP_ID.value, follow_up_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+
+async def get_all_module_follow_up(
+    connection: AsyncConnection,
+    module_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_UP.value)
+            .where(FollowUpColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder

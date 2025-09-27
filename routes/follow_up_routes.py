@@ -5,7 +5,7 @@ from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
-    attach_issues_to_follow_up
+    attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model
 from models.issue_models import get_engagement_issues_model
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp
@@ -134,6 +134,7 @@ async def fetch_all_completed_engagements(
         return data
 
 
+
 @router.get("/issues/{module_id}")
 async def fetch_all_issues_on_engagement(
         module_id: str,
@@ -148,6 +149,23 @@ async def fetch_all_issues_on_engagement(
         )
 
         return data
+
+
+
+
+@router.get("/{module_id}")
+async def fetch_all_follow_up_on_module(
+        module_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = get_all_module_follow_up(
+            connection=connection,
+            module_id=module_id
+        )
+
+        return data
+
 
 
 
@@ -250,6 +268,22 @@ async def update_follow_up_test(
             passed="Follow Up Test Successfully Updated",
             failed="Failed Updated Follow Up Test"
         )
+
+
+
+
+
+@router.get("/test/{follow_up_id}", response_model=ResponseMessage)
+async def fetch_follow_up_test_model(
+        follow_up_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_follow_up_test_model(
+            connection=connection,
+            follow_up_id=follow_up_id
+        )
+        return data
 
 
 
