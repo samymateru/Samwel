@@ -5,7 +5,7 @@ from models.main_program_models import create_new_main_audit_program_model, expo
     fetch_main_programs_models, update_main_audit_program_models, \
     update_main_audit_program_process_rating_model, delete_main_audit_program_model
 from schema import ResponseMessage
-from schemas.library_schemas import LibraryCategory
+from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.main_program_schemas import NewMainProgram, UpdateMainProgram, UpdateMainProgramProcessRating
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
@@ -58,6 +58,20 @@ async def export_main_audit_program_to_library(
             failed="Failed Exporting  Main Program"
         )
 
+
+@router.post("/main_program/import/{engagement_id}", response_model=ResponseMessage)
+async def import_main_audit_program_to_engagement(
+        engagement_id: str,
+        library_ids: ImportLibraryItems,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+
+        return await return_checker(
+            data="",
+            passed="Main Program Successfully Exported",
+            failed="Failed Exporting  Main Program"
+        )
 
 @router.get("/main_program/{engagement_id}")
 async def fetch_all_main_programs(

@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-
 from models.libray_models import create_new_libray_entry_model
 from models.sub_program_models import create_new_sub_program_model, fetch_all_sub_program_model, \
     fetch_single_sub_program_model, update_sub_program_model, delete_sub_program_model, export_sub_program_to_lib_model
 from schema import ResponseMessage, CurrentUser
-from schemas.library_schemas import LibraryCategory
+from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.sub_program_schemas import UpdateSubProgram, NewSubProgram
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
@@ -126,6 +125,21 @@ async def export_sub_program_to_lib(
 
         return await return_checker(
             data=results,
+            passed="Sub Program Successfully Exported",
+            failed="Failed Exporting  Sub Program"
+        )
+
+
+@router.post("/sub_program/import/{program_id}", response_model=ResponseMessage)
+async def import_sub_program_from_library(
+        program_id: str,
+        library_ids: ImportLibraryItems,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+
+        return await return_checker(
+            data="results",
             passed="Sub Program Successfully Exported",
             failed="Failed Exporting  Sub Program"
         )

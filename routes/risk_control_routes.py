@@ -6,7 +6,7 @@ from models.risk_control_models import create_new_risk_control_on_sub_program_mo
     edit_risk_control_on_sub_program_model, delete_risk_control_on_sub_program_model, \
     export_risk_control_to_library_model
 from schema import ResponseMessage
-from schemas.library_schemas import LibraryCategory
+from schemas.library_schemas import LibraryCategory, ImportLibraryItems
 from schemas.risk_contol_schemas import NewRiskControl, UpdateRiskControl
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
@@ -128,11 +128,10 @@ async def export_risk_control_to_library(
         )
 
 
-
-
-@router.put("/import/{risk_control_id}")
+@router.post("/import/{sub_program_id}")
 async def import_risk_control_to_sub_program(
-        risk_control_id: str,
+        sub_program_id: str,
+        library_ids: ImportLibraryItems,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
