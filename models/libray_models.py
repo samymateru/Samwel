@@ -1,7 +1,8 @@
 from psycopg import AsyncConnection
 from typing import Dict, List
 from core.tables import Tables
-from schemas.library_schemas import LibraryCategory, CreateLibraryEntry, LibraryColumns
+from schemas.library_schemas import LibraryCategory, CreateLibraryEntry, LibraryColumns, MainProgramLibraryItem, \
+    SubProgramLibraryItem, RiskControlLibraryItem
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -70,6 +71,8 @@ async def get_module_library_entry_items(
 
         return builder
 
+
+
 async def delete_libray_entry_model(
         connection: AsyncConnection,
         library_id: str
@@ -87,3 +90,33 @@ async def delete_libray_entry_model(
         return builder
 
 
+
+
+async def update_main_program_library_model(
+        connection: AsyncConnection,
+        main_program: MainProgramLibraryItem,
+        library_id: str
+):
+    with exception_response():
+        pass
+
+
+
+
+async def update_sub_program_library_model(
+        connection: AsyncConnection,
+        sub_program: SubProgramLibraryItem,
+        library_id: str
+):
+    with exception_response():
+        pass
+
+
+
+async def update_risk_control_library_model(
+        connection: AsyncConnection,
+        risk_control: RiskControlLibraryItem,
+        library_id: str
+):
+    with exception_response():
+        pass
