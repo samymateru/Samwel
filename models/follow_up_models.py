@@ -346,7 +346,6 @@ async def get_all_module_follow_up(
                 model=ReadAttachment,
             )
             .where("follow_up."+FollowUpColumns.MODULE_ID.value, module_id)
-            .where("attachment."+AttachmentColumns.CATEGORY.value, AttachmentCategory.FOlLOW_UP.value)
             .select_fields()
             .fetch_all()
         )

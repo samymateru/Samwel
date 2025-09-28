@@ -56,13 +56,13 @@ class NewFollowUp(BaseModel):
 
 class CreateFollowUp(BaseModel):
     follow_up_id: str
-    module_id: str
+    module_id: Optional[str] = None
     name: str
     status: FollowUpStatus
     attachment: Optional[str] = None
     created_by: str
     reviewed_by: Optional[str] = None
-    created_at: datetime
+    created_at: Optional[datetime]
 
 
 class UpdateFollowUp(BaseModel):
