@@ -16,14 +16,15 @@ from datetime import datetime
 async def register_new_module(
         connection: AsyncConnection,
         module: NewModule,
-        organization_id: str
+        organization_id: str,
+        status: ModuleStatus
 ):
     with exception_response():
         __module__ = CreateModule(
             id=get_unique_key(),
             organization=organization_id,
             name=module.name,
-            status=ModuleStatus.PENDING,
+            status=status.value,
             created_at=datetime.now()
         )
 

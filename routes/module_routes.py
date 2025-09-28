@@ -5,7 +5,7 @@ from models.module_models import register_new_module, get_user_modules, get_orga
     generate_module_activation_data, get_activation_data, activate_module, add_licence_to_module, \
     delete_module_temporarily_model
 from schema import ResponseMessage, CurrentUser
-from schemas.module_schemas import NewModule, ReadModule
+from schemas.module_schemas import NewModule, ReadModule, ModuleStatus
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -20,14 +20,19 @@ async def create_new_module(
         _: CurrentUser = Depends(get_current_user)
     ):
     with exception_response():
+
+        status = ModuleStatus.ACTIVE if module.licence_id == "cb67a203f8da" else ModuleStatus.PENDING
+
         results = await register_new_module(
             connection=connection,
             module=module,
-            organization_id=organization_id
+            organization_id=organization_id,
+            status=status
         )
 
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Register Module")
+
 
         licence = plans.get(module.licence_id)
 
