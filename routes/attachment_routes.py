@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, UploadFile, File, Query, BackgroundTasks
 
 from core.utils import upload_attachment
 from models.attachment_model import add_new_attachment, fetch_item_attachment, remove_attachment
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.postgres.insert import InsertQueryBuilder
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/attachment")
@@ -17,14 +18,15 @@ async def add_category_attachment(
         category: AttachmentCategory = Query(...),
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        background_tasks: BackgroundTasks = BackgroundTasks()
+        background_tasks: BackgroundTasks = BackgroundTasks(),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await add_new_attachment(
             connection=connection,
             attachment=attachment,
             item_id=item_id,
-            module_id="fe7423f2141d",
+            module_id=auth.module_id,
             url=upload_attachment(
             category=category,
             background_tasks=background_tasks,
