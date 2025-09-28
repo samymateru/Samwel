@@ -2,10 +2,11 @@ from psycopg import AsyncConnection
 from typing import Dict, List
 from core.tables import Tables
 from schemas.library_schemas import LibraryCategory, CreateLibraryEntry, LibraryColumns, MainProgramLibraryItem, \
-    SubProgramLibraryItem, RiskControlLibraryItem
+    SubProgramLibraryItem, RiskControlLibraryItem, LibraryItemUpdate
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
@@ -98,7 +99,21 @@ async def update_main_program_library_model(
         library_id: str
 ):
     with exception_response():
-        pass
+
+        __main_program__ = LibraryItemUpdate(
+            data=main_program.model_dump()
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .values(main_program)
+            .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
+            .where({LibraryColumns.LIBRARY_ID.value: library_id})
+            .returning(LibraryColumns.LIBRARY_ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -109,7 +124,20 @@ async def update_sub_program_library_model(
         library_id: str
 ):
     with exception_response():
-        pass
+        __sub_program__ = LibraryItemUpdate(
+            data=sub_program.model_dump()
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .values(__sub_program__)
+            .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
+            .where({LibraryColumns.LIBRARY_ID.value: library_id})
+            .returning(LibraryColumns.LIBRARY_ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -119,4 +147,34 @@ async def update_risk_control_library_model(
         library_id: str
 ):
     with exception_response():
-        pass
+        __risk_control__ = LibraryItemUpdate(
+            data=risk_control.model_dump()
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .values(__risk_control__)
+            .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
+            .where({LibraryColumns.LIBRARY_ID.value: library_id})
+            .returning(LibraryColumns.LIBRARY_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def delete_library_item(
+        connection: AsyncConnection,
+        library_id: str
+):
+    with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.LIBRARY.value)
+            .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
+            .where({LibraryColumns.LIBRARY_ID.value: library_id})
+            .returning(LibraryColumns.LIBRARY_ID.value)
+            .execute()
+        )
+
+        return builder

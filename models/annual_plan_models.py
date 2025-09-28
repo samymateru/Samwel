@@ -2,7 +2,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.annual_plan_schemas import NewAnnualPlan, CreateAnnualPlan, AnnualPlanStatus, AnnualPlanColumns, \
     UpdateAnnualPlan, RemoveAnnualPlanPartially, ReadAnnualPlan, AnnualPlan
-from schemas.attachement_schemas import CreateAttachment, ReadAttachment
+from schemas.attachement_schemas import ReadAttachment
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -48,6 +48,7 @@ async def get_module_annual_plans(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.ANNUAL_PLANS.value, alias="pln")
+            .select(AnnualPlan)
             .join(
                 "LEFT",
                 Tables.ATTACHMENTS.value,
@@ -56,7 +57,7 @@ async def get_module_annual_plans(
                 use_prefix=True,
                 model=ReadAttachment,
             )
-            .select_fields()
+            .select_joins()
             .where(AnnualPlanColumns.MODULE.value, module_id)
             .fetch_all()
         )
@@ -76,18 +77,19 @@ async def get_module_annual_plans(
                 creator=plan.get("creator"),
                 created_at=plan.get("created_at"),
                 attachment=ReadAttachment(
-                    attachment_id=plan.get("attachment_id"),
-                    module_id=plan.get("attachment_id"),
-                    item_id=plan.get("item_id"),
-                    filename=plan.get("filename"),
-                    category=plan.get("category"),
-                    url=plan.get("url"),
-                    size=plan.get("size"),
-                    type=plan.get("type"),
-                    created_at=plan.get("created_at")
+                    attachment_id=plan.get("attachment_attachment_id"),
+                    module_id=plan.get("attachment_attachment_id"),
+                    item_id=plan.get("attachment_item_id"),
+                    filename=plan.get("attachment_filename"),
+                    category=plan.get("attachment_category"),
+                    url=plan.get("attachment_url"),
+                    size=plan.get("attachment_size"),
+                    type=plan.get("attachment_type"),
+                    created_at=plan.get("attachment_created_at")
                 )
 
             )
+
             plans.append(data)
 
         return plans

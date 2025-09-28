@@ -64,6 +64,10 @@ class MainProgramLibraryItem(BaseModel):
     sub_programs: List[SubProgramLibraryItem]
 
 
+class LibraryItemUpdate(BaseModel):
+    data: Dict
+
+
 
 
 

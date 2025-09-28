@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
-    update_sub_program_library_model
+    update_sub_program_library_model, update_risk_control_library_model
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
     RiskControlLibraryItem
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -50,15 +50,25 @@ async def update_sub_program_library_item(
         )
 
 
+
 @router.put("/risk_control/{library_id}")
 async def update_risk_control_library_item(
         library_id: str,
-        item: RiskControlLibraryItem,
+        risk_control: RiskControlLibraryItem,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await update_risk_control_library_model(
+            connection=connection,
+            risk_control=risk_control,
+            library_id=library_id,
+        )
 
+        return await return_checker(
+            data=results,
+            passed="Risk Control Successfully Updated",
+            failed="Failed Updating Risk Control"
+        )
 
 
 
@@ -77,14 +87,5 @@ async def fetch_all_library_items(
 
         return data
 
-
-
-@router.get("/{libray_item_id}")
-async def fetch_single_library_item(
-        libray_item_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
 
 

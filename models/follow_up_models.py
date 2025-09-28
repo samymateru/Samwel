@@ -1,6 +1,6 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.attachement_schemas import AttachmentColumns, AttachmentCategory, ReadAttachment, ReadAttachment_
+from schemas.attachement_schemas import ReadAttachment
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
     UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \

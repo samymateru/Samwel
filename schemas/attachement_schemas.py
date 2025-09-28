@@ -46,15 +46,3 @@ class CreateAttachment(BaseModel):
 class ReadAttachment(CreateAttachment):
     pass
 
-
-
-class ReadAttachment_(BaseModel):
-    attachment_id: Optional[str] = None
-    item_id: Optional[str] = None
-    filename: Optional[str] = None
-    size: Optional[int] = None
-    type: Optional[str] = None
-    url: Optional[str] = None
-    category: Optional[AttachmentCategory] = None
-    creator: Optional[str] = None
-    created_at: Optional[datetime] = None
