@@ -1,5 +1,6 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
+
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
     get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
     edit_entity_user, edit_module_user
@@ -7,6 +8,7 @@ from schema import ResponseMessage, CurrentUser
 from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
 ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.notifications.util import notification_manager
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
@@ -32,6 +34,13 @@ async def create_new_user(
 
         if new_user_data is None:
             raise HTTPException(status_code=400, detail="Failed To Create New User")
+
+        notification_manager.notify(
+            user.email,
+            {
+                "message": "You have been invited module please verify"
+            }
+        )
 
 
         organization_user_data = await create_new_organization_user(

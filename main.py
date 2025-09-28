@@ -37,6 +37,7 @@ from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, R
 from schemas.organization_schemas import ReadOrganization
 from services.logging.logger import global_logger
 from services.notifications.notifications_service import NotificationManager
+from services.notifications.util import notification_manager
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
@@ -69,7 +70,6 @@ from routes.risk_control_routes import router as risk_control_routes
 
 load_dotenv()
 
-notification_manager = NotificationManager()
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -79,8 +79,8 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
-        #await notification_manager.start_worker()
-        #await notification_manager.connect()
+        await notification_manager.start_worker()
+        await notification_manager.connect()
         await test_direct_connection()
         await init_redis_pool()
     except Exception as e:
