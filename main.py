@@ -27,7 +27,7 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
-from AuditNew.Internal.engagements.attachments.routes import router as attachments
+from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
@@ -277,7 +277,7 @@ app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 
 
-app.include_router(attachments, tags=["Attachments"])
+app.include_router(attachment_routes, tags=["Attachments Routes"])
 app.include_router(subscriptions, tags=["Subscriptions"])
 app.include_router(entity_routes, tags=["Entity Routes"])
 app.include_router(organization_routes, tags=["Organization Routes"])

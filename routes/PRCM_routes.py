@@ -4,11 +4,12 @@ from models.PRCM_models import create_new_prcm_model, get_prcm_model, update_prc
     get_summary_audit_program_model, remove_prcm_to_program_model, add_prcm_to_program_model
 from models.main_program_models import create_new_main_audit_program_model
 from models.sub_program_models import create_new_sub_program_model
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.PRCM_schemas import NewPRCM, UpdatePRCM, AddPRCMToWorkProgram
 from schemas.main_program_schemas import NewMainProgram
 from schemas.sub_program_schemas import NewSubProgram
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/engagements")
@@ -55,6 +56,7 @@ async def add_to_work_program_summary_audit_program_(
         prcm_program: AddPRCMToWorkProgram,
         prcm_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         main_program = NewMainProgram(
@@ -85,7 +87,7 @@ async def add_to_work_program_summary_audit_program_(
             connection=connection,
             sub_program=sub_program,
             program_id=audit_program_data.get("id"),
-            module_id="fe7423f2141d",
+            module_id=auth.module_id,
             throw=False
         )
 

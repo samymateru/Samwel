@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
@@ -16,17 +17,30 @@ class AttachmentCategory(str, Enum):
     ENGAGEMENT_ADMINISTRATION = "engagement_administration"
 
 
+class AttachmentColumns(str, Enum):
+    ATTACHMENT_ID = "attachment_id"
+    MODULE_ID = "module_id"
+    FILENAME = "filename"
+    ITEM_ID = "item_id"
+    SIZE = "size"
+    TYPE = "type"
+    CATEGORY = "category"
+    CREATOR = "creator"
+    CREATED_AT = "created_at"
 
-class NewAttachment(BaseModel):
-    name: str
-    url: str
-    size: int
-    type: str
+
+class CreateAttachment(BaseModel):
+    attachment_id: Optional[str] = None
+    module_id: Optional[str] = None
+    item_id: Optional[str] = None
+    filename: Optional[str] = None
+    size: Optional[int] = None
+    type: Optional[str] = None
+    url: Optional[str] = None
+    category: Optional[AttachmentCategory] = None
+    creator: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 
-class Attachment(BaseModel):
-
-    attachment_id: str
-    category: AttachmentCategory
-    creator: str
-    created_at: datetime
+class ReadAttachment(CreateAttachment):
+    pass

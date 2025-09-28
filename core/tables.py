@@ -25,5 +25,6 @@ class Tables(str, Enum):
     FOLLOW_UP_TESTS = "follow_up_tests"
     FOLLOW_ENGAGEMENTS = "follow_up_engagements"
     FOLLOW_ISSUES = "follow_up_issues"
+    ATTACHMENTS = "attachments"
 
 

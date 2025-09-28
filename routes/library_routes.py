@@ -7,13 +7,46 @@ from utils import exception_response
 
 router = APIRouter(prefix="/library")
 
-@router.post("/{item_id}")
+
+@router.put("/{item_id}")
 async def created_new_library_item(
         item_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
         pass
+
+
+
+@router.put("/main_program/{library_id}")
+async def update_main_program_library_item(
+        library_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
+@router.put("/sub_program/{library_id}")
+async def update_sub_program_library_item(
+        library_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
+
+
+@router.put("/risk_control/{library_id}")
+async def update_risk_control_library_item(
+        library_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
 
 
 @router.get("/{module_id}")

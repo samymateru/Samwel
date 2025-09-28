@@ -64,11 +64,7 @@ async def create_new_follow_up(
             )
 
 
-        return await return_checker(
-            data=data,
-            passed="Follow Up Successfully Created",
-            failed="Failed Creating  Follow Up"
-        )
+        return data
 
 
 

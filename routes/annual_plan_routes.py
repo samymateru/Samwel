@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, BackgroundTasks
+from core.utils import upload_attachment
 from models.annual_plan_models import register_new_annual_plan, get_module_annual_plans, get_annual_plan_details, \
     remove_annual_plan_partially, edit_annual_plan_details
+from models.attachment_model import add_new_attachment
 from schema import ResponseMessage
 from schemas.annual_plan_schemas import NewAnnualPlan, ReadAnnualPlan, UpdateAnnualPlan
+from schemas.attachement_schemas import AttachmentCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.logging.logger import global_logger
 from utils import exception_response, return_checker
 from datetime import datetime
-from typing import List
+
 
 router = APIRouter(prefix="/annual_plans")
 
@@ -20,6 +24,7 @@ async def create_new_annual_plan(
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
 
@@ -28,14 +33,31 @@ async def create_new_annual_plan(
             year=year,
             start=start,
             end=end,
-            attachment=attachment.filename
         )
 
-        results = await register_new_annual_plan(
+        annual_plan_results = await register_new_annual_plan(
             connection=connection,
             annual_plan=annual_plan,
             module_id=module_id
         )
+
+        if annual_plan_results is None:
+            global_logger.error(f"Failed to Create Annual Plan Module: {module_id}")
+
+
+        results = await add_new_attachment(
+            connection=connection,
+            attachment=attachment,
+            item_id=annual_plan_results.get("id"),
+            module_id=module_id,
+            url=upload_attachment(
+            category=AttachmentCategory.ANNUAL_PLAN,
+            background_tasks=background_tasks,
+            file=attachment
+            ),
+            category=AttachmentCategory.ANNUAL_PLAN
+        )
+
 
         return await return_checker(
             data=results,
@@ -44,7 +66,7 @@ async def create_new_annual_plan(
         )
 
 
-@router.get("/{module_id}", response_model=List[ReadAnnualPlan])
+@router.get("/{module_id}")
 async def fetch_all_module_annual_plans(
         module_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

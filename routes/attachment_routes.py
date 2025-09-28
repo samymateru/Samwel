@@ -1,20 +1,78 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Query, BackgroundTasks
 
+from core.utils import upload_attachment
+from models.attachment_model import add_new_attachment, fetch_item_attachment, remove_attachment
 from schema import ResponseMessage
 from schemas.attachement_schemas import AttachmentCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response
+from services.connections.postgres.insert import InsertQueryBuilder
+from utils import exception_response, return_checker
 
-router = APIRouter(prefix="/attachments")
+router = APIRouter(prefix="/attachment")
 
 
-@router.post("/{section_id}", response_model=ResponseMessage)
+@router.post("/{item_id}", response_model=ResponseMessage)
 async def add_category_attachment(
-        section_id: str,
-        category: AttachmentCategory,
+        item_id: str,
+        category: AttachmentCategory = Query(...),
         attachment: UploadFile = File(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
+):
+    with exception_response():
+        results = await add_new_attachment(
+            connection=connection,
+            attachment=attachment,
+            item_id=item_id,
+            module_id="fe7423f2141d",
+            url=upload_attachment(
+            category=category,
+            background_tasks=background_tasks,
+            file=attachment
+            ),
+            category=category
+        )
+
+        return await return_checker(
+            data=results,
+            passed=f"Attachment From {category}  Successfully Added",
+            failed=f"Failed Adding  Attachment From {category}"
+        )
+
+
+
+
+@router.get("/{item_id}")
+async def fetch_item_attachments(
+        item_id: str,
+        category: AttachmentCategory = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
-    
+        data = await fetch_item_attachment(
+            connection=connection,
+            category=category,
+            item_id=item_id
+        )
+
+        return data
+
+
+
+@router.delete("/{attachment_id}", response_model=ResponseMessage)
+async def delete_item_attachments(
+        attachment_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await remove_attachment(
+            connection=connection,
+            attachment_id=attachment_id
+        )
+
+
+        return await return_checker(
+            data=results,
+            passed=f"Attachment Successfully Deleted",
+            failed=f"Failed Deleting Attachment"
+        )

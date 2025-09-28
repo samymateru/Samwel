@@ -1,6 +1,10 @@
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
+
+from schemas.attachement_schemas import ReadAttachment
 
 
 class AnnualPlanStatus(str, Enum):
@@ -29,7 +33,6 @@ class NewAnnualPlan(BaseModel):
     year: str
     start: datetime
     end: datetime
-    attachment: str
 
 
 class CreateAnnualPlan(NewAnnualPlan):
@@ -37,9 +40,8 @@ class CreateAnnualPlan(NewAnnualPlan):
     module: str
     reference: str
     status: AnnualPlanStatus
-    creator: str
-    attachment: str
-    created_at: datetime
+    creator: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 
 class AnnualPlan(CreateAnnualPlan):
@@ -47,7 +49,7 @@ class AnnualPlan(CreateAnnualPlan):
 
 
 class ReadAnnualPlan(AnnualPlan):
-    pass
+    attachment: ReadAttachment
 
 
 class UpdateAnnualPlan(BaseModel):

@@ -20,9 +20,10 @@ async def add_new_follow_up(
             InsertQueryBuilder(connection=connection)
             .into_table("follow_up")
             .values(follow_up)
-            .returning(FollowUpColumns.FOLLOW_UP_ID.value)
+            .returning(FollowUpColumns.FOLLOW_UP_ID.value, FollowUpColumns.NAME.value)
             .execute()
         )
+
         return builder
 
 
