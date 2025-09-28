@@ -1,12 +1,15 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File, Query, BackgroundTasks
 from AuditNew.Internal.engagements.schemas import EngagementStatus
+from core.utils import upload_attachment
+from models.attachment_model import add_new_attachment
 from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
     attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model
 from models.issue_models import get_engagement_issues_model
+from schemas.attachement_schemas import AttachmentCategory
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp, ReadFollowUpData
 from schema import ResponseMessage
@@ -17,7 +20,8 @@ from typing import List, Optional
 
 router = APIRouter(prefix="/follow_up")
 
-@router.post("/{module_id}", response_model=ResponseMessage)
+
+@router.post("/{module_id}")
 async def create_new_follow_up(
         module_id: str,
         name: str = Form(...),
@@ -26,10 +30,11 @@ async def create_new_follow_up(
         attachment: Optional[UploadFile] = File(None),
         reviewed_by: str = Form(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
 
-        data = await add_new_follow_up(
+        follow_up_data = await add_new_follow_up(
             connection=connection,
             follow_up=CreateFollowUp(
             follow_up_id=get_unique_key(),
@@ -44,14 +49,14 @@ async def create_new_follow_up(
         )
 
 
-        if data is None:
+        if follow_up_data is None:
             raise HTTPException(status_code=400, detail="Failed To Create Follow Up")
 
 
         for engagement_id in engagement_ids:
             await attach_engagements_to_follow_up(
                 connection=connection,
-                follow_up_id=data.get("follow_up_id"),
+                follow_up_id=follow_up_data.get("follow_up_id"),
                 engagement_id=engagement_id
             )
 
@@ -59,12 +64,26 @@ async def create_new_follow_up(
         for issue_id in issue_ids:
             await attach_issues_to_follow_up(
                 connection=connection,
-                follow_up_id=data.get("follow_up_id"),
+                follow_up_id=follow_up_data.get("follow_up_id"),
                 issue_id=issue_id
             )
 
+        if attachment is not None:
+            await add_new_attachment(
+                connection=connection,
+                attachment=attachment,
+                item_id=follow_up_data.get("follow_up_id"),
+                module_id=module_id,
+                url=upload_attachment(
+                category=AttachmentCategory.FOlLOW_UP,
+                background_tasks=background_tasks,
+                file=attachment
+                ),
+                category=AttachmentCategory.FOlLOW_UP
+            )
 
-        return data
+
+        return follow_up_data
 
 
 

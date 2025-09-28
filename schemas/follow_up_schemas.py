@@ -3,6 +3,8 @@ from datetime import datetime
 from pydantic import  BaseModel
 from enum import Enum
 
+from schemas.attachement_schemas import ReadAttachment
+
 
 class FollowUpStatus(str, Enum):
     DRAFT = "Draft"
@@ -125,5 +127,5 @@ class BaseFollowUpData(CreateFollowUp):
     pass
 
 
-class ReadFollowUpData(CreateFollowUp):
-    pass
+class ReadFollowUpData(BaseFollowUpData):
+    attachment: ReadAttachment

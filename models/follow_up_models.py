@@ -1,8 +1,10 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
+from schemas.attachement_schemas import AttachmentColumns, AttachmentCategory, ReadAttachment
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
-    UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue
+    UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \
+    ReadFollowUpData
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -334,9 +336,45 @@ async def get_all_module_follow_up(
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
-            .from_table(Tables.FOLLOW_UP.value)
-            .where(FollowUpColumns.MODULE_ID.value, module_id)
+            .from_table(Tables.FOLLOW_UP.value, alias="follow_up")
+            .join(
+                "LEFT",
+                Tables.ATTACHMENTS.value,
+                "attachment.item_id = follow_up.follow_up_id",
+                "attachment",
+                use_prefix=True,
+                model=ReadAttachment,
+            )
+            .where("follow_up."+FollowUpColumns.MODULE_ID.value, module_id)
+            .where("attachment."+AttachmentColumns.CATEGORY.value, AttachmentCategory.FOlLOW_UP.value)
+            .select_fields()
             .fetch_all()
         )
 
-        return builder
+        follow_ups = []
+
+        for follow_up in builder:
+            data = ReadFollowUpData(
+                follow_up_id=follow_up.get("follow_up_id"),
+                module_id=follow_up.get("module_id"),
+                name=follow_up.get("name"),
+                status=follow_up.get("status"),
+                created_by=follow_up.get("created_by"),
+                created_at=follow_up.get("created_at"),
+                attachment=ReadAttachment(
+                    attachment_id=follow_up.get("attachment_id"),
+                    module_id=follow_up.get("attachment_id"),
+                    item_id=follow_up.get("item_id"),
+                    filename=follow_up.get("filename"),
+                    category=follow_up.get("category"),
+                    url=follow_up.get("url"),
+                    size=follow_up.get("size"),
+                    type=follow_up.get("type"),
+                    created_at=follow_up.get("created_at")
+                )
+            )
+
+            follow_ups.append(data)
+
+
+        return follow_ups
