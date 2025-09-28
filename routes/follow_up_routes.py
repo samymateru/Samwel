@@ -8,7 +8,7 @@ from models.follow_up_models import add_new_follow_up, update_follow_up_details_
     attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model
 from models.issue_models import get_engagement_issues_model
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUpTest, CreateFollowUp, \
-    FollowUpStatus, UpdateFollowUp
+    FollowUpStatus, UpdateFollowUp, ReadFollowUpData
 from schema import ResponseMessage
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, get_unique_key, return_checker
@@ -149,13 +149,13 @@ async def fetch_all_issues_on_engagement(
 
 
 
-@router.get("/{module_id}")
+@router.get("/{module_id}", response_model=List[ReadFollowUpData])
 async def fetch_all_follow_up_on_module(
         module_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        data = get_all_module_follow_up(
+        data = await get_all_module_follow_up(
             connection=connection,
             module_id=module_id
         )
