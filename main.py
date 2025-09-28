@@ -36,7 +36,6 @@ from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
 from services.logging.logger import global_logger
-from services.notifications.notifications_service import NotificationManager
 from services.notifications.util import notification_manager
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \

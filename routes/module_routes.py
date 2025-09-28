@@ -17,7 +17,7 @@ async def create_new_module(
         organization_id: str,
         module: NewModule,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
     ):
     with exception_response():
 

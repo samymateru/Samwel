@@ -16,6 +16,7 @@ class AttachmentCategory(str, Enum):
     ISSUE_IMPLEMENTATION = "issue_implementation"
     ENGAGEMENT_ADMINISTRATION = "engagement_administration"
     FOlLOW_UP = "follow_up"
+    FOLLOW_UP_TEST = "follow_up_test"
 
 
 class AttachmentColumns(str, Enum):
