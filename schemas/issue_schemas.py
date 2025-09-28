@@ -145,16 +145,24 @@ class NewIssueResponse(BaseModel):
     type: IssueResponseTypes
     issued_by: str
 
+
+
 class CreateIssueResponses(NewIssueResponse):
     id: str
     issue: str
     created_at: datetime
 
+
+
 class UpdateIssueStatus(BaseModel):
     status: IssueStatus
 
+
+
 class UpdateIssueDetails(BaseModel):
     pass
+
+
 
 class ReadIssues(BaseModel):
     id: str

@@ -1,3 +1,4 @@
+from schemas.issue_schemas import ReadIssues
 from utils import get_current_user
 from schema import CurrentUser, ResponseMessage
 from fastapi import APIRouter, Depends
@@ -51,14 +52,12 @@ async def update_reporting_procedure(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
-@router.get("/summary_findings/{engagement_id}", response_model=List[SummaryFinding])
+@router.get("/summary_findings/{engagement_id}", response_model=List[ReadIssues])
 async def fetch_summary_of_findings(
         engagement_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_summary_findings(connection=db, engagement_id=engagement_id)
         return data
