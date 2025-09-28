@@ -106,6 +106,7 @@ async def delete_main_audit_program_model(
             .from_table(Tables.MAIN_PROGRAM.value)
             .check_exists({MainProgramColumns.ID.value: program_id})
             .where({MainProgramColumns.ID.value: program_id})
+            .returning(MainProgramColumns.ID.value)
             .execute()
         )
 

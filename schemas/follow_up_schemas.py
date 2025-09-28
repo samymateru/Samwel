@@ -89,6 +89,11 @@ class CreateFollowUpTest(NewFollowUpTest):
     follow_up_id: str
     created_at: datetime
 
+class FollowUpTest(CreateFollowUpTest):
+    pass
+
+class ReadFollowUpTest(FollowUpTest):
+    pass
 
 class CreateFollowUpEngagement(BaseModel):
     follow_up_engagement_id: str

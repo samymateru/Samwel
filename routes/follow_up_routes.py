@@ -11,7 +11,7 @@ from models.follow_up_models import add_new_follow_up, update_follow_up_details_
 from models.issue_models import get_engagement_issues_model
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUp, \
-    FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest
+    FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest, ReadFollowUpTest
 from schema import ResponseMessage
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, get_unique_key, return_checker
@@ -288,7 +288,7 @@ async def update_follow_up_test(
 
 
 
-@router.get("/test/{follow_up_id}", response_model=ResponseMessage)
+@router.get("/test/{follow_up_id}", response_model=List[ReadFollowUpTest])
 async def fetch_follow_up_test_model(
         follow_up_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
