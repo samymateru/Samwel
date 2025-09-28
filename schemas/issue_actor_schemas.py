@@ -25,7 +25,7 @@ class NewIssueActor(BaseModel):
     user_id: str
     name: str
     email: str
-    role: str
+    role: IssueActors
 
 
 class CreateIssueActor(NewIssueActor):

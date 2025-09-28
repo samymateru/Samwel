@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.issue_actor_schemas import CreateIssueActor, IssueActors, IssueActorColumns
-from schemas.issue_schemas import NewIssue
+from schemas.issue_schemas import NewIssue, IssueColumns
 from schemas.user_schemas import User
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -11,11 +11,13 @@ from utils import exception_response, get_unique_key
 from datetime import datetime
 
 
+
 async def assign_issue_actor(
         connection: AsyncConnection,
         user: User,
         role: IssueActors,
-        issue_id: str
+        issue_id: str,
+        throw: bool = False
 ):
     with exception_response():
         __user__ = CreateIssueActor(
@@ -35,11 +37,12 @@ async def assign_issue_actor(
             .check_exists({IssueActorColumns.ROLE.value: role.value})
             .check_exists({IssueActorColumns.USER_ID.value: user.id})
             .check_exists({IssueActorColumns.ISSUE_ID.value: issue_id})
-            .throw_error_on_exists(False)
+            .throw_error_on_exists(throw)
             .returning(IssueActorColumns.ISSUE_ACTOR_ID.value)
             .execute()
         )
         return builder
+
 
 
 async def get_all_issue_actors_on_issue_model(
@@ -55,6 +58,7 @@ async def get_all_issue_actors_on_issue_model(
         )
 
         return builder
+
 
 
 async def get_issue_actors_on_issue_based_on_role_model(
@@ -74,28 +78,23 @@ async def get_issue_actors_on_issue_based_on_role_model(
         return builder
 
 
+
 async def remove_issue_actor_model(
         connection: AsyncConnection,
-        issue_id: str,
-        user_id: str
+        issue_actor_id: str,
 ):
     with exception_response():
         builder = await (
             DeleteQueryBuilder(connection=connection)
             .from_table(Tables.ISSUE_ACTORS.value)
-            .check_exists({
-                IssueActorColumns.ISSUE_ID.value: issue_id,
-                IssueActorColumns.USER_ID.value: user_id
-            })
-            .where({
-                IssueActorColumns.ISSUE_ID.value: issue_id,
-                IssueActorColumns.USER_ID.value: user_id
-            })
+            .check_exists({IssueActorColumns.ISSUE_ACTOR_ID.value: issue_actor_id})
+            .where({IssueActorColumns.ISSUE_ACTOR_ID.value: issue_actor_id})
             .returning(IssueActorColumns.ISSUE_ACTOR_ID.value)
             .execute()
         )
 
         return builder
+
 
 
 async def initialize_issue_actors(
@@ -196,3 +195,29 @@ async def initialize_issue_actors(
                 raise HTTPException(status_code=400, detail="Error While Assign Issue Actors")
 
         return True
+
+
+
+async def get_all_actor_issues_model(
+        connection: AsyncConnection,
+        user_id: str,
+        module_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUE_ACTORS.value, alias="iss_act")
+            .join(
+                "LEFT",
+                Tables.ISSUES.value,
+                "iss.id = iss_act.issue_id"
+                "iss",
+                use_prefix=False
+            )
+            .where(IssueActorColumns.USER_ID.value, user_id)
+            .where(IssueColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder
+

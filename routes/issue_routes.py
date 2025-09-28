@@ -228,9 +228,6 @@ async def delete_issue_details(
 
 
 
-
-
-
 @router.get("/{module_id}")
 async def fetch_all_module_issues_filtered(
         module_id: str,

@@ -16,15 +16,17 @@ class AttachmentCategory(str, Enum):
     ENGAGEMENT_ADMINISTRATION = "engagement_administration"
 
 
-class Attachment(BaseModel):
-    id: Optional[str] = None
-    engagement: str
-    procedure: str
+
+class NewAttachment(BaseModel):
     name: str
     url: str
     size: int
     type: str
-    section: AttachmentSections
-    creator_name: Optional[str] = None
-    creator_email: Optional[str] = None
-    created_at: datetime = datetime.now()
+
+
+class Attachment(BaseModel):
+
+    attachment_id: str
+    category: AttachmentCategory
+    creator: str
+    created_at: datetime
