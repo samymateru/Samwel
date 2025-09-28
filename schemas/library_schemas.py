@@ -34,3 +34,37 @@ class CreateLibraryEntry(BaseModel):
 
 class ImportLibraryItems(BaseModel):
     library_ids: List[str]
+
+
+
+
+class RiskControlLibraryItem(BaseModel):
+    risk: str
+    risk_rating: str
+    control: str
+    control_type: str
+    control_objective: str
+
+
+
+class SubProgramLibraryItem(BaseModel):
+    prcm: List[RiskControlLibraryItem]
+    title: str
+    test_type: str
+    audit_objective: str
+    test_description: str
+    brief_description: str
+    sampling_approach: str
+
+
+
+class MainProgramLibraryItem(BaseModel):
+    program_name: str
+    program_description: str
+    sub_programs: List[SubProgramLibraryItem]
+
+
+
+
+
+
