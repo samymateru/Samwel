@@ -313,3 +313,18 @@ async def edit_entity_user(
         )
 
         return builder
+
+
+async def get_user_by_email(
+        connection: AsyncConnection,
+        email: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.USERS.value)
+            .where(UserColumns.EMAIL.value, email)
+            .fetch_one()
+        )
+
+        return builder

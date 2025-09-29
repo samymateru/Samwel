@@ -1,7 +1,9 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.notification_schemas import UpdateNotificationRead, UserNotificationColumns, NotificationsStatus
+from schemas.notification_schemas import UpdateNotificationRead, UserNotificationColumns, NotificationsStatus, \
+    CreateNotifications
 from services.connections.postgres.delete import DeleteQueryBuilder
+from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response
@@ -11,18 +13,18 @@ from datetime import datetime
 
 async def add_notification_to_user_model(
         connection: AsyncConnection,
-        user_id: str
+        notification: CreateNotifications
 ):
     with exception_response():
+
         builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.NOTIFICATIONS.value)
-            .where(UserNotificationColumns.USER.value, user_id)
-            .fetch_all()
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.NOTIFICATIONS.value)
+            .values(notification)
+            .execute()
         )
 
         return builder
-
 
 
 async def fetch_all_user_notification_model(

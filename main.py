@@ -186,10 +186,12 @@ async def login(
           connection=Depends(get_async_db_connection)
 ):
     with exception_response():
+
         user_data  = await get_entity_user_details_by_mail(
             connection=connection,
             email=email
         )
+
         if user_data is None:
             raise HTTPException(status_code=404, detail="User doesn't exists")
 

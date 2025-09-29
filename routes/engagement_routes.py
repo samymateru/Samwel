@@ -7,11 +7,13 @@ from models.engagement_models import register_new_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
     update_engagement_data, generate_engagement_code
 from models.engagement_staff_models import create_new_engagement_staff_model
+from models.notification_models import add_notification_to_user_model
 from models.recent_activity_models import add_new_recent_activity
 from schema import ResponseMessage, CurrentUser
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
     AddOpinionRating, UpdateEngagement_
 from schemas.engagement_staff_schemas import NewEngagementStaff
+from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
@@ -59,6 +61,18 @@ async def create_new_engagement(
                 connection=connection,
                 staff=staff,
                 engagement_id=results.get("id")
+            )
+
+            await add_notification_to_user_model(
+                connection=connection,
+                notification=CreateNotifications(
+                    id=get_unique_key(),
+                    title="Engagement invitation",
+                    user_id=lead.id,
+                    message=f"Your have been invited to engagement {engagement.name} as Engagement lead",
+                    status=NotificationsStatus.NEW,
+                    created_at=datetime.now()
+                )
             )
 
         await add_new_recent_activity(
@@ -139,8 +153,6 @@ async def update_engagement_details(
                 created_at=datetime.now()
             )
         )
-
-
 
         return await return_checker(
             data=results,

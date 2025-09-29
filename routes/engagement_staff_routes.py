@@ -1,12 +1,16 @@
+from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
     update_staff_model, delete_staff_model
+from models.notification_models import add_notification_to_user_model
+from models.user_models import get_user_by_email
 from schema import ResponseMessage
 from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, ReadEngagementStaff
+from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response, return_checker
+from utils import exception_response, return_checker, get_unique_key
 
 router = APIRouter(prefix="/engagements")
 
@@ -17,14 +21,38 @@ async def create_new_engagement_staff(
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+
         results = await create_new_engagement_staff_model(
             connection=connection,
             staff=staff,
             engagement_id=engagement_id
         )
 
+        if results is None:
+            raise HTTPException(status_code=400, detail="Failed To Create Engagement Staff")
+
+
+        user_data = await get_user_by_email(
+            connection=connection,
+            email=staff.email
+        )
+
+
+        await add_notification_to_user_model(
+            connection=connection,
+            notification=CreateNotifications(
+                id=get_unique_key(),
+                title="Engagement invitation",
+                user_id=user_data.get("id"),
+                message=f"Your have been invited to engagement as {staff.role} from {staff.start_date} to {staff.end_date}",
+                status=NotificationsStatus.NEW,
+                created_at=datetime.now()
+            )
+        )
+
+
         return await return_checker(
-            data=results,
+            data=True,
             passed="Engagement Staff Successfully Created",
             failed="Failed Creating  Engagement Staff"
         )
