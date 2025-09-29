@@ -69,6 +69,7 @@ def render_node(node, document):
                             if "marks" in c:
                                 apply_marks(run, c["marks"])
 
+
 def render_doc(data):
     doc = Document()
     for node in data.get("content", []):
@@ -133,4 +134,4 @@ json_data = {
 }
 
 sample = render_doc(json_data)
-sample.save("output.docx")
+sample.save("placeholder.docx")

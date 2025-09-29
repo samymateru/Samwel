@@ -214,8 +214,8 @@ async def get_all_actor_issues_model(
                 "iss",
                 use_prefix=False
             )
-            .where(IssueActorColumns.USER_ID.value, user_id)
-            .where(IssueColumns.MODULE_ID.value, module_id)
+            .where("iss_act."+IssueActorColumns.USER_ID.value, user_id)
+            .where("iss."+IssueColumns.MODULE_ID.value, module_id)
             .fetch_all()
         )
 
