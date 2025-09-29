@@ -3,17 +3,18 @@ from docxtpl import DocxTemplate, Subdoc
 doc = DocxTemplate("name.docx")
 
 # Create subdoc for insertion
-subdoc = doc.new_subdoc("placeholder.docx")
-subdoc.add_paragraph("This is inserted content.")
+subdoc1 = doc.new_subdoc("placeholder.docx")
+subdoc2 = doc.new_subdoc("placeholder.docx")
+
 
 
 context = {
     'people': [
         {
-        'name': subdoc,
+        'name': subdoc1,
         },
         {
-        'place': subdoc,
+        'name': subdoc2,
         }
     ]
 }

@@ -210,7 +210,7 @@ async def get_all_actor_issues_model(
             .join(
                 "LEFT",
                 Tables.ISSUES.value,
-                "iss.id = iss_act.issue_id"
+                "iss.id = iss_act.issue_id",
                 "iss",
                 use_prefix=False
             )
