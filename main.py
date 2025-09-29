@@ -1,5 +1,7 @@
 import uuid
 from typing import Optional
+
+import aio_pika
 from fastapi import FastAPI, Depends, Form, Request, Query
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
@@ -35,6 +37,7 @@ from models.user_models import get_entity_user_details_by_mail
 from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
+from services.connections.rabitmq.connection import get_rabbitmq_channel
 from services.logging.logger import global_logger
 from services.notifications.util import notification_manager
 from services.security.security import verify_password
@@ -125,6 +128,21 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"detail": exc.detail}
     )
+
+from aio_pika import RobustChannel
+@app.get("/")
+async def home(
+        channel: RobustChannel = Depends(get_rabbitmq_channel),
+
+):
+    queue_name = "my_queue"
+
+    await channel.default_exchange.publish(
+        aio_pika.Message(body=b"Hello from FastAPI!"),
+        routing_key=queue_name
+    )
+
+    return {"message": "Task sent!"}
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
@@ -239,6 +257,7 @@ async def change_password(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
+
         await update_user_password(
             connection=db,
             user_id=user.user_id,
@@ -246,6 +265,7 @@ async def change_password(
             new_password=new_password
 
         )
+
         return ResponseMessage(detail="Password updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

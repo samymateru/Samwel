@@ -273,9 +273,6 @@ async def get_module_issues_model(
 
 
 
-
-
-
 async def update_issue_details_model(
         connection: AsyncConnection,
         issue: UpdateIssueDetails,

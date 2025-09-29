@@ -1,6 +1,5 @@
 import aio_pika
 from typing import AsyncGenerator, Optional
-
 from aio_pika.abc import AbstractRobustChannel
 
 

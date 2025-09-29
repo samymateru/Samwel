@@ -160,7 +160,27 @@ class UpdateIssueStatus(BaseModel):
 
 
 class UpdateIssueDetails(BaseModel):
-    pass
+    title: str
+    criteria: Dict | str
+    finding: Dict | str
+    risk_rating: str
+    source: str
+    process: str
+    sub_process: str
+    root_cause: str
+    sub_root_cause: str
+    risk_category: str
+    sub_risk_category: str
+    impact_category: str
+    impact_sub_category: str
+    root_cause_description: Dict | str
+    impact_description: Dict | str
+    recommendation: Dict | str
+    regulatory: bool
+    estimated_implementation_date: datetime
+    sdi_name: Optional[str] = None
+    recurring_status: Optional[bool] = False
+    management_action_plan: Optional[Dict] | Optional[str] = None
 
 
 
