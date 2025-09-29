@@ -8,6 +8,23 @@ from utils import exception_response
 from datetime import datetime
 
 
+
+async def add_notification_to_user_model(
+        connection: AsyncConnection,
+        user_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.NOTIFICATIONS.value)
+            .where(UserNotificationColumns.USER.value, user_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
 async def fetch_all_user_notification_model(
         connection: AsyncConnection,
         user_id: str

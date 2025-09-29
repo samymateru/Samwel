@@ -27,8 +27,8 @@ services:
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672"    # AMQP protocol port (your app connects here)
-      - "15672:15672"  # Management UI port
+      - "5672:5672"
+      - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest   # You can change these credentials
+      RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
