@@ -187,13 +187,11 @@ async def fetch_all_follow_up_on_module(
 @router.put("/review/{follow_up_id}", response_model=ResponseMessage)
 async def review_follow_up_data(
         follow_up_id: str,
-        reviewed_by: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
         results = await approve_follow_up_data_model(
             connection=connection,
-            reviewed_by=reviewed_by,
             follow_up_id=follow_up_id
         )
 

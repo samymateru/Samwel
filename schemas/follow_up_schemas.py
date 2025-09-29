@@ -9,6 +9,7 @@ from schemas.attachement_schemas import ReadAttachment
 class FollowUpStatus(str, Enum):
     DRAFT = "Draft"
     PREPARED = "Prepared"
+    REVIEWED = "Reviewed"
     COMPLETED = "Completed"
 
 class FollowUpColumns(str, Enum):

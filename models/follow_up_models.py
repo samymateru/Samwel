@@ -69,13 +69,36 @@ async def remove_follow_up_data_model(
 
 async def approve_follow_up_data_model(
         connection: AsyncConnection,
-        follow_up_id: str,
-        reviewed_by: str
+        follow_up_id: str
 ):
     with exception_response():
-        __follow_up__ = ReviewFollowUp(
-            reviewed_by=reviewed_by,
-            status=FollowUpStatus.PREPARED,
+        __follow_up__ = CompleteFollowUp(
+            status=FollowUpStatus.REVIEWED,
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.FOLLOW_UP.value)
+            .values(__follow_up__)
+            .check_exists({FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id})
+            .where({
+                FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id,
+                FollowUpColumns.STATUS.value: FollowUpStatus.PREPARED,
+            })
+            .returning(FollowUpColumns.FOLLOW_UP_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+async def reset_follow_up_status_to_draft_model(
+        connection: AsyncConnection,
+        follow_up_id: str
+):
+    with exception_response():
+        __follow_up__ = CompleteFollowUp(
+            status=FollowUpStatus.DRAFT,
         )
 
         builder = await (
@@ -92,14 +115,13 @@ async def approve_follow_up_data_model(
 
 
 
-async def reset_follow_up_status_to_draft_model(
+async def mark_follow_up_prepared_model(
         connection: AsyncConnection,
         follow_up_id: str
 ):
     with exception_response():
-        __follow_up__ = DisApproveFollowUp(
-            status=FollowUpStatus.DRAFT,
-            reviewed_by=""
+        __follow_up__ = CompleteFollowUp(
+            status=FollowUpStatus.PREPARED,
         )
 
         builder = await (
@@ -107,7 +129,10 @@ async def reset_follow_up_status_to_draft_model(
             .into_table(Tables.FOLLOW_UP.value)
             .values(__follow_up__)
             .check_exists({FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id})
-            .where({FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id})
+            .where({
+                FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id,
+                FollowUpColumns.STATUS.value: FollowUpStatus.DRAFT
+            })
             .returning(FollowUpColumns.FOLLOW_UP_ID.value)
             .execute()
         )
@@ -130,12 +155,16 @@ async def complete_follow_up_model(
             .into_table(Tables.FOLLOW_UP.value)
             .values(__follow_up__)
             .check_exists({FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id})
-            .where({FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id})
+            .where({
+                FollowUpColumns.FOLLOW_UP_ID.value: follow_up_id,
+                FollowUpColumns.STATUS.value: FollowUpStatus.REVIEWED,
+            })
             .returning(FollowUpColumns.FOLLOW_UP_ID.value)
             .execute()
         )
 
         return builder
+
 
 
 
