@@ -8,9 +8,9 @@ class AttachmentCategory(str, Enum):
     PLANNING = "planning"
     FINALIZATION = "finalization"
     REPORTING = "reporting"
-    PROCEDURE = "procedure"
-    PROGRAM = "procedure"
-    DRAFT_ENGAGEMENT = "draft_engagement"
+    SUB_PROGRAM = "sub_program"
+    REVISED_ENGAGEMENT_ENGAGEMENT = "revised_engagement_engagement"
+
     FINAL_ENGAGEMENT = "final_engagement"
     ANNUAL_PLAN = "annual_plan"
     ISSUE_IMPLEMENTATION = "issue_implementation"
