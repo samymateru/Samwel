@@ -34,7 +34,7 @@ def apply_marks(run, marks):
                 run.font.size = Pt(size)
 
 
-def render_node(node, document, parent=None):
+def render_node(node, document):
     ntype = node["type"]
 
     if ntype == "paragraph":
@@ -76,7 +76,6 @@ def render_doc(data):
     return doc
 
 # Example usage:
-import json
 
 json_data = {
     "type": "doc",
@@ -98,7 +97,38 @@ json_data = {
                 ] },
                 { "type": "text", "text": "world!" }
             ]
+        },
+        {
+            "type": "ordered_list",
+            "content": [
+                {
+                    "type": "list_item",
+                    "content": [
+                        {"type": "paragraph", "content": [
+                            {"type": "text", "text": "Hello ", "marks": [
+                                {"type": "bold"},
+                                {"type": "color", "attrs": {"color": "#FF0000"}},
+                                {"type": "underline"},
+                                {"type": "fontsize", "attrs": {"size": 36}},
+                                {
+                                    "type": "fontfamily",
+                                    "attrs": {
+                                        "name": "Arial"
+                                    }
+                                }
+                            ]}
+                        ]}
+                    ]
+                },
+                {
+                    "type": "list_item",
+                    "content": [
+                        {"type": "paragraph", "content": [{"type": "text", "text": "Second bullet"}]}
+                    ]
+                }
+            ]
         }
+
     ]
 }
 
