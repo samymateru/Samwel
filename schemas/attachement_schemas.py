@@ -9,12 +9,13 @@ class AttachmentCategory(str, Enum):
     FINALIZATION = "finalization"
     REPORTING = "reporting"
     SUB_PROGRAM = "sub_program"
-    REVISED_ENGAGEMENT_ENGAGEMENT = "revised_engagement_engagement"
-
-    FINAL_ENGAGEMENT = "final_engagement"
+    REVISED_ENGAGEMENT_LETTER = "revised_engagement_letter"
+    FINDING_SHEET = "finding_sheet"
+    DRAFT_AUDIT_REPORT = "draft_audit_report"
     ANNUAL_PLAN = "annual_plan"
     ISSUE_IMPLEMENTATION = "issue_implementation"
-    ENGAGEMENT_ADMINISTRATION = "engagement_administration"
+    POLICY = "policy"
+    ENGAGEMENT_PROCESS = "engagement_process"
     FOlLOW_UP = "follow_up"
     FOLLOW_UP_TEST = "follow_up_test"
 
