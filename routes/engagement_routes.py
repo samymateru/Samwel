@@ -1,18 +1,21 @@
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import List
+from typing import List, Optional
 from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
     update_engagement_data, generate_engagement_code
 from models.engagement_staff_models import create_new_engagement_staff_model
-from schema import ResponseMessage
+from models.recent_activity_models import add_new_recent_activity
+from schema import ResponseMessage, CurrentUser
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
     AddOpinionRating, UpdateEngagement_
 from schemas.engagement_staff_schemas import NewEngagementStaff
+from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import exception_response, return_checker
+from services.security.security import get_current_user
+from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
 router = APIRouter(prefix="/engagements")
@@ -57,6 +60,19 @@ async def create_new_engagement(
                 staff=staff,
                 engagement_id=results.get("id")
             )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=module_id,
+                name=engagement.name,
+                description="New Engagement Created",
+                category=RecentActivityCategory.ENGAGEMENT_CREATED,
+                created_by="",
+                created_at=datetime.now()
+            )
+        )
 
         asyncio.create_task(set_engagement_templates(engagement_id=results.get("id")))
 
@@ -111,6 +127,19 @@ async def update_engagement_details(
             engagement_id=engagement_id
         )
 
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=engagement.name,
+                name=engagement.name,
+                description="Engagement Updated",
+                category=RecentActivityCategory.ENGAGEMENT_UPDATED,
+                created_by="",
+                created_at=datetime.now()
+            )
+        )
+
 
 
         return await return_checker(
@@ -123,12 +152,27 @@ async def update_engagement_details(
 @router.put("/archive/{engagement_id}")
 async def archive_engagement(
         engagement_id: str,
+        name: Optional[str] = Query(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await archive_annual_plan_engagement(
             connection=connection,
             engagement_id=engagement_id
+        )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=auth.module_id,
+                name=name,
+                description="Engagement Archived",
+                category=RecentActivityCategory.ENGAGEMENT_ARCHIVED,
+                created_by="",
+                created_at=datetime.now()
+            )
         )
 
         return await return_checker(
@@ -141,12 +185,27 @@ async def archive_engagement(
 @router.put("/complete/{engagement_id}")
 async def complete_engagement(
         engagement_id: str,
+        name: Optional[str] = Query(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await complete_annual_plan_engagement(
             connection=connection,
             engagement_id=engagement_id
+        )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=auth.module_id,
+                name=name,
+                description="Engagement Archived",
+                category=RecentActivityCategory.ENGAGEMENT_ARCHIVED,
+                created_by="",
+                created_at=datetime.now()
+            )
         )
 
         return await return_checker(
@@ -159,12 +218,27 @@ async def complete_engagement(
 @router.delete("/{engagement_id}")
 async def delete_engagement_data_partially(
         engagement_id: str,
+        name: Optional[str] = Query(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await remove_engagement_partially(
             connection=connection,
             engagement_id=engagement_id
+        )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=auth.module_id,
+                name=name,
+                description="Engagement Deleted",
+                category=RecentActivityCategory.ENGAGEMENT_DELETED,
+                created_by="",
+                created_at=datetime.now()
+            )
         )
 
         return await return_checker(

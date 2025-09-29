@@ -6,7 +6,7 @@ from datetime import datetime
 
 class UserNotificationColumns(str, Enum):
     ID = "id"
-    USER = "user"
+    USER = "user_id"
     TITLE = "title"
     MESSAGE = "message"
     STATUS = "status"
@@ -17,12 +17,12 @@ class UserNotificationColumns(str, Enum):
 class NotificationsStatus(str, Enum):
     NEW = "New"
     OPENED = "Opened"
-    ARCHIVED = "archived"
+    ARCHIVED = "Archived"
 
 
 class ReadUserNotification(BaseModel):
     id: str
-    user: str
+    user_id: str
     title: Optional[str] = None
     message: str
     status: NotificationsStatus
@@ -31,7 +31,7 @@ class ReadUserNotification(BaseModel):
 
 class CreateNotifications(BaseModel):
     id: str
-    user: str
+    user_id: str
     title: Optional[str] = None
     message: str
     status: NotificationsStatus

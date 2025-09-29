@@ -3,12 +3,14 @@ from core.utils import upload_attachment
 from models.annual_plan_models import register_new_annual_plan, get_module_annual_plans, get_annual_plan_details, \
     remove_annual_plan_partially, edit_annual_plan_details
 from models.attachment_model import add_new_attachment
+from models.recent_activity_models import add_new_recent_activity
 from schema import ResponseMessage
 from schemas.annual_plan_schemas import NewAnnualPlan, ReadAnnualPlan, UpdateAnnualPlan
 from schemas.attachement_schemas import AttachmentCategory
+from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from utils import exception_response, return_checker
+from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
 
@@ -56,6 +58,19 @@ async def create_new_annual_plan(
             file=attachment
             ),
             category=AttachmentCategory.ANNUAL_PLAN
+        )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=module_id,
+                name=name,
+                description="New Annual Plan Created",
+                category=RecentActivityCategory.ANNUAL_PLAN_CREATED,
+                created_by="",
+                created_at=datetime.now()
+            )
         )
 
 

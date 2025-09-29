@@ -1,7 +1,11 @@
 from psycopg import AsyncConnection
-
-from schemas.notification_schemas import UpdateNotificationRead
+from core.tables import Tables
+from schemas.notification_schemas import UpdateNotificationRead, UserNotificationColumns, NotificationsStatus
+from services.connections.postgres.delete import DeleteQueryBuilder
+from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response
+from datetime import datetime
 
 
 async def fetch_all_user_notification_model(
@@ -9,7 +13,15 @@ async def fetch_all_user_notification_model(
         user_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.NOTIFICATIONS.value)
+            .where(UserNotificationColumns.USER.value, user_id)
+            .fetch_all()
+        )
+
+        return builder
+
 
 
 async def remove_single_user_notification_model(
@@ -17,7 +29,17 @@ async def remove_single_user_notification_model(
         notification_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.NOTIFICATIONS.value)
+            .check_exists({UserNotificationColumns.ID.value: notification_id})
+            .where({UserNotificationColumns.ID.value: notification_id})
+            .returning(UserNotificationColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
 
 
 async def remove_all_user_notifications_model(
@@ -25,13 +47,38 @@ async def remove_all_user_notifications_model(
         user_id: str
 ):
     with exception_response():
-        pass
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.NOTIFICATIONS.value)
+            .check_exists({UserNotificationColumns.USER.value: user_id})
+            .where({UserNotificationColumns.USER.value: user_id})
+            .returning(UserNotificationColumns.USER.value)
+            .execute()
+        )
+
+        return builder
+
 
 
 async def update_user_notification_after_read_model(
         connection: AsyncConnection,
-        notification: UpdateNotificationRead,
         notification_id: str
 ):
     with exception_response():
-        pass
+
+        __read_notification__ = UpdateNotificationRead(
+            status=NotificationsStatus.OPENED,
+            read_at=datetime.now()
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.NOTIFICATIONS.value)
+            .values(__read_notification__)
+            .check_exists({UserNotificationColumns.ID.value: notification_id})
+            .where({UserNotificationColumns.ID.value: notification_id})
+            .returning(UserNotificationColumns.ID.value)
+            .execute()
+        )
+
+        return builder
