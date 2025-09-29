@@ -3,15 +3,18 @@ from docxtpl import DocxTemplate, Subdoc
 doc = DocxTemplate("name.docx")
 
 subdoc1 = doc.new_subdoc("placeholder.docx")
-subdoc2 = doc.new_subdoc("placeholder.docx")
-
+subdoc = doc.new_subdoc("placeholder.docx")
 
 
 context = {
     'people': [
+
         {
-        'name': subdoc1,
+            'name': subdoc1,
+            'place': subdoc
+
         }
+
     ]
 }
 

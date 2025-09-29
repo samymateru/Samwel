@@ -1,7 +1,5 @@
 import asyncio
-
 from fastapi import APIRouter, Depends, HTTPException
-
 from background import set_company_profile
 from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details, \
     delete_entity_completely, edit_entity_data

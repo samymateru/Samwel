@@ -1,9 +1,12 @@
 from datetime import datetime
 from typing import Dict, Optional, List
-
 from pydantic import BaseModel
 
 
+class ResponsiblePerson(BaseModel):
+    name: str
+    email: str
+    role: str
 
 class IssuesFinding(BaseModel):
     title: str

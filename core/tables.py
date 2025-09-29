@@ -28,5 +28,6 @@ class Tables(str, Enum):
     ATTACHMENTS = "attachments"
     RECENT_ACTIVITIES = "recent_activities"
     NOTIFICATIONS = "notifications"
+    MANAGEMENT = "managers"
 
 

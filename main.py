@@ -68,6 +68,7 @@ from routes.issue_actor_routes import router as issue_actor_routes
 from routes.PRCM_routes import router as PRCM_routes
 from routes.engegement_administration_profile_routes import router as engagement_administration_profile_routes
 from routes.risk_control_routes import router as risk_control_routes
+from routes.management_routes import router as management_routes
 
 
 load_dotenv()
@@ -317,6 +318,7 @@ app.include_router(library_routes, tags=["Library Routes"])
 app.include_router(main_program_routes, tags=["Main Program Routes"])
 app.include_router(sub_program_routes, tags=["Sub Program Routes"])
 app.include_router(follow_up_routes, tags=["Follow Routes"])
+app.include_router(management_routes, tags=["Management Routes"])
 
 
 
