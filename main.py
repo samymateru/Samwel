@@ -34,7 +34,7 @@ from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
 from conv import converter
-from models.roll_forwar_model import export_engagement_content_model
+from models.roll_forwar_model import export_engagement_content_model, roll_policy, roll_regulation
 from reports.models.issue_finding_model import load_issue_finding, create_table_of_content
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
@@ -77,6 +77,10 @@ from routes.PRCM_routes import router as PRCM_routes
 from routes.engegement_administration_profile_routes import router as engagement_administration_profile_routes
 from routes.risk_control_routes import router as risk_control_routes
 from routes.management_routes import router as management_routes
+from routes.policy_routes import router as policy_routes
+from routes.regulation_routes import router as regulation_routes
+
+
 from docxtpl import DocxTemplate, Subdoc
 
 
@@ -147,10 +151,18 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        data = await export_engagement_content_model(
+        # data = await export_engagement_content_model(
+        #     connection=connection,
+        #     engagement_id=engagement_id,
+        #     annual_plan_id="4c227f4fc497"
+        # )
+        #
+        # return data
+
+        data = await roll_regulation(
             connection=connection,
-            engagement_id=engagement_id,
-            annual_plan_id="4c227f4fc497"
+            previous_engagement_id="0a69c33424be",
+            new_engagement_id="fdb4fdf6c31b"
         )
 
         return data
@@ -321,6 +333,8 @@ app.include_router(user_routes, tags=["User Routes"])
 app.include_router(annual_plan_routes, tags=["Annual Plans Routes"])
 app.include_router(engagement_routes, tags=["Engagements Routes"])
 app.include_router(engagement_administration_profile_routes, tags=["Engagement Administration Profile  Routes"])
+app.include_router(policy_routes, tags=["Engagement Policies  Routes"])
+app.include_router(regulation_routes, tags=["Engagement Regulations  Routes"])
 app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
 app.include_router(PRCM_routes, tags=["PRCM  Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])

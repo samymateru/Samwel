@@ -12,7 +12,8 @@ from utils import exception_response, get_unique_key
 async def create_new_policy_model(
         connection: AsyncConnection,
         policy: NewPolicy,
-        engagement_id: str
+        engagement_id: str,
+        throw: bool = True
 ):
     with exception_response():
         __policy__ = CreatePolicy(
@@ -28,6 +29,8 @@ async def create_new_policy_model(
             .into_table(Tables.POLICIES.value)
             .values(__policy__)
             .check_exists({PolicyColumns.NAME.value: policy.name})
+            .check_exists({PolicyColumns.ENGAGEMENT.value: engagement_id})
+            .throw_error_on_exists(throw)
             .returning(PolicyColumns.ID.value)
             .execute()
         )

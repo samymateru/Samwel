@@ -11,7 +11,8 @@ from utils import exception_response, get_unique_key
 async def create_new_regulation_model(
         connection: AsyncConnection,
         regulation: NewRegulation,
-        engagement_id: str
+        engagement_id: str,
+        throw: bool = True
 ):
     with exception_response():
         __regulation__ = CreateRegulation(
@@ -27,6 +28,8 @@ async def create_new_regulation_model(
             .into_table(Tables.REGULATIONS.value)
             .values(__regulation__)
             .check_exists({RegulationColumns.NAME.value: regulation.name})
+            .check_exists({RegulationColumns.ENGAGEMENT.value: engagement_id})
+            .throw_error_on_exists(throw)
             .returning(RegulationColumns.ID.value)
             .execute()
         )
