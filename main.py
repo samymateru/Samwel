@@ -27,6 +27,7 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
+from reports.models.finding_report import generate_finding_report
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -139,7 +140,13 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        await generate_finding_report(
+            connection=connection,
+            engagement_id="4b15ba494eb9",
+            module_id="04e9e6ebdf06"
+        )
+
+        return True
 
 
 

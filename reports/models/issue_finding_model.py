@@ -1,11 +1,9 @@
-import json
-from typing import List, Dict
-
 from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
+from docx.shared import RGBColor
 from psycopg import AsyncConnection
 from models.engagement_models import get_single_engagement_details
-from models.issue_actor_models import get_all_issue_actors_on_issue_model
+from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
 from models.issue_models import get_engagement_issues_model
 from models.organization_models import get_module_organization
 from reports.schemas.issue_finding_schema import ResponsiblePeople, IssuesFinding, IssueFindingSheet
@@ -13,16 +11,43 @@ from utils import exception_response
 from docx import Document
 
 
-def set_cell_background(cell, color_hex: str):
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+def set_cell_background_color(cell, color_hex: str):
     """
-    Set background color of a cell in hex format (e.g., 'FF0000' for red).
+    Set the background color of a table cell in a Word document.
+
+    Args:
+        cell: The cell object from a `docx` table.
+        color_hex (str): Hex code like 'FF0000' (red), 'D9D9D9' (gray), etc.
     """
     tc = cell._tc
     tcPr = tc.get_or_add_tcPr()
 
     shd = OxmlElement('w:shd')
-    shd.set(qn('w:fill'), color_hex)  # background color
+    shd.set(qn('w:val'), 'clear')     # <-- required
+    shd.set(qn('w:color'), 'auto')    # <-- required
+    shd.set(qn('w:fill'), color_hex)  # <-- actual background color
+
+    # Remove existing <w:shd> if present (to avoid duplicates)
+    for child in tcPr.findall(qn('w:shd')):
+        tcPr.remove(child)
+
     tcPr.append(shd)
+
+
+
+def set_cell_text_color(cell, color_hex: str):
+    """
+    Set the text color inside a cell.
+    """
+    for paragraph in cell.paragraphs:
+        for run in paragraph.runs:
+            run.font.color.rgb = RGBColor.from_string(color_hex)
+
+
+
 
 
 async def load_issue_finding(
@@ -51,7 +76,7 @@ async def load_issue_finding(
         all_issues = []
 
         for issue in issue_data:
-            user_details = await get_all_issue_actors_on_issue_model(
+            user_details = await get_all_issue_actors_on_issue_by_status_model(
                 connection=connection,
                 issue_id=issue.get("id")
             )
@@ -79,15 +104,19 @@ def create_table_of_content(issues, doc: Document):
     hdr_cells[1].text = 'Title'
     hdr_cells[2].text = 'Audit Finding Rating'
 
+    for cell in hdr_cells:
+        set_cell_text_color(cell, 'ff0000')
+        set_cell_background_color(cell, 'D9D9D9')  # Light grey
+
+
+
 
     for idx, d in enumerate(issues, start=1):
         row_cells = table.add_row().cells
         row_cells[0].text = str(idx)
         row_cells[1].text = d.title
         row_cells[2].text = d.risk_rating
-        set_cell_background(row_cells[2], "000000")  # black background
 
-        set_cell_background(row_cells[2], "000000")
 
 
 
