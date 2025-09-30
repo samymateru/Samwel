@@ -1,7 +1,11 @@
 import uuid
 from typing import Optional
 
-from docx.shared import RGBColor
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import RGBColor, Pt
 from fastapi import FastAPI, Depends, Form, Request, Query
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
@@ -30,7 +34,8 @@ from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
 from conv import converter
-from reports.models.issue_finding_model import load_issue_finding
+from models.roll_forwar_model import export_engagement_content_model
+from reports.models.issue_finding_model import load_issue_finding, create_table_of_content
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -135,79 +140,22 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-@app.get("/")
+
+@app.get("/{engagement_id}")
 async def home(
+        engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        data = await load_issue_finding(
+        data = await export_engagement_content_model(
             connection=connection,
-            engagement_id="4b15ba494eb9",
-            module_id="04e9e6ebdf06"
+            engagement_id=engagement_id,
+            annual_plan_id="4c227f4fc497"
         )
 
-        doc = DocxTemplate("template.docx")
-
-        issues_context = []
-
-        for da in data.issues:
-            # Generate individual documents for each field
-            converter(filename="finding.docx", data=da.finding)
-            converter(filename="criteria.docx", data=da.criteria)
-            converter(filename="recommendation.docx", data=da.recommendation)
-            converter(filename="management_action_plan.docx", data=da.management_action_plan)
-            converter(filename="root_cause_description.docx", data=da.root_cause_description)
-            converter(filename="impact_description.docx", data=da.impact_description)
-
-
-            if da.risk_rating == "Improvement Required":
-                rating_subdoc = doc.new_subdoc()
-                p = rating_subdoc.add_paragraph(da.risk_rating)
-                p.runs[0].font.color.rgb = RGBColor(255, 0, 0)  # Red color
-                risk_rating_field = rating_subdoc
-            else:
-                risk_rating_field = da.risk_rating
-
-            finding_subdoc = doc.new_subdoc("finding.docx")
-            criteria_subdoc = doc.new_subdoc("criteria.docx")
-            recommendation_subdoc = doc.new_subdoc("recommendation.docx")
-            management_action_plan_subdoc = doc.new_subdoc("management_action_plan.docx")
-            root_cause_descrption_subdoc = doc.new_subdoc("root_cause_description.docx")
-            impact_descrption_subdoc = doc.new_subdoc("impact_description.docx")
-
-
-
-            # Append to context list
-            issues_context.append({
-                "title": da.title,
-                "process": da.process,
-                "sub_process": da.sub_process,
-                "risk_category": da.risk_category,
-                "sub_risk_category": da.sub_risk_category,
-                "recurring":"Yes" if da.recurring_status else "No",
-                "rating": risk_rating_field,
-                "root_cause_description": root_cause_descrption_subdoc,
-                "impact_description": impact_descrption_subdoc,
-                "finding": finding_subdoc,
-                "criteria": criteria_subdoc,
-                "recommendation": recommendation_subdoc,
-                "management_action_plan": management_action_plan_subdoc,
-                "responsible_people": da.responsible_people
-            })
-
-
-        # Render once with all issues
-        context = {
-            "organization_name": data.organization_name,
-            'engagement_code': data.engagement_code,
-            "engagement_name": data.engagement_name,
-            "issues": issues_context
-        }
-
-        doc.render(context)
-        doc.save("final_output.docx")
-
         return data
+
+
 
 
 

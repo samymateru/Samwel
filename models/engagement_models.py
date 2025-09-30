@@ -15,9 +15,14 @@ async def register_new_engagement(
         engagement: NewEngagement,
         annual_plan_id: str,
         module_id: str,
-        code: str = ""
 ):
     with exception_response():
+        code = await generate_engagement_code(
+            connection=connection,
+            annual_plan_id=annual_plan_id,
+            code=engagement.department.code
+        )
+
         __engagement__ = CreateEngagement(
             id=get_unique_key(),
             plan_id=annual_plan_id,

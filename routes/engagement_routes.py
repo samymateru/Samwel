@@ -30,18 +30,13 @@ async def create_new_engagement(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        code = await generate_engagement_code(
-            connection=connection,
-            annual_plan_id=annual_plan_id,
-            code=engagement.department.code
-        )
+
 
         results = await register_new_engagement(
             connection=connection,
             engagement=engagement,
             annual_plan_id=annual_plan_id,
-            module_id=module_id,
-            code=code
+            module_id=module_id
         )
 
         if results is None:

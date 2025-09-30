@@ -1,4 +1,8 @@
-from typing import List
+import json
+from typing import List, Dict
+
+from docx.opc.oxml import qn
+from docx.oxml import OxmlElement
 from psycopg import AsyncConnection
 from models.engagement_models import get_single_engagement_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_model
@@ -7,6 +11,19 @@ from models.organization_models import get_module_organization
 from reports.schemas.issue_finding_schema import ResponsiblePeople, IssuesFinding, IssueFindingSheet
 from utils import exception_response
 from docx import Document
+
+
+def set_cell_background(cell, color_hex: str):
+    """
+    Set background color of a cell in hex format (e.g., 'FF0000' for red).
+    """
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+
+    shd = OxmlElement('w:shd')
+    shd.set(qn('w:fill'), color_hex)  # background color
+    tcPr.append(shd)
+
 
 async def load_issue_finding(
     connection: AsyncConnection,
@@ -59,13 +76,18 @@ def create_table_of_content(issues, doc: Document):
     table.style = 'Table Grid'
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'No'
-    hdr_cells[1].text = 'Tie'
+    hdr_cells[1].text = 'Title'
     hdr_cells[2].text = 'Audit Finding Rating'
 
-    for d in issues:
+
+    for idx, d in enumerate(issues, start=1):
         row_cells = table.add_row().cells
-        row_cells[1].text = d.get("title")
-        row_cells[2].text = d.get("rating")
+        row_cells[0].text = str(idx)
+        row_cells[1].text = d.title
+        row_cells[2].text = d.risk_rating
+        set_cell_background(row_cells[2], "000000")  # black background
+
+        set_cell_background(row_cells[2], "000000")
 
 
 

@@ -5,13 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/policy_models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/regulation_models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/roll_forwar_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/policy_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/regulation_routes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/schemas/policy_schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/schemas/regulation_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/CornerStone.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CornerStone.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/follow_up_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/follow_up_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/engagement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/libray_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/libray_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/issue_finding_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_finding_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/y.py" beforeDir="false" afterPath="$PROJECT_DIR$/y.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,64 +67,70 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.2048.executor&quot;: &quot;Run&quot;,
-    &quot;Python.9_Types_of_Hash_Cracker.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Changing_Wall_Paper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Clock.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Connect-4.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Current_City_Weather.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Edge_Detection.executor&quot;: &quot;Run&quot;,
-    &quot;Python.OS_interaction.executor&quot;: &quot;Run&quot;,
-    &quot;Python.advice.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ai-storytelling-game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bandwidth_py3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.blending_Image.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bubble_sort.executor&quot;: &quot;Run&quot;,
-    &quot;Python.chrome-automation.executor&quot;: &quot;Run&quot;,
-    &quot;Python.cipher_buster.executor&quot;: &quot;Run&quot;,
-    &quot;Python.constants.executor&quot;: &quot;Run&quot;,
-    &quot;Python.database.executor&quot;: &quot;Run&quot;,
-    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
-    &quot;Python.detection.executor&quot;: &quot;Run&quot;,
-    &quot;Python.eyes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.face_detect.executor&quot;: &quot;Run&quot;,
-    &quot;Python.finder.executor&quot;: &quot;Run&quot;,
-    &quot;Python.game.executor&quot;: &quot;Run&quot;,
-    &quot;Python.insert_builder.executor&quot;: &quot;Run&quot;,
-    &quot;Python.login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.maze.executor&quot;: &quot;Run&quot;,
-    &quot;Python.mx.executor&quot;: &quot;Run&quot;,
-    &quot;Python.pdf.executor&quot;: &quot;Run&quot;,
-    &quot;Python.query_builder.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
-    &quot;Python.redis_cache.executor&quot;: &quot;Run&quot;,
-    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
-    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
-    &quot;Python.s3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.script.executor&quot;: &quot;Run&quot;,
-    &quot;Python.security.executor&quot;: &quot;Run&quot;,
-    &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ses.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tables.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.testing.executor&quot;: &quot;Run&quot;,
-    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
-    &quot;Python.word_doc.executor&quot;: &quot;Run&quot;,
-    &quot;Python.x.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.2048.executor": "Run",
+    "Python.9_Types_of_Hash_Cracker.executor": "Run",
+    "Python.Changing_Wall_Paper.executor": "Run",
+    "Python.Clock.executor": "Run",
+    "Python.Connect-4.executor": "Run",
+    "Python.Current_City_Weather.executor": "Run",
+    "Python.Edge_Detection.executor": "Run",
+    "Python.OS_interaction.executor": "Run",
+    "Python.advice.executor": "Run",
+    "Python.ai-storytelling-game.executor": "Run",
+    "Python.bandwidth_py3.executor": "Run",
+    "Python.blending_Image.executor": "Run",
+    "Python.bubble_sort.executor": "Run",
+    "Python.chrome-automation.executor": "Run",
+    "Python.cipher_buster.executor": "Run",
+    "Python.constants.executor": "Run",
+    "Python.conv.executor": "Run",
+    "Python.database.executor": "Run",
+    "Python.databases.executor": "Run",
+    "Python.detection.executor": "Run",
+    "Python.eyes.executor": "Run",
+    "Python.face_detect.executor": "Run",
+    "Python.finder.executor": "Run",
+    "Python.game.executor": "Run",
+    "Python.insert_builder.executor": "Run",
+    "Python.issue_finding_model.executor": "Run",
+    "Python.login.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.maze.executor": "Run",
+    "Python.mx.executor": "Run",
+    "Python.pdf.executor": "Run",
+    "Python.query_builder.executor": "Run",
+    "Python.rabitmq.executor": "Run",
+    "Python.redis_cache.executor": "Run",
+    "Python.roles.executor": "Run",
+    "Python.roll_forwar_model.executor": "Run",
+    "Python.routes.executor": "Run",
+    "Python.run-payload.executor": "Run",
+    "Python.s3.executor": "Run",
+    "Python.schemas.executor": "Run",
+    "Python.script.executor": "Run",
+    "Python.security.executor": "Run",
+    "Python.seedings.executor": "Run",
+    "Python.ses.executor": "Run",
+    "Python.start-file.executor": "Run",
+    "Python.sub_doc.executor": "Run",
+    "Python.tables.executor": "Debug",
+    "Python.test.executor": "Run",
+    "Python.testing.executor": "Run",
+    "Python.utils.executor": "Run",
+    "Python.word_doc.executor": "Run",
+    "Python.x.executor": "Run",
+    "Python.y.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "deletionFromPopupRequiresConfirmation": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client" />
@@ -144,399 +159,399 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00674" summary="fixing auth and token generation">
+    <task id="LOCAL-00724" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758714062982</created>
-      <option name="number" value="00674" />
-      <option name="presentableId" value="LOCAL-00674" />
+      <created>1758966011818</created>
+      <option name="number" value="00724" />
+      <option name="presentableId" value="LOCAL-00724" />
       <option name="project" value="LOCAL" />
-      <updated>1758714062982</updated>
+      <updated>1758966011818</updated>
     </task>
-    <task id="LOCAL-00675" summary="fixing auth and token generation">
+    <task id="LOCAL-00725" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758716137402</created>
-      <option name="number" value="00675" />
-      <option name="presentableId" value="LOCAL-00675" />
+      <created>1758967066916</created>
+      <option name="number" value="00725" />
+      <option name="presentableId" value="LOCAL-00725" />
       <option name="project" value="LOCAL" />
-      <updated>1758716137402</updated>
+      <updated>1758967066916</updated>
     </task>
-    <task id="LOCAL-00676" summary="fixing auth and token generation">
+    <task id="LOCAL-00726" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758716378300</created>
-      <option name="number" value="00676" />
-      <option name="presentableId" value="LOCAL-00676" />
+      <created>1758967521441</created>
+      <option name="number" value="00726" />
+      <option name="presentableId" value="LOCAL-00726" />
       <option name="project" value="LOCAL" />
-      <updated>1758716378300</updated>
+      <updated>1758967521441</updated>
     </task>
-    <task id="LOCAL-00677" summary="fixing auth and token generation">
+    <task id="LOCAL-00727" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758717670898</created>
-      <option name="number" value="00677" />
-      <option name="presentableId" value="LOCAL-00677" />
+      <created>1758967577324</created>
+      <option name="number" value="00727" />
+      <option name="presentableId" value="LOCAL-00727" />
       <option name="project" value="LOCAL" />
-      <updated>1758717670898</updated>
+      <updated>1758967577324</updated>
     </task>
-    <task id="LOCAL-00678" summary="fixing auth and token generation">
+    <task id="LOCAL-00728" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758720506855</created>
-      <option name="number" value="00678" />
-      <option name="presentableId" value="LOCAL-00678" />
+      <created>1758971084804</created>
+      <option name="number" value="00728" />
+      <option name="presentableId" value="LOCAL-00728" />
       <option name="project" value="LOCAL" />
-      <updated>1758720506855</updated>
+      <updated>1758971084805</updated>
     </task>
-    <task id="LOCAL-00679" summary="fixing auth and token generation">
+    <task id="LOCAL-00729" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758723982431</created>
-      <option name="number" value="00679" />
-      <option name="presentableId" value="LOCAL-00679" />
+      <created>1758974390689</created>
+      <option name="number" value="00729" />
+      <option name="presentableId" value="LOCAL-00729" />
       <option name="project" value="LOCAL" />
-      <updated>1758723982431</updated>
+      <updated>1758974390691</updated>
     </task>
-    <task id="LOCAL-00680" summary="fixing auth and token generation">
+    <task id="LOCAL-00730" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758725662145</created>
-      <option name="number" value="00680" />
-      <option name="presentableId" value="LOCAL-00680" />
+      <created>1758977090233</created>
+      <option name="number" value="00730" />
+      <option name="presentableId" value="LOCAL-00730" />
       <option name="project" value="LOCAL" />
-      <updated>1758725662145</updated>
+      <updated>1758977090233</updated>
     </task>
-    <task id="LOCAL-00681" summary="fixing auth and token generation">
+    <task id="LOCAL-00731" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758727825750</created>
-      <option name="number" value="00681" />
-      <option name="presentableId" value="LOCAL-00681" />
+      <created>1758978359368</created>
+      <option name="number" value="00731" />
+      <option name="presentableId" value="LOCAL-00731" />
       <option name="project" value="LOCAL" />
-      <updated>1758727825750</updated>
+      <updated>1758978359368</updated>
     </task>
-    <task id="LOCAL-00682" summary="fixing auth and token generation">
+    <task id="LOCAL-00732" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758728579561</created>
-      <option name="number" value="00682" />
-      <option name="presentableId" value="LOCAL-00682" />
+      <created>1758984114901</created>
+      <option name="number" value="00732" />
+      <option name="presentableId" value="LOCAL-00732" />
       <option name="project" value="LOCAL" />
-      <updated>1758728579562</updated>
+      <updated>1758984114901</updated>
     </task>
-    <task id="LOCAL-00683" summary="fixing auth and token generation">
+    <task id="LOCAL-00733" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758731118113</created>
-      <option name="number" value="00683" />
-      <option name="presentableId" value="LOCAL-00683" />
+      <created>1758985187497</created>
+      <option name="number" value="00733" />
+      <option name="presentableId" value="LOCAL-00733" />
       <option name="project" value="LOCAL" />
-      <updated>1758731118113</updated>
+      <updated>1758985187497</updated>
     </task>
-    <task id="LOCAL-00684" summary="fixing auth and token generation">
+    <task id="LOCAL-00734" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758732887261</created>
-      <option name="number" value="00684" />
-      <option name="presentableId" value="LOCAL-00684" />
+      <created>1758988848714</created>
+      <option name="number" value="00734" />
+      <option name="presentableId" value="LOCAL-00734" />
       <option name="project" value="LOCAL" />
-      <updated>1758732887262</updated>
+      <updated>1758988848715</updated>
     </task>
-    <task id="LOCAL-00685" summary="fixing auth and token generation">
+    <task id="LOCAL-00735" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758734712484</created>
-      <option name="number" value="00685" />
-      <option name="presentableId" value="LOCAL-00685" />
+      <created>1758988860111</created>
+      <option name="number" value="00735" />
+      <option name="presentableId" value="LOCAL-00735" />
       <option name="project" value="LOCAL" />
-      <updated>1758734712485</updated>
+      <updated>1758988860111</updated>
     </task>
-    <task id="LOCAL-00686" summary="fixing auth and token generation">
+    <task id="LOCAL-00736" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758735033592</created>
-      <option name="number" value="00686" />
-      <option name="presentableId" value="LOCAL-00686" />
+      <created>1758989711843</created>
+      <option name="number" value="00736" />
+      <option name="presentableId" value="LOCAL-00736" />
       <option name="project" value="LOCAL" />
-      <updated>1758735033592</updated>
+      <updated>1758989711843</updated>
     </task>
-    <task id="LOCAL-00687" summary="fixing auth and token generation">
+    <task id="LOCAL-00737" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758735304238</created>
-      <option name="number" value="00687" />
-      <option name="presentableId" value="LOCAL-00687" />
+      <created>1758989941150</created>
+      <option name="number" value="00737" />
+      <option name="presentableId" value="LOCAL-00737" />
       <option name="project" value="LOCAL" />
-      <updated>1758735304238</updated>
+      <updated>1758989941150</updated>
     </task>
-    <task id="LOCAL-00688" summary="fixing auth and token generation">
+    <task id="LOCAL-00738" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758779934176</created>
-      <option name="number" value="00688" />
-      <option name="presentableId" value="LOCAL-00688" />
+      <created>1759002624529</created>
+      <option name="number" value="00738" />
+      <option name="presentableId" value="LOCAL-00738" />
       <option name="project" value="LOCAL" />
-      <updated>1758779934177</updated>
+      <updated>1759002624529</updated>
     </task>
-    <task id="LOCAL-00689" summary="fixing auth and token generation">
+    <task id="LOCAL-00739" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758782497831</created>
-      <option name="number" value="00689" />
-      <option name="presentableId" value="LOCAL-00689" />
+      <created>1759007371426</created>
+      <option name="number" value="00739" />
+      <option name="presentableId" value="LOCAL-00739" />
       <option name="project" value="LOCAL" />
-      <updated>1758782497831</updated>
+      <updated>1759007371426</updated>
     </task>
-    <task id="LOCAL-00690" summary="fixing auth and token generation">
+    <task id="LOCAL-00740" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758783022424</created>
-      <option name="number" value="00690" />
-      <option name="presentableId" value="LOCAL-00690" />
+      <created>1759014015851</created>
+      <option name="number" value="00740" />
+      <option name="presentableId" value="LOCAL-00740" />
       <option name="project" value="LOCAL" />
-      <updated>1758783022424</updated>
+      <updated>1759014015851</updated>
     </task>
-    <task id="LOCAL-00691" summary="fixing auth and token generation">
+    <task id="LOCAL-00741" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758783641601</created>
-      <option name="number" value="00691" />
-      <option name="presentableId" value="LOCAL-00691" />
+      <created>1759015187118</created>
+      <option name="number" value="00741" />
+      <option name="presentableId" value="LOCAL-00741" />
       <option name="project" value="LOCAL" />
-      <updated>1758783641602</updated>
+      <updated>1759015187118</updated>
     </task>
-    <task id="LOCAL-00692" summary="fixing auth and token generation">
+    <task id="LOCAL-00742" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758784982789</created>
-      <option name="number" value="00692" />
-      <option name="presentableId" value="LOCAL-00692" />
+      <created>1759017277050</created>
+      <option name="number" value="00742" />
+      <option name="presentableId" value="LOCAL-00742" />
       <option name="project" value="LOCAL" />
-      <updated>1758784982789</updated>
+      <updated>1759017277050</updated>
     </task>
-    <task id="LOCAL-00693" summary="fixing auth and token generation">
+    <task id="LOCAL-00743" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758787889057</created>
-      <option name="number" value="00693" />
-      <option name="presentableId" value="LOCAL-00693" />
+      <created>1759017868595</created>
+      <option name="number" value="00743" />
+      <option name="presentableId" value="LOCAL-00743" />
       <option name="project" value="LOCAL" />
-      <updated>1758787889057</updated>
+      <updated>1759017868595</updated>
     </task>
-    <task id="LOCAL-00694" summary="fixing auth and token generation">
+    <task id="LOCAL-00744" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758789499909</created>
-      <option name="number" value="00694" />
-      <option name="presentableId" value="LOCAL-00694" />
+      <created>1759040265701</created>
+      <option name="number" value="00744" />
+      <option name="presentableId" value="LOCAL-00744" />
       <option name="project" value="LOCAL" />
-      <updated>1758789499909</updated>
+      <updated>1759040265702</updated>
     </task>
-    <task id="LOCAL-00695" summary="fixing auth and token generation">
+    <task id="LOCAL-00745" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758789750724</created>
-      <option name="number" value="00695" />
-      <option name="presentableId" value="LOCAL-00695" />
+      <created>1759054436812</created>
+      <option name="number" value="00745" />
+      <option name="presentableId" value="LOCAL-00745" />
       <option name="project" value="LOCAL" />
-      <updated>1758789750724</updated>
+      <updated>1759054436812</updated>
     </task>
-    <task id="LOCAL-00696" summary="fixing auth and token generation">
+    <task id="LOCAL-00746" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758790142765</created>
-      <option name="number" value="00696" />
-      <option name="presentableId" value="LOCAL-00696" />
+      <created>1759055524710</created>
+      <option name="number" value="00746" />
+      <option name="presentableId" value="LOCAL-00746" />
       <option name="project" value="LOCAL" />
-      <updated>1758790142765</updated>
+      <updated>1759055524711</updated>
     </task>
-    <task id="LOCAL-00697" summary="fixing auth and token generation">
+    <task id="LOCAL-00747" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758793331767</created>
-      <option name="number" value="00697" />
-      <option name="presentableId" value="LOCAL-00697" />
+      <created>1759055628274</created>
+      <option name="number" value="00747" />
+      <option name="presentableId" value="LOCAL-00747" />
       <option name="project" value="LOCAL" />
-      <updated>1758793331767</updated>
+      <updated>1759055628275</updated>
     </task>
-    <task id="LOCAL-00698" summary="fixing auth and token generation">
+    <task id="LOCAL-00748" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758793982141</created>
-      <option name="number" value="00698" />
-      <option name="presentableId" value="LOCAL-00698" />
+      <created>1759056201189</created>
+      <option name="number" value="00748" />
+      <option name="presentableId" value="LOCAL-00748" />
       <option name="project" value="LOCAL" />
-      <updated>1758793982141</updated>
+      <updated>1759056201189</updated>
     </task>
-    <task id="LOCAL-00699" summary="fixing auth and token generation">
+    <task id="LOCAL-00749" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758794475679</created>
-      <option name="number" value="00699" />
-      <option name="presentableId" value="LOCAL-00699" />
+      <created>1759058201738</created>
+      <option name="number" value="00749" />
+      <option name="presentableId" value="LOCAL-00749" />
       <option name="project" value="LOCAL" />
-      <updated>1758794475680</updated>
+      <updated>1759058201738</updated>
     </task>
-    <task id="LOCAL-00700" summary="fixing auth and token generation">
+    <task id="LOCAL-00750" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758797730459</created>
-      <option name="number" value="00700" />
-      <option name="presentableId" value="LOCAL-00700" />
+      <created>1759060053875</created>
+      <option name="number" value="00750" />
+      <option name="presentableId" value="LOCAL-00750" />
       <option name="project" value="LOCAL" />
-      <updated>1758797730459</updated>
+      <updated>1759060053876</updated>
     </task>
-    <task id="LOCAL-00701" summary="fixing auth and token generation">
+    <task id="LOCAL-00751" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758798309687</created>
-      <option name="number" value="00701" />
-      <option name="presentableId" value="LOCAL-00701" />
+      <created>1759060805428</created>
+      <option name="number" value="00751" />
+      <option name="presentableId" value="LOCAL-00751" />
       <option name="project" value="LOCAL" />
-      <updated>1758798309687</updated>
+      <updated>1759060805428</updated>
     </task>
-    <task id="LOCAL-00702" summary="fixing auth and token generation">
+    <task id="LOCAL-00752" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758803904245</created>
-      <option name="number" value="00702" />
-      <option name="presentableId" value="LOCAL-00702" />
+      <created>1759063772143</created>
+      <option name="number" value="00752" />
+      <option name="presentableId" value="LOCAL-00752" />
       <option name="project" value="LOCAL" />
-      <updated>1758803904245</updated>
+      <updated>1759063772143</updated>
     </task>
-    <task id="LOCAL-00703" summary="fixing auth and token generation">
+    <task id="LOCAL-00753" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758806389183</created>
-      <option name="number" value="00703" />
-      <option name="presentableId" value="LOCAL-00703" />
+      <created>1759067400083</created>
+      <option name="number" value="00753" />
+      <option name="presentableId" value="LOCAL-00753" />
       <option name="project" value="LOCAL" />
-      <updated>1758806389183</updated>
+      <updated>1759067400084</updated>
     </task>
-    <task id="LOCAL-00704" summary="fixing auth and token generation">
+    <task id="LOCAL-00754" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758806872731</created>
-      <option name="number" value="00704" />
-      <option name="presentableId" value="LOCAL-00704" />
+      <created>1759067828210</created>
+      <option name="number" value="00754" />
+      <option name="presentableId" value="LOCAL-00754" />
       <option name="project" value="LOCAL" />
-      <updated>1758806872732</updated>
+      <updated>1759067828210</updated>
     </task>
-    <task id="LOCAL-00705" summary="fixing auth and token generation">
+    <task id="LOCAL-00755" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758808485508</created>
-      <option name="number" value="00705" />
-      <option name="presentableId" value="LOCAL-00705" />
+      <created>1759069204105</created>
+      <option name="number" value="00755" />
+      <option name="presentableId" value="LOCAL-00755" />
       <option name="project" value="LOCAL" />
-      <updated>1758808485508</updated>
+      <updated>1759069204105</updated>
     </task>
-    <task id="LOCAL-00706" summary="fixing auth and token generation">
+    <task id="LOCAL-00756" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758810343611</created>
-      <option name="number" value="00706" />
-      <option name="presentableId" value="LOCAL-00706" />
+      <created>1759085068486</created>
+      <option name="number" value="00756" />
+      <option name="presentableId" value="LOCAL-00756" />
       <option name="project" value="LOCAL" />
-      <updated>1758810343611</updated>
+      <updated>1759085068486</updated>
     </task>
-    <task id="LOCAL-00707" summary="fixing auth and token generation">
+    <task id="LOCAL-00757" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758812024763</created>
-      <option name="number" value="00707" />
-      <option name="presentableId" value="LOCAL-00707" />
+      <created>1759086223613</created>
+      <option name="number" value="00757" />
+      <option name="presentableId" value="LOCAL-00757" />
       <option name="project" value="LOCAL" />
-      <updated>1758812024763</updated>
+      <updated>1759086223613</updated>
     </task>
-    <task id="LOCAL-00708" summary="fixing auth and token generation">
+    <task id="LOCAL-00758" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758813261539</created>
-      <option name="number" value="00708" />
-      <option name="presentableId" value="LOCAL-00708" />
+      <created>1759088285630</created>
+      <option name="number" value="00758" />
+      <option name="presentableId" value="LOCAL-00758" />
       <option name="project" value="LOCAL" />
-      <updated>1758813261540</updated>
+      <updated>1759088285630</updated>
     </task>
-    <task id="LOCAL-00709" summary="fixing auth and token generation">
+    <task id="LOCAL-00759" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758818052684</created>
-      <option name="number" value="00709" />
-      <option name="presentableId" value="LOCAL-00709" />
+      <created>1759142458729</created>
+      <option name="number" value="00759" />
+      <option name="presentableId" value="LOCAL-00759" />
       <option name="project" value="LOCAL" />
-      <updated>1758818052684</updated>
+      <updated>1759142458730</updated>
     </task>
-    <task id="LOCAL-00710" summary="fixing auth and token generation">
+    <task id="LOCAL-00760" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758822957214</created>
-      <option name="number" value="00710" />
-      <option name="presentableId" value="LOCAL-00710" />
+      <created>1759143753313</created>
+      <option name="number" value="00760" />
+      <option name="presentableId" value="LOCAL-00760" />
       <option name="project" value="LOCAL" />
-      <updated>1758822957214</updated>
+      <updated>1759143753313</updated>
     </task>
-    <task id="LOCAL-00711" summary="fixing auth and token generation">
+    <task id="LOCAL-00761" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758868048466</created>
-      <option name="number" value="00711" />
-      <option name="presentableId" value="LOCAL-00711" />
+      <created>1759144105665</created>
+      <option name="number" value="00761" />
+      <option name="presentableId" value="LOCAL-00761" />
       <option name="project" value="LOCAL" />
-      <updated>1758868048466</updated>
+      <updated>1759144105665</updated>
     </task>
-    <task id="LOCAL-00712" summary="fixing auth and token generation">
+    <task id="LOCAL-00762" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758868324467</created>
-      <option name="number" value="00712" />
-      <option name="presentableId" value="LOCAL-00712" />
+      <created>1759148077258</created>
+      <option name="number" value="00762" />
+      <option name="presentableId" value="LOCAL-00762" />
       <option name="project" value="LOCAL" />
-      <updated>1758868324467</updated>
+      <updated>1759148077258</updated>
     </task>
-    <task id="LOCAL-00713" summary="fixing auth and token generation">
+    <task id="LOCAL-00763" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758869406656</created>
-      <option name="number" value="00713" />
-      <option name="presentableId" value="LOCAL-00713" />
+      <created>1759160855500</created>
+      <option name="number" value="00763" />
+      <option name="presentableId" value="LOCAL-00763" />
       <option name="project" value="LOCAL" />
-      <updated>1758869406656</updated>
+      <updated>1759160855500</updated>
     </task>
-    <task id="LOCAL-00714" summary="fixing auth and token generation">
+    <task id="LOCAL-00764" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758871661175</created>
-      <option name="number" value="00714" />
-      <option name="presentableId" value="LOCAL-00714" />
+      <created>1759161907524</created>
+      <option name="number" value="00764" />
+      <option name="presentableId" value="LOCAL-00764" />
       <option name="project" value="LOCAL" />
-      <updated>1758871661175</updated>
+      <updated>1759161907524</updated>
     </task>
-    <task id="LOCAL-00715" summary="fixing auth and token generation">
+    <task id="LOCAL-00765" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758872374145</created>
-      <option name="number" value="00715" />
-      <option name="presentableId" value="LOCAL-00715" />
+      <created>1759162372565</created>
+      <option name="number" value="00765" />
+      <option name="presentableId" value="LOCAL-00765" />
       <option name="project" value="LOCAL" />
-      <updated>1758872374145</updated>
+      <updated>1759162372566</updated>
     </task>
-    <task id="LOCAL-00716" summary="fixing auth and token generation">
+    <task id="LOCAL-00766" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758872855815</created>
-      <option name="number" value="00716" />
-      <option name="presentableId" value="LOCAL-00716" />
+      <created>1759162737457</created>
+      <option name="number" value="00766" />
+      <option name="presentableId" value="LOCAL-00766" />
       <option name="project" value="LOCAL" />
-      <updated>1758872855815</updated>
+      <updated>1759162737457</updated>
     </task>
-    <task id="LOCAL-00717" summary="fixing auth and token generation">
+    <task id="LOCAL-00767" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758880589541</created>
-      <option name="number" value="00717" />
-      <option name="presentableId" value="LOCAL-00717" />
+      <created>1759167653442</created>
+      <option name="number" value="00767" />
+      <option name="presentableId" value="LOCAL-00767" />
       <option name="project" value="LOCAL" />
-      <updated>1758880589541</updated>
+      <updated>1759167653442</updated>
     </task>
-    <task id="LOCAL-00718" summary="fixing auth and token generation">
+    <task id="LOCAL-00768" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758882138246</created>
-      <option name="number" value="00718" />
-      <option name="presentableId" value="LOCAL-00718" />
+      <created>1759168938049</created>
+      <option name="number" value="00768" />
+      <option name="presentableId" value="LOCAL-00768" />
       <option name="project" value="LOCAL" />
-      <updated>1758882138246</updated>
+      <updated>1759168938049</updated>
     </task>
-    <task id="LOCAL-00719" summary="fixing auth and token generation">
+    <task id="LOCAL-00769" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758885318117</created>
-      <option name="number" value="00719" />
-      <option name="presentableId" value="LOCAL-00719" />
+      <created>1759171031158</created>
+      <option name="number" value="00769" />
+      <option name="presentableId" value="LOCAL-00769" />
       <option name="project" value="LOCAL" />
-      <updated>1758885318117</updated>
+      <updated>1759171031158</updated>
     </task>
-    <task id="LOCAL-00720" summary="fixing auth and token generation">
+    <task id="LOCAL-00770" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758898661725</created>
-      <option name="number" value="00720" />
-      <option name="presentableId" value="LOCAL-00720" />
+      <created>1759177795173</created>
+      <option name="number" value="00770" />
+      <option name="presentableId" value="LOCAL-00770" />
       <option name="project" value="LOCAL" />
-      <updated>1758898661725</updated>
+      <updated>1759177795173</updated>
     </task>
-    <task id="LOCAL-00721" summary="fixing auth and token generation">
+    <task id="LOCAL-00771" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758909335088</created>
-      <option name="number" value="00721" />
-      <option name="presentableId" value="LOCAL-00721" />
+      <created>1759178526866</created>
+      <option name="number" value="00771" />
+      <option name="presentableId" value="LOCAL-00771" />
       <option name="project" value="LOCAL" />
-      <updated>1758909335088</updated>
+      <updated>1759178526866</updated>
     </task>
-    <task id="LOCAL-00722" summary="fixing auth and token generation">
+    <task id="LOCAL-00772" summary="fixing auth and token generation">
       <option name="closed" value="true" />
-      <created>1758925051262</created>
-      <option name="number" value="00722" />
-      <option name="presentableId" value="LOCAL-00722" />
+      <created>1759197226386</created>
+      <option name="number" value="00772" />
+      <option name="presentableId" value="LOCAL-00772" />
       <option name="project" value="LOCAL" />
-      <updated>1758925051263</updated>
+      <updated>1759197226387</updated>
     </task>
-    <option name="localTasksCounter" value="723" />
+    <option name="localTasksCounter" value="773" />
     <servers />
   </component>
   <component name="UnknownFeatures">

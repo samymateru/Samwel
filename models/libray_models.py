@@ -151,8 +151,10 @@ async def update_risk_control_library_model(
             data=risk_control.model_dump()
         )
 
+
         builder = await (
             UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.LIBRARY.value)
             .values(__risk_control__)
             .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
             .where({LibraryColumns.LIBRARY_ID.value: library_id})
