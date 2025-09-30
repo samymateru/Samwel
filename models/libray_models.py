@@ -106,6 +106,7 @@ async def update_main_program_library_model(
 
         builder = await (
             UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.LIBRARY.value)
             .values(main_program)
             .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
             .where({LibraryColumns.LIBRARY_ID.value: library_id})
@@ -130,6 +131,7 @@ async def update_sub_program_library_model(
 
         builder = await (
             UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.LIBRARY.value)
             .values(__sub_program__)
             .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
             .where({LibraryColumns.LIBRARY_ID.value: library_id})
