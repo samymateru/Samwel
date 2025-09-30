@@ -244,6 +244,7 @@ async def get_all_actor_issues_model(
             )
             .where("iss_act."+IssueActorColumns.USER_ID.value, user_id)
             .where("iss."+IssueColumns.MODULE_ID.value, module_id)
+            .distinct("iss.id")
             .fetch_all()
         )
 
