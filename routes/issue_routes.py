@@ -269,7 +269,7 @@ async def send_issue_to_owner(
 
 
 
-@router.get("/issue_updates/{issue_id}")
+@router.get("/issue_updates/{issue_id}", response_model=List[ReadIssueResponse])
 async def fetch_issue_updates(
         issue_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),

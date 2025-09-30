@@ -8,7 +8,7 @@ from models.module_models import increment_module_reference
 from schemas.attachement_schemas import ReadAttachment
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
-    IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse
+    IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -497,4 +497,18 @@ async def fetch_issue_responses_model(
 
 
 
+async def mark_issue_prepared_model(
+        connection: AsyncConnection,
+        issue: MarkIssuePrepared,
+):
+    with exception_response():
+        pass
 
+
+
+async def mark_issue_review_model(
+        connection: AsyncConnection,
+        issue: MarkIssuePrepared,
+):
+    with exception_response():
+        pass

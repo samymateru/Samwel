@@ -227,8 +227,19 @@ class ReadIssues(BaseModel):
     management_action_plan: Optional[Dict] | Optional[str] = None
 
 
+
 class MarkIssueReportable(BaseModel):
     reportable: bool
+
+
+class MarkIssuePrepared(BaseModel):
+    prepared_by: User
+
+
+
+class MarkIssueReview(BaseModel):
+    reviewed_by: User
+
 
 
 class ReviseIssue(BaseModel):

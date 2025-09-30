@@ -20,49 +20,23 @@ class ProcedureTypes(str, Enum):
     REPORTING = "Reporting"
     FINALIZATION = "Finalization"
 
+
 class Section(BaseModel):
     value: str
+
 
 class User(BaseModel):
     id: str
     name: str
+
+
 
 class PreparedReviewedBy(BaseModel):
     name: Optional[str]
     email: Optional[str] = None
     date_issued: Optional[datetime] = datetime.now()
 
-class PRCM(BaseModel):
-    id: Optional[str] = None
-    reference: Optional[str] = None
-    process: Optional[str]
-    risk: Optional[str]
-    risk_rating: Optional[str]
-    control: Optional[str]
-    control_objective: Optional[str]
-    control_type: Optional[str]
-    residue_risk: Optional[str] = None
-    summary_audit_program: Optional[str] = None
-    type: Optional[str] = None
 
-class SummaryAuditProgram(BaseModel):
-    id: Optional[str] = None
-    process: Optional[str]
-    risk: Optional[str]
-    risk_rating: Optional[str]
-    control: Optional[str]
-    control_objective: Optional[str]
-    control_type: Optional[str]
-    procedure: Optional[str]
-    program: Optional[str]
-
-class EngagementLetter(BaseModel):
-    id: Optional[str] = None
-    name: Optional[str]
-    value: Optional[str]
-    size: Optional[int]
-    type: Optional[str] = None
-    extension: Optional[str]
 
 class StandardTemplate(BaseModel):
     id: Optional[str] = None
@@ -78,31 +52,16 @@ class StandardTemplate(BaseModel):
     prepared_by: Optional[PreparedReviewedBy] = None
     reviewed_by: Optional[PreparedReviewedBy] = None
 
+
 class NewPlanningProcedure(BaseModel):
     title: str
 
 
-class SummaryAuditProgramResponse(BaseModel):
-    reference: Optional[str] = None
-    process: Optional[str]
-    risk: Optional[str]
-    risk_rating: Optional[str]
-    control: Optional[str]
-    control_type: Optional[str] = None
-    procedure: Optional[str]
-    program: Optional[str]
-    procedure_id: Optional[str] = None
-
-
 class SaveProcedure(BaseModel):
     objectives: Optional[Section] = None
-    tests: Optional[Section]
-    results: Optional[Section]
-    observation: Optional[Section]
-    conclusion: Optional[Section]
-    type: Optional[ProcedureTypes]
+    tests: Section
+    results: Section
+    observation: Section
+    conclusion: Section
+    type: ProcedureTypes
 
-class PlanningWorkProgram(BaseModel):
-    program_name: str
-    procedure_name: str
-    prcm_id: str
