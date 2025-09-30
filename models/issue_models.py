@@ -415,6 +415,8 @@ async def send_issue_to_owner_model(
             roles=[IssueActors.IMPLEMENTER.value]
         )
 
+
+
         user_ids = [actor['user_id'] for actor in issue_actor]
 
         if user_id not in user_ids:

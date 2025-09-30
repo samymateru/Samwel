@@ -160,6 +160,7 @@ class BaseIssueResponse(CreateIssueResponses):
     pass
 
 
+
 class ReadIssueResponse(BaseIssueResponse):
     attachment: ReadAttachment
 

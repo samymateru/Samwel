@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
@@ -14,6 +16,14 @@ class TemplateType(str, Enum):
     SHEET = "sheet"
     SURVEY = "survey"
     ARCHIVE = "archive"
+
+
+class StandardTemplateColumns(str, Enum):
+    ID = "id"
+    ENGAGEMENT = "engagement"
+    TITLE = "title"
+    REFERENCE = "reference"
+
 
 
 class TemplateStatus(str, Enum):
@@ -55,8 +65,20 @@ class CreateStandardTemplate(NewStandardTemplate):
     conclusion: Section
     type: TemplateType
     status: TemplateStatus
-    prepared_by: PreparedReviewedBy
-    reviewed_by: PreparedReviewedBy
+    prepared_by: Optional[PreparedReviewedBy] = None
+    reviewed_by: Optional[PreparedReviewedBy] = None
+
+
+
+class UpdateStandardProcedure(BaseModel):
+    tests: Section
+    objectives: Section
+    results: Section
+    observation: Section
+    conclusion: Section
+    prepared_by: Optional[PreparedReviewedBy] = None
+    reviewed_by: Optional[PreparedReviewedBy] = None
+
 
 
 

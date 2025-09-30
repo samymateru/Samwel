@@ -16,23 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 router = APIRouter(prefix="/issue")
 
-@router.put("/send_owner/{issue_id}", response_model=ResponseMessage)
-async def submit_issue_to_owner(
-        issue_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        await send_issues_to_owner(
-            connection=db,
-            issue_id=issue_id,
-            user_email=user.user_email,
-            user_name=user.user_name)
-        return ResponseMessage(detail="Successfully send the issue to owner")
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 
 @router.put("/accept_response/{issue_id}", response_model=ResponseMessage)

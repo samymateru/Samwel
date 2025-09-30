@@ -149,7 +149,6 @@ async def home(
         return True
 
 
-
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
         module_id: str,

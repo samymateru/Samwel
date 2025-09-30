@@ -313,17 +313,6 @@ async def fetch_all_module_issues_filtered(
 
 
 
-@router.get("/user/{user_id}")
-async def fetch_all_user_issues(
-        user_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
-
-
-
-
 
 
 
