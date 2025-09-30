@@ -31,5 +31,6 @@ class Tables(str, Enum):
     MANAGEMENT = "managers"
     POLICIES = "policies"
     REGULATIONS = "regulations"
+    ENGAGEMENT_PROCESS = "engagement_process"
 
 

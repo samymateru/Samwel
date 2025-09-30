@@ -79,6 +79,7 @@ from routes.risk_control_routes import router as risk_control_routes
 from routes.management_routes import router as management_routes
 from routes.policy_routes import router as policy_routes
 from routes.regulation_routes import router as regulation_routes
+from routes.engagement_process_routes import router as engagement_process_routes
 
 
 from docxtpl import DocxTemplate, Subdoc
@@ -335,6 +336,7 @@ app.include_router(engagement_routes, tags=["Engagements Routes"])
 app.include_router(engagement_administration_profile_routes, tags=["Engagement Administration Profile  Routes"])
 app.include_router(policy_routes, tags=["Engagement Policies  Routes"])
 app.include_router(regulation_routes, tags=["Engagement Regulations  Routes"])
+app.include_router(engagement_process_routes, tags=["Engagement Process  Routes"])
 app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
 app.include_router(PRCM_routes, tags=["PRCM  Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])

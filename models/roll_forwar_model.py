@@ -169,8 +169,8 @@ async def roll_regulation(
         return True
 
 
-
-
+async def ro():
+    pass
 
 
 
