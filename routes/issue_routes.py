@@ -396,7 +396,6 @@ async def issue_decline_response(
         issue: NewDeclineResponse,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user),
-        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         status = None
@@ -411,7 +410,7 @@ async def issue_decline_response(
 
         response = NewIssueResponse(
             notes=issue.decline_notes,
-            type=IssueResponseTypes.DECLINE.value,
+            type=IssueResponseTypes.DECLINE,
             issued_by=auth.user_id
         )
 

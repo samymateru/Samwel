@@ -331,7 +331,7 @@ async def issue_accept_model(
         await change_issue_status(
             connection=connection,
             issue_id=issue_id,
-            issue_status=status.value
+            issue_status=status
         )
 
         results = await save_issue_responses(
