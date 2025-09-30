@@ -1,6 +1,7 @@
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.opc.oxml import qn
 from docx.oxml import OxmlElement
-from docx.shared import RGBColor
+from docx.shared import RGBColor, Inches
 from psycopg import AsyncConnection
 from models.engagement_models import get_single_engagement_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
@@ -98,15 +99,17 @@ async def load_issue_finding(
 
 def create_table_of_content(issues, doc: Document):
     table = doc.add_table(rows=1, cols=3)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
     table.style = 'Table Grid'
+
     hdr_cells = table.rows[0].cells
     hdr_cells[0].text = 'No'
     hdr_cells[1].text = 'Title'
     hdr_cells[2].text = 'Audit Finding Rating'
 
     for cell in hdr_cells:
-        set_cell_text_color(cell, 'ff0000')
-        set_cell_background_color(cell, 'D9D9D9')  # Light grey
+        set_cell_text_color(cell, 'ffffff')
+        set_cell_background_color(cell, '0000FF')  # Light grey
 
 
 

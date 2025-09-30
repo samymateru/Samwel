@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
-from models.issue_actor_models import initialize_issue_actors
+from models.issue_actor_models import initialize_issue_actors, get_all_issue_actors_on_issue_by_status_model
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
     revise_issue_model, generate_issue_reference, change_issue_status
 from schema import ResponseMessage
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
-    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue
+    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue, \
+    IssueActors
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -255,7 +256,24 @@ async def send_issue_to_owner(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        user_id = "12345"
+        issue_data = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        issue_actor = await get_all_issue_actors_on_issue_by_status_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=[IssueActors.IMPLEMENTER.value]
+        )
+
+        user_ids = [actor['user_id'] for actor in issue_actor]
+
+        if user_id not in user_ids:
+            raise HTTPException(status_code=409, detail="Your Not Issue Implementer")
+
+
 
 
 @router.put("/accept_response/{issue_id}")

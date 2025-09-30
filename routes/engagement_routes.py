@@ -9,7 +9,7 @@ from models.engagement_models import register_new_engagement, \
 from models.engagement_staff_models import create_new_engagement_staff_model
 from models.notification_models import add_notification_to_user_model
 from models.recent_activity_models import add_new_recent_activity
-from models.roll_forwar_model import engagement_roll_forward
+from models.roll_forwar_model import engagement_roll_forward_model
 from schema import ResponseMessage, CurrentUser
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
     AddOpinionRating, UpdateEngagement_
@@ -290,7 +290,7 @@ async def engagement_roll_forward(
         auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-        results = await engagement_roll_forward(
+        results = await engagement_roll_forward_model(
             connection=connection,
             engagement_id=engagement_id,
             annual_plan=annual_plan,

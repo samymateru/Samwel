@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
@@ -62,8 +64,12 @@ async def get_all_issue_actors_on_issue_model(
 
 async def get_all_issue_actors_on_issue_by_status_model(
         connection: AsyncConnection,
-        issue_id: str
+        issue_id: str,
+        roles=None
 ):
+    if roles is None:
+        roles = ["lod2_risk_manager", "lod2_compliance_officer"]
+
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
@@ -76,10 +82,7 @@ async def get_all_issue_actors_on_issue_by_status_model(
                 use_prefix=False
             )
             .where("iss_act."+IssueActorColumns.ISSUE_ID.value, issue_id)
-            .where("iss_act."+IssueActorColumns.ROLE.value, [
-                "lod2_risk_manager",
-                "lod2_compliance_officer"
-            ])
+            .where("iss_act."+IssueActorColumns.ROLE.value, roles)
             .fetch_all()
         )
 

@@ -261,8 +261,6 @@ async def get_engagement_issues_model(
 
 
 
-
-
 async def get_module_issues_model(
         connection: AsyncConnection,
         issue_id: str,
