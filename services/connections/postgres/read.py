@@ -22,8 +22,17 @@ class ReadBuilder:
         self._table_alias = None
         self._distinct = False
 
-    def distinct(self):
-        self._distinct = True
+    def distinct(self, *columns: str):
+        """
+        If called with no arguments:
+            .distinct() -> SELECT DISTINCT
+        If called with arguments:
+            .distinct("iss.id") -> SELECT DISTINCT ON (iss.id)
+        """
+        if columns:
+            self._distinct = columns  # store the list
+        else:
+            self._distinct = True
         return self
 
     def join(self, join_type: str, table: str, on: str, alias: Optional[str] = None,
@@ -172,7 +181,19 @@ class ReadBuilder:
             )
             join_clauses.append(join_clause)
 
-        select_prefix = sql.SQL("SELECT DISTINCT ") if self._distinct else sql.SQL("SELECT ")
+
+        if isinstance(self._distinct, (tuple, list)):
+            distinct_cols = [sql.SQL(col) for col in self._distinct]
+            select_prefix = (
+                    sql.SQL("SELECT DISTINCT ON (") +
+                    sql.SQL(", ").join(distinct_cols) +
+                    sql.SQL(") ")
+            )
+        elif self._distinct is True:
+            select_prefix = sql.SQL("SELECT DISTINCT ")
+        else:
+            select_prefix = sql.SQL("SELECT ")
+
         query = select_prefix + select_clause + sql.SQL(" ") + from_clause + sql.SQL("").join(join_clauses)
 
         if self._where:
