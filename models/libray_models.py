@@ -9,7 +9,7 @@ from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
-
+from psycopg.types.json import Json
 
 async def create_new_libray_entry_model(
         connection: AsyncConnection,
@@ -107,7 +107,7 @@ async def update_main_program_library_model(
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.LIBRARY.value)
-            .values(main_program)
+            .values(__main_program__)
             .check_exists({LibraryColumns.LIBRARY_ID.value: library_id})
             .where({LibraryColumns.LIBRARY_ID.value: library_id})
             .returning(LibraryColumns.LIBRARY_ID.value)

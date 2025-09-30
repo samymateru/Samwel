@@ -257,6 +257,7 @@ async def send_issue_to_owner(
 ):
     with exception_response():
         user_id = "12345"
+
         issue_data = await fetch_single_issue_item_model(
             connection=connection,
             issue_id=issue_id
@@ -272,6 +273,11 @@ async def send_issue_to_owner(
 
         if user_id not in user_ids:
             raise HTTPException(status_code=409, detail="Your Not Issue Implementer")
+
+        if issue_data.get("status") != IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
+            raise HTTPException(status_code=409, detail="Issue cannot be send right now,")
+
+        
 
 
 
