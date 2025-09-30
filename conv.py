@@ -76,62 +76,10 @@ def render_doc(data):
         render_node(node, doc)
     return doc
 
-# Example usage:
 
-json_data = {
-    "type": "doc",
-    "content": [
-        {
-            "type": "paragraph",
-            "content": [
-                { "type": "text", "text": "Hello ", "marks": [
-                    {"type": "bold"},
-                    {"type": "color", "attrs": {"color": "#FF0000"}},
-                    {"type": "underline"},
-                    {"type": "fontsize", "attrs": {"size": 36}},
-                    {
-                      "type": "fontfamily",
-                      "attrs": {
-                        "name": "Arial"
-                      }
-                    }
-                ] },
-                { "type": "text", "text": "world!" }
-            ]
-        },
-        {
-            "type": "ordered_list",
-            "content": [
-                {
-                    "type": "list_item",
-                    "content": [
-                        {"type": "paragraph", "content": [
-                            {"type": "text", "text": "Hello ", "marks": [
-                                {"type": "bold"},
-                                {"type": "color", "attrs": {"color": "#FF0000"}},
-                                {"type": "underline"},
-                                {"type": "fontsize", "attrs": {"size": 36}},
-                                {
-                                    "type": "fontfamily",
-                                    "attrs": {
-                                        "name": "Arial"
-                                    }
-                                }
-                            ]}
-                        ]}
-                    ]
-                },
-                {
-                    "type": "list_item",
-                    "content": [
-                        {"type": "paragraph", "content": [{"type": "text", "text": "Second bullet"}]}
-                    ]
-                }
-            ]
-        }
+def converter(filename, data):
+    sample = render_doc(data)
+    sample.save(filename)
 
-    ]
-}
 
-sample = render_doc(json_data)
-sample.save("placeholder.docx")
+

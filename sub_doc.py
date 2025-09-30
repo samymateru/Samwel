@@ -1,22 +1,10 @@
 from docxtpl import DocxTemplate, Subdoc
 
-doc = DocxTemplate("name.docx")
-
-subdoc1 = doc.new_subdoc("placeholder.docx")
-subdoc = doc.new_subdoc("placeholder.docx")
+doc = DocxTemplate("template.docx")
 
 
-context = {
-    'people': [
+def create_final_data(context):
+    subdoc1 = doc.new_subdoc("name.docx")
 
-        {
-            'name': subdoc1,
-            'place': subdoc
-
-        }
-
-    ]
-}
-
-doc.render(context)
-doc.save("final_output.docx")
+    doc.render(context)
+    doc.save("final_output.docx")

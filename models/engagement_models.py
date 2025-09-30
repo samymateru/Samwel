@@ -49,6 +49,8 @@ async def register_new_engagement(
 
         return builder
 
+
+
 async def get_all_annual_plan_engagement(
         connection: AsyncConnection,
         annual_plan_id: str

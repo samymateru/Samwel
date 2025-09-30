@@ -42,6 +42,8 @@ async def register_new_organization(
 
         return builder
 
+
+
 async def get_user_organizations(connection: AsyncConnection, user_id: str):
     with exception_response():
 
@@ -60,6 +62,7 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
         )
         return builder
 
+
 async def get_entity_organizations(connection: AsyncConnection, entity_id: str):
     with exception_response():
         builder = await (
@@ -71,9 +74,9 @@ async def get_entity_organizations(connection: AsyncConnection, entity_id: str):
 
         return builder
 
+
 async def get_module_organization(connection: AsyncConnection, module_id: str):
     with exception_response():
-
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.MODULES.value, alias="mod")

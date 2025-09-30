@@ -3,7 +3,7 @@ from typing import Dict, Optional, List
 from pydantic import BaseModel
 
 
-class ResponsiblePerson(BaseModel):
+class ResponsiblePeople(BaseModel):
     name: str
     email: str
     role: str
@@ -28,7 +28,7 @@ class IssuesFinding(BaseModel):
     management_action_plan: Optional[Dict] | Optional[str] = None
     recurring_status: Optional[bool] = False
     estimated_implementation_date: datetime
-
+    responsible_people: List[ResponsiblePeople]
 
 
 class IssueFindingSheet(BaseModel):

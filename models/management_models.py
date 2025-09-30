@@ -46,7 +46,7 @@ async def fetch_organization_management_model(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.MANAGEMENT.value)
-            .where(ManagementColumns.ORGANIZATION_ID, organization_id)
+            .where(ManagementColumns.ORGANIZATION_ID.value, organization_id)
             .fetch_all()
         )
 
