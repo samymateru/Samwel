@@ -5,8 +5,10 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
 from models.module_models import increment_module_reference
+from schemas.attachement_schemas import ReadAttachment
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
-    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors
+    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
+    IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -120,7 +122,6 @@ async def save_issue_responses(
             issue=issue_id,
             created_at=datetime.now(),
             notes=response.notes if response.notes is  not None else "",
-            attachments=response.attachments
         )
 
         builder = await (
@@ -130,24 +131,8 @@ async def save_issue_responses(
             .returning(IssueResponseColumns.ID.value)
             .execute()
         )
+
         return builder
-
-
-
-async def fetch_issue_responses_model(
-        connection: AsyncConnection,
-        issue_id: str,
-):
-    with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ISSUE_RESPONSES.value)
-            .where(IssueResponseColumns.ISSUE.value, issue_id)
-            .limit(20)
-            .fetch_all()
-        )
-
-        return  builder
 
 
 
@@ -183,6 +168,8 @@ async def revise_issue_model(
         )
 
         return builder
+
+
 
 
 
@@ -235,6 +222,7 @@ async def generate_issue_reference(
             if results is None:
                 raise HTTPException(status_code=400, detail="Error Incrementing External Issue Reference")
             return reference
+
 
 
 
@@ -351,6 +339,63 @@ async def issue_accept_model(
 
 
 
+
+
+
+
+
+
+
+async def send_issue_for_implementation_model(
+        connection: AsyncConnection,
+        user_id: str,
+        issue_ids: SendIssueImplementor,
+):
+    with exception_response():
+        for issue_id in issue_ids.issue_ids:
+            await change_issue_status(
+                connection=connection,
+                issue_id=issue_id,
+                issue_status=IssueStatus.OPEN,
+            )
+
+            await save_issue_responses(
+                connection=connection,
+                response=NewIssueResponse(
+                notes="Issue Sent For Implementation",
+                type=IssueResponseTypes.SEND,
+                issued_by=user_id
+                ),
+                issue_id=issue_id
+            )
+
+
+
+
+async def save_issue_implementation_model(
+        connection: AsyncConnection,
+        user_id: str,
+        issue_id: str,
+        response: NewIssueResponse
+):
+    with exception_response():
+        results = await save_issue_responses(
+            connection=connection,
+            response=response,
+            issue_id=issue_id
+        )
+
+        await change_issue_status(
+            connection=connection,
+            issue_id=issue_id,
+            issue_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
+        )
+
+        return results
+
+
+
+
 async def send_issue_to_owner_model(
         connection: AsyncConnection,
         user_id: str,
@@ -377,6 +422,79 @@ async def send_issue_to_owner_model(
 
         if issue_data.get("status") != IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
             raise HTTPException(status_code=409, detail="Issue cannot be Sent right now,")
+
+
+        await change_issue_status(
+            connection=connection,
+            issue_id=issue_id,
+            issue_status=IssueStatus.IN_PROGRESS_OWNER
+        )
+
+
+        results = await save_issue_responses(
+            connection=connection,
+            response=NewIssueResponse(
+            notes="Issue Sent To Owner",
+            type=IssueResponseTypes.SEND,
+            issued_by=user_id
+        ),
+            issue_id=issue_id
+        )
+
+        return results
+
+
+
+
+async def fetch_issue_responses_model(
+        connection: AsyncConnection,
+        issue_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUE_RESPONSES.value, alias="iss_rsp")
+            .select(BaseIssueResponse)
+            .join(
+                "LEFT",
+                Tables.ATTACHMENTS.value,
+                "attachment.item_id = iss_rsp.id",
+                "attachment",
+                use_prefix=True,
+                model=ReadAttachment,
+            )
+            .where("iss_rsp."+IssueResponseColumns.ISSUE.value, issue_id)
+            .limit(20)
+            .select_joins()
+            .fetch_all()
+        )
+
+        responses = []
+
+        for data in builder:
+            response = ReadIssueResponse(
+                    id=data.get("id"),
+                    issue=data.get("issue"),
+                    type=data.get("type"),
+                    notes=data.get("notes"),
+                    issued_by=data.get("issue_by"),
+                    created_at=data.get("created_at"),
+                    attachment=ReadAttachment(
+                    attachment_id=data.get("attachment_attachment_id"),
+                    module_id=data.get("attachment_attachment_id"),
+                    item_id=data.get("attachment_item_id"),
+                    filename=data.get("attachment_filename"),
+                    category=data.get("attachment_category"),
+                    url=data.get("attachment_url"),
+                    size=data.get("attachment_size"),
+                    type=data.get("attachment_type"),
+                    created_at=data.get("attachment_created_at")
+                )
+            )
+            responses.append(response)
+
+        return  responses
+
 
 
 

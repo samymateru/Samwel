@@ -1,15 +1,21 @@
 from datetime import datetime
 from typing import Optional, List
-from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException, BackgroundTasks
+
+from core.utils import upload_attachment
+from models.attachment_model import add_new_attachment
 from models.issue_actor_models import initialize_issue_actors, get_all_issue_actors_on_issue_by_status_model
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
-    revise_issue_model, generate_issue_reference, change_issue_status, fetch_issue_responses_model
-from schema import ResponseMessage
+    revise_issue_model, generate_issue_reference, change_issue_status, fetch_issue_responses_model, \
+    save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model
+from schema import ResponseMessage, CurrentUser
+from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue, \
     IssueActors, ReadIssueResponse
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/issue")
@@ -180,18 +186,18 @@ async def send_issue_for_implementation(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        for issue_id in issue_ids.issue_ids:
-            await change_issue_status(
-                connection=connection,
-                issue_id=issue_id,
-                issue_status=IssueStatus.OPEN,
-            )
+        results = await send_issue_for_implementation_model(
+            connection=connection,
+            issue_ids=issue_ids,
+            user_id=""
+        )
 
         return await return_checker(
-            data=True,
+            data=results,
             passed="Successfully Send Issue",
             failed="Fail Sending Issue"
         )
+
 
 
 
@@ -201,27 +207,37 @@ async def save_issue_implementation(
         notes: str = Form(...),
         attachment: UploadFile = File(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
-        results = await save_issue_responses(
-            connection=connection,
-            response=NewIssueResponse(
+        response =  NewIssueResponse(
             notes=notes,
-            attachments=attachment.filename if attachment is not None else None,
             type=IssueResponseTypes.SAVE,
             issued_by=""
-            ),
-            issue_id=issue_id
         )
 
-        if results is None:
-            raise HTTPException(status_code=400, detail="While Save Issue Implementation Failed To Save")
-
-        results = await change_issue_status(
+        results = await save_issue_implementation_model(
             connection=connection,
+            user_id="",
             issue_id=issue_id,
-            issue_status=IssueStatus.IN_PROGRESS_IMPLEMENTER
+            response=response
         )
+
+
+        if attachment is not None:
+            await add_new_attachment(
+                connection=connection,
+                attachment=attachment,
+                item_id=results.get("id"),
+                module_id=auth.module_id,
+                url=upload_attachment(
+                category=AttachmentCategory.ANNUAL_PLAN,
+                background_tasks=background_tasks,
+                file=attachment
+                ),
+                category=AttachmentCategory.ANNUAL_PLAN
+            )
 
         return await return_checker(
             data=results,
@@ -231,16 +247,29 @@ async def save_issue_implementation(
 
 
 
+
 @router.put("/send_owner/{issue_id}")
 async def send_issue_to_owner(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await send_issue_to_owner_model(
+            connection=connection,
+            issue_id=issue_id,
+            user_id=""
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Successfully Send Issue To Owner",
+            failed="Fail Send Issue To Owner"
+        )
 
 
-@router.get("/issue_updates/{issue_id}", response_model=List[ReadIssueResponse])
+
+
+@router.get("/issue_updates/{issue_id}")
 async def fetch_issue_updates(
         issue_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -251,6 +280,15 @@ async def fetch_issue_updates(
             issue_id=issue_id
         )
         return data
+
+
+
+
+
+
+
+
+
 
 
 
@@ -267,6 +305,14 @@ async def fetch_all_module_issues_filtered(
 
 
 
+
+
+
+
+
+
+
+
 @router.get("/user/{user_id}")
 async def fetch_all_user_issues(
         user_id: str,
@@ -274,6 +320,9 @@ async def fetch_all_user_issues(
 ):
     with exception_response():
         pass
+
+
+
 
 
 
