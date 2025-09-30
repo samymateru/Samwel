@@ -13,7 +13,7 @@ class AttachmentCategory(str, Enum):
     FINDING_SHEET = "finding_sheet"
     DRAFT_AUDIT_REPORT = "draft_audit_report"
     ANNUAL_PLAN = "annual_plan"
-    ISSUE_IMPLEMENTATION = "issue_implementation"
+    ISSUE_RESPONSES = "issue_responses"
     POLICY = "policy"
     ENGAGEMENT_PROCESS = "engagement_process"
     FOlLOW_UP = "follow_up"

@@ -4,16 +4,16 @@ from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPExcep
 
 from core.utils import upload_attachment
 from models.attachment_model import add_new_attachment
-from models.issue_actor_models import initialize_issue_actors, get_all_issue_actors_on_issue_by_status_model
+from models.issue_actor_models import initialize_issue_actors
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
-    revise_issue_model, generate_issue_reference, change_issue_status, fetch_issue_responses_model, \
+    revise_issue_model, generate_issue_reference, fetch_issue_responses_model, \
     save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model
 from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
-    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue, \
-    IssueActors, ReadIssueResponse
+    NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
+ ReadIssueResponse
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -148,28 +148,44 @@ async def request_issue_revise(
         reason: str = Form(...),
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
-        response_result = await save_issue_responses(
-            connection=connection,
-            response=NewIssueResponse(
-            notes=reason,
-            attachments=attachment.filename,
-            type=IssueResponseTypes.REVISE,
-            issued_by=""
-            ),
-            issue_id=issue_id
-        )
-
-
-        if response_result is None:
-            raise HTTPException(status_code=400, detail="Failed To Save Response While Revise Issue")
-
         results = await revise_issue_model(
             connection=connection,
             revised_date=revised_date,
             issue_id=issue_id
         )
+
+        if results is None:
+            raise HTTPException(status_code=400, detail="Failed To Save Revise Issue")
+
+        response_result = await save_issue_responses(
+            connection=connection,
+            response=NewIssueResponse(
+            notes=reason,
+            type=IssueResponseTypes.REVISE,
+            issued_by=auth.user_id
+            ),
+            issue_id=issue_id
+        )
+
+
+        if attachment is not None:
+            await add_new_attachment(
+                connection=connection,
+                attachment=attachment,
+                item_id=response_result.get("id"),
+                module_id=auth.module_id,
+                url=upload_attachment(
+                category=AttachmentCategory.ISSUE_RESPONSES,
+                background_tasks=background_tasks,
+                file=attachment
+                ),
+                category=AttachmentCategory.ISSUE_RESPONSES
+            )
+
 
         return await return_checker(
             data=results,
@@ -214,12 +230,12 @@ async def save_issue_implementation(
         response =  NewIssueResponse(
             notes=notes,
             type=IssueResponseTypes.SAVE,
-            issued_by=""
+            issued_by=auth.user_id
         )
 
         results = await save_issue_implementation_model(
             connection=connection,
-            user_id="",
+            user_id=auth.user_id,
             issue_id=issue_id,
             response=response
         )
@@ -232,11 +248,11 @@ async def save_issue_implementation(
                 item_id=results.get("id"),
                 module_id=auth.module_id,
                 url=upload_attachment(
-                category=AttachmentCategory.ANNUAL_PLAN,
+                category=AttachmentCategory.ISSUE_RESPONSES,
                 background_tasks=background_tasks,
                 file=attachment
                 ),
-                category=AttachmentCategory.ANNUAL_PLAN
+                category=AttachmentCategory.ISSUE_RESPONSES
             )
 
         return await return_checker(
@@ -252,12 +268,13 @@ async def save_issue_implementation(
 async def send_issue_to_owner(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
         results = await send_issue_to_owner_model(
             connection=connection,
             issue_id=issue_id,
-            user_id=""
+            user_id=auth.user_id
         )
 
         return await return_checker(
