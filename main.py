@@ -1,11 +1,5 @@
 import uuid
 from typing import Optional
-
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.shared import RGBColor, Pt
 from fastapi import FastAPI, Depends, Form, Request, Query
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
@@ -33,9 +27,6 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
-from conv import converter
-from models.roll_forwar_model import export_engagement_content_model, roll_policy, roll_regulation
-from reports.models.issue_finding_model import load_issue_finding, create_table_of_content
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -48,7 +39,6 @@ from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
 from services.notifications.util import notification_manager
 from services.security.security import verify_password
-from sub_doc import create_final_data
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
 from Management.templates.databases import *
@@ -80,9 +70,6 @@ from routes.management_routes import router as management_routes
 from routes.policy_routes import router as policy_routes
 from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
-
-
-from docxtpl import DocxTemplate, Subdoc
 
 
 
@@ -152,21 +139,7 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        # data = await export_engagement_content_model(
-        #     connection=connection,
-        #     engagement_id=engagement_id,
-        #     annual_plan_id="4c227f4fc497"
-        # )
-        #
-        # return data
-
-        data = await roll_regulation(
-            connection=connection,
-            previous_engagement_id="0a69c33424be",
-            new_engagement_id="fdb4fdf6c31b"
-        )
-
-        return data
+        pass
 
 
 

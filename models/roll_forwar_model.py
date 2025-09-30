@@ -4,6 +4,8 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from models.attachment_model import fetch_item_attachment
 from models.engagement_models import get_single_engagement_details, register_new_engagement
+from models.main_program_models import export_main_audit_program_to_library_model, fetch_main_programs_models, \
+    import_main_audit_program_to_library_model
 from models.policy_models import get_engagement_policies_model, \
     create_new_policy_model
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
@@ -55,6 +57,8 @@ async def export_engagement_content_model(
         )
 
         return results
+
+
 
 
 async def roll_policy(
@@ -115,6 +119,7 @@ async def roll_policy(
 
 
 
+
 async def roll_regulation(
         connection: AsyncConnection,
         previous_engagement_id: str,
@@ -169,8 +174,82 @@ async def roll_regulation(
         return True
 
 
-async def ro():
-    pass
+
+
+async def roll_forward_main_program(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+        module_id: str
+):
+    with exception_response():
+
+        main_program_data = await fetch_main_programs_models(
+            connection=connection,
+            engagement_id=previous_engagement_id
+        )
+
+        for program in main_program_data:
+            data = await export_main_audit_program_to_library_model(
+                connection=connection,
+                program_id=program.get("id"),
+            )
+
+            await import_main_audit_program_to_library_model(
+                connection=connection,
+                engagement_id=new_engagement_id,
+                module_id=module_id,
+                main_program=data
+            )
+
+
+
+
+async def engagement_roll_forward(
+    connection: AsyncConnection,
+    engagement_id: str,
+    annual_plan: str,
+    module_id: str
+):
+    with exception_response():
+        data = await export_engagement_content_model(
+            connection=connection,
+            engagement_id=engagement_id,
+            annual_plan_id=annual_plan
+        )
+
+
+        await roll_policy(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+
+        await roll_regulation(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+
+        await roll_forward_main_program(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id"),
+            module_id=module_id
+        )
+
+
+        return data
+
+
+
+
+
+
+
+
 
 
 
