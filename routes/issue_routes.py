@@ -344,8 +344,8 @@ async def issue_accept_response(
         accept_attachment: Optional[UploadFile] = File(None),
         lod2_feedback: Optional[IssueLOD2Feedback] = Form(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
-
+        auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         status = None
@@ -358,19 +358,30 @@ async def issue_accept_response(
             status = lod2_feedback.value
 
 
-        response = NewIssueResponse(
-            notes=accept_notes,
-            attachments=accept_attachment.filename,
-            type=IssueResponseTypes.ACCEPT.value,
-            issued_by=auth.user_id
-        )
-
         results = await issue_accept_model(
             connection=connection,
-            response=response,
+            response=NewIssueResponse(
+            notes=accept_notes,
+            type=IssueResponseTypes.ACCEPT,
+            issued_by=auth.user_id
+            ),
             issue_id=issue_id,
             status=status
         )
+
+        if accept_attachment is not None:
+            await add_new_attachment(
+                connection=connection,
+                attachment=accept_attachment,
+                item_id=results.get("id"),
+                module_id=auth.module_id,
+                url=upload_attachment(
+                category=AttachmentCategory.ISSUE_RESPONSES,
+                background_tasks=background_tasks,
+                file=accept_attachment
+                ),
+                category=AttachmentCategory.ISSUE_RESPONSES
+            )
 
         return await return_checker(
             data=results,

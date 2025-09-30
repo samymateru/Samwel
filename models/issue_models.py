@@ -328,14 +328,20 @@ async def issue_accept_model(
 ):
     with exception_response():
 
-        results = await change_issue_status(
+        await change_issue_status(
             connection=connection,
             issue_id=issue_id,
-            issue_status=status
+            issue_status=status.value
         )
 
-        if results is None:
-            raise HTTPException(status_code=400, detail="Failed Accepting Issue")
+        results = await save_issue_responses(
+            connection=connection,
+            response=response,
+            issue_id=issue_id
+        )
+
+        return results
+
 
 
 
