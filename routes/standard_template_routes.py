@@ -1,4 +1,6 @@
 from fastapi import Depends, APIRouter
+
+from models.standard_template_models import create_new_standard_template_model
 from schema import ResponseMessage
 from schemas.standard_template_schemas import NewStandardTemplate, ProcedureTypes, UpdateStandardProcedure
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -16,7 +18,12 @@ async def create_standard_procedure(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await create_new_standard_template_model(
+            connection=connection,
+            procedure=procedure,
+            type_=type_,
+            engagement_id=engagement_id
+        )
 
 
 @router.get("/{engagement_id}")

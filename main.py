@@ -15,7 +15,6 @@ from Management.entity.profile.impact_category.routes import router as impact_ca
 from Management.entity.profile.engagement_type.routes import router as engagement_type
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
 from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
-from AuditNew.Internal.engagements.issue.routes import router as issue_
 from AuditNew.Internal.engagements.task.routes import router as task_
 from Management.entity.profile.root_cause_category.routes import router as root_cause
 from Management.entity.profile.risk_category.routes import router as risk_category_
@@ -293,7 +292,6 @@ app.include_router(business_process_, tags=["Engagement Business Processes"])
 app.include_router(impact_category_, tags=["Impact Category Rating"])
 app.include_router(root_cause, tags=["Root Cause Category"])
 app.include_router(risk_category_, tags=["Risk Category Rating"])
-app.include_router(issue_, tags=["Issue"])
 app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
 app.include_router(risk_, tags=["Engagement Risk"])

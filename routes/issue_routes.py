@@ -344,10 +344,12 @@ async def issue_accept_response(
         accept_attachment: Optional[UploadFile] = File(None),
         lod2_feedback: Optional[IssueLOD2Feedback] = Form(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 
 ):
     with exception_response():
         status = None
+
         if accept_actor.value == "lod1_owner":
             status = IssueStatus.CLOSED_NOT_VERIFIED.value
         elif accept_actor.value == "lod3_audit_manager":
@@ -360,7 +362,7 @@ async def issue_accept_response(
             notes=accept_notes,
             attachments=accept_attachment.filename,
             type=IssueResponseTypes.ACCEPT.value,
-            issued_by=""
+            issued_by=auth.user_id
         )
 
         results = await issue_accept_model(

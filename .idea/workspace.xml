@@ -6,12 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/standard_template_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/standard_template_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/standard_template.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/standard_template.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/standard_template_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/standard_template_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/standard_template.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/standard_template_routes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,22 +148,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00736" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1758989711843</created>
-      <option name="number" value="00736" />
-      <option name="presentableId" value="LOCAL-00736" />
-      <option name="project" value="LOCAL" />
-      <updated>1758989711843</updated>
-    </task>
-    <task id="LOCAL-00737" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1758989941150</created>
-      <option name="number" value="00737" />
-      <option name="presentableId" value="LOCAL-00737" />
-      <option name="project" value="LOCAL" />
-      <updated>1758989941150</updated>
     </task>
     <task id="LOCAL-00738" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -543,7 +525,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759266908004</updated>
     </task>
-    <option name="localTasksCounter" value="785" />
+    <task id="LOCAL-00785" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1759270955375</created>
+      <option name="number" value="00785" />
+      <option name="presentableId" value="LOCAL-00785" />
+      <option name="project" value="LOCAL" />
+      <updated>1759270955375</updated>
+    </task>
+    <task id="LOCAL-00786" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1759271697867</created>
+      <option name="number" value="00786" />
+      <option name="presentableId" value="LOCAL-00786" />
+      <option name="project" value="LOCAL" />
+      <updated>1759271697867</updated>
+    </task>
+    <option name="localTasksCounter" value="787" />
     <servers />
   </component>
   <component name="UnknownFeatures">

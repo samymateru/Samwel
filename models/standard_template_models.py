@@ -17,7 +17,7 @@ procedure_category = {
 
 async def create_new_standard_template_model(
         connection: AsyncConnection,
-        template: NewStandardTemplate,
+        procedure: NewStandardTemplate,
         type_: ProcedureTypes,
         engagement_id: str
 ):
@@ -25,7 +25,7 @@ async def create_new_standard_template_model(
         __standard_template__ = CreateStandardTemplate(
             id=get_unique_key(),
             engagement=engagement_id,
-            title=template.title,
+            title=procedure.title,
             reference="",
             tests=Section(value=""),
             objectives = Section(value=""),
@@ -42,7 +42,7 @@ async def create_new_standard_template_model(
             InsertQueryBuilder(connection=connection)
             .into_table(procedure_category.get(type_.value))
             .check_exists({StandardTemplateColumns.ENGAGEMENT.value: engagement_id})
-            .check_exists({StandardTemplateColumns.TITLE.value: template.title})
+            .check_exists({StandardTemplateColumns.TITLE.value: procedure.title})
             .returning(StandardTemplateColumns.ID.value)
             .values(__standard_template__)
             .execute()
