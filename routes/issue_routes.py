@@ -1,18 +1,20 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException
 from models.issue_actor_models import initialize_issue_actors, get_all_issue_actors_on_issue_by_status_model
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
-    revise_issue_model, generate_issue_reference, change_issue_status
+    revise_issue_model, generate_issue_reference, change_issue_status, fetch_issue_responses_model
 from schema import ResponseMessage
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, ReviseIssue, \
-    IssueActors
+    IssueActors, ReadIssueResponse
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/issue")
+
+
 
 @router.post("/{sub_program_id}", response_model=ResponseMessage)
 async def create_new_issue(
@@ -52,6 +54,49 @@ async def create_new_issue(
             passed="Issue Successfully Created",
             failed="Failed Creating  Issue"
         )
+
+
+
+@router.put("/{issue_id}")
+async def update_issue_details(
+        issue_id: str,
+        issue: UpdateIssueDetails,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+
+):
+    with exception_response():
+        results = await update_issue_details_model(
+            connection=connection,
+            issue=issue,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Successfully Updated",
+            failed="Failed Updating  Issue"
+        )
+
+
+
+
+@router.delete("/{issue_id}")
+async def delete_issue_details(
+        issue_id: str,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await delete_issue_details_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Successfully Deleted",
+            failed="Failed Deleting  Issue"
+        )
+
 
 
 
@@ -128,6 +173,7 @@ async def request_issue_revise(
 
 
 
+
 @router.put("/send_implementor")
 async def send_issue_for_implementation(
         issue_ids: SendIssueImplementor,
@@ -185,46 +231,26 @@ async def save_issue_implementation(
 
 
 
-@router.put("/{issue_id}")
-async def update_issue_details(
+@router.put("/send_owner/{issue_id}")
+async def send_issue_to_owner(
         issue_id: str,
-        issue: UpdateIssueDetails,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-
 ):
     with exception_response():
-        results = await update_issue_details_model(
-            connection=connection,
-            issue=issue,
-            issue_id=issue_id
-        )
-
-        return await return_checker(
-            data=results,
-            passed="Issue Successfully Updated",
-            failed="Failed Updating  Issue"
-        )
+        pass
 
 
-
-@router.delete("/{issue_id}")
-async def delete_issue_details(
+@router.get("/issue_updates/{issue_id}", response_model=List[ReadIssueResponse])
+async def fetch_issue_updates(
         issue_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        results = await delete_issue_details_model(
+        data = await fetch_issue_responses_model(
             connection=connection,
             issue_id=issue_id
         )
-
-        return await return_checker(
-            data=results,
-            passed="Issue Successfully Deleted",
-            failed="Failed Deleting  Issue"
-        )
-
-
+        return data
 
 
 
@@ -250,34 +276,7 @@ async def fetch_all_user_issues(
         pass
 
 
-@router.put("/send_owner/{issue_id}")
-async def send_issue_to_owner(
-        issue_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        user_id = "12345"
 
-        issue_data = await fetch_single_issue_item_model(
-            connection=connection,
-            issue_id=issue_id
-        )
-
-        issue_actor = await get_all_issue_actors_on_issue_by_status_model(
-            connection=connection,
-            issue_id=issue_id,
-            roles=[IssueActors.IMPLEMENTER.value]
-        )
-
-        user_ids = [actor['user_id'] for actor in issue_actor]
-
-        if user_id not in user_ids:
-            raise HTTPException(status_code=409, detail="Your Not Issue Implementer")
-
-        if issue_data.get("status") != IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
-            raise HTTPException(status_code=409, detail="Issue cannot be send right now,")
-
-        
 
 
 

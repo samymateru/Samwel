@@ -3,9 +3,10 @@ from typing import List
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
 from models.module_models import increment_module_reference
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
-    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue
+    CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -130,6 +131,25 @@ async def save_issue_responses(
             .execute()
         )
         return builder
+
+
+
+async def fetch_issue_responses_model(
+        connection: AsyncConnection,
+        issue_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUE_RESPONSES.value)
+            .where(IssueResponseColumns.ISSUE.value, issue_id)
+            .limit(20)
+            .fetch_all()
+        )
+
+        return  builder
+
+
 
 
 
@@ -291,6 +311,7 @@ async def update_issue_details_model(
 
 
 
+
 async def delete_issue_details_model(
         connection: AsyncConnection,
         issue_id: str,
@@ -310,6 +331,7 @@ async def delete_issue_details_model(
 
 
 
+
 async def issue_accept_model(
         connection: AsyncConnection,
         response: NewIssueResponse,
@@ -326,5 +348,35 @@ async def issue_accept_model(
 
         if results is None:
             raise HTTPException(status_code=400, detail="Failed Accepting Issue")
+
+
+
+async def send_issue_to_owner_model(
+        connection: AsyncConnection,
+        user_id: str,
+        issue_id: str
+):
+    with exception_response():
+
+        issue_data = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+
+        issue_actor = await get_all_issue_actors_on_issue_by_status_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=[IssueActors.IMPLEMENTER.value]
+        )
+
+        user_ids = [actor['user_id'] for actor in issue_actor]
+
+        if user_id not in user_ids:
+            raise HTTPException(status_code=409, detail="Your Not Issue Implementer")
+
+        if issue_data.get("status") != IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
+            raise HTTPException(status_code=409, detail="Issue cannot be Sent right now,")
+
 
 

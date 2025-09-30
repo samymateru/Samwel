@@ -116,24 +116,6 @@ async def fetch_issue_based_on_actor(
 
 
 
-
-@router.get("/updates/{issue_id}", response_model=List[IssueImplementationDetails])
-async def fetch_issue_updates(
-        issue_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
-):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        data = await get_issue_updates(connection=db, issue_id=issue_id)
-        return data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-
-
 @router.put("/prepared/{issue_id}", response_model=ResponseMessage)
 async def prepare_issue(
         issue_id: str,

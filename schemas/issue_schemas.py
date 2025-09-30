@@ -154,6 +154,12 @@ class CreateIssueResponses(NewIssueResponse):
 
 
 
+
+class ReadIssueResponse(CreateIssueResponses):
+    pass
+
+
+
 class UpdateIssueStatus(BaseModel):
     status: IssueStatus
 
