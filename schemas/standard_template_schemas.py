@@ -41,9 +41,9 @@ class ProcedureTypes(str, Enum):
 
 
 class PreparedReviewedBy(BaseModel):
-    name: str
-    email: str
-    date_issued: datetime
+    name: Optional[str] = None
+    email: Optional[str] = None
+    date_issued: datetime = None
 
 
 class NewStandardTemplate(BaseModel):

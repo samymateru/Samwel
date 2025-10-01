@@ -20,7 +20,7 @@ file = Document()
 
 table = file.add_table(
     rows=1,
-    cols=1
+    cols=2
 )
 
 table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -30,6 +30,7 @@ table.style = 'Table Grid'
 hdr_cells = table.rows[0].cells
 
 hdr_cells[0].text = 'No'
-print(hdr_cells)
+hdr_cells[1].text = 'Title'
+
 
 file.save("hello.docx")

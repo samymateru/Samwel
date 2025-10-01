@@ -7,6 +7,7 @@ class ResponsiblePeople(BaseModel):
     name: str
     email: str
     role: str
+    mod_usr_role: str
 
 class IssuesFinding(BaseModel):
     title: str

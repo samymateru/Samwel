@@ -27,6 +27,7 @@ from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
 from models.roll_forwar_model import engagement_process_roll, engagement_profile_roll, standard_template_roll
+from reports.draft_report import generate_draft_report_model
 from reports.models.finding_report import generate_finding_report
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
@@ -138,7 +139,7 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        await generate_finding_report(
+        await generate_draft_report_model(
             connection=connection,
             engagement_id="4b15ba494eb9",
             module_id="04e9e6ebdf06"

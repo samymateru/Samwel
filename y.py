@@ -4,7 +4,7 @@ data = await load_issue_finding(
     module_id="04e9e6ebdf06"
 )
 
-doc = DocxTemplate("template.docx")
+doc = DocxTemplate("finding_template.docx")
 docxs = Document()
 
 create_table_of_content(

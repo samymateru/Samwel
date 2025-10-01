@@ -82,6 +82,7 @@ async def load_issue_finding(
                 issue_id=issue.get("id")
             )
 
+
             responsible_people = [ResponsiblePeople(**user) for user in user_details]
             issue["responsible_people"] = responsible_people
             all_issues.append(IssuesFinding(**issue))

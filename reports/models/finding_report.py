@@ -19,7 +19,7 @@ async def generate_finding_report(
             module_id=module_id
         )
 
-        doc = DocxTemplate("template.docx")
+        doc = DocxTemplate("")
         docxs = Document()
 
 
@@ -58,7 +58,11 @@ async def generate_finding_report(
                 "sub_risk_category": da.sub_risk_category,
                 "recurring": "Yes" if da.recurring_status else "No",
                 "rating": da.risk_rating,
+                "root_cause": da.root_cause,
+                "sub_root_cause": da.sub_root_cause,
                 "root_cause_description": root_cause_descrption_subdoc,
+                "impact_category": da.impact_category,
+                "impact_sub_category": da.impact_sub_category,
                 "impact_description": impact_descrption_subdoc,
                 "finding": finding_subdoc,
                 "criteria": criteria_subdoc,

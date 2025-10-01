@@ -5,14 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change afterPath="$PROJECT_DIR$/reports/draft_report.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/notifications/email_notification_schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/draft_template.docx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/template.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/engagement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue_actor_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_actor_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/finding_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/issue_finding_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_finding_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sub_doc.py" beforeDir="false" afterPath="$PROJECT_DIR$/sub_doc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/y.py" beforeDir="false" afterPath="$PROJECT_DIR$/y.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,6 +132,7 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client" />
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
@@ -152,14 +157,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00750" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759060053875</created>
-      <option name="number" value="00750" />
-      <option name="presentableId" value="LOCAL-00750" />
-      <option name="project" value="LOCAL" />
-      <updated>1759060053876</updated>
     </task>
     <task id="LOCAL-00751" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -545,7 +542,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759313665102</updated>
     </task>
-    <option name="localTasksCounter" value="799" />
+    <task id="LOCAL-00799" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1759324175438</created>
+      <option name="number" value="00799" />
+      <option name="presentableId" value="LOCAL-00799" />
+      <option name="project" value="LOCAL" />
+      <updated>1759324175438</updated>
+    </task>
+    <option name="localTasksCounter" value="800" />
     <servers />
   </component>
   <component name="UnknownFeatures">

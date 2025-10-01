@@ -1,6 +1,6 @@
 from docxtpl import DocxTemplate, Subdoc
 
-doc = DocxTemplate("template.docx")
+doc = DocxTemplate("finding_template.docx")
 
 
 def create_final_data(context):
