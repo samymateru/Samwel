@@ -1,4 +1,6 @@
 import os
+import warnings
+
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docxtpl import DocxTemplate
@@ -7,6 +9,7 @@ from conv import converter
 from reports.models.issue_model import load_engagement_report_data
 from reports.utils import set_cell_text_color, set_cell_background_color
 from utils import exception_response
+warnings.filterwarnings("ignore")
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

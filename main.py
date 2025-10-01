@@ -1,5 +1,4 @@
 import uuid
-
 from typing import Optional
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
@@ -23,7 +22,6 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from AuditNew.Internal.engagements.control.routes import router as control_
 from reports.draft_report.draft_report import generate_draft_report_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
@@ -65,6 +63,8 @@ from routes.policy_routes import router as policy_routes
 from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
+
+
 
 load_dotenv()
 
@@ -282,7 +282,6 @@ app.include_router(root_cause, tags=["Root Cause Category"])
 app.include_router(risk_category_, tags=["Risk Category Rating"])
 app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
-app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 

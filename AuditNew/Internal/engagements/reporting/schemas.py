@@ -4,9 +4,6 @@ from enum import Enum
 from datetime import datetime
 
 
-class NewReportingProcedure(BaseModel):
-    title: str
-
 class ProgramSummary(BaseModel):
     id: Optional[str] = None
     name: str
