@@ -8,7 +8,7 @@ from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/engagements")
 
-@router.post("/{engagement_id}", status_code=201, response_model=ResponseMessage)
+@router.post("/std_template/{engagement_id}", status_code=201, response_model=ResponseMessage)
 async def create_standard_procedure(
         procedure: NewStandardTemplate,
         engagement_id: str,
@@ -31,7 +31,7 @@ async def create_standard_procedure(
 
 
 
-@router.get("/{engagement_id}")
+@router.get("/std_template/{engagement_id}")
 async def get_standard_standard_procedure(
         engagement_id: str,
         type_: ProcedureTypes,
@@ -50,7 +50,7 @@ async def get_standard_standard_procedure(
 
 
 
-@router.put("/{procedure_id}")
+@router.put("/std_template/{procedure_id}")
 async def update_standard_standard_procedure(
         procedure_id: str,
         procedure: UpdateStandardProcedure,
@@ -74,7 +74,7 @@ async def update_standard_standard_procedure(
 
 
 
-@router.delete("/{procedure_id}")
+@router.delete("/std_template/{procedure_id}")
 async def delete_standard_standard_procedure(
         procedure_id: str,
         type_: ProcedureTypes,

@@ -26,6 +26,7 @@ from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
+from models.roll_forwar_model import engagement_process_roll, engagement_profile_roll
 from reports.models.finding_report import generate_finding_report
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
@@ -70,6 +71,7 @@ from routes.management_routes import router as management_routes
 from routes.policy_routes import router as policy_routes
 from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
+from routes.standard_template_routes import router as standard_template_routes
 
 
 
@@ -84,8 +86,6 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
-        await notification_manager.start_worker()
-        await notification_manager.connect()
         await test_direct_connection()
         await init_redis_pool()
     except Exception as e:
@@ -139,11 +139,17 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        await generate_finding_report(
-            connection=connection,
-            engagement_id="4b15ba494eb9",
-            module_id="04e9e6ebdf06"
-        )
+        # await generate_finding_report(
+        #     connection=connection,
+        #     engagement_id="4b15ba494eb9",
+        #     module_id="04e9e6ebdf06"
+        # )
+
+        # await engagement_profile_roll(
+        #     connection=connection,
+        #     previous_engagement_id="fdb4fdf6c31b",
+        #     new_engagement_id="980998"
+        # )
 
         return True
 
@@ -183,6 +189,7 @@ async def module_redirection(
     else:
         redirect_url = f"http://{sub_domain}.{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"
         return RedirectUrl(redirect_url=redirect_url)
+
 
 
 @app.get("/api/session-code/{session_code}", tags=["Authentication"], response_model=TokenResponse)
@@ -266,7 +273,6 @@ async def change_password(
             user_id=user.user_id,
             old_password=old_password,
             new_password=new_password
-
         )
 
         return ResponseMessage(detail="Password updated successfully")
@@ -313,6 +319,7 @@ app.include_router(policy_routes, tags=["Engagement Policies  Routes"])
 app.include_router(regulation_routes, tags=["Engagement Regulations  Routes"])
 app.include_router(engagement_process_routes, tags=["Engagement Process  Routes"])
 app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
+app.include_router(standard_template_routes, tags=["Standard Templates Procedure Routes"])
 app.include_router(PRCM_routes, tags=["PRCM  Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])
 app.include_router(issue_actor_routes, tags=["Issue Actors Routes"])

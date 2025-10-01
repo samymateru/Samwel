@@ -3,17 +3,25 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from models.attachment_model import fetch_item_attachment
+from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
 from models.engagement_models import get_single_engagement_details, register_new_engagement
+from models.engagement_process_models import get_single_engagement_process_model, get_engagement_processes_model, \
+    create_engagement_process_model
 from models.main_program_models import export_main_audit_program_to_library_model, fetch_main_programs_models, \
     import_main_audit_program_to_library_model
 from models.policy_models import get_engagement_policies_model, \
     create_new_policy_model
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
 from schemas.attachement_schemas import AttachmentCategory, CreateAttachment, AttachmentColumns
+from schemas.engagement_administration_profile_schemas import EngagementProfileColumns, \
+    CreateEngagementAdministrationProfile
+from schemas.engagement_process_schemas import CreateEngagementProcess
 from schemas.engagement_schemas import EngagementStatus, EngagementStage, NewEngagement, Risk
 from schemas.policy_schemas import CreatePolicy
 from schemas.regulation_schemas import CreateRegulation
 from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.update import UpdateQueryBuilder
+from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 
 
@@ -218,6 +226,12 @@ async def engagement_roll_forward_model(
             annual_plan_id=annual_plan
         )
 
+        await engagement_profile_roll(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
 
         await roll_policy(
             connection=connection,
@@ -227,6 +241,13 @@ async def engagement_roll_forward_model(
 
 
         await roll_regulation(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+
+        await engagement_process_roll(
             connection=connection,
             previous_engagement_id=engagement_id,
             new_engagement_id=data.get("id")
@@ -244,6 +265,72 @@ async def engagement_roll_forward_model(
         return data
 
 
+
+
+async def engagement_profile_roll(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+):
+    with exception_response():
+        profile_data = await fetch_engagement_administration_profile_model(
+            connection=connection,
+            engagement_id=previous_engagement_id
+        )
+
+        data = profile_data.copy()
+
+        data.update({
+            "id": get_unique_key(),
+            "engagement": new_engagement_id
+        })
+
+        profile = CreateEngagementAdministrationProfile(**data)
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENT_PROFILE.value)
+            .values(profile)
+            .check_exists({EngagementProfileColumns.ENGAGEMENT.value: new_engagement_id})
+            .returning(EngagementProfileColumns.ID.value)
+            .execute()
+        )
+        return builder
+
+
+
+async def engagement_process_roll(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+):
+    with exception_response():
+        engagement_process_data = await get_engagement_processes_model(
+            connection=connection,
+            engagement_id=previous_engagement_id
+        )
+
+        for  _engagement_process_ in engagement_process_data:
+
+            data = _engagement_process_.copy()
+
+            data.update({
+                "id": get_unique_key(),
+                "engagement": new_engagement_id
+            })
+
+            engagement_process = CreateEngagementProcess(**data)
+
+            await create_engagement_process_model(
+                connection=connection,
+                engagement_process=engagement_process,
+                engagement_id=new_engagement_id,
+                throw=False
+            )
+
+        global_logger.info(f"Engagement Process Roll Forwarded to {new_engagement_id}")
+
+        return True
 
 
 
