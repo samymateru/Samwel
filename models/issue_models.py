@@ -10,6 +10,7 @@ from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColum
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
     IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
+from schemas.user_schemas import ReadOrganizationUser, BaseUser
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -471,6 +472,14 @@ async def fetch_issue_responses_model(
                 use_prefix=True,
                 model=ReadAttachment,
             )
+            .join(
+                "LEFT",
+                Tables.USERS.value,
+                "usr.id = iss_rsp.issued_by",
+                "usr",
+                use_prefix=True,
+                model=BaseUser,
+            )
             .where("iss_rsp."+IssueResponseColumns.ISSUE.value, issue_id)
             .limit(20)
             .select_joins()
@@ -485,7 +494,7 @@ async def fetch_issue_responses_model(
                     issue=data.get("issue"),
                     type=data.get("type"),
                     notes=data.get("notes"),
-                    issued_by=data.get("issue_by"),
+                    issued_by=data.get("usr_name"),
                     created_at=data.get("created_at"),
                     attachment=ReadAttachment(
                     attachment_id=data.get("attachment_attachment_id"),
