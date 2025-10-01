@@ -350,12 +350,12 @@ async def issue_accept_response(
     with exception_response():
         status = None
 
-        if accept_actor.value == "lod1_owner":
+        if accept_actor == "lod1_owner":
             status = IssueStatus.CLOSED_NOT_VERIFIED.value
-        elif accept_actor.value == "lod3_audit_manager":
+        elif accept_actor == "lod3_audit_manager":
             status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT.value
         else:
-            status = lod2_feedback.value
+            status = lod2_feedback
 
 
         results = await issue_accept_model(

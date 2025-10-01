@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Query, BackgroundTasks
-
 from core.utils import upload_attachment
 from models.attachment_model import add_new_attachment, fetch_item_attachment, remove_attachment
 from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.connections.postgres.insert import InsertQueryBuilder
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
