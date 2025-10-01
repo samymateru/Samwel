@@ -74,7 +74,6 @@ from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
 
 
-
 load_dotenv()
 
 
@@ -139,11 +138,11 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        # await generate_finding_report(
-        #     connection=connection,
-        #     engagement_id="4b15ba494eb9",
-        #     module_id="04e9e6ebdf06"
-        # )
+        await generate_finding_report(
+            connection=connection,
+            engagement_id="4b15ba494eb9",
+            module_id="04e9e6ebdf06"
+        )
 
         return True
 

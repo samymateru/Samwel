@@ -22,6 +22,7 @@ class EngagementStatus(str, Enum):
     CLOSED = "Closed"
     ONGOING = "Ongoing"
     DELETED = "Deleted"
+    ARCHIVED = "Archived"
 
 
 class EngagementStage(str, Enum):
@@ -112,6 +113,7 @@ class AddOpinionRating(BaseModel):
 
 class ArchiveEngagement(BaseModel):
     archived: bool
+    status: EngagementStatus
 
 
 class CompleteEngagement(BaseModel):

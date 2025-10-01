@@ -151,7 +151,8 @@ async def archive_annual_plan_engagement(
 ):
     with exception_response():
         __archive__ =  ArchiveEngagement(
-            archived=True
+            archived=True,
+            status=EngagementStatus.ARCHIVED.value
         )
 
         builder = await (
