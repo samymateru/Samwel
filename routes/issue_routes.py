@@ -344,7 +344,7 @@ async def issue_accept_response(
         accept_attachment: Optional[UploadFile] = File(None),
         lod2_feedback: Optional[IssueLOD2Feedback] = Form(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user),
+        auth: CurrentUser = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
@@ -362,7 +362,7 @@ async def issue_accept_response(
             response=NewIssueResponse(
             notes=accept_notes,
             type=IssueResponseTypes.ACCEPT,
-            issued_by="auth.user_id"
+            issued_by=auth.user_id
             ),
             issue_id=issue_id,
             status=status
@@ -373,7 +373,7 @@ async def issue_accept_response(
                 connection=connection,
                 attachment=accept_attachment,
                 item_id=results.get("id"),
-                module_id="auth.module_id",
+                module_id=auth.module_id,
                 url=upload_attachment(
                 category=AttachmentCategory.ISSUE_RESPONSES,
                 background_tasks=background_tasks,
@@ -394,23 +394,23 @@ async def issue_decline_response(
         issue_id: str,
         issue: NewDeclineResponse,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user),
+        auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
         status = None
         if issue.actor == IssueActors.OWNER:
-            status = IssueStatus.IN_PROGRESS_IMPLEMENTER.value
+            status = IssueStatus.IN_PROGRESS_IMPLEMENTER
         elif issue.actor == IssueActors.RISK_MANAGER or issue.actor == IssueActors.COMPLIANCE_OFFICER:
-            status = IssueStatus.IN_PROGRESS_OWNER.value
+            status = IssueStatus.IN_PROGRESS_OWNER
         elif issue.actor == IssueActors.AUDIT_MANAGER:
-            status = IssueStatus.CLOSED_NOT_VERIFIED.value
+            status = IssueStatus.CLOSED_NOT_VERIFIED
         else:
             status = None
 
         response = NewIssueResponse(
             notes=issue.decline_notes,
             type=IssueResponseTypes.DECLINE,
-            # issued_by=auth.user_id
+            issued_by=auth.user_id
         )
 
         results = await issue_accept_model(

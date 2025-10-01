@@ -233,7 +233,7 @@ async def change_issue_status(
 ):
     with exception_response():
         __issue__ = UpdateIssueStatus(
-            status=issue_status.value
+            status=issue_status
         )
 
         builder = await (
