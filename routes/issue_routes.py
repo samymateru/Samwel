@@ -13,7 +13,7 @@ from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
- ReadIssueResponse
+    ReadIssueResponse, IssueActors
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -344,26 +344,25 @@ async def issue_accept_response(
         accept_attachment: Optional[UploadFile] = File(None),
         lod2_feedback: Optional[IssueLOD2Feedback] = Form(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user),
+        #auth: CurrentUser = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         status = None
 
-        if accept_actor == "lod1_owner":
-            status = IssueStatus.CLOSED_NOT_VERIFIED.value
-        elif accept_actor == "lod3_audit_manager":
-            status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT.value
+        if accept_actor == IssueActors.OWNER:
+            status = IssueStatus.CLOSED_NOT_VERIFIED
+        elif accept_actor == IssueActors.AUDIT_MANAGER:
+            status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT
         else:
             status = lod2_feedback
-
 
         results = await issue_accept_model(
             connection=connection,
             response=NewIssueResponse(
             notes=accept_notes,
             type=IssueResponseTypes.ACCEPT,
-            issued_by=auth.user_id
+            issued_by="auth.user_id"
             ),
             issue_id=issue_id,
             status=status
@@ -374,7 +373,7 @@ async def issue_accept_response(
                 connection=connection,
                 attachment=accept_attachment,
                 item_id=results.get("id"),
-                module_id=auth.module_id,
+                module_id="auth.module_id",
                 url=upload_attachment(
                 category=AttachmentCategory.ISSUE_RESPONSES,
                 background_tasks=background_tasks,
@@ -395,15 +394,15 @@ async def issue_decline_response(
         issue_id: str,
         issue: NewDeclineResponse,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user),
+        #auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
         status = None
-        if issue.actor.value == "lod1_owner":
+        if issue.actor == IssueActors.OWNER:
             status = IssueStatus.IN_PROGRESS_IMPLEMENTER.value
-        elif issue.actor.value == "lod2_risk_manager" or issue.actor.value == "lod2_compliance_officer":
+        elif issue.actor == IssueActors.RISK_MANAGER or issue.actor == IssueActors.COMPLIANCE_OFFICER:
             status = IssueStatus.IN_PROGRESS_OWNER.value
-        elif issue.actor.value == "lod3_audit_manager":
+        elif issue.actor == IssueActors.AUDIT_MANAGER:
             status = IssueStatus.CLOSED_NOT_VERIFIED.value
         else:
             status = None
@@ -411,7 +410,7 @@ async def issue_decline_response(
         response = NewIssueResponse(
             notes=issue.decline_notes,
             type=IssueResponseTypes.DECLINE,
-            issued_by=auth.user_id
+            # issued_by=auth.user_id
         )
 
         results = await issue_accept_model(
