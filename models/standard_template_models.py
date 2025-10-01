@@ -13,6 +13,11 @@ procedure_category = {
     "Finalization": "finalization_procedure"
 }
 
+procedure_reference = {
+    "Planning": "PLN",
+    "Reporting": "PRT",
+    "Finalization": "FNL"
+}
 
 
 async def create_new_standard_template_model(
@@ -22,11 +27,17 @@ async def create_new_standard_template_model(
         engagement_id: str
 ):
     with exception_response():
+        reference = await get_reference_model(
+            connection=connection,
+            type_=type_,
+            engagement_id=engagement_id
+        )
+
         __standard_template__ = CreateStandardTemplate(
             id=get_unique_key(),
             engagement=engagement_id,
             title=procedure.title,
-            reference="",
+            reference=reference or "PLN-001",
             tests=Section(value=""),
             objectives = Section(value=""),
             observation = Section(value=""),
@@ -106,3 +117,28 @@ async def read_standard_template_model(
         )
 
         return builder
+
+
+
+async def get_reference_model(
+        connection: AsyncConnection,
+        type_: ProcedureTypes,
+        engagement_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(procedure_category.get(type_.value))
+            .where(StandardTemplateColumns.ENGAGEMENT.value, engagement_id)
+            .order_by(StandardTemplateColumns.REFERENCE.value, descending=True)
+            .fetch_one()
+        )
+
+        if builder is None:
+            return 0
+
+
+        results: str = builder.get("reference")
+        count = int(results.split("-")[1]) + 1
+
+        return f"{procedure_reference.get(type_.value)}-{count:03d}"

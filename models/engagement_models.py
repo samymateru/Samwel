@@ -98,8 +98,8 @@ async def get_all_annual_plan_engagement(
             FROM engagements eng
             LEFT JOIN staff stf 
                 ON stf.engagement = eng.id
-            WHERE eng.plan_id = %s
-            GROUP BY eng.id, eng.plan_id, eng.name, eng.start_date, eng.end_date;
+            WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted')
+            GROUP BY eng.id, eng.plan_id, eng.name, eng.start_date, eng.end_date, eng.status;
             """)
 
         async with connection.cursor() as cursor:

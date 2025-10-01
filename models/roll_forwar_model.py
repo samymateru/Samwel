@@ -12,6 +12,8 @@ from models.main_program_models import export_main_audit_program_to_library_mode
 from models.policy_models import get_engagement_policies_model, \
     create_new_policy_model
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
+from models.standard_template_models import read_standard_template_model, get_reference_model, \
+    create_new_standard_template_model
 from schemas.attachement_schemas import AttachmentCategory, CreateAttachment, AttachmentColumns
 from schemas.engagement_administration_profile_schemas import EngagementProfileColumns, \
     CreateEngagementAdministrationProfile
@@ -19,10 +21,18 @@ from schemas.engagement_process_schemas import CreateEngagementProcess
 from schemas.engagement_schemas import EngagementStatus, EngagementStage, NewEngagement, Risk
 from schemas.policy_schemas import CreatePolicy
 from schemas.regulation_schemas import CreateRegulation
+from schemas.standard_template_schemas import ProcedureTypes, CreateStandardTemplate
 from services.connections.postgres.insert import InsertQueryBuilder
-from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
+
+
+
+sections = [
+    ProcedureTypes.PLANNING,
+    ProcedureTypes.REPORTING,
+    ProcedureTypes.FINALIZATION
+]
 
 
 async def export_engagement_content_model(
@@ -66,6 +76,37 @@ async def export_engagement_content_model(
 
         return results
 
+
+
+async def engagement_profile_roll(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+):
+    with exception_response():
+        profile_data = await fetch_engagement_administration_profile_model(
+            connection=connection,
+            engagement_id=previous_engagement_id
+        )
+
+        data = profile_data.copy()
+
+        data.update({
+            "id": get_unique_key(),
+            "engagement": new_engagement_id
+        })
+
+        profile = CreateEngagementAdministrationProfile(**data)
+
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENT_PROFILE.value)
+            .values(profile)
+            .check_exists({EngagementProfileColumns.ENGAGEMENT.value: new_engagement_id})
+            .returning(EngagementProfileColumns.ID.value)
+            .execute()
+        )
+        return builder
 
 
 
@@ -127,7 +168,6 @@ async def roll_policy(
 
 
 
-
 async def roll_regulation(
         connection: AsyncConnection,
         previous_engagement_id: str,
@@ -184,121 +224,6 @@ async def roll_regulation(
 
 
 
-async def roll_forward_main_program(
-        connection: AsyncConnection,
-        previous_engagement_id: str,
-        new_engagement_id: str,
-        module_id: str
-):
-    with exception_response():
-
-        main_program_data = await fetch_main_programs_models(
-            connection=connection,
-            engagement_id=previous_engagement_id
-        )
-
-        for program in main_program_data:
-            data = await export_main_audit_program_to_library_model(
-                connection=connection,
-                program_id=program.get("id"),
-            )
-
-            await import_main_audit_program_to_library_model(
-                connection=connection,
-                engagement_id=new_engagement_id,
-                module_id=module_id,
-                main_program=data
-            )
-
-
-
-
-async def engagement_roll_forward_model(
-    connection: AsyncConnection,
-    engagement_id: str,
-    annual_plan: str,
-    module_id: str
-):
-    with exception_response():
-        data = await export_engagement_content_model(
-            connection=connection,
-            engagement_id=engagement_id,
-            annual_plan_id=annual_plan
-        )
-
-        await engagement_profile_roll(
-            connection=connection,
-            previous_engagement_id=engagement_id,
-            new_engagement_id=data.get("id")
-        )
-
-
-        await roll_policy(
-            connection=connection,
-            previous_engagement_id=engagement_id,
-            new_engagement_id=data.get("id")
-        )
-
-
-        await roll_regulation(
-            connection=connection,
-            previous_engagement_id=engagement_id,
-            new_engagement_id=data.get("id")
-        )
-
-
-        await engagement_process_roll(
-            connection=connection,
-            previous_engagement_id=engagement_id,
-            new_engagement_id=data.get("id")
-        )
-
-
-        await roll_forward_main_program(
-            connection=connection,
-            previous_engagement_id=engagement_id,
-            new_engagement_id=data.get("id"),
-            module_id=module_id
-        )
-
-
-        return data
-
-
-
-
-async def engagement_profile_roll(
-        connection: AsyncConnection,
-        previous_engagement_id: str,
-        new_engagement_id: str,
-):
-    with exception_response():
-        profile_data = await fetch_engagement_administration_profile_model(
-            connection=connection,
-            engagement_id=previous_engagement_id
-        )
-
-        data = profile_data.copy()
-
-        data.update({
-            "id": get_unique_key(),
-            "engagement": new_engagement_id
-        })
-
-        profile = CreateEngagementAdministrationProfile(**data)
-
-        builder = await (
-            InsertQueryBuilder(connection=connection)
-            .into_table(Tables.ENGAGEMENT_PROFILE.value)
-            .values(profile)
-            .check_exists({EngagementProfileColumns.ENGAGEMENT.value: new_engagement_id})
-            .returning(EngagementProfileColumns.ID.value)
-            .execute()
-        )
-        return builder
-
-
-
 async def engagement_process_roll(
         connection: AsyncConnection,
         previous_engagement_id: str,
@@ -332,6 +257,123 @@ async def engagement_process_roll(
 
         return True
 
+
+
+async def standard_template_roll(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+):
+    with exception_response():
+        for section in sections:
+            procedures = await read_standard_template_model(
+                connection=connection,
+                type_= section,
+                engagement_id=previous_engagement_id
+            )
+
+            for procedure in procedures:
+                data = procedure.copy()
+
+                data.update({
+                    "id": get_unique_key(),
+                    "engagement": new_engagement_id
+                })
+
+                __std_procedure = CreateStandardTemplate(**data)
+
+                await create_new_standard_template_model(
+                    connection=connection,
+                    procedure=__std_procedure,
+                    type_=section,
+                    engagement_id=new_engagement_id
+                )
+
+
+        return True
+
+
+
+async def roll_forward_main_program(
+        connection: AsyncConnection,
+        previous_engagement_id: str,
+        new_engagement_id: str,
+        module_id: str
+):
+    with exception_response():
+
+        main_program_data = await fetch_main_programs_models(
+            connection=connection,
+            engagement_id=previous_engagement_id
+        )
+
+        for program in main_program_data:
+            data = await export_main_audit_program_to_library_model(
+                connection=connection,
+                program_id=program.get("id"),
+            )
+
+            await import_main_audit_program_to_library_model(
+                connection=connection,
+                engagement_id=new_engagement_id,
+                module_id=module_id,
+                main_program=data
+            )
+
+
+
+
+async def engagement_roll_forward_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+        annual_plan: str,
+        module_id: str
+):
+    with exception_response():
+        data = await export_engagement_content_model(
+            connection=connection,
+            engagement_id=engagement_id,
+            annual_plan_id=annual_plan
+        )
+
+        await engagement_profile_roll(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+        await roll_policy(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+        await roll_regulation(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+        await engagement_process_roll(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id")
+        )
+
+        await standard_template_roll(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id"),
+        )
+
+        await roll_forward_main_program(
+            connection=connection,
+            previous_engagement_id=engagement_id,
+            new_engagement_id=data.get("id"),
+            module_id=module_id
+        )
+
+        return data
 
 
 

@@ -23,14 +23,15 @@ class StandardTemplateColumns(str, Enum):
     ENGAGEMENT = "engagement"
     TITLE = "title"
     REFERENCE = "reference"
+    CREATED_AT = "created_at"
 
 
 
 class TemplateStatus(str, Enum):
-    PENDING = "pending"
-    PREPARED = "prepared"
-    REVIEWED = "reviewed"
-    COMPLETED = "completed"
+    PENDING = "Pending"
+    PREPARED = "Prepared"
+    REVIEWED = "Reviewed"
+    COMPLETED = "Completed"
 
 
 class ProcedureTypes(str, Enum):
