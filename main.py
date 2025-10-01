@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from fastapi import FastAPI, Depends, Form, Request, Query
+from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -14,42 +14,33 @@ from Management.entity.profile.business_process.routes import router as business
 from Management.entity.profile.impact_category.routes import router as impact_category_
 from Management.entity.profile.engagement_type.routes import router as engagement_type
 from AuditNew.Internal.engagements.administration.routes import router as administration_router
-from AuditNew.Internal.engagements.finalizations.routes import router as finalization_router
 from AuditNew.Internal.engagements.task.routes import router as task_
 from Management.entity.profile.root_cause_category.routes import router as root_cause
 from Management.entity.profile.risk_category.routes import router as risk_category_
 from AuditNew.Internal.engagements.review_comment.routes import router as review_comment_
 from AuditNew.Internal.engagements.reporting.routes import router as reporting_router
-from AuditNew.Internal.engagements.planning.routes import router as planning_router
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
-from AuditNew.Internal.engagements.risk.routes import router as risk_
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from AuditNew.Internal.engagements.control.routes import router as control_
-from models.roll_forwar_model import engagement_process_roll, engagement_profile_roll, standard_template_roll
-from reports.draft_report import generate_draft_report_model
-from reports.models.finding_report import generate_finding_report
+from reports.draft_report.draft_report import generate_draft_report_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
-from redis_cache import init_redis_pool, close_redis_pool
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from services.notifications.util import notification_manager
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
-from Management.templates.databases import *
 from dotenv import load_dotenv
 import sys
 import asyncio
 from rate_limiter import RateLimiterMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from x import test_direct_connection
 from core.datastructures.pop_dict import PopDict
 from routes.issue_routes import router as issue_routes
 from routes.library_routes import router as library_routes
@@ -74,7 +65,6 @@ from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
 
-
 load_dotenv()
 
 
@@ -86,17 +76,17 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_api: FastAPI):
     try:
-        await test_direct_connection()
-        await init_redis_pool()
+        pass
     except Exception as e:
         print(e)
-
     yield
 
     try:
-        await close_redis_pool()
+        pass
     except Exception as e:
         print(e)
+
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -135,7 +125,6 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 @app.get("/{engagement_id}")
 async def home(
-        engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
@@ -275,9 +264,7 @@ async def change_password(
 
 
 app.include_router(administration_router, tags=["Engagement Administration"])
-app.include_router(planning_router, tags=["Engagement Planning"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
-app.include_router(finalization_router, tags=["Engagement Finalization"])
 app.include_router(reporting_router, tags=["Engagement Reporting"])
 app.include_router(roles_router, tags=["Roles"])
 app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
@@ -294,7 +281,6 @@ app.include_router(root_cause, tags=["Root Cause Category"])
 app.include_router(risk_category_, tags=["Risk Category Rating"])
 app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
-app.include_router(risk_, tags=["Engagement Risk"])
 app.include_router(control_, tags=["Engagement Control"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])

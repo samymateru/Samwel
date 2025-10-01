@@ -1,9 +1,6 @@
-from typing import List
-
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from pydantic import BaseModel
-
 from core.tables import Tables
 from schemas.issue_actor_schemas import CreateIssueActor, IssueActors, IssueActorColumns, ReadIssueActors
 from schemas.issue_schemas import NewIssue, IssueColumns

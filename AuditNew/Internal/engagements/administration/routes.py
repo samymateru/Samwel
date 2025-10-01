@@ -1,15 +1,10 @@
 from utils import get_current_user
 from schema import CurrentUser
-from fastapi import APIRouter, Depends, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, Depends
 from utils import get_async_db_connection
 from AuditNew.Internal.engagements.administration.databases import *
 from schema import ResponseMessage
 from typing import List
-import uuid
-import tempfile
-import shutil
-from s3 import upload_file
-import os
 from dotenv import load_dotenv
 
 load_dotenv()

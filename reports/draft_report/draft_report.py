@@ -2,13 +2,14 @@ import os
 from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
 from conv import converter
-from reports.models.issue_finding_model import load_issue_finding
+from reports.models.issue_model import load_engagement_report_data
 from utils import exception_response
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(BASE_DIR, "template.docx")
 output_path = os.path.join(BASE_DIR, "final.docx")
+
 
 async def generate_draft_report_model(
     engagement_id: str,
@@ -23,24 +24,18 @@ async def generate_draft_report_model(
     impact_description_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-impact_description.docx")
 
 
-
-
-
     with exception_response():
-        data = await load_issue_finding(
+        data = await load_engagement_report_data(
             connection=connection,
             engagement_id=engagement_id,
             module_id=module_id
         )
-
-
 
         doc = DocxTemplate(template_path)
 
         issues_context = []
 
         for da in data.issues:
-            print(da.responsible_people)
             converter(filename=finding_path, data=da.finding)
             converter(filename=criteria_path, data=da.criteria)
             converter(filename=recommendation_path, data=da.recommendation)

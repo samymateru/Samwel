@@ -9,7 +9,7 @@ schema_type = TypeVar("schema_type", bound=BaseModel)
 class InsertQueryBuilder:
     """
     A utility class for building and executing parameterized SQL INSERT statements
-    using an asynchronous PostgreSQL connection (psycopg3) and Pydantic models.
+    using an asynchronous PostgreSQL connection (psycopg3) and Pydantic finding_sheet.
 
     This builder supports:
     - Specifying the target table.

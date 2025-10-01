@@ -7,7 +7,8 @@ class ResponsiblePeople(BaseModel):
     name: str
     email: str
     role: str
-    mod_usr_role: str
+    mod_usr_role : str
+
 
 class IssuesFinding(BaseModel):
     title: str
@@ -32,7 +33,8 @@ class IssuesFinding(BaseModel):
     responsible_people: List[ResponsiblePeople]
 
 
-class IssueFindingSheet(BaseModel):
+
+class EngagementReport(BaseModel):
     organization_name: str
     engagement_name: str
     engagement_code: str

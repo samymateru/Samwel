@@ -5,18 +5,62 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing auth and token generation">
-      <change afterPath="$PROJECT_DIR$/draft_template.docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reports/template.docx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/finding_sheet/template.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/query_builder.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/annual_plans/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/engagements/administration/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/attachments/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/finalizations/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/planning/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/risk/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/risk/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/risk/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/engagements/work_program/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/library/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/library/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/library/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/notificatins/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/notificatins/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/notificatins/schema.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/templates/databases.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/templates/routes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Management/templates/schemas.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/draft_template.docx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/issue_actor_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_actor_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/models/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/finding_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/models/issue_finding_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_finding_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nginx/default.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/qodana.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/redis_cache.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report/2_cell_table.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/issue_finding_model.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sub_doc.py" beforeDir="false" afterPath="$PROJECT_DIR$/sub_doc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/y.py" beforeDir="false" afterPath="$PROJECT_DIR$/y.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/template.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/s3.py" beforeDir="false" afterPath="$PROJECT_DIR$/s3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/insert.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/insert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/update.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/update.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ses.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/start-file.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/word_doc.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/x.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/y.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,21 +169,22 @@
     "deletionFromPopupRequiresConfirmation": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client/reports/finding_sheet",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports\finding_sheet" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports\draft_report" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\Management\settings\business_process" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\Management" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\Internal" />
-      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone\AuditNew\features" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -157,14 +202,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00751" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759060805428</created>
-      <option name="number" value="00751" />
-      <option name="presentableId" value="LOCAL-00751" />
-      <option name="project" value="LOCAL" />
-      <updated>1759060805428</updated>
     </task>
     <task id="LOCAL-00752" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -550,7 +587,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759324175438</updated>
     </task>
-    <option name="localTasksCounter" value="800" />
+    <task id="LOCAL-00800" summary="fixing auth and token generation">
+      <option name="closed" value="true" />
+      <created>1759340542965</created>
+      <option name="number" value="00800" />
+      <option name="presentableId" value="LOCAL-00800" />
+      <option name="project" value="LOCAL" />
+      <updated>1759340542965</updated>
+    </task>
+    <option name="localTasksCounter" value="801" />
     <servers />
   </component>
   <component name="UnknownFeatures">
