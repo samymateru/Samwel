@@ -165,9 +165,14 @@ async def revise_issue_model(
 
 
         if revision_status is None:
-            role_user_ids = [item["user_id"] for item in issue_actor if item["role"] == IssueReviseActors.IMPLEMENTER]
+            role_user_ids = [item["user_id"] for item in issue_actor if item["role"] == IssueReviseActors.IMPLEMENTER.value]
+
             is_in_role = user_id in role_user_ids
+
             if is_in_role:
+                if revised_date == None:
+                    raise HTTPException(status_code=400, detail="Provide Revised Date Please")
+
                 status = RevisionStatus.WAITING_OWNER
             else:
                 raise HTTPException(status_code=409, detail="You Must Be Implementer")
