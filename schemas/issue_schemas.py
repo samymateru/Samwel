@@ -13,11 +13,13 @@ class IssueResponseTypes(str, Enum):
     SEND = "Send"
     REVISE = "Revise"
 
+
 class User(BaseModel):
     id: str
     name: Optional[str] = None
     email: Optional[str] = None
     date_issued: Optional[datetime] = None
+
 
 class IssueColumns(str, Enum):
     ID = "id"
@@ -27,6 +29,7 @@ class IssueColumns(str, Enum):
     ENGAGEMENT = "engagement"
     SUB_PROGRAM = "sub_program"
     REF = "ref"
+
 
 class IssueResponseColumns(str, Enum):
     ID = "id"
@@ -237,7 +240,7 @@ class ReadIssues(BaseModel):
     sdi_name: Optional[str] = None
     recurring_status: Optional[bool] = False
     management_action_plan: Optional[Dict] | Optional[str] = None
-
+    provisional_response: Optional[str] = None
 
 
 class MarkIssueReportable(BaseModel):
