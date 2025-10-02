@@ -7,7 +7,6 @@ from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
 from conv import converter
 from reports.models.issue_model import load_engagement_report_data
-from reports.utils import set_cell_text_color, set_cell_background_color
 from utils import exception_response
 warnings.filterwarnings("ignore")
 
@@ -101,7 +100,7 @@ async def generate_finding_report(
 
         doc.render(context)
         doc.save(output_path)
-        return data
+        return output_path, data.engagement_name
 
 
 

@@ -116,4 +116,5 @@ async def generate_draft_report_model(
 
         doc.render(context)
         doc.save(output_path)
-        return output_path
+
+        return output_path, data.engagement_name

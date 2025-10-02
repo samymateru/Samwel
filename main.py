@@ -1,10 +1,7 @@
 import uuid
 from typing import Optional
-
-import aio_pika
-from aio_pika.abc import AbstractRobustChannel
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
-from starlette.responses import JSONResponse, FileResponse
+from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
@@ -25,8 +22,6 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from reports.draft_report.draft_report import generate_draft_report_model
-from reports.finding_sheet.finding_report import generate_finding_report
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -34,8 +29,7 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
-from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.connections.rabitmq.connection import get_rabbitmq_channel, AsyncRabbitMQSingleton
+from services.connections.rabitmq.connection import AsyncRabbitMQSingleton
 from services.connections.rabitmq.consumer_thread import RabbitMQMultiQueue
 from services.logging.logger import global_logger
 from services.security.security import verify_password
@@ -69,6 +63,7 @@ from routes.policy_routes import router as policy_routes
 from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
+from routes.planning_routes import router as planning_routes
 
 
 
@@ -133,20 +128,10 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 @app.get("/{engagement_id}")
-async def home(
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
+async def home():
     with exception_response():
-        data = await generate_draft_report_model(
-            connection=connection,
-            engagement_id="4b15ba494eb9",
-            module_id="04e9e6ebdf06"
-        )
+        pass
 
-        return FileResponse(
-            path=data,
-            filename="monthly_report.docx",  # 👈 downloaded name
-        )
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
@@ -311,6 +296,8 @@ app.include_router(regulation_routes, tags=["Engagement Regulations  Routes"])
 app.include_router(engagement_process_routes, tags=["Engagement Process  Routes"])
 app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
 app.include_router(standard_template_routes, tags=["Standard Templates Procedure Routes"])
+app.include_router(planning_routes, tags=["Planning  Routes"])
+
 app.include_router(PRCM_routes, tags=["PRCM  Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])
 app.include_router(issue_actor_routes, tags=["Issue Actors Routes"])
