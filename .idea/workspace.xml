@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/planning_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/planning_routes.py" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -154,14 +148,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00769" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759171031158</created>
-      <option name="number" value="00769" />
-      <option name="presentableId" value="LOCAL-00769" />
-      <option name="project" value="LOCAL" />
-      <updated>1759171031158</updated>
     </task>
     <task id="LOCAL-00770" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -547,7 +533,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759436539702</updated>
     </task>
-    <option name="localTasksCounter" value="818" />
+    <task id="LOCAL-00818" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759439099003</created>
+      <option name="number" value="00818" />
+      <option name="presentableId" value="LOCAL-00818" />
+      <option name="project" value="LOCAL" />
+      <updated>1759439099003</updated>
+    </task>
+    <option name="localTasksCounter" value="819" />
     <servers />
   </component>
   <component name="UnknownFeatures">
