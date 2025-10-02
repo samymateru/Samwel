@@ -34,24 +34,6 @@ async def fetch_detailed_issue_reports(
         return issues
 
 
-
-@router.get("/issue_summary/{company_module_id}")
-async def fetch_summary_issue_reports(
-        company_module_id: str,
-        db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
-):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
-    try:
-        summary_report_data = await get_main_reports(connection=db, company_module_id=company_module_id)
-        if summary_report_data is None:
-            raise HTTPException(status_code=400, detail="No data to show")
-        return summary_report_data
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
 @router.get("/review_comments/{company_module_id}")
 async def fetch_review_comments(
         company_module_id: str,
@@ -62,6 +44,22 @@ async def fetch_review_comments(
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_review_comments_report(connection=db, company_module_id=company_module_id)
+        return data
+    except HTTPException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+
+@router.get("/tasks/{company_module_id}")
+async def fetch_tasks(
+        company_module_id: str,
+        db=Depends(get_async_db_connection),
+        user: CurrentUser = Depends(get_current_user)
+):
+    if user.status_code != 200:
+        raise HTTPException(status_code=user.status_code, detail=user.description)
+    try:
+        data = await get_tasks_report(connection=db, company_module_id=company_module_id)
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
