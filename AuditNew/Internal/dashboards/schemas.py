@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 
+
 class PlanDetails(BaseModel):
     total: Optional[int] = 0
     completed: Optional[int] = 0
@@ -13,11 +14,22 @@ class _EngagementStatus_(BaseModel):
     pending: int
     ongoing: int
     completed: int
+    archived: int
+    deleted: int
 
 class _IssueStatus_(BaseModel):
     pending: int
     ongoing: int
     completed: int
+
+
+
+class IssueStatusSummary(BaseModel):
+    total: int
+    not_started: int
+    open: int
+    in_progress: int
+    closed: int
 
 class _Engagement_(BaseModel):
     id: Optional[str]
@@ -33,15 +45,14 @@ class _Issue_(BaseModel):
     id: Optional[str]
     reference: Optional[str]
     title: Optional[str]
-    finding: Optional[str]
     risk_rating: Optional[str]
     process: Optional[str]
+    status: Optional[str] = None
     engagement: str
 
 class ModuleHomeDashboard(BaseModel):
-    engagements: List[_Engagement_]
     engagements_metrics: _EngagementStatus_
-    issues: List[_Issue_]
+    issues_metrics: IssueStatusSummary
 
 
 class EngagementMetrics(BaseModel):

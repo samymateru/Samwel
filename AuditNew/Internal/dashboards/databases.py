@@ -4,11 +4,12 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from datetime import datetime
 
-from AuditNew.Internal.dashboards.schemas import _Engagement_, ModuleHomeDashboard, _Issue_, _EngagementStatus_
+from AuditNew.Internal.dashboards.schemas import ModuleHomeDashboard, _Issue_, _EngagementStatus_
 from core.tables import Tables
 from schemas.engagement_schemas import EngagementColumns
 from schemas.issue_schemas import IssueColumns
 from services.connections.postgres.read import ReadBuilder
+from test import count_issue_statuses
 from utils import exception_response
 
 
@@ -486,7 +487,8 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         isu.title AS issue_title,
         isu.finding AS issue_finding,
         isu.risk_rating AS issue_rating,
-        isu.process AS issue_process
+        isu.process AS issue_process,
+        COALESCE(isu.status, 'N/A') AS issue_status
         
         FROM public.annual_plans pln
         JOIN public.engagements eng ON pln.id = eng.plan_id
@@ -505,17 +507,20 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
 
+
             dashboard_data = separate_engagements_and_issues(data)
             engagements_metrics = count_engagement_statuses(data)
 
-            engagements = [_Engagement_(**eng) for eng in dashboard_data.get("engagements", [])]
             issues = [_Issue_(**eng) for eng in dashboard_data.get("issues", [])]
+            data = count_issue_statuses(issues)
+
 
             final_data = ModuleHomeDashboard(
-                engagements=engagements,
                 engagements_metrics=engagements_metrics,
-                issues=issues,
+                issues_metrics=data,
             )
+
+
 
             return final_data
 
@@ -553,7 +558,8 @@ def separate_engagements_and_issues(rows):
                 'finding': row['issue_finding'],
                 'risk_rating': row['issue_rating'],
                 'process': row['issue_process'],
-                'engagement': engagement_id
+                'engagement': engagement_id,
+                'status': row['issue_status']
             }
 
     return {
@@ -574,8 +580,13 @@ def count_engagement_statuses(rows):
         total=sum(status_counter.values()),
         pending=status_counter.get("Pending", 0),
         ongoing=status_counter.get("Ongoing", 0),
-        completed=status_counter.get("Completed", 0)
+        completed=status_counter.get("Completed", 0),
+        archived=status_counter.get("Archived", 0),
+        deleted=status_counter.get("Deleted", 0),
     )
+
+
+
 
 
 
