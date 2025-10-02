@@ -132,6 +132,7 @@ async def update_engagement_details(
         engagement_id: str,
         engagement: UpdateEngagement_,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await update_engagement_data(
@@ -144,7 +145,7 @@ async def update_engagement_details(
             connection=connection,
             recent_activity=RecentActivities(
                 activity_id=get_unique_key(),
-                module_id=engagement.name,
+                module_id=auth.module_id,
                 name=engagement.name,
                 description="Engagement Updated",
                 category=RecentActivityCategory.ENGAGEMENT_UPDATED,

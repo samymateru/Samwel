@@ -5,6 +5,11 @@ from psycopg import AsyncConnection, sql
 from datetime import datetime
 
 from AuditNew.Internal.dashboards.schemas import _Engagement_, ModuleHomeDashboard, _Issue_, _EngagementStatus_
+from core.tables import Tables
+from schemas.engagement_schemas import EngagementColumns
+from schemas.issue_schemas import IssueColumns
+from services.connections.postgres.read import ReadBuilder
+from utils import exception_response
 
 
 async def query_annual_plans_summary(
@@ -571,6 +576,46 @@ def count_engagement_statuses(rows):
         ongoing=status_counter.get("Ongoing", 0),
         completed=status_counter.get("Completed", 0)
     )
+
+
+
+async def get_engagement_metrics_model(
+        connection: AsyncConnection,
+        module_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENTS.value)
+            .where(EngagementColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+async def get_issue_metrics_model(
+        connection: AsyncConnection,
+        module_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value)
+            .where(IssueColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+
+
+
+
+
 
 
 

@@ -167,7 +167,6 @@ async def complete_follow_up_model(
 
 
 
-
 async def get_follow_up_test_model(
         connection: AsyncConnection,
         follow_up_id: str,
@@ -407,3 +406,14 @@ async def get_all_module_follow_up(
 
 
         return follow_ups
+
+
+async def set_issue_provisional_response(
+    connection: AsyncConnection,
+    module_id: str
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+        )

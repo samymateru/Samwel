@@ -1,5 +1,8 @@
 import uuid
 from typing import Optional
+
+import aio_pika
+from aio_pika.abc import AbstractRobustChannel
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
@@ -31,6 +34,8 @@ from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.connections.rabitmq.connection import get_rabbitmq_channel, AsyncRabbitMQSingleton
+from services.connections.rabitmq.consumer_thread import RabbitMQMultiQueue
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -73,17 +78,20 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 session_storage = PopDict()
+consumer = RabbitMQMultiQueue(["queue_1", "queue_2", "queue_3"])
+
 
 @asynccontextmanager
-async def lifespan(_api: FastAPI):
+async def lifespan(_: FastAPI):
     try:
-        pass
+        consumer.start()
     except Exception as e:
         print(e)
     yield
 
     try:
-        pass
+        await AsyncRabbitMQSingleton.get_instance().close_connection()
+        consumer.stop()
     except Exception as e:
         print(e)
 
@@ -124,18 +132,25 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 
+
+
 @app.get("/{engagement_id}")
 async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        channel: AbstractRobustChannel = Depends(get_rabbitmq_channel)
 ):
     with exception_response():
-        await generate_draft_report_model(
-            connection=connection,
-            engagement_id="4b15ba494eb9",
-            module_id="04e9e6ebdf06"
-        )
+        # await generate_draft_report_model(
+        #     connection=connection,
+        #     engagement_id="4b15ba494eb9",
+        #     module_id="04e9e6ebdf06"
+        # )
 
-        return True
+        consumer.publish("queue_1", {"se": ""})
+
+
+
+        return {"status": "Message sent"}
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

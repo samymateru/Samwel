@@ -284,8 +284,6 @@ async def update_follow_up_test(
 
 
 
-
-
 @router.get("/test/{follow_up_id}", response_model=List[ReadFollowUpTest])
 async def fetch_follow_up_test_model(
         follow_up_id: str,
@@ -317,3 +315,12 @@ async def delete_follow_up_test(
             failed="Failed Deleting Follow Up Test"
         )
 
+
+
+@router.delete("/test/{test_id}", response_model=ResponseMessage)
+async def set_issue_provisional_response(
+        issue_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass

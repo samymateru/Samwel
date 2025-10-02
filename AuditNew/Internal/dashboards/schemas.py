@@ -44,4 +44,16 @@ class ModuleHomeDashboard(BaseModel):
     issues: List[_Issue_]
 
 
+class EngagementMetrics(BaseModel):
+    total: int
+    pending: int
+    ongoing: int
+    completed: int
+
+
+
+
+
+
+
 

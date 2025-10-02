@@ -97,7 +97,12 @@ class UpdateQueryBuilder:
         for k, v in params.items():
             if isinstance(v, dict):
                 params[k] = Json(v)
+            elif isinstance(v, BaseModel):
+                # Convert nested BaseModel to dict
+                params[k] = Json(v.model_dump())
         return params
+
+
 
     def where(self, conditions: dict[str, any]) -> "UpdateQueryBuilder":
         """
@@ -113,6 +118,7 @@ class UpdateQueryBuilder:
         self._where_conditions = conditions
         return self
 
+
     def check_exists(self, conditions: dict[str, any]) -> "UpdateQueryBuilder":
         """
         Specify column-value conditions to check whether a matching record exists
@@ -127,6 +133,7 @@ class UpdateQueryBuilder:
         """
         self._check_exists = conditions
         return self
+
 
     def returning(self, *fields: str) -> "UpdateQueryBuilder":
         """
@@ -164,8 +171,8 @@ class UpdateQueryBuilder:
         if not self._where_conditions:
             raise ValueError("WHERE conditions must be provided to avoid updating all rows.")
 
-        update_fields = list(self._data.model_fields.keys())
-        update_values = self._data.model_dump()
+        update_values = self._data.model_dump() if isinstance(self._data, BaseModel) else self._data
+        update_fields = list(update_values.keys())
 
         set_sql = sql.SQL(", ").join(
             sql.SQL("{} = {}").format(sql.Identifier(field), sql.Placeholder(field)) for field in update_fields
