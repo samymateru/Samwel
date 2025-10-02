@@ -111,6 +111,10 @@ class CreateFollowUpIssue(BaseModel):
     created_at: datetime
 
 
+class ReadFollowUpUser(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+
 
 class ReviewFollowUp(BaseModel):
     status: FollowUpStatus
@@ -135,3 +139,5 @@ class BaseFollowUpData(CreateFollowUp):
 
 class ReadFollowUpData(BaseFollowUpData):
     attachment: ReadAttachment
+    reviewer: ReadFollowUpUser
+    creator: ReadFollowUpUser

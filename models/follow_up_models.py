@@ -4,7 +4,7 @@ from schemas.attachement_schemas import ReadAttachment
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
     UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \
-    ReadFollowUpData, BaseFollowUpData
+    ReadFollowUpData, BaseFollowUpData, ReadFollowUpUser
 from schemas.issue_schemas import IssueColumns, ReadIssues
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -375,6 +375,22 @@ async def get_all_module_follow_up(
                 use_prefix=True,
                 model=ReadAttachment,
             )
+            .join(
+                "LEFT",
+                Tables.USERS.value,
+                "reviewer.id = follow_up.created_by",
+                "reviewer",
+                use_prefix=True,
+                model=ReadFollowUpUser,
+            )
+            .join(
+                "LEFT",
+                Tables.USERS.value,
+                "creator.id = follow_up.reviewed_by",
+                "creator",
+                use_prefix=True,
+                model=ReadFollowUpUser,
+            )
             .where("follow_up."+FollowUpColumns.MODULE_ID.value, module_id)
             .select_joins()
             .fetch_all()
@@ -389,6 +405,7 @@ async def get_all_module_follow_up(
                 name=follow_up.get("name"),
                 status=follow_up.get("status"),
                 created_by=follow_up.get("created_by"),
+                reviewed_by=follow_up.get("reviewed_by"),
                 created_at=follow_up.get("created_at"),
                 attachment=ReadAttachment(
                     attachment_id=follow_up.get("attachment_attachment_id"),
@@ -400,6 +417,14 @@ async def get_all_module_follow_up(
                     size=follow_up.get("attachment_size"),
                     type=follow_up.get("attachment_type"),
                     created_at=follow_up.get("attachment_created_at")
+                ),
+                creator=ReadFollowUpUser(
+                    id=follow_up.get("creator_id"),
+                    name = follow_up.get("creator_name")
+                ),
+                reviewer=ReadFollowUpUser(
+                    id=follow_up.get("reviewer_id"),
+                    name=follow_up.get("reviewer_name")
                 )
             )
 

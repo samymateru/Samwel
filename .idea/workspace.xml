@@ -8,13 +8,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/follow_up_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/follow_up_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/template.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/engagement_letter/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/engagement_letter/template.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/template.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/follow_up_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/follow_up_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/engagement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/follow_up_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/follow_up_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -159,14 +154,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00760" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759143753313</created>
-      <option name="number" value="00760" />
-      <option name="presentableId" value="LOCAL-00760" />
-      <option name="project" value="LOCAL" />
-      <updated>1759143753313</updated>
     </task>
     <task id="LOCAL-00761" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -552,7 +539,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759400820051</updated>
     </task>
-    <option name="localTasksCounter" value="809" />
+    <task id="LOCAL-00809" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759405484201</created>
+      <option name="number" value="00809" />
+      <option name="presentableId" value="LOCAL-00809" />
+      <option name="project" value="LOCAL" />
+      <updated>1759405484201</updated>
+    </task>
+    <option name="localTasksCounter" value="810" />
     <servers />
   </component>
   <component name="UnknownFeatures">

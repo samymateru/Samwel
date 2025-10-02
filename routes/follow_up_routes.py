@@ -14,9 +14,10 @@ from schemas.attachement_schemas import AttachmentCategory
 from schemas.engagement_schemas import Engagement
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest, ReadFollowUpTest
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.issue_schemas import ReadIssues
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, get_unique_key, return_checker
 from typing import List, Optional
 
@@ -33,10 +34,10 @@ async def create_new_follow_up(
         attachment: Optional[UploadFile] = File(None),
         reviewed_by: str = Form(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        background_tasks: BackgroundTasks = BackgroundTasks()
+        background_tasks: BackgroundTasks = BackgroundTasks(),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-
         follow_up_data = await add_new_follow_up(
             connection=connection,
             follow_up=CreateFollowUp(
@@ -47,7 +48,7 @@ async def create_new_follow_up(
             status=FollowUpStatus.DRAFT,
             created_at=datetime.now(),
             reviewed_by=reviewed_by,
-            created_by=""
+            created_by=auth.user_id
             )
         )
 

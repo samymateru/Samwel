@@ -146,9 +146,6 @@ async def home(
             module_id="04e9e6ebdf06"
         )
 
-
-
-
         return True
 
 
