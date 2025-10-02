@@ -6,10 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/follow_up_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/follow_up_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/follow_up_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/follow_up_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/follow_up_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/follow_up_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,14 +155,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00761" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759144105665</created>
-      <option name="number" value="00761" />
-      <option name="presentableId" value="LOCAL-00761" />
-      <option name="project" value="LOCAL" />
-      <updated>1759144105665</updated>
     </task>
     <task id="LOCAL-00762" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -547,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759405484201</updated>
     </task>
-    <option name="localTasksCounter" value="810" />
+    <task id="LOCAL-00810" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759408164541</created>
+      <option name="number" value="00810" />
+      <option name="presentableId" value="LOCAL-00810" />
+      <option name="project" value="LOCAL" />
+      <updated>1759408164541</updated>
+    </task>
+    <option name="localTasksCounter" value="811" />
     <servers />
   </component>
   <component name="UnknownFeatures">

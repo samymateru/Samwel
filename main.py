@@ -132,9 +132,6 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-
-
-
 @app.get("/{engagement_id}")
 async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

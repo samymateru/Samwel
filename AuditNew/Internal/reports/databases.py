@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 
 
-async def get_main_reports(connection: AsyncConnection, company_module_id: str):
+async def get_main_reports(connection: AsyncConnection, module_id: str):
     query = sql.SQL(
         """
         SELECT 
@@ -13,14 +13,17 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         annual_plans.year as financial_year,
         engagements.opinion_rating as overall_opinion_rating,
         issue.title as issue_name,
-        issue.risk_rating as issue_rating,
+        issue.process as process,
+        issue.sub_process as sub_process,
+        issue.risk_rating,
         issue.source as issue_source,
         issue.criteria as issue_criteria,
         issue.root_cause_description as root_cause_description,
         issue.impact_description as impact_description,
-        issue.recommendation as issue_recommendation,
-        issue.management_action_plan as issue_management_action_plan,
-        issue.reportable as issue_reportable,
+        issue.recommendation as recommendation,
+        issue.management_action_plan as management_action_plan,
+        issue.reportable as reportable,
+        issue.created_at,
         CASE 
         WHEN issue.date_opened IS NOT NULL THEN 'Yes'
         ELSE 'No'
@@ -47,62 +50,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         WHEN (CURRENT_DATE - issue.date_revised::date) > 365 THEN 'Yes'
         ELSE 'No'
         END AS issue_due_more_than_365_days,
-        issue.status as issue_overall_status,
-        
-        -- LOD1 Owner
-        CASE 
-          WHEN jsonb_typeof(issue.lod1_owner) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.lod1_owner) AS elem
-          )
-          ELSE NULL
-        END AS LOD1_owner,
-        
-        -- LOD1 Implementer
-        CASE 
-          WHEN jsonb_typeof(issue.lod1_implementer) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.lod1_implementer) AS elem
-          )
-          ELSE NULL
-        END AS LOD1_Implementer,
-        
-        -- LOD2 Risk Manager
-        CASE 
-          WHEN jsonb_typeof(issue.lod2_risk_manager) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.lod2_risk_manager) AS elem
-          )
-          ELSE NULL
-        END AS LOD2_Risk_Manager,
-        
-        -- LOD2 Compliance Officer
-        CASE 
-          WHEN jsonb_typeof(issue.lod2_compliance_officer) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.lod2_compliance_officer) AS elem
-          )
-          ELSE NULL
-        END AS LOD2_Compliance_Officer,
-        
-        -- LOD3 Audit Manager
-        CASE 
-          WHEN jsonb_typeof(issue.lod3_audit_manager) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.lod3_audit_manager) AS elem
-          )
-          ELSE NULL
-        END AS LOD3_Audit_Manager,
-        
-        -- Observers
-        CASE 
-          WHEN jsonb_typeof(issue.observers) = 'array' THEN (
-            SELECT STRING_AGG(CONCAT(elem->>'name', ' <', elem->>'email', '>'), ', ')
-            FROM jsonb_array_elements(issue.observers) AS elem
-          )
-          ELSE NULL
-        END AS Observers,
-        
+        issue.status as issue_overall_status,    
         issue.response as latest_response
         
         FROM issue
@@ -117,23 +65,17 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         overall_opinion_rating,
         issue_id,
         issue_name,
-        issue_rating,
+        risk_rating,
         issue_source,
         issue_criteria,
         root_cause_description,
         impact_description,
-        issue_recommendation,
+        recommendation,
         management_action_plan,
-        issue_reportable,
+        reportable,
         date_issue_sent_to_client,
         estimated_implementation_date,
         issue_overall_status,
-        LOD1_Owner,
-        LOD1_Implementer,
-        LOD2_Risk_Manager,
-        LOD2_Compliance_Officer,
-        LOD3_Audit_Manager,
-        Observers,
         latest_revised_date,
         is_issue_revised,
         actual_implementation_date,
@@ -148,7 +90,7 @@ async def get_main_reports(connection: AsyncConnection, company_module_id: str):
         """)
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (company_module_id,))
+            await cursor.execute(query, (module_id,))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -168,12 +110,12 @@ async def get_summary_issue_reports(connection: AsyncConnection, company_module_
         annual_plans.year as financial_year,
         engagements.opinion_rating as overall_opinion_rating,
         issue.title as issue_name,
-        issue.risk_rating as issue_rating,
+        issue.risk_rating,
         issue.source as issue_source,
         issue.criteria as issue_criteria,
         issue.root_cause_description as root_cause_description,
         issue.impact_description as impact_description,
-        issue.recommendation as issue_recommendation,
+        issue.recommendation,
         issue.management_action_plan as issue_management_action_plan,
         issue.reportable as issue_reportable,
         CASE 

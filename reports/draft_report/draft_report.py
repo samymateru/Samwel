@@ -39,6 +39,10 @@ async def generate_draft_report_model(
         issues_context = []
 
         converter(filename=audit_background_path, data=data.engagement_profile.audit_background)
+        converter(filename=audit_background_path, data=data.engagement_profile.audit_background)
+        converter(filename=audit_background_path, data=data.engagement_profile.audit_background)
+        converter(filename=audit_background_path, data=data.engagement_profile.audit_background)
+
         audit_background_sub_doc = doc.new_subdoc(finding_path)
 
         for da in data.issues:
