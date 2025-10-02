@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
-from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
+from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model, get_all_issue_actors_on_issue_model
 from models.module_models import increment_module_reference
 from schemas.attachement_schemas import ReadAttachment
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
@@ -143,14 +143,52 @@ async def save_issue_responses(
 async def revise_issue_model(
         connection: AsyncConnection,
         revised_date: datetime,
-        revise_actors: IssueReviseActors,
         issue_id: str,
+        user_id: str
 ):
     with exception_response():
         issue_data = await fetch_single_issue_item_model(
             connection=connection,
             issue_id=issue_id
         )
+
+        status: Optional[RevisionStatus] = None
+
+        revision_status = issue_data.get("revision_status")
+
+        _revised_date_ = issue_data.get("revised_date") if revised_date is None else revised_date
+
+        issue_actor = await get_all_issue_actors_on_issue_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+
+        if revision_status is None:
+            role_user_ids = [item["user_id"] for item in issue_actor if item["role"] == IssueReviseActors.IMPLEMENTER]
+            is_in_role = user_id in role_user_ids
+            if is_in_role:
+                status = RevisionStatus.WAITING_OWNER
+            else:
+                raise HTTPException(status_code=409, detail="You Must Be Implementer")
+
+
+        if revision_status == RevisionStatus.WAITING_OWNER:
+            role_user_ids = [item["user_id"] for item in issue_actor if item["role"] == IssueReviseActors.OWNER]
+            is_in_role = user_id in role_user_ids
+            if is_in_role:
+                status = RevisionStatus.WAITING_LOD_2
+            else:
+                raise HTTPException(status_code=409, detail="You Must Be Owner")
+
+
+        if revision_status == RevisionStatus.WAITING_LOD_2:
+            role_user_ids = [item["user_id"] for item in issue_actor if item["role"] == IssueReviseActors.COMPLIANCE_OFFICER or item["role"] == IssueReviseActors.RISK_MANAGER]
+            is_in_role = user_id in role_user_ids
+            if is_in_role:
+                status = None
+            else:
+                raise HTTPException(status_code=409, detail="You Must Be LOD2")
 
 
         count = int(issue_data.get("revised_count") or 0) + 1
@@ -159,7 +197,7 @@ async def revise_issue_model(
             date_revised=revised_date,
             revised_status=True,
             revised_count=count,
-            revision_status=RevisionStatus.WAITING_LOD_2
+            revision_status=status
         )
 
         builder = await (

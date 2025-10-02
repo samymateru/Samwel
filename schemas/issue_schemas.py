@@ -258,7 +258,7 @@ class ReviseIssue(BaseModel):
     date_revised: datetime
     revised_status: bool
     revised_count: int
-    revision_status: RevisionStatus
+    revision_status: Optional[RevisionStatus] = None
 
 
 class SetOpenDate(BaseModel):

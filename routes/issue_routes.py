@@ -356,12 +356,12 @@ async def issue_decline_response(
 @router.put("/revise/{issue_id}",)
 async def request_issue_revise(
         issue_id: str,
-        revised_date: datetime = Form(...),
+        revised_date: Optional[datetime] = Form(None),
         reason: str = Form(...),
         attachment: UploadFile = File(None),
-        revise_actors: IssueReviseActors = Query(...),
+        user_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user),
+        #auth: CurrentUser = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
@@ -369,7 +369,7 @@ async def request_issue_revise(
             connection=connection,
             revised_date=revised_date,
             issue_id=issue_id,
-            revise_actors=revise_actors
+            user_id=user_id
         )
 
         if results is None:
@@ -380,7 +380,7 @@ async def request_issue_revise(
             response=NewIssueResponse(
             notes=reason,
             type=IssueResponseTypes.REVISE,
-            issued_by=auth.user_id
+            issued_by="auth.user_id"
             ),
             issue_id=issue_id
         )
@@ -391,7 +391,7 @@ async def request_issue_revise(
                 connection=connection,
                 attachment=attachment,
                 item_id=response_result.get("id"),
-                module_id=auth.module_id,
+                module_id="auth.module_id",
                 url=upload_attachment(
                 category=AttachmentCategory.ISSUE_RESPONSES,
                 background_tasks=background_tasks,
