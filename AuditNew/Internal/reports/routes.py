@@ -17,12 +17,12 @@ async def fetch_detailed_issue_reports(
         #user: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-        data = await get_main_reports(connection=db, module_id=module_id)
+        data = await get_all_issue_reports(connection=db, module_id=module_id)
         issues = []
         for x in data:
             refined = {
                 **x,
-                "issue_criteria": extract_text(x.get("issue_criteria")),
+                "criteria": extract_text(x.get("criteria")),
                 "recommendation": extract_text(x.get("recommendation")),
                 "finding": extract_text(x.get("finding")),
                 "root_cause_description": extract_text(x.get("root_cause_description")),
@@ -30,7 +30,6 @@ async def fetch_detailed_issue_reports(
                 "management_action_plan": extract_text(x.get("management_action_plan"))
             }
             issues.append(refined)
-            print(refined)
 
         return issues
 

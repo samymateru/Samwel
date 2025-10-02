@@ -1,6 +1,14 @@
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 
+from core.tables import Tables
+from schemas.annual_plan_schemas import ReadAnnualPlan
+from schemas.engagement_schemas import ReadEngagement, Engagement
+from schemas.issue_actor_schemas import NewIssueActor
+from schemas.issue_schemas import IssueColumns, ReadIssues, IssueActors
+from services.connections.postgres.read import ReadBuilder
+from utils import exception_response
+
 
 async def get_main_reports(connection: AsyncConnection, module_id: str):
     query = sql.SQL(
@@ -51,41 +59,23 @@ async def get_main_reports(connection: AsyncConnection, module_id: str):
         ELSE 'No'
         END AS issue_due_more_than_365_days,
         issue.status as issue_overall_status,    
-        issue.response as latest_response
+        issue.response as latest_response,
+        
+        COALESCE(
+        json_agg(
+            json_build_object(
+          
+                'role', iss_act.role
+
+            )
+            ) FILTER (WHERE iss_act.issue_actor_id IS NOT NULL), '[]'
+        ) AS issue_actors
         
         FROM issue
         JOIN engagements ON issue.engagement = engagements.id
         JOIN annual_plans ON engagements.plan_id = annual_plans.id
-        JOIN modules ON annual_plans.module = modules.id
-        WHERE modules.id = %s
-        GROUP BY
-        engagements.name,
-        engagement_code,
-        financial_year,
-        overall_opinion_rating,
-        issue_id,
-        issue_name,
-        risk_rating,
-        issue_source,
-        issue_criteria,
-        root_cause_description,
-        impact_description,
-        recommendation,
-        management_action_plan,
-        reportable,
-        date_issue_sent_to_client,
-        estimated_implementation_date,
-        issue_overall_status,
-        latest_revised_date,
-        is_issue_revised,
-        actual_implementation_date,
-        issue_revised_count,
-        days_remaining_to_implementation,
-        issue_due_more_than_90_days,
-        issue_due_more_than_365_days,
-        is_issue_sent_to_owner,
-        is_issue_pass_due,
-        latest_response
+        JOIN issue_actors iss_act on iss_act.issue_id = issue.id
+        WHERE issue.module_id = %s
         ;
         """)
     try:
@@ -273,3 +263,37 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching review comments {e}")
+
+
+
+async def get_all_issue_reports(
+        connection: AsyncConnection,
+        module_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value, alias="iss")
+            .select(ReadIssues)
+            .join(
+                "LEFT",
+                Tables.ENGAGEMENTS.value,
+                "engagement.id = iss.engagement",
+                "engagement",
+                use_prefix=True,
+                model=Engagement
+            )
+            .join(
+                "LEFT",
+                Tables.ANNUAL_PLANS.value,
+                "plan.id = engagement.plan_id",
+                "plan",
+                use_prefix=True,
+                model=ReadAnnualPlan
+            )
+            .select_joins()
+            .where("iss."+IssueColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder

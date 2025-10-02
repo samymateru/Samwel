@@ -9,8 +9,7 @@
       <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,14 +154,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00762" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759148077258</created>
-      <option name="number" value="00762" />
-      <option name="presentableId" value="LOCAL-00762" />
-      <option name="project" value="LOCAL" />
-      <updated>1759148077258</updated>
     </task>
     <task id="LOCAL-00763" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -548,7 +539,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759408164541</updated>
     </task>
-    <option name="localTasksCounter" value="811" />
+    <task id="LOCAL-00811" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759417270847</created>
+      <option name="number" value="00811" />
+      <option name="presentableId" value="LOCAL-00811" />
+      <option name="project" value="LOCAL" />
+      <updated>1759417270847</updated>
+    </task>
+    <option name="localTasksCounter" value="812" />
     <servers />
   </component>
   <component name="UnknownFeatures">

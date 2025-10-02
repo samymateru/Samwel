@@ -61,7 +61,6 @@ class RevisionStatus(str, Enum):
     OWNER = "Owner"
 
 
-
 class IssueResponseActors(str, Enum):
     OWNER = "lod1_owner"
     RISK_MANAGER = "lod2_risk_manager"
