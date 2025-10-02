@@ -18,6 +18,7 @@ async def generate_draft_report_model(
     module_id: str,
     connection: AsyncConnection,
 ):
+    audit_background_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-audit_background.docx")
     finding_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-finding.docx")
     criteria_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-criteria.docx")
     recommendation_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-recommendation.docx")
@@ -37,6 +38,9 @@ async def generate_draft_report_model(
 
         issues_context = []
 
+        converter(filename=audit_background_path, data=data.engagement_profile.audit_background)
+        audit_background_sub_doc = doc.new_subdoc(finding_path)
+
         for da in data.issues:
             converter(filename=finding_path, data=da.finding)
             converter(filename=criteria_path, data=da.criteria)
@@ -44,6 +48,7 @@ async def generate_draft_report_model(
             converter(filename=management_action_plan, data=da.management_action_plan)
             converter(filename=root_cause_description_path, data=da.root_cause_description)
             converter(filename=impact_description_path, data=da.impact_description)
+
 
             finding_sub_doc = doc.new_subdoc(finding_path)
             criteria_sub_doc = doc.new_subdoc(criteria_path)
@@ -72,14 +77,17 @@ async def generate_draft_report_model(
                 "recommendation": recommendation_sub_doc,
                 "management_action_plan": management_action_plan_sub_doc,
                 "responsible_people": da.responsible_people,
+                "implementation_date": da.estimated_implementation_date.strftime("%d %b %Y")
             })
 
         context = {
             "organization_name": data.organization_name,
+            "audit_background": audit_background_sub_doc,
             'engagement_code': data.engagement_code,
             "engagement_name": data.engagement_name,
             "issues": issues_context
         }
+
 
         doc.render(context)
         doc.save(output_path)

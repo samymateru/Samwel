@@ -123,8 +123,10 @@ class CompleteEngagement(BaseModel):
 class DeleteEngagementPartially(BaseModel):
     status: EngagementStatus
 
+
 class Engagement(CreateEngagement):
     pass
+
 
 class ReadEngagement(Engagement):
     leads: List[Lead]

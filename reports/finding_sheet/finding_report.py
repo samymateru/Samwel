@@ -53,7 +53,6 @@ async def generate_finding_report(
         issues_context = []
 
         for da in data.issues:
-            print(da)
             converter(filename=finding_path, data=da.finding)
             converter(filename=criteria_path, data=da.criteria)
             converter(filename=recommendation_path, data=da.recommendation)
@@ -88,6 +87,7 @@ async def generate_finding_report(
                 "recommendation": recommendation_sub_doc,
                 "management_action_plan": management_action_plan_sub_doc,
                 "responsible_people": da.responsible_people,
+                "implementation_date": da.estimated_implementation_date.strftime("%d %b %Y")
             })
 
 

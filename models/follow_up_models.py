@@ -5,7 +5,7 @@ from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpCo
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
     UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \
     ReadFollowUpData, BaseFollowUpData
-from schemas.issue_schemas import IssueColumns
+from schemas.issue_schemas import IssueColumns, ReadIssues
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -422,6 +422,53 @@ async def set_issue_provisional_response_model(
             .where(({IssueColumns.ID.value: issue_id}))
             .returning(IssueColumns.ID.value)
             .execute()
+        )
+
+        return builder
+
+
+async def fetching_follow_up_engagements_model(
+    connection: AsyncConnection,
+    follow_up_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_ENGAGEMENTS, alias="foll_eng")
+            .join(
+                "LEFT",
+                Tables.ENGAGEMENTS.value,
+                "eng.id = foll_eng.engagement_id",
+                "eng",
+                use_prefix=False
+            )
+            .where("foll_eng."+FollowUpEngagements.FOLLOW_UP_ID.value, follow_up_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+async def fetching_follow_up_issues_model(
+    connection: AsyncConnection,
+    follow_up_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_ISSUES, alias="foll_iss")
+            .join(
+                "LEFT",
+                Tables.ISSUES.value,
+                "iss.id = foll_iss.issue_id",
+                "iss",
+                use_prefix=False,
+                model=ReadIssues
+            )
+            .select_joins()
+            .where("foll_iss."+FollowUpEngagements.FOLLOW_UP_ID.value, follow_up_id)
+            .fetch_all()
         )
 
         return builder

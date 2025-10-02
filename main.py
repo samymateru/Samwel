@@ -140,7 +140,7 @@ async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        data = await generate_finding_report(
+        data = await generate_draft_report_model(
             connection=connection,
             engagement_id="4b15ba494eb9",
             module_id="04e9e6ebdf06"
@@ -149,7 +149,7 @@ async def home(
 
 
 
-        return data
+        return True
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

@@ -7,12 +7,15 @@ from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
-    attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model, set_issue_provisional_response_model
+    attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model, \
+    set_issue_provisional_response_model, fetching_follow_up_engagements_model, fetching_follow_up_issues_model
 from models.issue_models import get_engagement_issues_model
 from schemas.attachement_schemas import AttachmentCategory
+from schemas.engagement_schemas import Engagement
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUp, \
     FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest, ReadFollowUpTest
 from schema import ResponseMessage
+from schemas.issue_schemas import ReadIssues
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, get_unique_key, return_checker
 from typing import List, Optional
@@ -333,3 +336,34 @@ async def set_issue_provisional_response(
             passed="Provisional Response Pending Successfully",
             failed="Provisional Response Pending Failed"
         )
+
+
+
+
+@router.get("/engagements/follow/{follow_up_id}", response_model=List[Engagement])
+async def fetching_follow_up_engagements(
+        follow_up_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await fetching_follow_up_engagements_model(
+            connection=connection,
+            follow_up_id=follow_up_id
+        )
+
+        return data
+
+
+
+@router.get("/issues/follow/{follow_up_id}", response_model=List[ReadIssues])
+async def fetching_follow_up_issues(
+        follow_up_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await fetching_follow_up_issues_model(
+            connection=connection,
+            follow_up_id=follow_up_id
+        )
+
+        return data
