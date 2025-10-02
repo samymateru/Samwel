@@ -75,19 +75,26 @@ class UpdateQueryBuilder:
         self._raw_params = params
         return self
 
-    def values(self, data: schema_type) -> "UpdateQueryBuilder":
+
+    def values(self, data: Union[schema_type, dict]) -> "UpdateQueryBuilder":
         """
-        Provide the data to update using a Pydantic model.
+        Provide the data to update using a Pydantic model or a dictionary.
 
         Args:
-            data (schema_type): A Pydantic model instance containing the column-value pairs
-                                to be updated.
+            data (schema_type | dict): A Pydantic model instance or a dictionary
+                                       containing the column-value pairs to be updated.
 
         Returns:
             UpdateQueryBuilder: The current instance for method chaining.
         """
-        self._data = data
+        if isinstance(data, dict):
+            self._data = data
+        elif isinstance(data, BaseModel):
+            self._data = data
+        else:
+            raise TypeError("Values must be a Pydantic model or a dictionary.")
         return self
+
 
     def _convert_params(self, params: dict) -> dict:
         """

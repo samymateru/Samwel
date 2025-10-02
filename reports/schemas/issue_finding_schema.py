@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Dict, Optional, List
 from pydantic import BaseModel
 
+from schemas.engagement_administration_profile_schemas import ReadEngagementAdministrationProfile
+
 
 class ResponsiblePeople(BaseModel):
     name: str
@@ -38,4 +40,5 @@ class EngagementReport(BaseModel):
     organization_name: str
     engagement_name: str
     engagement_code: str
+    engagement_profile: ReadEngagementAdministrationProfile
     issues: List[IssuesFinding]

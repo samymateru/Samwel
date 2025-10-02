@@ -57,6 +57,10 @@ class IssueStatus(str, Enum):
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
     CLOSED_VERIFIED_BY_AUDIT = "Closed -> verified by audit"
 
+class RevisionStatus(str, Enum):
+    OWNER = "Owner"
+
+
 
 class IssueResponseActors(str, Enum):
     OWNER = "lod1_owner"
@@ -255,3 +259,4 @@ class SetOpenDate(BaseModel):
 
 class SetClosedDate(BaseModel):
     date_opened: bool
+

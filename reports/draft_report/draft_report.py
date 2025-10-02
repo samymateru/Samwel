@@ -1,6 +1,5 @@
 import os
 import warnings
-
 from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
 from conv import converter

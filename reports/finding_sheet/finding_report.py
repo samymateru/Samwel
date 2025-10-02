@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(BASE_DIR, "template.docx")
 output_path = os.path.join(BASE_DIR, "final.docx")
-
+table_of_content_path = os.path.join(BASE_DIR, "table_of_content.docx")
 
 async def generate_finding_report(
     engagement_id: str,
@@ -36,7 +36,8 @@ async def generate_finding_report(
             module_id=module_id
         )
 
-        doc = DocxTemplate("template.docx")
+
+        doc = DocxTemplate(template_path)
         table_of_content = Document()
 
 
@@ -45,13 +46,14 @@ async def generate_finding_report(
             doc=table_of_content
         )
 
-        table_of_content.save("table1.docx")
+        table_of_content.save(table_of_content_path)
 
-        table_of_content = doc.new_subdoc("table1.docx")
+        table_of_content_sub_doc = doc.new_subdoc(table_of_content_path)
 
         issues_context = []
 
         for da in data.issues:
+            print(da)
             converter(filename=finding_path, data=da.finding)
             converter(filename=criteria_path, data=da.criteria)
             converter(filename=recommendation_path, data=da.recommendation)
@@ -93,12 +95,13 @@ async def generate_finding_report(
             "organization_name": data.organization_name,
             'engagement_code': data.engagement_code,
             "engagement_name": data.engagement_name,
-            "table1": table_of_content,
+            "table1": table_of_content_sub_doc,
             "issues": issues_context
         }
 
         doc.render(context)
-        doc.save("final_output.docx")
+        doc.save(output_path)
+        return data
 
 
 
@@ -114,9 +117,6 @@ def create_table_of_content(issues, doc: Document):
     hdr_cells[2].text = 'Audit Finding Rating'
 
 
-    for cell in hdr_cells:
-        set_cell_text_color(cell, 'ffffff')
-        set_cell_background_color(cell, '0000FF')
 
 
     for idx, d in enumerate(issues, start=1):

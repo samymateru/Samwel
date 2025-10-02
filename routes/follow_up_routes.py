@@ -7,7 +7,7 @@ from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
-    attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model
+    attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model, set_issue_provisional_response_model
 from models.issue_models import get_engagement_issues_model
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUp, \
@@ -317,10 +317,19 @@ async def delete_follow_up_test(
 
 
 
-@router.delete("/test/{test_id}", response_model=ResponseMessage)
+@router.delete("/provisional_response/{issue_id}", response_model=ResponseMessage)
 async def set_issue_provisional_response(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await set_issue_provisional_response_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Provisional Response Pending Successfully",
+            failed="Provisional Response Pending Failed"
+        )

@@ -1,9 +1,12 @@
 from psycopg import AsyncConnection
+
+from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
 from models.engagement_models import get_single_engagement_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
 from models.issue_models import get_engagement_issues_model
 from models.organization_models import get_module_organization
 from reports.schemas.issue_finding_schema import ResponsiblePeople, IssuesFinding, EngagementReport
+from schemas.engagement_administration_profile_schemas import ReadEngagementAdministrationProfile
 from utils import exception_response
 
 
@@ -21,6 +24,11 @@ async def load_engagement_report_data(
 
 
         engagement_data = await get_single_engagement_details(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        engagement_profile_data = await fetch_engagement_administration_profile_model(
             connection=connection,
             engagement_id=engagement_id
         )
@@ -50,6 +58,7 @@ async def load_engagement_report_data(
         engagement_data = EngagementReport(
             organization_name=organization_data.get("name", ""),
             engagement_name=engagement_data.get("name", ""),
+            engagement_profile=ReadEngagementAdministrationProfile(**engagement_profile_data),
             engagement_code=engagement_data.get("code", ""),
             issues=all_issues
         )

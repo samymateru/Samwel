@@ -5,16 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
-      <change afterPath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/engagement_letter/engagement_letter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/engagement_letter/template.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/follow_up_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/follow_up_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/template.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/issue_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/schemas/issue_finding_schema.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/follow_up_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/follow_up_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/connections/postgres/update.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/update.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/rabitmq/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +92,7 @@
     "Python.eyes.executor": "Run",
     "Python.face_detect.executor": "Run",
     "Python.finder.executor": "Run",
+    "Python.finding_report.executor": "Run",
     "Python.game.executor": "Run",
     "Python.insert_builder.executor": "Run",
     "Python.issue_finding_model.executor": "Run",
@@ -124,12 +129,13 @@
     "deletionFromPopupRequiresConfirmation": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client/reports/finding_sheet",
+    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client/reports/engagement_letter",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports\engagement_letter" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports\finding_sheet" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client" />
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports" />
@@ -157,14 +163,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00758" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759088285630</created>
-      <option name="number" value="00758" />
-      <option name="presentableId" value="LOCAL-00758" />
-      <option name="project" value="LOCAL" />
-      <updated>1759088285630</updated>
     </task>
     <task id="LOCAL-00759" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -550,7 +548,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759358516274</updated>
     </task>
-    <option name="localTasksCounter" value="807" />
+    <task id="LOCAL-00807" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759391108415</created>
+      <option name="number" value="00807" />
+      <option name="presentableId" value="LOCAL-00807" />
+      <option name="project" value="LOCAL" />
+      <updated>1759391108415</updated>
+    </task>
+    <option name="localTasksCounter" value="808" />
     <servers />
   </component>
   <component name="UnknownFeatures">

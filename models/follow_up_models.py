@@ -5,6 +5,7 @@ from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpCo
     ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
     UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \
     ReadFollowUpData, BaseFollowUpData
+from schemas.issue_schemas import IssueColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -408,12 +409,19 @@ async def get_all_module_follow_up(
         return follow_ups
 
 
-async def set_issue_provisional_response(
+async def set_issue_provisional_response_model(
     connection: AsyncConnection,
-    module_id: str
+    issue_id: str
 ):
     with exception_response():
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.ISSUES.value)
+            .values({"provisional_response": "Pending"})
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where(({IssueColumns.ID.value: issue_id}))
+            .returning(IssueColumns.ID.value)
+            .execute()
         )
+
+        return builder

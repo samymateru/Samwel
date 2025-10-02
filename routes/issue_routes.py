@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, HTTPException, BackgroundTasks
-
 from core.utils import upload_attachment
 from models.attachment_model import add_new_attachment
 from models.issue_actor_models import initialize_issue_actors
@@ -146,7 +145,7 @@ async def request_issue_revise(
         issue_id: str,
         revised_date: datetime = Form(...),
         reason: str = Form(...),
-        attachment: UploadFile = File(...),
+        attachment: UploadFile = File(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user),
         background_tasks: BackgroundTasks = BackgroundTasks()
