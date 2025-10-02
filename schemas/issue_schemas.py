@@ -58,7 +58,15 @@ class IssueStatus(str, Enum):
     CLOSED_VERIFIED_BY_AUDIT = "Closed -> verified by audit"
 
 class RevisionStatus(str, Enum):
-    OWNER = "Owner"
+    WAITING_OWNER = "waiting_owner"
+    WAITING_LOD_2 = "waiting_lod_2"
+
+
+class IssueReviseActors(str, Enum):
+    OWNER = "lod1_owner"
+    RISK_MANAGER = "lod2_risk_manager"
+    COMPLIANCE_OFFICER = "lod2_compliance_officer"
+    IMPLEMENTER = "lod1_implementer"
 
 
 class IssueResponseActors(str, Enum):
@@ -250,6 +258,7 @@ class ReviseIssue(BaseModel):
     date_revised: datetime
     revised_status: bool
     revised_count: int
+    revision_status: RevisionStatus
 
 
 class SetOpenDate(BaseModel):

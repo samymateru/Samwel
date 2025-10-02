@@ -12,7 +12,7 @@ from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
-    ReadIssueResponse, IssueActors
+    ReadIssueResponse, IssueActors, IssueReviseActors
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -140,60 +140,6 @@ async def mark_issue_reportable(
 
 
 
-@router.put("/revise/{issue_id}",)
-async def request_issue_revise(
-        issue_id: str,
-        revised_date: datetime = Form(...),
-        reason: str = Form(...),
-        attachment: UploadFile = File(None),
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user),
-        background_tasks: BackgroundTasks = BackgroundTasks()
-):
-    with exception_response():
-        results = await revise_issue_model(
-            connection=connection,
-            revised_date=revised_date,
-            issue_id=issue_id
-        )
-
-        if results is None:
-            raise HTTPException(status_code=400, detail="Failed To Save Revise Issue")
-
-        response_result = await save_issue_responses(
-            connection=connection,
-            response=NewIssueResponse(
-            notes=reason,
-            type=IssueResponseTypes.REVISE,
-            issued_by=auth.user_id
-            ),
-            issue_id=issue_id
-        )
-
-
-        if attachment is not None:
-            await add_new_attachment(
-                connection=connection,
-                attachment=attachment,
-                item_id=response_result.get("id"),
-                module_id=auth.module_id,
-                url=upload_attachment(
-                category=AttachmentCategory.ISSUE_RESPONSES,
-                background_tasks=background_tasks,
-                file=attachment
-                ),
-                category=AttachmentCategory.ISSUE_RESPONSES
-            )
-
-
-        return await return_checker(
-            data=results,
-            passed="Successfully Revise Issue",
-            failed="Fail Revising Issue"
-        )
-
-
-
 
 @router.put("/send_implementor")
 async def send_issue_for_implementation(
@@ -300,15 +246,6 @@ async def fetch_issue_updates(
 
 
 
-
-
-
-
-
-
-
-
-
 @router.get("/{module_id}")
 async def fetch_all_module_issues_filtered(
         module_id: str,
@@ -317,20 +254,6 @@ async def fetch_all_module_issues_filtered(
 ):
     with exception_response():
         pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -388,6 +311,7 @@ async def issue_accept_response(
         )
 
 
+
 @router.put("/decline_response/{issue_id}")
 async def issue_decline_response(
         issue_id: str,
@@ -426,3 +350,59 @@ async def issue_decline_response(
         )
 
 
+
+
+
+@router.put("/revise/{issue_id}",)
+async def request_issue_revise(
+        issue_id: str,
+        revised_date: datetime = Form(...),
+        reason: str = Form(...),
+        attachment: UploadFile = File(None),
+        revise_actors: IssueReviseActors = Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
+):
+    with exception_response():
+        results = await revise_issue_model(
+            connection=connection,
+            revised_date=revised_date,
+            issue_id=issue_id,
+            revise_actors=revise_actors
+        )
+
+        if results is None:
+            raise HTTPException(status_code=400, detail="Failed To Save Revise Issue")
+
+        response_result = await save_issue_responses(
+            connection=connection,
+            response=NewIssueResponse(
+            notes=reason,
+            type=IssueResponseTypes.REVISE,
+            issued_by=auth.user_id
+            ),
+            issue_id=issue_id
+        )
+
+
+        if attachment is not None:
+            await add_new_attachment(
+                connection=connection,
+                attachment=attachment,
+                item_id=response_result.get("id"),
+                module_id=auth.module_id,
+                url=upload_attachment(
+                category=AttachmentCategory.ISSUE_RESPONSES,
+                background_tasks=background_tasks,
+                file=attachment
+                ),
+                category=AttachmentCategory.ISSUE_RESPONSES
+            )
+
+
+        return await return_checker(
+            data=results,
+            passed="Successfully Revise Issue",
+            failed="Fail Revising Issue"
+        )

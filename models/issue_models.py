@@ -8,7 +8,8 @@ from models.module_models import increment_module_reference
 from schemas.attachement_schemas import ReadAttachment
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
-    IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared
+    IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared, \
+    IssueReviseActors, RevisionStatus
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from schemas.user_schemas import ReadOrganizationUser, BaseUser
 from services.connections.postgres.delete import DeleteQueryBuilder
@@ -142,6 +143,7 @@ async def save_issue_responses(
 async def revise_issue_model(
         connection: AsyncConnection,
         revised_date: datetime,
+        revise_actors: IssueReviseActors,
         issue_id: str,
 ):
     with exception_response():
@@ -150,12 +152,14 @@ async def revise_issue_model(
             issue_id=issue_id
         )
 
+
         count = int(issue_data.get("revised_count") or 0) + 1
 
         __revise__ = ReviseIssue(
             date_revised=revised_date,
             revised_status=True,
-            revised_count=count
+            revised_count=count,
+            revision_status=RevisionStatus.WAITING_LOD_2
         )
 
         builder = await (

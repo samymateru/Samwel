@@ -4,7 +4,7 @@ from typing import Optional
 import aio_pika
 from aio_pika.abc import AbstractRobustChannel
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, FileResponse
 from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
@@ -143,7 +143,10 @@ async def home(
             module_id="04e9e6ebdf06"
         )
 
-        return True
+        return FileResponse(
+            path=data,
+            filename="monthly_report.docx",  # 👈 downloaded name
+        )
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

@@ -321,7 +321,7 @@ async def delete_follow_up_test(
 
 
 
-@router.delete("/provisional_response/{issue_id}", response_model=ResponseMessage)
+@router.put("/provisional_response/{issue_id}", response_model=ResponseMessage)
 async def set_issue_provisional_response(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

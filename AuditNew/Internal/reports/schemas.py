@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from schemas.issue_schemas import IssueStatus
 
 
-
 class ReportIssues(BaseModel):
     id:str
     ref: str
@@ -12,7 +11,6 @@ class ReportIssues(BaseModel):
     engagement_code: str
     engagement_opinion_rating: Optional[str] = None
     plan_year: str
-    created_at: datetime
     response: Optional[str] = None
     reportable: Optional[bool] = False
     title: str
@@ -30,6 +28,7 @@ class ReportIssues(BaseModel):
     recurring_status: Optional[bool] = False
     management_action_plan: Optional[str]  = None
     status: IssueStatus
+    created_at: datetime
 
 
     # issue_due_more_than_365_days: Optional[str]
