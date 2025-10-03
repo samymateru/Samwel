@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, UploadFile, File
+from fastapi import APIRouter, Depends, Query, UploadFile, File, BackgroundTasks
 from starlette.responses import FileResponse
 
 from models.planning_models import attach_draft_engagement_report_model, attach_finding_report_model, \
@@ -85,6 +85,7 @@ async def attach_draft_engagement_report(
         engagement_id: str,
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
         #auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
@@ -92,7 +93,8 @@ async def attach_draft_engagement_report(
             connection=connection,
             attachment=attachment,
             module_id="",
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
+            background_tasks=background_tasks
         )
 
         return await return_checker(
@@ -110,6 +112,7 @@ async def attach_finding_sheet_report(
         engagement_id: str,
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
         #auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
@@ -117,7 +120,8 @@ async def attach_finding_sheet_report(
             connection=connection,
             attachment=attachment,
             module_id="",
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
+            background_tasks=background_tasks
         )
 
         return await return_checker(
@@ -133,6 +137,7 @@ async def attach_engagement_letter_report(
         engagement_id: str,
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
         #auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
@@ -140,7 +145,8 @@ async def attach_engagement_letter_report(
             connection=connection,
             attachment=attachment,
             module_id="",
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
+            background_tasks=background_tasks
         )
 
         return await return_checker(
