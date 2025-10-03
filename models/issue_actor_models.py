@@ -65,6 +65,7 @@ async def get_all_issue_actors_on_issue_model(
 class UserIssueRole(BaseModel):
     role: str
 
+
 async def get_all_issue_actors_on_issue_by_status_model(
         connection: AsyncConnection,
         issue_id: str,

@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
+from schemas.issue_actor_schemas import ReadIssueActors
 from schemas.issue_schemas import IssueStatus
 
 
@@ -32,6 +33,7 @@ class ReportIssues(BaseModel):
     date_revised: datetime
     revised_count: Optional[int] = 0
     revised_status: Optional[bool] = False
+    implementers: List[ReadIssueActors]
 
 
 

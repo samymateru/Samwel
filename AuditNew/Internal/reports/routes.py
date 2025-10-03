@@ -2,6 +2,8 @@ from typing import List
 
 from AuditNew.Internal.reports.schemas import ReportIssues
 from core.utils import extract_text
+from models.issue_actor_models import get_all_issue_actors_on_issue_model
+from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import get_current_user, get_async_db_connection, exception_response
 from schema import CurrentUser
 from fastapi import APIRouter, Depends
@@ -13,13 +15,18 @@ router = APIRouter(prefix="/reports")
 @router.get("/issue_detailed/{module_id}", response_model=List[ReportIssues])
 async def fetch_detailed_issue_reports(
         module_id: str,
-        db=Depends(get_async_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        #_: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-        data = await get_all_issue_reports(connection=db, module_id=module_id)
+        data = await get_all_issue_reports(connection=connection, module_id=module_id)
         issues = []
         for x in data:
+            implementers = await get_all_issue_actors_on_issue_model(
+                connection=connection,
+                issue_id=x.get("id")
+            )
+
             refined = {
                 **x,
                 "criteria": extract_text(x.get("criteria")),
@@ -27,7 +34,8 @@ async def fetch_detailed_issue_reports(
                 "finding": extract_text(x.get("finding")),
                 "root_cause_description": extract_text(x.get("root_cause_description")),
                 "impact_description": extract_text(x.get("impact_description")),
-                "management_action_plan": extract_text(x.get("management_action_plan"))
+                "management_action_plan": extract_text(x.get("management_action_plan")),
+                "implementers": implementers
             }
             issues.append(refined)
 
