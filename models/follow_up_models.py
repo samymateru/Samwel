@@ -2,7 +2,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.attachement_schemas import ReadAttachment
 from schemas.follow_up_schemas import CreateFollowUp, FollowUpStatus, FollowUpColumns, UpdateFollowUp, \
-    ReviewFollowUp, DisApproveFollowUp, CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
+    CompleteFollowUp, CreateFollowUpTest, NewFollowUpTest, FollowUpTestColumns, \
     UpdateFollowUpTest, FollowUpEngagements, FollowUpIssues, CreateFollowUpEngagement, CreateFollowUpIssue, \
     ReadFollowUpData, BaseFollowUpData, ReadFollowUpUser
 from schemas.issue_schemas import IssueColumns, ReadIssues
@@ -432,6 +432,84 @@ async def get_all_module_follow_up(
 
 
         return follow_ups
+
+
+
+async def get_single_follow_up_model(
+    connection: AsyncConnection,
+    follow_up_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.FOLLOW_UP.value, alias="follow_up")
+            .select(BaseFollowUpData)
+            .join(
+                "LEFT",
+                Tables.ATTACHMENTS.value,
+                "attachment.item_id = follow_up.follow_up_id",
+                "attachment",
+                use_prefix=True,
+                model=ReadAttachment,
+            )
+            .join(
+                "LEFT",
+                Tables.USERS.value,
+                "reviewer.id = follow_up.created_by",
+                "reviewer",
+                use_prefix=True,
+                model=ReadFollowUpUser,
+            )
+            .join(
+                "LEFT",
+                Tables.USERS.value,
+                "creator.id = follow_up.reviewed_by",
+                "creator",
+                use_prefix=True,
+                model=ReadFollowUpUser,
+            )
+            .where("follow_up."+FollowUpColumns.FOLLOW_UP_ID.value, follow_up_id)
+            .select_joins()
+            .fetch_one()
+        )
+
+
+        if builder is None:
+            return None
+
+        data = ReadFollowUpData(
+            follow_up_id=builder.get("follow_up_id"),
+            module_id=builder.get("module_id"),
+            name=builder.get("name"),
+            status=builder.get("status"),
+            created_by=builder.get("created_by"),
+            reviewed_by=builder.get("reviewed_by"),
+            created_at=builder.get("created_at"),
+            attachment=ReadAttachment(
+                attachment_id=builder.get("attachment_attachment_id"),
+                module_id=builder.get("attachment_attachment_id"),
+                item_id=builder.get("attachment_item_id"),
+                filename=builder.get("attachment_filename"),
+                category=builder.get("attachment_category"),
+                url=builder.get("attachment_url"),
+                size=builder.get("attachment_size"),
+                type=builder.get("attachment_type"),
+                created_at=builder.get("attachment_created_at")
+            ),
+            creator=ReadFollowUpUser(
+                id=builder.get("creator_id"),
+                name = builder.get("creator_name")
+            ),
+            reviewer=ReadFollowUpUser(
+                id=builder.get("reviewer_id"),
+                name=builder.get("reviewer_name")
+            )
+        )
+
+
+        return data
+
+
 
 
 async def set_issue_provisional_response_model(

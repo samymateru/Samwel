@@ -141,16 +141,18 @@ async def mark_issue_reportable(
 
 
 
+
 @router.put("/send_implementor")
 async def send_issue_for_implementation(
         issue_ids: SendIssueImplementor,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        #auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await send_issue_for_implementation_model(
             connection=connection,
-            issue_ids=issue_ids,
-            user_id=""
+            issue_ids=SendIssueImplementor(issue_ids=[]),
+            user_id="auth.user_id"
         )
 
         return await return_checker(
@@ -242,18 +244,6 @@ async def fetch_issue_updates(
             issue_id=issue_id
         )
         return data
-
-
-
-
-@router.get("/{module_id}")
-async def fetch_all_module_issues_filtered(
-        module_id: str,
-        filters: str =  Query(...),
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
 
 
 

@@ -207,6 +207,8 @@ class UpdateIssueDetails(BaseModel):
     sdi_name: Optional[str] = None
     recurring_status: Optional[bool] = False
     management_action_plan: Optional[Dict] | Optional[str] = None
+    prepared_by: Optional[Dict] = None
+    reviewed_by: Optional[Dict] = None
 
 
 
@@ -241,6 +243,10 @@ class ReadIssues(BaseModel):
     recurring_status: Optional[bool] = False
     management_action_plan: Optional[Dict] | Optional[str] = None
     provisional_response: Optional[str] = None
+    revision_status: Optional[str] = None
+    prepared_by: Optional[Dict] = None
+    reviewed_by: Optional[Dict] = None
+
 
 
 class MarkIssueReportable(BaseModel):

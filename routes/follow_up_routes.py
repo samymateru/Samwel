@@ -8,7 +8,8 @@ from models.follow_up_models import add_new_follow_up, update_follow_up_details_
     approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
     attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model, \
-    set_issue_provisional_response_model, fetching_follow_up_engagements_model, fetching_follow_up_issues_model
+    set_issue_provisional_response_model, fetching_follow_up_engagements_model, fetching_follow_up_issues_model, \
+    get_single_follow_up_model
 from models.issue_models import get_engagement_issues_model
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.engagement_schemas import Engagement
@@ -183,6 +184,23 @@ async def fetch_all_follow_up_on_module(
             module_id=module_id
         )
 
+        return data
+
+
+
+@router.get("/single/{follow_up_id}", response_model=ReadFollowUpData)
+async def fetch_all_follow_up_on_module(
+        follow_up_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await get_single_follow_up_model(
+            connection=connection,
+            follow_up_id=follow_up_id
+        )
+
+        if data is None:
+            raise HTTPException(status_code=404, detail="Follow Up Not Found")
         return data
 
 

@@ -396,10 +396,6 @@ async def issue_accept_model(
 
 
 
-
-
-
-
 async def send_issue_for_implementation_model(
         connection: AsyncConnection,
         user_id: str,
