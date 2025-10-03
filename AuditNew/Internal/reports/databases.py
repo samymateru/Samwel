@@ -1,13 +1,15 @@
+from typing import List
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
-
 from core.tables import Tables
 from schemas.annual_plan_schemas import ReadAnnualPlan
 from schemas.engagement_schemas import Engagement
 from schemas.issue_schemas import IssueColumns, ReadIssues
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response
-
+from collections import Counter
+from typing import List
+from AuditNew.Internal.dashboards.schemas import _Issue_, IssueStatusSummary
 
 async def get_review_comments_report(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
@@ -18,6 +20,7 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
         rc.reference,
         rc.description,
         rc.raised_by,
+        rc.action_owner,
         rc.resolution_summary,
         rc.resolution_details,
         rc.resolved_by,
@@ -35,6 +38,7 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
         rc.reference,
         rc.description,
         rc.raised_by,
+        rc.action_owner,
         rc.resolution_summary,
         rc.resolution_details,
         rc.resolved_by,
@@ -63,6 +67,7 @@ async def get_tasks_report(connection: AsyncConnection, company_module_id: str):
         rc.reference,
         rc.description,
         rc.raised_by,
+        rc.action_owner,
         rc.resolution_summary,
         rc.resolution_details,
         rc.resolved_by,
@@ -80,6 +85,7 @@ async def get_tasks_report(connection: AsyncConnection, company_module_id: str):
         rc.reference,
         rc.description,
         rc.raised_by,
+        rc.action_owner,
         rc.resolution_summary,
         rc.resolution_details,
         rc.resolved_by,
@@ -131,6 +137,32 @@ async def get_all_issue_reports(
         )
 
         return builder
+
+
+
+def count_issue_statuses(rows: List[_Issue_]):
+    status_counter = Counter()
+
+    for row in rows:
+
+        # Normalize status into broader categories
+        if row.status == "Not started":
+            status_counter["Not started"] += 1
+        elif row.status == "Open":
+            status_counter["Open"] += 1
+        elif row.status.startswith("In progress"):
+            status_counter["In Progress"] += 1
+        elif row.status.startswith("Closed"):
+            status_counter["Closed"] += 1
+
+    return IssueStatusSummary(
+        total=sum(status_counter.values()),
+        not_started=status_counter.get("Not started", 0),
+        open=status_counter.get("Open", 0),
+        in_progress=status_counter.get("In Progress", 0),
+        closed=status_counter.get("Closed", 0),
+    )
+
 
 
 

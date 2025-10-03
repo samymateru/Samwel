@@ -116,6 +116,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
         return JSONResponse(status_code=500, content={"detail": str(e)})
 
 
+
 # noinspection PyTypeChecker
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
@@ -126,6 +127,7 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"detail": exc.detail}
     )
+
 
 @app.get("/{engagement_id}")
 async def home():
@@ -185,6 +187,7 @@ async def refresh_token(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while retrieving session code {e}")
+
 
 
 @app.post("/login", tags=["Authentication"], response_model=LoginResponse)

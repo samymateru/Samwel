@@ -5,11 +5,11 @@ from psycopg import AsyncConnection, sql
 from datetime import datetime
 
 from AuditNew.Internal.dashboards.schemas import ModuleHomeDashboard, _Issue_, _EngagementStatus_
+from AuditNew.Internal.reports.databases import count_issue_statuses
 from core.tables import Tables
 from schemas.engagement_schemas import EngagementColumns
 from schemas.issue_schemas import IssueColumns
 from services.connections.postgres.read import ReadBuilder
-from test import count_issue_statuses
 from utils import exception_response
 
 
