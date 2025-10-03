@@ -12,7 +12,7 @@ from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
-    ReadIssueResponse, IssueActors, IssueReviseActors
+    ReadIssueResponse, IssueActors
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -142,7 +142,7 @@ async def mark_issue_reportable(
 
 
 
-@router.put("/send_implementor")
+@router.put("/send_implementor/")
 async def send_issue_for_implementation(
         issue_ids: SendIssueImplementor,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -299,6 +299,7 @@ async def issue_accept_response(
             passed="Issue Successfully Accepted",
             failed="Failed Accepting  Issue"
         )
+
 
 
 
