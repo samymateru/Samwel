@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
-    update_sub_program_library_model, update_risk_control_library_model, create_new_libray_entry_model
+    update_sub_program_library_model, update_risk_control_library_model, create_new_libray_entry_model, \
+    delete_libray_entry_model
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
     RiskControlLibraryItem, WorkingPapers
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -119,5 +120,15 @@ async def deleting_working_paper(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        results = await delete_libray_entry_model(
+            connection=connection,
+            library_id=library_id
+        )
+
+
+        return await return_checker(
+            data=results,
+            passed="Working Paper Successfully Deleted",
+            failed="Failed Deleting Working Paper"
+        )
 

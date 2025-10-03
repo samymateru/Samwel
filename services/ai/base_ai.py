@@ -90,16 +90,15 @@ async def chat(
             return {"message": result}
 
         else:
-            async def event_stream():
-                stream = await client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": user_input}],
-                    stream=True,
-                )
-                async for event in stream:
-                    if event.choices[0].delta.content:
-                        yield event.choices[0].delta.content
+            response = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": user_input}],
+            )
 
-            return {"message": StreamingResponse(event_stream(), media_type="text/plain")}
+            # Extract the full text result
+            result = response.choices[0].message.content
+
+            return {"message": result}
+
 
 
