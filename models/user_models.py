@@ -85,6 +85,7 @@ async def create_new_organization_user(
         return builder
 
 
+
 async def create_new_module_user(
         connection: AsyncConnection,
         module_id: str,
@@ -217,6 +218,7 @@ async def get_entity_users(
         return builder
 
 
+
 async def get_module_user_details(
         connection: AsyncConnection,
         module_id: str,
@@ -241,6 +243,7 @@ async def get_module_user_details(
         return builder
 
 
+
 async def get_entity_user_details_by_mail(
         connection: AsyncConnection,
         email: str
@@ -254,6 +257,29 @@ async def get_entity_user_details_by_mail(
         )
 
         return builder
+
+
+
+
+async def update_user_ai_session(
+        connection: AsyncConnection,
+        user_id: str,
+        count: int
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.USERS.value)
+            .values({"ai_session_count": count})
+            .check_exists({UserColumns.ID.value: user_id})
+            .where({UserColumns.ID.value: user_id})
+            .returning(UserColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
+
 
 
 async def delete_user_in_module(
@@ -275,6 +301,7 @@ async def delete_user_in_module(
         )
 
         return  builder
+
 
 
 async def edit_module_user(
