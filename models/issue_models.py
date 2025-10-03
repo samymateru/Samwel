@@ -54,7 +54,8 @@ async def create_new_issue_model(
             management_action_plan=issue.management_action_plan,
             regulatory=issue.regulatory,
             estimated_implementation_date=issue.estimated_implementation_date,
-            engagement=engagement_id
+            engagement=engagement_id,
+            date_revised=issue.estimated_implementation_date
         )
 
 
@@ -139,7 +140,6 @@ async def save_issue_responses(
 
 
 
-
 async def revise_issue_model(
         connection: AsyncConnection,
         revised_date: datetime,
@@ -216,8 +216,6 @@ async def revise_issue_model(
         )
 
         return builder
-
-
 
 
 
@@ -389,10 +387,6 @@ async def issue_accept_model(
         )
 
         return results
-
-
-
-
 
 
 

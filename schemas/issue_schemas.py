@@ -72,11 +72,13 @@ class IssueReviseActors(str, Enum):
     IMPLEMENTER = "lod1_implementer"
 
 
+
 class IssueResponseActors(str, Enum):
     OWNER = "lod1_owner"
     RISK_MANAGER = "lod2_risk_manager"
     COMPLIANCE_OFFICER = "lod2_compliance_officer"
     AUDIT_MANAGER = "lod3_audit_manager"
+
 
 
 class IssueLOD2Feedback(str, Enum):
@@ -123,6 +125,9 @@ class CreateIssue(NewIssue):
     engagement: str
     created_at: datetime
     status: IssueStatus
+    date_revised: Optional[datetime]
+    revised_count: Optional[int] = 0
+    revised_status: Optional[bool] = False
     reportable: Optional[bool] = False
 
 
@@ -246,6 +251,9 @@ class ReadIssues(BaseModel):
     revision_status: Optional[str] = None
     prepared_by: Optional[Dict] = None
     reviewed_by: Optional[Dict] = None
+    date_revised: datetime
+    revised_count: Optional[int] = 0
+    revised_status: Optional[bool] = False
 
 
 

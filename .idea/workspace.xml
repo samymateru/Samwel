@@ -6,16 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/tables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/attachment_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/attachment_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/libray_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/libray_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/planning_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/planning_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/engagement_letter/engagement_letter.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/engagement_letter/engagement_letter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/planning_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/planning_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/attachement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/attachement_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/library_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/library_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/planning_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/planning_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,14 +152,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00778" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759245671575</created>
-      <option name="number" value="00778" />
-      <option name="presentableId" value="LOCAL-00778" />
-      <option name="project" value="LOCAL" />
-      <updated>1759245671575</updated>
     </task>
     <task id="LOCAL-00779" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -553,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759481959099</updated>
     </task>
-    <option name="localTasksCounter" value="827" />
+    <task id="LOCAL-00827" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759491905707</created>
+      <option name="number" value="00827" />
+      <option name="presentableId" value="LOCAL-00827" />
+      <option name="project" value="LOCAL" />
+      <updated>1759491905707</updated>
+    </task>
+    <option name="localTasksCounter" value="828" />
     <servers />
   </component>
   <component name="UnknownFeatures">
