@@ -29,6 +29,10 @@ class ReportIssues(BaseModel):
     management_action_plan: Optional[str]  = None
     status: IssueStatus
     created_at: datetime
+    date_revised: datetime
+    revised_count: Optional[int] = 0
+    revised_status: Optional[bool] = False
+
 
 
     # issue_due_more_than_365_days: Optional[str]

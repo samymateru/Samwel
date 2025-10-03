@@ -139,7 +139,6 @@ async def save_issue_responses(
 
 
 
-
 async def revise_issue_model(
         connection: AsyncConnection,
         revised_date: datetime,
@@ -151,6 +150,7 @@ async def revise_issue_model(
             connection=connection,
             issue_id=issue_id
         )
+
 
         status: Optional[RevisionStatus] = None
 

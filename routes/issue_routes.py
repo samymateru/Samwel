@@ -163,7 +163,6 @@ async def send_issue_for_implementation(
 
 
 
-
 @router.put("/save_implementation/{issue_id}")
 async def save_issue_implementation(
         issue_id: str,
@@ -207,7 +206,6 @@ async def save_issue_implementation(
             passed="Successfully Save Issue Implementation",
             failed="Fail Save Issue Implementation"
         )
-
 
 
 
@@ -348,7 +346,7 @@ async def issue_decline_response(
 async def request_issue_revise(
         issue_id: str,
         revised_date: Optional[datetime] = Form(None),
-        reason: str = Form(...),
+        reason: str = Form(None),
         attachment: UploadFile = File(None),
         user_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
