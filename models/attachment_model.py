@@ -38,7 +38,10 @@ async def add_new_attachment(
             InsertQueryBuilder(connection=connection)
             .into_table(Tables.ATTACHMENTS.value)
             .values(__attachment__)
-            .returning(AttachmentColumns.ATTACHMENT_ID.value)
+            .returning(
+                AttachmentColumns.ATTACHMENT_ID.value,
+                AttachmentColumns.URL.value
+            )
             .execute()
         )
 

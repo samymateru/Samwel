@@ -1,11 +1,14 @@
-from fastapi import UploadFile, BackgroundTasks
+from datetime import datetime
+
+from fastapi import UploadFile, BackgroundTasks, HTTPException
 from psycopg import AsyncConnection
-
+from core.tables import Tables
 from core.utils import upload_attachment
-from models.attachment_model import add_new_attachment
+from models.engagement_models import get_single_engagement_with_plan_details
 from schemas.attachement_schemas import AttachmentCategory
-from utils import exception_response
-
+from schemas.planning_schemas import Reports, ReportType, ReportsColumns
+from services.connections.postgres.insert import InsertQueryBuilder
+from utils import exception_response, get_unique_key
 
 
 
@@ -14,49 +17,48 @@ async def attach_draft_engagement_report_model(
         attachment: UploadFile,
         engagement_id: str,
         module_id: str,
+        category: ReportType,
         background_tasks: BackgroundTasks
 ):
     with exception_response():
 
-        url = upload_attachment(
-            category=AttachmentCategory.DRAFT_AUDIT_REPORT,
+        engagement_data = await get_single_engagement_with_plan_details(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        if engagement_data is None:
+            raise HTTPException(status_code=404, detail="Engagement Not Found")
+
+
+        __report__ = Reports(
+            report_id=get_unique_key(),
+            module_id=module_id,
+            engagement_id=engagement_id,
+            url=upload_attachment(
+            category=AttachmentCategory.ANNUAL_PLAN,
             background_tasks=background_tasks,
             file=attachment
+            ),
+            plan_name=engagement_data.get("pln_name"),
+            plan_year=engagement_data.get("pln_year"),
+            engagement_name=engagement_data.get("name"),
+            engagement_code=engagement_data.get("code"),
+            file_name=attachment.filename,
+            file_type=attachment.content_type,
+            file_size=attachment.size,
+            category=category,
+            created_at=datetime.now()
         )
 
-        results = await add_new_attachment(
-            connection=connection,
-            attachment=attachment,
-            item_id=engagement_id,
-            module_id=module_id,
-            url=url,
-            category=AttachmentCategory.ANNUAL_PLAN
+        builder = await (
+            InsertQueryBuilder(connection=connection)
+            .into_table(Tables.REPORTS.value)
+            .values(__report__)
+            .check_exists({ReportsColumns.ENGAGEMENT_NAME.value: engagement_data.get("name")})
+            .check_exists({ReportsColumns.ENGAGEMENT_ID.value: engagement_data.get("id")})
+            .returning(ReportsColumns.ENGAGEMENT_ID.value)
+            .execute()
         )
 
-
-
-
-
-async def attach_finding_report_model(
-        connection: AsyncConnection,
-        attachment: UploadFile,
-        engagement_id: str,
-        module_id: str,
-        background_tasks: BackgroundTasks
-
-):
-    with exception_response():
-        pass
-
-
-
-async def attach_engagement_letter_model(
-        connection: AsyncConnection,
-        attachment: UploadFile,
-        engagement_id: str,
-        module_id: str,
-        background_tasks: BackgroundTasks
-):
-    with exception_response():
-        pass
-
+        return builder

@@ -28,6 +28,7 @@ class AttachmentColumns(str, Enum):
     SIZE = "size"
     TYPE = "type"
     CATEGORY = "category"
+    URL = "url"
     CREATOR = "creator"
     CREATED_AT = "created_at"
 

@@ -1,8 +1,9 @@
 from psycopg import AsyncConnection, sql
 from core.tables import Tables
+from schemas.annual_plan_schemas import ReadAnnualPlan
 from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, CompleteEngagement, EngagementStatus, \
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
-    UpdateEngagement_
+    UpdateEngagement_, Engagement
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -138,6 +139,32 @@ async def get_single_engagement_details(
             ReadBuilder(connection=connection)
             .from_table(Tables.ENGAGEMENTS.value)
             .where(EngagementColumns.ID.value, engagement_id)
+            .fetch_one()
+        )
+
+        return builder
+
+
+
+async def get_single_engagement_with_plan_details(
+        connection: AsyncConnection,
+        engagement_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENTS.value, alias="eng")
+            .select(Engagement)
+            .join(
+                "LEFT",
+                Tables.ANNUAL_PLANS.value,
+                "pln.id = eng.plan_id",
+                "pln",
+                use_prefix=True,
+                model=ReadAnnualPlan
+            )
+            .select_joins()
+            .where("eng."+EngagementColumns.ID.value, engagement_id)
             .fetch_one()
         )
 

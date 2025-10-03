@@ -20,6 +20,7 @@ class LibraryCategory(str, Enum):
     SUB_PROGRAM = "Sub Program"
     RISK_CONTROL = "Risk Control"
     WORKING_PAPER = "Working Paper"
+    AUDIT_REPORTS = "Audit Reports"
 
 
 class CreateLibraryEntry(BaseModel):
