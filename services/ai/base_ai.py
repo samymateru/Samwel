@@ -87,7 +87,7 @@ async def chat(
             if not result:
                 raise HTTPException(status_code=500, detail="No output generated from model")
 
-            return result
+            return {"message": result}
 
         else:
             async def event_stream():
@@ -100,6 +100,6 @@ async def chat(
                     if event.choices[0].delta.content:
                         yield event.choices[0].delta.content
 
-            return StreamingResponse(event_stream(), media_type="text/plain")
+            return {"message": StreamingResponse(event_stream(), media_type="text/plain")}
 
 

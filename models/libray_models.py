@@ -10,6 +10,7 @@ from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
+
 async def create_new_libray_entry_model(
         connection: AsyncConnection,
         library: Dict,
@@ -36,6 +37,7 @@ async def create_new_libray_entry_model(
             .execute()
         )
         return builder
+
 
 
 async def get_module_library_entry_model(

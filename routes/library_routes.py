@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Query
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
-    update_sub_program_library_model, update_risk_control_library_model
+    update_sub_program_library_model, update_risk_control_library_model, create_new_libray_entry_model
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
-    RiskControlLibraryItem
+    RiskControlLibraryItem, WorkingPapers
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
@@ -90,9 +90,32 @@ async def fetch_all_library_items(
 
 
 @router.post("/working_papers/{module_id}")
-async def add_new_w(
+async def add_new_working_paper(
         module_id: str,
-        category: LibraryCategory = Query(...),
+        working_paper: WorkingPapers,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await create_new_libray_entry_model(
+            connection=connection,
+            module_id=module_id,
+            user_id="",
+            library=working_paper.model_dump(),
+            category=LibraryCategory.WORKING_PAPER
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Working Paper Successfully Created",
+            failed="Failed Creating Working Paper"
+        )
+
+
+
+
+@router.delete("/working_papers/{library_id}")
+async def deleting_working_paper(
+        library_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():

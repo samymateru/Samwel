@@ -65,8 +65,17 @@ class MainProgramLibraryItem(BaseModel):
     sub_programs: List[SubProgramLibraryItem]
 
 
+
+class WorkingPapers(BaseModel):
+    url: str
+    name: str
+    description: str
+
 class LibraryItemUpdate(BaseModel):
     data: Dict
+
+
+
 
 
 
