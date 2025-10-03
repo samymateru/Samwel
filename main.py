@@ -64,6 +64,7 @@ from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
 from routes.planning_routes import router as planning_routes
+from services.ai.base_ai import router as ai
 
 
 
@@ -285,6 +286,7 @@ app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
 
 
+app.include_router(ai, tags=["AI Generation Routes"])
 app.include_router(attachment_routes, tags=["Attachments Routes"])
 app.include_router(subscriptions, tags=["Subscriptions"])
 app.include_router(entity_routes, tags=["Entity Routes"])

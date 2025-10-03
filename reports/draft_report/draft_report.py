@@ -21,7 +21,6 @@ async def generate_draft_report_model(
     audit_background_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-audit_background.docx")
     key_legislations_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-key_legislations.docx")
     key_changes_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-key_changes.docx")
-    key_changes_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-key_changes.docx")
     system_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-system.docx")
     reliance_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-reliance.docx")
 
@@ -51,7 +50,7 @@ async def generate_draft_report_model(
         converter(filename=reliance_path, data=data.engagement_profile.reliance)
 
 
-        audit_background_sub_doc = doc.new_subdoc(finding_path)
+        audit_background_sub_doc = doc.new_subdoc(audit_background_path)
         key_legislations_sub_doc = doc.new_subdoc(key_legislations_path)
         key_changes_sub_doc = doc.new_subdoc(key_changes_path)
         system_sub_doc = doc.new_subdoc(system_path)
@@ -101,6 +100,20 @@ async def generate_draft_report_model(
                 "implementation_date": da.estimated_implementation_date.strftime("%d %b %Y")
             })
 
+        temp_files = [
+            audit_background_path,
+            key_legislations_path,
+            key_changes_path,
+            system_path,
+            reliance_path,
+            finding_path,
+            criteria_path,
+            recommendation_path,
+            management_action_plan,
+            root_cause_description_path,
+            impact_description_path,
+        ]
+
         context = {
             "organization_name": data.organization_name,
             "audit_background": audit_background_sub_doc,
@@ -112,6 +125,13 @@ async def generate_draft_report_model(
             "engagement_name": data.engagement_name,
             "issues": issues_context
         }
+
+        for f in temp_files:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception as e:
+                    print(f"Could not delete {f}: {e}")
 
 
         doc.render(context)

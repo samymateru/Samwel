@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from fastapi import UploadFile, BackgroundTasks, HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
@@ -7,7 +6,9 @@ from core.utils import upload_attachment
 from models.engagement_models import get_single_engagement_with_plan_details
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.planning_schemas import Reports, ReportType, ReportsColumns
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
+from services.connections.postgres.read import ReadBuilder
 from utils import exception_response, get_unique_key
 
 
@@ -29,7 +30,6 @@ async def attach_draft_engagement_report_model(
 
         if engagement_data is None:
             raise HTTPException(status_code=404, detail="Engagement Not Found")
-
 
         __report__ = Reports(
             report_id=get_unique_key(),
@@ -56,7 +56,49 @@ async def attach_draft_engagement_report_model(
             .into_table(Tables.REPORTS.value)
             .values(__report__)
             .check_exists({ReportsColumns.ENGAGEMENT_NAME.value: engagement_data.get("name")})
-            .check_exists({ReportsColumns.ENGAGEMENT_ID.value: engagement_data.get("id")})
+            .check_exists({ReportsColumns.CATEGORY.value: category.value})
+            .returning(ReportsColumns.ENGAGEMENT_ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+
+async def fetch_report_on_engagement(
+    connection: AsyncConnection,
+    engagement_id: str,
+    category: ReportType,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.REPORTS.value)
+            .where(ReportsColumns.ENGAGEMENT_ID.value, engagement_id)
+            .where(ReportsColumns.CATEGORY.value, category.value)
+            .fetch_one()
+        )
+
+        return builder
+
+
+async def remove_engagement_report(
+    connection: AsyncConnection,
+    engagement_id: str,
+    category: ReportType,
+):
+    with exception_response():
+        builder = await (
+            DeleteQueryBuilder(connection=connection)
+            .from_table(Tables.REPORTS.value)
+            .check_exists({
+                ReportsColumns.CATEGORY.value: category.value,
+                ReportsColumns.ENGAGEMENT_ID.value: engagement_id
+            })
+            .where({
+                ReportsColumns.CATEGORY.value: category.value,
+                ReportsColumns.ENGAGEMENT_ID.value: engagement_id
+            })
             .returning(ReportsColumns.ENGAGEMENT_ID.value)
             .execute()
         )

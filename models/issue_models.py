@@ -1,5 +1,4 @@
 from typing import List, Optional
-
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
@@ -18,6 +17,8 @@ from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
+
+
 
 async def create_new_issue_model(
         connection: AsyncConnection,

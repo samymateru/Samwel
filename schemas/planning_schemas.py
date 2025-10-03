@@ -3,9 +3,9 @@ from enum import Enum
 from datetime import datetime
 
 class ReportType(str, Enum):
-    DRAFT_ENGAGEMENT_REPORT = "draft_engagement_report"
-    DRAFT_ENGAGEMENT_LETTER = "draft_engagement_letter"
-    DRAFT_FINDING_LETTER = "draft_finding_sheet"
+    ENGAGEMENT_REPORT = "engagement_report"
+    ENGAGEMENT_LETTER = "engagement_letter"
+    FINDING_LETTER = "finding_sheet"
 
 
 class ReportsColumns(str, Enum):
