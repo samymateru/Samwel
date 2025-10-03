@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/reports/schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue_actor_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_actor_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/library_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/library_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/ai/base_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/ai/base_ai.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,14 +154,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00783" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759261491444</created>
-      <option name="number" value="00783" />
-      <option name="presentableId" value="LOCAL-00783" />
-      <option name="project" value="LOCAL" />
-      <updated>1759261491444</updated>
     </task>
     <task id="LOCAL-00784" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -547,7 +539,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759525882347</updated>
     </task>
-    <option name="localTasksCounter" value="832" />
+    <task id="LOCAL-00832" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759527731911</created>
+      <option name="number" value="00832" />
+      <option name="presentableId" value="LOCAL-00832" />
+      <option name="project" value="LOCAL" />
+      <updated>1759527731911</updated>
+    </task>
+    <option name="localTasksCounter" value="833" />
     <servers />
   </component>
   <component name="UnknownFeatures">

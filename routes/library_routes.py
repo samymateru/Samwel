@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
-
+from fastapi import APIRouter, Depends, Query
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
     update_sub_program_library_model, update_risk_control_library_model
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
@@ -28,6 +27,7 @@ async def update_main_program_library_item(
             passed="Main Program  Successfully Updated",
             failed="Failed Updating  Main Program"
         )
+
 
 
 @router.put("/sub_program/{library_id}")
@@ -88,4 +88,13 @@ async def fetch_all_library_items(
         return data
 
 
+
+@router.post("/working_papers/{module_id}")
+async def add_new_w(
+        module_id: str,
+        category: LibraryCategory = Query(...),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
 

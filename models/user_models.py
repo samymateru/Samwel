@@ -11,6 +11,7 @@ from services.security.security import hash_password
 from utils import exception_response, get_unique_key
 
 
+
 async def register_new_user(
         connection: AsyncConnection,
         user: NewUser,
@@ -46,6 +47,7 @@ async def register_new_user(
         )
 
         return builder
+
 
 
 async def create_new_organization_user(
@@ -118,6 +120,7 @@ async def create_new_module_user(
         return builder
 
 
+
 async def get_module_users(
         connection: AsyncConnection,
         module_id: str,
@@ -138,6 +141,7 @@ async def get_module_users(
         )
 
         return builder
+
 
 
 async def get_organization_users(
@@ -281,7 +285,6 @@ async def update_user_ai_session(
 
 
 
-
 async def delete_user_in_module(
         connection: AsyncConnection,
         user_id: str,
@@ -323,6 +326,7 @@ async def edit_module_user(
         return builder
 
 
+
 async def edit_entity_user(
         connection: AsyncConnection,
         user: UpdateEntityUser,
@@ -340,6 +344,7 @@ async def edit_entity_user(
         )
 
         return builder
+
 
 
 async def get_user_by_email(
