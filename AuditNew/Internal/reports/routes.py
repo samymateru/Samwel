@@ -14,7 +14,7 @@ router = APIRouter(prefix="/reports")
 async def fetch_detailed_issue_reports(
         module_id: str,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         data = await get_all_issue_reports(connection=db, module_id=module_id)

@@ -146,13 +146,13 @@ async def mark_issue_reportable(
 async def send_issue_for_implementation(
         issue_ids: SendIssueImplementor,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user)
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await send_issue_for_implementation_model(
             connection=connection,
-            issue_ids=SendIssueImplementor(issue_ids=[]),
-            user_id="auth.user_id"
+            issue_ids=issue_ids,
+            user_id=auth.user_id
         )
 
         return await return_checker(

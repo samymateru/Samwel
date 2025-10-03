@@ -13,6 +13,7 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
     query = sql.SQL(
         """
         SELECT 
+        rc.id,
         rc.title,
         rc.reference,
         rc.description,
@@ -29,6 +30,7 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
         JOIN modules m ON ap.module = m.id
         WHERE m.id = %s
         GROUP BY
+        rc.id,
         rc.title,
         rc.reference,
         rc.description,
@@ -52,11 +54,11 @@ async def get_review_comments_report(connection: AsyncConnection, company_module
         raise HTTPException(status_code=400, detail=f"Error fetching review comments {e}")
 
 
-
 async def get_tasks_report(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
         """
-        SELECT 
+        SELECT
+        rc.id, 
         rc.title,
         rc.reference,
         rc.description,
@@ -73,6 +75,7 @@ async def get_tasks_report(connection: AsyncConnection, company_module_id: str):
         JOIN modules m ON ap.module = m.id
         WHERE m.id = %s
         GROUP BY
+        rc.id,
         rc.title,
         rc.reference,
         rc.description,
