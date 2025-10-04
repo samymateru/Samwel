@@ -3,8 +3,6 @@ from openai import AsyncOpenAI
 from dotenv import load_dotenv
 import os
 
-from starlette.responses import StreamingResponse
-
 from models.user_models import get_entity_user_details_by_mail, update_user_ai_session
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
@@ -15,6 +13,7 @@ from enum import Enum
 load_dotenv()
 
 PROMPT_ID = "pmpt_68dff1e1b0508190aad7968097707e580ca0b5c943f846d1"
+AGENT_PROMT_ID = "pmpt_68e06c797b648190a09dfd23c9b2280c0a1f4e65171cafb4"
 PROMPT_VERSION = "1"  # Keep this aligned with your template version in dashboard
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -23,6 +22,7 @@ router = APIRouter(prefix="/ai")
 class Mode(str, Enum):
     NORMAL = "normal"
     AUDIT = "audit"
+    AGENT = "agent"
 
 
 MAX_INPUT_WORDS = 1500
@@ -70,6 +70,7 @@ async def chat(
 
         global_logger.info("Passed AI Check")
 
+
         if mode == Mode.AUDIT:
             response = await client.responses.create(
                 model="gpt-4.1-mini",  # Or another supported model
@@ -88,6 +89,30 @@ async def chat(
                 raise HTTPException(status_code=500, detail="No output generated from model")
 
             return {"message": result}
+
+
+
+        elif mode == Mode.AGENT:
+            response = await client.responses.create(
+                model="gpt-4.1-mini",  # Or another supported model
+                prompt={
+                    "id": AGENT_PROMT_ID,
+                    "version": PROMPT_VERSION,
+                    "variables": {
+                        "user_input": user_input
+                    }
+                }
+            )
+
+
+            # Extract model output
+            result = getattr(response, "output_text", None)
+            if not result:
+                raise HTTPException(status_code=500, detail="No output generated from model")
+
+            return {"message": result}
+
+
 
         else:
             response = await client.chat.completions.create(

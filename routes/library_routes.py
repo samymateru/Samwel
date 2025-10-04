@@ -114,8 +114,8 @@ async def add_new_working_paper(
 
 
 
-@router.delete("/working_papers/{library_id}")
-async def deleting_working_paper(
+@router.delete("/{library_id}")
+async def deleting_library_item(
         library_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -132,3 +132,27 @@ async def deleting_working_paper(
             failed="Failed Deleting Working Paper"
         )
 
+
+
+
+
+
+
+
+@router.get("/reports/{module_id}")
+async def fetch_reports(
+        module_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
+
+
+
+@router.get("/reports/{report_id}")
+async def deleting_library_item(
+        report_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        pass
