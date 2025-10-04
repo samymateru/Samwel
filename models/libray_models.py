@@ -3,6 +3,7 @@ from typing import Dict, List
 from core.tables import Tables
 from schemas.library_schemas import LibraryCategory, CreateLibraryEntry, LibraryColumns, MainProgramLibraryItem, \
     SubProgramLibraryItem, RiskControlLibraryItem, LibraryItemUpdate
+from schemas.planning_schemas import ReportsColumns
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -197,6 +198,22 @@ async def delete_library_item(
             .where({LibraryColumns.LIBRARY_ID.value: library_id})
             .returning(LibraryColumns.LIBRARY_ID.value)
             .execute()
+        )
+
+        return builder
+
+
+
+async def fetch_library_report_module_model(
+    connection: AsyncConnection,
+    module_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.REPORTS.value)
+            .where(ReportsColumns.MODULE_ID.value, module_id)
+            .fetch_all()
         )
 
         return builder

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
     update_sub_program_library_model, update_risk_control_library_model, create_new_libray_entry_model, \
-    delete_libray_entry_model
+    delete_libray_entry_model, fetch_library_report_module_model
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
     RiskControlLibraryItem, WorkingPapers
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -135,24 +135,15 @@ async def deleting_library_item(
 
 
 
-
-
-
-
 @router.get("/reports/{module_id}")
-async def fetch_reports(
+async def fetch_library_reports(
         module_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        pass
+        data = await fetch_library_report_module_model(
+            connection=connection,
+            module_id=module_id
+        )
 
-
-
-@router.get("/reports/{report_id}")
-async def deleting_library_item(
-        report_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        pass
+        return data

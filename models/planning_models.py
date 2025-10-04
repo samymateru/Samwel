@@ -82,6 +82,7 @@ async def fetch_report_on_engagement(
         return builder
 
 
+
 async def remove_engagement_report(
     connection: AsyncConnection,
     engagement_id: str,

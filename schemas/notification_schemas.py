@@ -1,5 +1,5 @@
-from typing import Optional
-from pydantic import BaseModel
+from typing import Optional, List
+from pydantic import BaseModel, Field
 from enum import Enum
 from datetime import datetime
 
@@ -42,3 +42,31 @@ class CreateNotifications(BaseModel):
 class UpdateNotificationRead(BaseModel):
     status: NotificationsStatus
     read_at: datetime
+
+
+
+class NewUserInvitation(BaseModel):
+    name: str
+    email: str
+    password: str
+
+
+
+class NewAuditorInvitation(BaseModel):
+    name: str
+    engagement_name: str
+    period: str
+    leads: List[str]
+
+
+class EngagementMarkCompleted(BaseModel):
+    engagement_name: str
+    period: str
+    completed_date: datetime
+
+
+
+class EngagementMarkArchived(BaseModel):
+    engagement_name: str
+    period: str
+    completed_date: datetime
