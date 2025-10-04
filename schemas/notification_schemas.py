@@ -70,3 +70,10 @@ class EngagementMarkArchived(BaseModel):
     engagement_name: str
     period: str
     completed_date: datetime
+
+
+class SendUserInvitationNotification(BaseModel):
+    template_model: NewUserInvitation
+    template_id: int
+    to: str
+

@@ -7,6 +7,8 @@ import logging
 from dotenv import load_dotenv
 from aio_pika import connect_robust, IncomingMessage, Message, ExchangeType
 
+from services.notifications.postmark import email_service
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -36,6 +38,7 @@ class RabbitMQMultiQueue(threading.Thread):
         self._exchange = None
         self._publish_queue: asyncio.Queue = asyncio.Queue()
 
+
     def run(self):
         """Start the async event loop for RabbitMQ consumption and publishing."""
         if sys.platform == "win32":
@@ -44,6 +47,7 @@ class RabbitMQMultiQueue(threading.Thread):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(self._consume())
+
 
     async def _publisher_task(self):
         """Background async task that publishes messages from the internal queue."""
@@ -114,8 +118,17 @@ class RabbitMQMultiQueue(threading.Thread):
         """Process incoming messages."""
         async with message.process():
             body = message.body.decode()
-            print(body)
-            # Add any message handling logic here
+
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                data = {"mode": 'single', "data": ""}
+
+
+            if queue_name == "user":
+                if data["mode"] == "single":
+                    await email_service.send_with_template(data["data"])
+
 
     async def _close(self):
         """Gracefully close channel and connection."""
@@ -128,9 +141,26 @@ class RabbitMQMultiQueue(threading.Thread):
         except Exception as e:
             logger.exception(f"Error closing RabbitMQ connection: {e}")
 
+
     def stop(self):
         """Stop consumer and publisher gracefully."""
         self._stop_event.set()
-        if self.loop and self.loop.is_running():
-            asyncio.run_coroutine_threadsafe(self._close(), self.loop)
-            self.loop.call_soon_threadsafe(self.loop.stop)
+
+        if not self.loop:
+            return
+
+        # Only run cleanup if the loop is still alive
+        if self.loop.is_running() and not self.loop.is_closed():
+            try:
+                # Schedule coroutine cleanup safely
+                asyncio.run_coroutine_threadsafe(self._close(), self.loop)
+
+                # Stop loop safely
+                self.loop.call_soon_threadsafe(self.loop.stop)
+            except RuntimeError as e:
+                # Loop may already be closed, ignore gracefully
+                print(f"Loop already closed: {e}")
+
+
+consumer = RabbitMQMultiQueue(["user", "issue", "queue_3"])
+consumer.start()

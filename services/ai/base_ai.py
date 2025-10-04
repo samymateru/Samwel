@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 import os
 
 from models.user_models import get_entity_user_details_by_mail, update_user_ai_session
+from schema import CurrentUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
+from services.security.security import get_current_user
 from utils import exception_response
 from enum import Enum
 
@@ -33,7 +35,8 @@ USER_MONTHLY_LIMIT = 100000
 async def chat(
     user_input: str,
     mode: Mode = Query(...),
-    connection=Depends(AsyncDBPoolSingleton.get_db_connection)
+    connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+    auth: CurrentUser = Depends(get_current_user)
 ):
     """
     Generate an audit report using a saved OpenAI Prompt template.
@@ -44,7 +47,7 @@ async def chat(
 
         data = await get_entity_user_details_by_mail(
             connection=connection,
-            email="cornely@gmail.com"
+            email=auth.user_email
         )
 
         if data is None:

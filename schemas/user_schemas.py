@@ -56,7 +56,6 @@ class NewUser(BaseModel):
     name: Optional[str]
     email: str
     type: UserTypes
-    category: Optional[str] = None
     telephone: Optional[str] = None
     role: Optional[str] = None
     title: Optional[str] = None
@@ -80,7 +79,6 @@ class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
     user_id: str
-    category: str
     management_title: str
     administrator: bool
     owner: bool
@@ -128,7 +126,6 @@ class UserModuleSection(BaseModel):
 
 class ReadOrganizationUser(BaseUser):
     management_title: Optional[str] = None
-    category: Optional[str] = None
     modules: List[UserModuleSection]
 
 

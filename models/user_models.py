@@ -58,7 +58,6 @@ async def create_new_organization_user(
         administrator: bool = False,
         owner: bool = False,
         check_exists: bool = False,
-        category: str = "Module"
 
 ):
     with exception_response():
@@ -66,7 +65,6 @@ async def create_new_organization_user(
             organization_user_id=get_unique_key(),
             organization_id=organization_id,
             user_id=user_id,
-            category=category,
             management_title=management_title,
             administrator=administrator,
             owner=owner,

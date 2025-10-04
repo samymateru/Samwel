@@ -1,4 +1,8 @@
 import os
+import secrets
+import string
+from random import random, choice
+
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -30,6 +34,11 @@ def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode(), salt).decode()
     return hashed
+
+
+def generate_password(length: int = 6) -> str:
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 def verify_password(hashed_password: str, plain_password: str) -> bool:
     """
@@ -76,4 +85,3 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="auth token is invalid")
 
 
-# print(verify_password("$argon2id$v=19$m=102400,t=2,p=8$borGjCdUwUdSE/QwCv90jw$qhg4cWQrg7kkUIqJntUmGORjvVd+hE9VVGI6L+3FhBE", "string"))

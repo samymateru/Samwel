@@ -5,11 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
+      <change afterPath="$PROJECT_DIR$/core/tempaltes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/libray_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/libray_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/planning_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/planning_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/library_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/library_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/attachement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/attachement_schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schemas/notification_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/notification_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/user_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/user_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/ai/base_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/ai/base_ai.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/notifications/postmark.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/notifications/postmark.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/security/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/security/security.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,14 +164,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00788" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759274957281</created>
-      <option name="number" value="00788" />
-      <option name="presentableId" value="LOCAL-00788" />
-      <option name="project" value="LOCAL" />
-      <updated>1759274957281</updated>
     </task>
     <task id="LOCAL-00789" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -548,7 +549,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759538543658</updated>
     </task>
-    <option name="localTasksCounter" value="837" />
+    <task id="LOCAL-00837" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759539605570</created>
+      <option name="number" value="00837" />
+      <option name="presentableId" value="LOCAL-00837" />
+      <option name="project" value="LOCAL" />
+      <updated>1759539605571</updated>
+    </task>
+    <option name="localTasksCounter" value="838" />
     <servers />
   </component>
   <component name="UnknownFeatures">

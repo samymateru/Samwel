@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Form, UploadFile, File, BackgroundTasks
+
+from core.utils import upload_attachment
 from models.libray_models import get_module_library_entry_model, update_main_program_library_model, \
     update_sub_program_library_model, update_risk_control_library_model, create_new_libray_entry_model, \
     delete_libray_entry_model, fetch_library_report_module_model
+from schemas.attachement_schemas import AttachmentCategory
 from schemas.library_schemas import LibraryCategory, MainProgramLibraryItem, SubProgramLibraryItem, \
     RiskControlLibraryItem, WorkingPapers
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -73,6 +76,7 @@ async def update_risk_control_library_item(
 
 
 
+
 @router.get("/{module_id}")
 async def fetch_all_library_items(
         module_id: str,
@@ -93,17 +97,32 @@ async def fetch_all_library_items(
 @router.post("/working_papers/{module_id}")
 async def add_new_working_paper(
         module_id: str,
-        working_paper: WorkingPapers,
+        name: str = Form(...),
+        description: str = Form(...),
+        attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
+
+        __working__ = WorkingPapers(
+            name=name,
+            description=description,
+            url=upload_attachment(
+            category=AttachmentCategory.WORKING_PAPERS,
+            background_tasks=background_tasks,
+            file=attachment
+            )
+        )
+
         results = await create_new_libray_entry_model(
             connection=connection,
             module_id=module_id,
             user_id="",
-            library=working_paper.model_dump(),
+            library=__working__.model_dump(),
             category=LibraryCategory.WORKING_PAPER
         )
+
 
         return await return_checker(
             data=results,

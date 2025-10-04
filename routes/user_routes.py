@@ -1,15 +1,15 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
-
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
     get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
     edit_entity_user, edit_module_user
 from schema import ResponseMessage, CurrentUser
-from schemas.user_schemas import NewUser, UserTypes, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
+from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
+from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
 ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.notifications.util import notification_manager
-from services.security.security import get_current_user
+from services.connections.rabitmq.consumer_thread import consumer
+from services.security.security import get_current_user, generate_password
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/users")
@@ -24,9 +24,12 @@ async def create_new_user(
         auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
+        password = generate_password()
+
         new_user_data = await register_new_user(
             connection=connection,
             entity_id=auth.entity_id,
+            password=password,
             user=user,
             check_if_exist=False
         )
@@ -35,13 +38,6 @@ async def create_new_user(
         if new_user_data is None:
             raise HTTPException(status_code=400, detail="Failed To Create New User")
 
-        notification_manager.notify(
-            user.email,
-            {
-                "message": "You have been invited module please verify"
-            }
-        )
-
 
         organization_user_data = await create_new_organization_user(
             connection=connection,
@@ -49,35 +45,49 @@ async def create_new_user(
             user_id=new_user_data.get("id"),
             administrator=False,
             owner=False,
-            category="Management" if user.category == "Management" else "Module",
             management_title=user.title
         )
+
 
         if organization_user_data is None:
             raise HTTPException(status_code=400, detail="Failed To Attach User To Organization")
 
-        if user.type != UserTypes.MANAGEMENT:
-            if module_id is None:
-                raise HTTPException(status_code=400, detail="Module ID Needed")
-            module_user_data = await create_new_module_user(
-                connection=connection,
-                user=user,
-                module_id=module_id,
-                user_id=new_user_data.get("id")
-            )
 
-            return await return_checker(
-                data=module_user_data,
-                passed="User Successfully Created",
-                failed="Failed Creating  User"
-            )
+        module_user_data = await create_new_module_user(
+            connection=connection,
+            user=user,
+            module_id=module_id,
+            user_id=new_user_data.get("id")
+        )
 
-        else:
-            return await return_checker(
-                data=organization_user_data,
-                passed="Management User Successfully Created",
-                failed="Failed Creating  Management User"
+
+
+        data = SendUserInvitationNotification(
+            to=user.email,
+            template_id=41703594,
+            template_model=NewUserInvitation(
+                name=user.name,
+                email=user.email,
+                password=password
             )
+        )
+
+
+        consumer.publish(
+            "user",
+            body={
+                "mode": "single",
+                "data": data.model_dump()
+            })
+
+
+        return await return_checker(
+            data=module_user_data,
+            passed="User Successfully Created",
+            failed="Failed Creating  User"
+        )
+
+
 
 
 @router.get("/entity/{entity_id}", response_model=List[BaseUser])

@@ -28,9 +28,10 @@ from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.organization_schemas import ReadOrganization
 from services.connections.rabitmq.connection import AsyncRabbitMQSingleton
-from services.connections.rabitmq.consumer_thread import RabbitMQMultiQueue
+from services.connections.rabitmq.consumer_thread import consumer
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -74,9 +75,8 @@ load_dotenv()
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-session_storage = PopDict()
-consumer = RabbitMQMultiQueue(["queue_1", "queue_2", "queue_3"])
 
+session_storage = PopDict()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -91,6 +91,8 @@ async def lifespan(_: FastAPI):
         consumer.stop()
     except Exception as e:
         print(e)
+
+
 
 
 
@@ -134,6 +136,7 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 async def home():
     with exception_response():
         pass
+
 
 
 

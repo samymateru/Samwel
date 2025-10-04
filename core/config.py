@@ -25,3 +25,6 @@ class Settings(pydantic.v1.BaseSettings):
 
 
 settings = Settings()
+
+
+SENDER_MAIL = "eaudit@egarcglobal.com"
