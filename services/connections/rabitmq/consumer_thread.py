@@ -125,6 +125,8 @@ class RabbitMQMultiQueue(threading.Thread):
                 data = {"mode": 'single', "data": ""}
 
 
+
+
             if queue_name == "user":
                 if data["mode"] == "single":
                     await email_service.send_with_template(data["data"])

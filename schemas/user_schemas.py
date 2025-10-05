@@ -26,6 +26,7 @@ class OrganizationUserColumns(str, Enum):
 
 class ModuleUserColumns(str, Enum):
     MODULE_USER_ID = "module_user_id"
+    ORGANIZATION_ID = "organization_id"
     MODULE_ID = "module_id"
     USER_ID = "user_id"
     ROLE = "role"
@@ -87,6 +88,7 @@ class CreateOrganizationUser(BaseModel):
 
 class CreateModuleUser(BaseModel):
     module_user_id: str
+    organization_id: str
     module_id: str
     user_id: str
     title: str

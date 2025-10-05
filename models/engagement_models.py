@@ -218,7 +218,6 @@ async def complete_annual_plan_engagement(
         return builder
 
 
-
 async def remove_engagement_partially(
         connection: AsyncConnection,
         engagement_id: str

@@ -29,6 +29,7 @@ class ReadUserNotification(BaseModel):
     read_at: Optional[datetime] = None
     created_at: datetime
 
+
 class CreateNotifications(BaseModel):
     id: str
     user_id: str
@@ -51,12 +52,20 @@ class NewUserInvitation(BaseModel):
     password: str
 
 
-
 class NewAuditorInvitation(BaseModel):
     name: str
     engagement_name: str
     period: str
     leads: List[str]
+
+
+class SingleIssueNotification(BaseModel):
+    reference: str
+    engagement: str
+    title: str
+    rating: str
+    due_date: datetime
+
 
 
 class EngagementMarkCompleted(BaseModel):
@@ -76,4 +85,12 @@ class SendUserInvitationNotification(BaseModel):
     template_model: NewUserInvitation
     template_id: int
     to: str
+
+
+class SendSingleIssueNotification(BaseModel):
+    template_model: SingleIssueNotification
+    template_id: int
+    users: List[str]
+
+
 

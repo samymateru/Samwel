@@ -9,6 +9,7 @@ from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntit
 ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.rabitmq.consumer_thread import consumer
+from services.logging.logger import global_logger
 from services.security.security import get_current_user, generate_password
 from utils import exception_response, return_checker
 
@@ -19,7 +20,7 @@ router = APIRouter(prefix="/users")
 async def create_new_user(
         organization_id: str,
         user: NewUser,
-        module_id: str = Query(None),
+        module_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user)
 ):
@@ -36,6 +37,7 @@ async def create_new_user(
 
 
         if new_user_data is None:
+            global_logger.exception("Failed To Create New User")
             raise HTTPException(status_code=400, detail="Failed To Create New User")
 
 
@@ -57,9 +59,9 @@ async def create_new_user(
             connection=connection,
             user=user,
             module_id=module_id,
-            user_id=new_user_data.get("id")
+            user_id=new_user_data.get("id"),
+            organization_id=organization_id
         )
-
 
 
         data = SendUserInvitationNotification(
@@ -104,6 +106,7 @@ async def fetch_entity_users(
         return data
 
 
+
 @router.get("/organization/{organization_id}", response_model=List[ReadOrganizationUser])
 async def fetch_organization_users(
         organization_id: Optional[str] = None,
@@ -118,15 +121,18 @@ async def fetch_organization_users(
         return data
 
 
+
 @router.get("/module/{module_id}", response_model=List[ReadModuleUsers])
 async def fetch_module_users(
-        module_id: Optional[str] = None,
+        module_id: str,
+        organization_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
         data = await get_module_users(
             connection=connection,
-            module_id=module_id
+            module_id=module_id,
+            organization_id=organization_id
         )
 
         return data

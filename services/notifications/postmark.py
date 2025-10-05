@@ -4,6 +4,8 @@ from typing import List, Dict
 from postmarker.core import PostmarkClient
 from dotenv import load_dotenv
 
+from services.logging.logger import global_logger
+
 load_dotenv()
 
 class AsyncPostmarkEmailService:
@@ -39,6 +41,23 @@ class AsyncPostmarkEmailService:
         tasks = [ self.send_with_template(e) for e in emails ]
 
         return await asyncio.gather(*tasks)
+
+
+    # async def send_issue_notification(service, template_id, template_model, users):
+    #     """Send templated emails concurrently with graceful error handling."""
+    #
+    #     async def send_email(email: str):
+    #         try:
+    #             await service.send_with_template(
+    #                 to=email,
+    #                 template_id=template_id,
+    #                 template_model=template_model,
+    #             )
+    #
+    #         except Exception as _:
+    #             global_logger.exception("Failed While Tying To Send Issue Notifications")
+    #
+    #     await asyncio.gather(*(send_email(email) for email in users))
 
 
 email_service = AsyncPostmarkEmailService()

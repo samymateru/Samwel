@@ -85,10 +85,10 @@ async def create_new_organization_user(
         return builder
 
 
-
 async def create_new_module_user(
         connection: AsyncConnection,
         module_id: str,
+        organization_id: str,
         user_id: str,
         user: NewUser,
         check_exists: bool = True
@@ -96,6 +96,7 @@ async def create_new_module_user(
     with exception_response():
         __module_user__ = CreateModuleUser(
             module_user_id=get_unique_key(),
+            organization_id=organization_id,
             module_id=module_id,
             user_id=user_id,
             role=user.role,
@@ -122,6 +123,7 @@ async def create_new_module_user(
 async def get_module_users(
         connection: AsyncConnection,
         module_id: str,
+        organization_id: str
 ):
     with exception_response():
         builder = await (
@@ -135,6 +137,7 @@ async def get_module_users(
                 use_prefix=False
             )
             .where("mod_usr."+ModuleUserColumns.MODULE_ID, module_id)
+            .where("mod_usr." + ModuleUserColumns.ORGANIZATION_ID, organization_id)
             .fetch_all()
         )
 

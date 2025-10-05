@@ -2,19 +2,22 @@ from typing import List, Optional
 from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.engagement_models import get_single_engagement_with_plan_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model, get_all_issue_actors_on_issue_model
 from models.module_models import increment_module_reference
 from schemas.attachement_schemas import ReadAttachment
+from schemas.issue_actor_schemas import ReadIssueActors
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
     IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared, \
     IssueReviseActors, RevisionStatus
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
-from schemas.user_schemas import ReadOrganizationUser, BaseUser
+from schemas.user_schemas import BaseUser
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
+from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
@@ -316,15 +319,6 @@ async def get_engagement_issues_model(
 
 
 
-async def get_module_issues_model(
-        connection: AsyncConnection,
-        issue_id: str,
-        issue_status: IssueStatus,
-):
-    with exception_response():
-        pass
-
-
 
 async def update_issue_details_model(
         connection: AsyncConnection,
@@ -416,7 +410,6 @@ async def send_issue_for_implementation_model(
 
 
 
-
 async def save_issue_implementation_model(
         connection: AsyncConnection,
         user_id: str,
@@ -424,6 +417,21 @@ async def save_issue_implementation_model(
         response: NewIssueResponse
 ):
     with exception_response():
+        actors = await get_all_issue_actors_on_issue_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        is_implementer = user_has_role(
+            user_id,
+            IssueActors.IMPLEMENTER,
+            actors
+        )
+
+        if not is_implementer:
+            raise HTTPException(status_code=405, detail="Sorry Your Not Issue Implementer")
+
+
         results = await save_issue_responses(
             connection=connection,
             response=response,
@@ -448,27 +456,19 @@ async def send_issue_to_owner_model(
 ):
     with exception_response():
 
-        issue_data = await fetch_single_issue_item_model(
+        actors = await get_all_issue_actors_on_issue_model(
             connection=connection,
             issue_id=issue_id
         )
 
-
-        issue_actor = await get_all_issue_actors_on_issue_by_status_model(
-            connection=connection,
-            issue_id=issue_id,
-            roles=[IssueActors.IMPLEMENTER.value]
+        is_implementer = user_has_role(
+            user_id,
+            IssueActors.IMPLEMENTER,
+            actors
         )
 
-
-
-        user_ids = [actor['user_id'] for actor in issue_actor]
-
-        if user_id not in user_ids:
-            raise HTTPException(status_code=409, detail="Your Not Issue Implementer")
-
-        if issue_data.get("status") != IssueStatus.IN_PROGRESS_IMPLEMENTER.value:
-            raise HTTPException(status_code=409, detail="Issue cannot be Sent right now,")
+        if not is_implementer:
+            raise HTTPException(status_code=405, detail="Sorry Your Not Issue Implementer")
 
 
         await change_issue_status(
@@ -552,6 +552,7 @@ async def fetch_issue_responses_model(
 
 
 
+
 async def mark_issue_prepared_model(
         connection: AsyncConnection,
         issue: MarkIssuePrepared,
@@ -561,9 +562,53 @@ async def mark_issue_prepared_model(
 
 
 
+
 async def mark_issue_review_model(
         connection: AsyncConnection,
         issue: MarkIssuePrepared,
 ):
     with exception_response():
         pass
+
+
+
+def user_has_role(user_id: str, role: str, issue_actors: List[ReadIssueActors]) -> bool:
+    return any(actor["user_id"] == user_id and actor["role"] == role for actor in issue_actors)
+
+
+
+
+
+async def generate_and_send_issue_notification_model(
+        connection: AsyncConnection,
+        issue_id: str,
+        roles: List[IssueActors]
+):
+    with exception_response():
+        issue_actors = await get_all_issue_actors_on_issue_by_status_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=roles
+        )
+        if issue_actors is None:
+            global_logger.exception("Error Fetching Issue Actors")
+
+
+        issue_details = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+        if issue_details is None:
+            global_logger.exception("Error Fetching Issue Details")
+
+
+        engagement_details = await get_single_engagement_with_plan_details(
+            connection=connection,
+            engagement_id=issue_details.get("engagement")
+        )
+        if issue_details is None:
+            global_logger.exception("Error Fetching Engagement Details")
+
+
+
+        emails = [actor["email"] for actor in issue_actors]

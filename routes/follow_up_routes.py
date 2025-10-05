@@ -5,16 +5,16 @@ from core.utils import upload_attachment
 from models.attachment_model import add_new_attachment
 from models.engagement_models import get_module_engagement_model
 from models.follow_up_models import add_new_follow_up, update_follow_up_details_model, remove_follow_up_data_model, \
-    approve_follow_up_data_model, reset_follow_up_status_to_draft_model, complete_follow_up_model, \
+    reset_follow_up_status_to_draft_model, complete_follow_up_model, \
     add_follow_up_test_model, update_follow_up_test_model, delete_follow_up_test_model, attach_engagements_to_follow_up, \
     attach_issues_to_follow_up, get_all_module_follow_up, get_follow_up_test_model, \
     set_issue_provisional_response_model, fetching_follow_up_engagements_model, fetching_follow_up_issues_model, \
-    get_single_follow_up_model
+    get_single_follow_up_model, change_follow_up_status_data_model
 from models.issue_models import get_engagement_issues_model
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.engagement_schemas import Engagement
 from schemas.follow_up_schemas import UpdateFollowUpTest, CreateFollowUp, \
-    FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest, ReadFollowUpTest
+    FollowUpStatus, UpdateFollowUp, ReadFollowUpData, NewFollowUpTest, ReadFollowUpTest, CompleteFollowUp
 from schema import ResponseMessage, CurrentUser
 from schemas.issue_schemas import ReadIssues
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -189,7 +189,7 @@ async def fetch_all_follow_up_on_module(
 
 
 @router.get("/single/{follow_up_id}", response_model=ReadFollowUpData)
-async def fetch_all_follow_up_on_module(
+async def fetch_single_follow_up_data_module(
         follow_up_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
@@ -212,15 +212,45 @@ async def review_follow_up_data(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-        results = await approve_follow_up_data_model(
+        status = CompleteFollowUp(
+            status=FollowUpStatus.REVIEWED
+        )
+
+
+        results = await change_follow_up_status_data_model(
             connection=connection,
-            follow_up_id=follow_up_id
+            follow_up_id=follow_up_id,
+            status=status
         )
 
         return await return_checker(
             data=results,
             passed="Follow Up Successfully Reviewed",
             failed="Failed Reviewing  Follow Up"
+        )
+
+
+
+@router.put("/prepare/{follow_up_id}", response_model=ResponseMessage)
+async def prepared_follow_up_data(
+        follow_up_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        status = CompleteFollowUp(
+            status=FollowUpStatus.PREPARED
+        )
+
+        results = await change_follow_up_status_data_model(
+            connection=connection,
+            follow_up_id=follow_up_id,
+            status=status
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Follow Up Successfully Prepared",
+            failed="Failed Preparing  Follow Up"
         )
 
 
@@ -263,6 +293,8 @@ async def complete_follow_up_data(
 
 
 
+
+
 @router.post("/test/{follow_up_id}", response_model=ResponseMessage)
 async def create_new_follow_up_test(
         follow_up_id: str,
@@ -282,6 +314,7 @@ async def create_new_follow_up_test(
             passed="Follow Up Test Successfully Created",
             failed="Failed Creating Follow Up Test"
         )
+
 
 
 

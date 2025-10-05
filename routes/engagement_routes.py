@@ -149,7 +149,7 @@ async def update_engagement_details(
                 name=engagement.name,
                 description="Engagement Updated",
                 category=RecentActivityCategory.ENGAGEMENT_UPDATED,
-                created_by="",
+                created_by=auth.user_id,
                 created_at=datetime.now()
             )
         )
@@ -182,7 +182,7 @@ async def archive_engagement(
                 name=name,
                 description="Engagement Archived",
                 category=RecentActivityCategory.ENGAGEMENT_ARCHIVED,
-                created_by="",
+                created_by=auth.user_id,
                 created_at=datetime.now()
             )
         )
@@ -216,7 +216,7 @@ async def complete_engagement(
                 name=name,
                 description="Engagement Archived",
                 category=RecentActivityCategory.ENGAGEMENT_ARCHIVED,
-                created_by="",
+                created_by=auth.user_id,
                 created_at=datetime.now()
             )
         )
@@ -226,6 +226,41 @@ async def complete_engagement(
             passed="Engagement Successfully Completed",
             failed="Failed Completing  Engagement"
         )
+
+
+
+@router.put("/reopen/{engagement_id}")
+async def reopen_engagement(
+        engagement_id: str,
+        name: Optional[str] = Query(None),
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        results = await complete_annual_plan_engagement(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        await add_new_recent_activity(
+            connection=connection,
+            recent_activity=RecentActivities(
+                activity_id=get_unique_key(),
+                module_id=auth.module_id,
+                name=name,
+                description="Engagement Reopened",
+                category=RecentActivityCategory.ENGAGEMENT_REOPEN,
+                created_by=auth.user_id,
+                created_at=datetime.now()
+            )
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Engagement Successfully Reopened",
+            failed="Failed Reopening  Engagement"
+        )
+
 
 
 

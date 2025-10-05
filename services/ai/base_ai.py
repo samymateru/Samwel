@@ -42,7 +42,7 @@ class Variables(BaseModel):
 async def chat(
     chat_request: Variables,
     connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-    auth: CurrentUser = Depends(get_current_user)
+    #auth: CurrentUser = Depends(get_current_user)
 ):
     """
     Generate an audit report using a saved OpenAI Prompt template.
@@ -53,7 +53,7 @@ async def chat(
 
         data = await get_entity_user_details_by_mail(
             connection=connection,
-            email=auth.user_email
+            email="samymateru1999@gmail.com"
         )
 
         if data is None:

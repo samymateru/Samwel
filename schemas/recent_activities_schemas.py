@@ -22,6 +22,7 @@ class RecentActivityCategory(str, Enum):
     ENGAGEMENT_UPDATED = "engagement_updated"
     ENGAGEMENT_ARCHIVED = "engagement_archived"
     ENGAGEMENT_DELETED = "engagement_deleted"
+    ENGAGEMENT_REOPEN = "engagement_reopen"
 
 
 class RecentActivities(BaseModel):
