@@ -22,14 +22,14 @@ async def create_new_user(
         user: NewUser,
         module_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
+        #auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         password = generate_password()
 
         new_user_data = await register_new_user(
             connection=connection,
-            entity_id=auth.entity_id,
+            entity_id="e6ee99a32f53",
             password=password,
             user=user,
             check_if_exist=False
@@ -82,6 +82,7 @@ async def create_new_user(
                 "data": data.model_dump()
             })
 
+        global_logger.info("User Successfully Created")
 
         return await return_checker(
             data=module_user_data,

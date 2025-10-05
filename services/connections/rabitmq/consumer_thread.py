@@ -7,6 +7,7 @@ import logging
 from dotenv import load_dotenv
 from aio_pika import connect_robust, IncomingMessage, Message, ExchangeType
 
+from services.logging.logger import global_logger
 from services.notifications.postmark import email_service
 
 load_dotenv()
@@ -118,18 +119,19 @@ class RabbitMQMultiQueue(threading.Thread):
         """Process incoming messages."""
         async with message.process():
             body = message.body.decode()
+            global_logger.info("Mail Published On Exchange")
 
             try:
                 data = json.loads(body)
             except json.JSONDecodeError:
+                global_logger("Error Sending Email")
                 data = {"mode": 'single', "data": ""}
-
-
 
 
             if queue_name == "user":
                 if data["mode"] == "single":
                     await email_service.send_with_template(data["data"])
+                    global_logger.info("Mail Sent Successfully")
 
 
     async def _close(self):

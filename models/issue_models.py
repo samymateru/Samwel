@@ -606,6 +606,8 @@ async def generate_and_send_issue_notification_model(
             connection=connection,
             engagement_id=issue_details.get("engagement")
         )
+
+
         if issue_details is None:
             global_logger.exception("Error Fetching Engagement Details")
 
