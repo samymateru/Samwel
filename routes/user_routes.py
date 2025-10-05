@@ -125,14 +125,12 @@ async def fetch_organization_users(
 @router.get("/module/{module_id}", response_model=List[ReadModuleUsers])
 async def fetch_module_users(
         module_id: str,
-        organization_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
     ):
     with exception_response():
         data = await get_module_users(
             connection=connection,
             module_id=module_id,
-            organization_id=organization_id
         )
 
         return data

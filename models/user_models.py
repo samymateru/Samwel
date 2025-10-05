@@ -123,7 +123,6 @@ async def create_new_module_user(
 async def get_module_users(
         connection: AsyncConnection,
         module_id: str,
-        organization_id: str
 ):
     with exception_response():
         builder = await (
@@ -137,7 +136,6 @@ async def get_module_users(
                 use_prefix=False
             )
             .where("mod_usr."+ModuleUserColumns.MODULE_ID, module_id)
-            .where("mod_usr." + ModuleUserColumns.ORGANIZATION_ID, organization_id)
             .fetch_all()
         )
 
