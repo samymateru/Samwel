@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from core.constants import plans
 from models.module_models import register_new_module, get_user_modules, get_organization_modules, get_module_details, \
     generate_module_activation_data, get_activation_data, activate_module, add_licence_to_module, \
@@ -64,13 +64,15 @@ async def create_new_module(
 @router.get("/user/{user_id}", response_model=List[ReadModule])
 async def fetch_user_modules(
         user_id: str,
+        organization_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
         _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         data = await get_user_modules(
             connection=connection,
-            user_id=user_id
+            user_id=user_id,
+            organization_id=organization_id
         )
 
         return data

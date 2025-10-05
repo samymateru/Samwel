@@ -43,7 +43,8 @@ async def register_new_module(
 
 async def get_user_modules(
         connection: AsyncConnection,
-        user_id: str
+        user_id: str,
+        organization_id: str
 ):
     with exception_response():
         builder = await (
@@ -57,6 +58,8 @@ async def get_user_modules(
                 use_prefix=False
             )
             .where("mod_usr."+ModuleUserColumns.USER_ID.value, user_id)
+            .where("mod_usr." + ModuleUserColumns.ORGANIZATION_ID.value, organization_id)
+
             .fetch_all()
         )
         return builder

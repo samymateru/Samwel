@@ -4,8 +4,6 @@ from typing import List, Dict
 from postmarker.core import PostmarkClient
 from dotenv import load_dotenv
 
-from services.logging.logger import global_logger
-
 load_dotenv()
 
 class AsyncPostmarkEmailService:

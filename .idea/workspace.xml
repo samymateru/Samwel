@@ -5,23 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/follow_up_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/follow_up_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/user_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/follow_up_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/follow_up_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/user_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/notification_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/notification_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/recent_activities_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/recent_activities_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/user_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/user_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/ai/base_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/ai/base_ai.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/logging/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/logging/logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/notifications/postmark.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/notifications/postmark.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,14 +151,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00794" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759278990539</created>
-      <option name="number" value="00794" />
-      <option name="presentableId" value="LOCAL-00794" />
-      <option name="project" value="LOCAL" />
-      <updated>1759278990539</updated>
     </task>
     <task id="LOCAL-00795" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -560,7 +536,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759657386557</updated>
     </task>
-    <option name="localTasksCounter" value="843" />
+    <task id="LOCAL-00843" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759677673857</created>
+      <option name="number" value="00843" />
+      <option name="presentableId" value="LOCAL-00843" />
+      <option name="project" value="LOCAL" />
+      <updated>1759677673858</updated>
+    </task>
+    <option name="localTasksCounter" value="844" />
     <servers />
   </component>
   <component name="UnknownFeatures">
