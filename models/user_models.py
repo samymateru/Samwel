@@ -85,6 +85,7 @@ async def create_new_organization_user(
         return builder
 
 
+
 async def create_new_module_user(
         connection: AsyncConnection,
         module_id: str,
