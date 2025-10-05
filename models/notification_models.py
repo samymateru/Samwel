@@ -1,5 +1,11 @@
+from typing import List
+
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.engagement_staff_models import fetch_engagement_staff_model
+from models.issue_actor_models import get_all_issue_actors_on_issue_model
+from models.management_models import fetch_organization_management_model
+from schemas.issue_actor_schemas import IssueActors, IssueActorColumns
 from schemas.notification_schemas import UpdateNotificationRead, UserNotificationColumns, NotificationsStatus, \
     CreateNotifications
 from services.connections.postgres.delete import DeleteQueryBuilder
@@ -98,6 +104,81 @@ async def update_user_notification_after_read_model(
             .where({UserNotificationColumns.ID.value: notification_id})
             .returning(UserNotificationColumns.ID.value)
             .execute()
+        )
+
+        return builder
+
+
+async def get_organization_managers_model(
+        connection: AsyncConnection,
+        organization_id: str,
+):
+    with exception_response():
+        data = await fetch_organization_management_model(
+            connection=connection,
+            organization_id=organization_id
+        )
+
+        return data
+
+
+
+async def get_engagements_business_contacts_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.BUSINESS_CONTACT)
+            .where("engagement", engagement_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
+
+async def get_engagements_audit_contacts_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+):
+    with exception_response():
+        data = await fetch_engagement_staff_model(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        return data
+
+
+
+async def get_issue_contacts_model(
+        connection: AsyncConnection,
+        issue_id: str,
+):
+    with exception_response():
+        data = await get_all_issue_actors_on_issue_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+
+        return data
+
+
+
+async def get_issue_contacts_by_role_model(
+        connection: AsyncConnection,
+        issue_id: str,
+        roles: List[IssueActors]
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUE_ACTORS.value)
+            .where(IssueActorColumns.ISSUE_ID.value, issue_id)
+            .where(IssueActorColumns.ROLE.value, roles)
+            .fetch_all()
         )
 
         return builder

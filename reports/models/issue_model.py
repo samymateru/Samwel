@@ -1,5 +1,4 @@
 from psycopg import AsyncConnection
-
 from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
 from models.engagement_models import get_single_engagement_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
