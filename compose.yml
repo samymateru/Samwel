@@ -8,19 +8,6 @@ services:
     restart: always
     ports:
       - "8000:8001"
-    depends_on:
-      - rabbitmq   # Add RabbitMQ dependency here
     env_file:
       - .env
 
-
-#  rabbitmq:
-#    image: rabbitmq:3-management
-#    container_name: rabbitmq
-#    restart: always
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#    environment:
-#      RABBITMQ_DEFAULT_USER: guest
-#      RABBITMQ_DEFAULT_PASS: guest
