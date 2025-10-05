@@ -27,6 +27,7 @@ async def create_new_user(
     with exception_response():
         password = "123456"
 
+
         new_user_data = await register_new_user(
             connection=connection,
             entity_id=auth.entity_id,
