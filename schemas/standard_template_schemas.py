@@ -1,7 +1,5 @@
 from typing import Optional
-
 from pydantic import BaseModel
-from datetime import datetime
 from enum import Enum
 
 
@@ -43,7 +41,7 @@ class ProcedureTypes(str, Enum):
 class PreparedReviewedBy(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
-    date_issued: datetime = None
+    date_issued: str = None
 
 
 class NewStandardTemplate(BaseModel):
