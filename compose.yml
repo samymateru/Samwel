@@ -13,21 +13,14 @@ services:
     env_file:
       - .env
 
-#  redis:
-#    image: redis:alpine
-#    container_name: redis
-#    restart: always
-#    ports:
-#      - "6379:6379"
-
 
   rabbitmq:
     image: rabbitmq:3-management  # RabbitMQ with management plugin UI included
     container_name: rabbitmq
     restart: always
     ports:
-      - "6379:5672"
-      - "8001:15672"
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
