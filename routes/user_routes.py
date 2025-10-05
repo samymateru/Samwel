@@ -10,7 +10,7 @@ ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.rabitmq.consumer_thread import consumer
 from services.logging.logger import global_logger
-from services.security.security import get_current_user, generate_password
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/users")
@@ -22,14 +22,14 @@ async def create_new_user(
         user: NewUser,
         module_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user)
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-        password = generate_password()
+        password = "123456"
 
         new_user_data = await register_new_user(
             connection=connection,
-            entity_id="e6ee99a32f53",
+            entity_id=auth.entity_id,
             password=password,
             user=user,
             check_if_exist=False
