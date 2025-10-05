@@ -358,3 +358,35 @@ async def get_user_by_email(
         )
 
         return builder
+
+
+
+
+# Users Fetching
+async def get_organization_managers_model(
+        connection: AsyncConnection,
+        organization_id: str,
+):
+    with exception_response():
+        pass
+
+
+
+async def get_engagements_business_contacts_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+):
+    with exception_response():
+        pass
+
+
+
+async def get_engagements_audit_contacts_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+):
+    with exception_response():
+        pass
+
+
+

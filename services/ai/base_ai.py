@@ -15,7 +15,8 @@ from enum import Enum
 load_dotenv()
 
 PROMPT_ID = "pmpt_68dff1e1b0508190aad7968097707e580ca0b5c943f846d1"
-AGENT_PROMT_ID = "pmpt_68e06c797b648190a09dfd23c9b2280c0a1f4e65171cafb4"
+AGENT_PROMPT_ID = "pmpt_68e06c797b648190a09dfd23c9b2280c0a1f4e65171cafb4"
+NORMAL_PROMPT_ID = "pmpt_68e2067c51d8819495ae4bf53a91b2bd08e384013663abdd"
 PROMPT_VERSION = "1"  # Keep this aligned with your template version in dashboard
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -30,6 +31,7 @@ class Mode(str, Enum):
 MAX_INPUT_WORDS = 1500
 MAX_OUTPUT_TOKENS = 500
 USER_MONTHLY_LIMIT = 100000
+
 
 @router.get("/chat")
 async def chat(
@@ -91,7 +93,7 @@ async def chat(
             if not result:
                 raise HTTPException(status_code=500, detail="No output generated from model")
 
-            return {"message": result}
+            return {"message": result, "mode": mode, "prompt_id": PROMPT_ID}
 
 
 
@@ -99,7 +101,7 @@ async def chat(
             response = await client.responses.create(
                 model="gpt-4.1-mini",  # Or another supported model
                 prompt={
-                    "id": AGENT_PROMT_ID,
+                    "id": AGENT_PROMPT_ID,
                     "version": PROMPT_VERSION,
                     "variables": {
                         "user_input": user_input
@@ -113,20 +115,29 @@ async def chat(
             if not result:
                 raise HTTPException(status_code=500, detail="No output generated from model")
 
-            return {"message": result}
+            return {"message": result, "mode": mode, "prompt_id": AGENT_PROMPT_ID}
 
 
 
         else:
-            response = await client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": user_input}],
+            response = await client.responses.create(
+                model="gpt-4.1-mini",  # Or another supported model
+                prompt={
+                    "id": NORMAL_PROMPT_ID,
+                    "version": PROMPT_VERSION,
+                    "variables": {
+                        "user_input": user_input
+                    }
+                }
             )
 
-            # Extract the full text result
-            result = response.choices[0].message.content
 
-            return {"message": result}
+            # Extract model output
+            result = getattr(response, "output_text", None)
+            if not result:
+                raise HTTPException(status_code=500, detail="No output generated from model")
+
+            return {"message": result, "mode": mode, "prompt_id": NORMAL_PROMPT_ID}
 
 
 

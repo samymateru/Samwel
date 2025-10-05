@@ -28,7 +28,6 @@ from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
-from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.organization_schemas import ReadOrganization
 from services.connections.rabitmq.connection import AsyncRabbitMQSingleton
 from services.connections.rabitmq.consumer_thread import consumer
