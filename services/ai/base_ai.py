@@ -48,7 +48,7 @@ async def chat(
     Generate an audit report using a saved OpenAI Prompt template.
     """
     with exception_response():
-        if len(chat_request.variables.user_input) > MAX_INPUT_WORDS:
+        if len(chat_request.user_input) > MAX_INPUT_WORDS:
             raise HTTPException(status_code=405, detail="To Many Words You Pass The Maximum 1500")
 
         data = await get_entity_user_details_by_mail(
