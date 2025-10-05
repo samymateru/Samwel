@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/tables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/notification_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/notification_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/user_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports/models/issue_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/ai/base_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/ai/base_ai.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -156,14 +152,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00791" summary="fixing auth and token generation">
-      <option name="closed" value="true" />
-      <created>1759275920724</created>
-      <option name="number" value="00791" />
-      <option name="presentableId" value="LOCAL-00791" />
-      <option name="project" value="LOCAL" />
-      <updated>1759275920724</updated>
     </task>
     <task id="LOCAL-00792" summary="fixing auth and token generation">
       <option name="closed" value="true" />
@@ -549,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759648062238</updated>
     </task>
-    <option name="localTasksCounter" value="840" />
+    <task id="LOCAL-00840" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759654704860</created>
+      <option name="number" value="00840" />
+      <option name="presentableId" value="LOCAL-00840" />
+      <option name="project" value="LOCAL" />
+      <updated>1759654704860</updated>
+    </task>
+    <option name="localTasksCounter" value="841" />
     <servers />
   </component>
   <component name="UnknownFeatures">

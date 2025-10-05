@@ -97,7 +97,11 @@ async def chat(
         if not result:
             raise HTTPException(status_code=500, detail="No output generated from model")
 
-        return {"message": result, "mode": chat_request.mode, "prompt_id": PROMPT_ID}
+        return {
+            "message": result,
+            "prompt_id": chat_request.prompt_id,
+            "prompt_version": chat_request.prompt_version
+        }
 
 
 
