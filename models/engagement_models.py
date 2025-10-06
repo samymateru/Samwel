@@ -3,7 +3,8 @@ from core.tables import Tables
 from schemas.annual_plan_schemas import ReadAnnualPlan
 from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, CompleteEngagement, EngagementStatus, \
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
-    UpdateEngagement_, Engagement
+    UpdateEngagement_, Engagement, EngagementRiskMaturityRating, UpdateEngagementRiskMaturityRating, \
+    UpdateRiskMaturityRatingLowerPart
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -289,6 +290,7 @@ async def update_engagement_data(
         return builder
 
 
+
 async def generate_engagement_code(
         connection: AsyncConnection,
         code: str,
@@ -313,3 +315,48 @@ async def generate_engagement_code(
         return code + "-" + str(max_ + 1).zfill(3) + "-" + str(datetime.now().year)
 
 
+
+
+async def update_risk_maturity_rating_table_model(
+        connection: AsyncConnection,
+        engagement: EngagementRiskMaturityRating,
+        engagement_id: str
+):
+    with exception_response():
+        __engagement__ = UpdateEngagementRiskMaturityRating(
+            risk_maturity_rating=engagement.model_dump()
+        )
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENTS.value)
+            .values(__engagement__)
+            .check_exists({EngagementColumns.ID.value: engagement_id})
+            .where({EngagementColumns.ID.value: engagement_id})
+            .returning(EngagementColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+
+
+
+
+async def update_risk_maturity_rating_lower_section_model(
+        connection: AsyncConnection,
+        engagement: UpdateRiskMaturityRatingLowerPart,
+        engagement_id: str
+):
+    with exception_response():
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENTS.value)
+            .values(engagement)
+            .check_exists({EngagementColumns.ID.value: engagement_id})
+            .where({EngagementColumns.ID.value: engagement_id})
+            .returning(EngagementColumns.ID.value)
+            .execute()
+        )
+
+        return builder

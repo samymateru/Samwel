@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Dict
 from enum import Enum
 from datetime import datetime
 
@@ -130,3 +130,26 @@ class Engagement(CreateEngagement):
 
 class ReadEngagement(Engagement):
     leads: List[Lead]
+
+
+class MaturityRating(BaseModel):
+    maturity_rating: str
+    rating_rationale: str
+
+class EngagementRiskMaturityRating(BaseModel):
+    operational_risk: MaturityRating
+    strategic_risk: MaturityRating
+    credit_risk: MaturityRating
+    liquidity_risk: MaturityRating
+    compliance_risk: MaturityRating
+    market_risk: MaturityRating
+    overall_risk_maturity_rating: MaturityRating
+
+
+class UpdateEngagementRiskMaturityRating(BaseModel):
+    risk_maturity_rating: Dict
+
+
+class UpdateRiskMaturityRatingLowerPart(BaseModel):
+    opinion_rating: str
+    opinion_conclusion: str

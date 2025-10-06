@@ -5,14 +5,14 @@ from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
-    update_engagement_data
+    update_engagement_data, update_risk_maturity_rating_table_model, update_risk_maturity_rating_lower_section_model
 from models.engagement_staff_models import create_new_engagement_staff_model
 from models.notification_models import add_notification_to_user_model
 from models.recent_activity_models import add_new_recent_activity
 from models.roll_forwar_model import engagement_roll_forward_model
 from schema import ResponseMessage, CurrentUser
 from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
-    AddOpinionRating, UpdateEngagement_
+    AddOpinionRating, UpdateEngagement_, EngagementRiskMaturityRating, UpdateRiskMaturityRatingLowerPart
 from schemas.engagement_staff_schemas import NewEngagementStaff
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
@@ -22,6 +22,7 @@ from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
 router = APIRouter(prefix="/engagements")
+
 
 @router.post("/{annual_plan_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_engagement(
@@ -161,6 +162,7 @@ async def update_engagement_details(
         )
 
 
+
 @router.put("/archive/{engagement_id}")
 async def archive_engagement(
         engagement_id: str,
@@ -298,26 +300,6 @@ async def delete_engagement_data_partially(
 
 
 
-@router.put("/opinion_rating/{engagement_id}")
-async def edit_engagement_opinion_rating(
-        engagement_id: str,
-        opinion_rating: AddOpinionRating,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-):
-    with exception_response():
-        results = await update_engagement_opinion_rating(
-            connection=connection,
-            opinion_rating=opinion_rating,
-            engagement_id=engagement_id
-        )
-
-        return await return_checker(
-            data=results,
-            passed="Opinion Rating Updated",
-            failed="Failed Updating Opinion Rating"
-        )
-
-
 
 @router.put("/roll_forward/{engagement_id}")
 async def engagement_roll_forward(
@@ -338,4 +320,49 @@ async def engagement_roll_forward(
             data=results,
             passed="Engagement Successfully Roll Forwarded",
             failed="Failed Roll Forward Engagement"
+        )
+
+
+
+@router.put("/risk_maturity_rating_table/{engagement_id}")
+async def update_engagement_risk_maturity_rating_table(
+        engagement_id: str,
+        engagement: EngagementRiskMaturityRating,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        #auth: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        results = await update_risk_maturity_rating_table_model(
+            connection=connection,
+            engagement=engagement,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Maturity Rating Successfully Updated",
+            failed="Failed Updating Maturity Rating"
+        )
+
+
+
+
+@router.put("/risk_maturity_rating_lower_section/{engagement_id}")
+async def update_engagement_risk_maturity_rating_lower_section_table(
+        engagement_id: str,
+        engagement: UpdateRiskMaturityRatingLowerPart,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        #auth: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        results = await update_risk_maturity_rating_lower_section_model(
+            connection=connection,
+            engagement=engagement,
+            engagement_id=engagement_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Maturity Rating Successfully Updated",
+            failed="Failed Updating Maturity Rating"
         )

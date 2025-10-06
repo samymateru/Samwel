@@ -176,6 +176,7 @@ async def module_redirection(
         raise HTTPException(status_code=400, detail="Unknown sub-domain")
 
     token: str = create_jwt_token(data.model_dump())
+
     session_code = str(uuid.uuid4())
 
     try:

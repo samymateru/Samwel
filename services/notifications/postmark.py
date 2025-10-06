@@ -35,7 +35,8 @@ class AsyncPostmarkEmailService:
         }
 
         # Call the Postmark SDK synchronously
-        return self.client.emails.send_with_template(**kwargs)
+        #return self.client.emails.send_with_template(**kwargs)
+        return {}
 
 
 
@@ -53,13 +54,14 @@ class AsyncPostmarkEmailService:
         results = []
         for e in emails:
             try:
-                res = self.client.emails.send_with_template(
-                    From=self.From,
-                    To=e["to"],
-                    TemplateModel=e["template_model"],
-                    TemplateId=e["template_id"],
-                )
-                results.append(res)
+                # res = self.client.emails.send_with_template(
+                #     From=self.From,
+                #     To=e["to"],
+                #     TemplateModel=e["template_model"],
+                #     TemplateId=e["template_id"],
+                # )
+                # results.append(res)
+                pass
             except Exception as ex:
                 results.append({"error": str(ex), "to": e.get("to")})
 
