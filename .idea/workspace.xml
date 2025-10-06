@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/rabitmq/connection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/rabitmq/consumer_thread.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/notifications/postmark.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/notifications/postmark.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -149,14 +158,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00803" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759353560089</created>
-      <option name="number" value="00803" />
-      <option name="presentableId" value="LOCAL-00803" />
-      <option name="project" value="LOCAL" />
-      <updated>1759353560089</updated>
     </task>
     <task id="LOCAL-00804" summary="removing old files">
       <option name="closed" value="true" />
@@ -542,7 +543,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759686404358</updated>
     </task>
-    <option name="localTasksCounter" value="852" />
+    <task id="LOCAL-00852" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759686759855</created>
+      <option name="number" value="00852" />
+      <option name="presentableId" value="LOCAL-00852" />
+      <option name="project" value="LOCAL" />
+      <updated>1759686759855</updated>
+    </task>
+    <option name="localTasksCounter" value="853" />
     <servers />
   </component>
   <component name="UnknownFeatures">

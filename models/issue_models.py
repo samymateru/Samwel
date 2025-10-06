@@ -12,11 +12,13 @@ from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColum
     IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared, \
     IssueReviseActors, RevisionStatus
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
+from schemas.notification_schemas import SendSingleIssueNotification, SingleIssueNotification
 from schemas.user_schemas import BaseUser
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
+from services.connections.rabitmq.consumer_thread import consumer
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
@@ -488,6 +490,12 @@ async def send_issue_to_owner_model(
             issue_id=issue_id
         )
 
+        await generate_and_send_issue_notification_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=[IssueActors.OWNER]
+        )
+
         return results
 
 
@@ -590,6 +598,7 @@ async def generate_and_send_issue_notification_model(
             issue_id=issue_id,
             roles=roles
         )
+
         if issue_actors is None:
             global_logger.exception("Error Fetching Issue Actors")
 
@@ -598,6 +607,8 @@ async def generate_and_send_issue_notification_model(
             connection=connection,
             issue_id=issue_id
         )
+
+
         if issue_details is None:
             global_logger.exception("Error Fetching Issue Details")
 
@@ -614,3 +625,26 @@ async def generate_and_send_issue_notification_model(
 
 
         emails = [actor["email"] for actor in issue_actors]
+
+        notify = SendSingleIssueNotification(
+            template_model=SingleIssueNotification(
+                title=issue_details.get("ref"),
+                reference=issue_details.get("ref"),
+                rating=issue_details.get("risk_rating"),
+                engagement=engagement_details.get("name"),
+                due_date=datetime.now()
+            ),
+            users=emails,
+            template_id=41703998
+        )
+
+
+
+        consumer.publish(
+            "user",
+            body={
+                "mode": "single",
+                "data": notify.model_dump()
+            })
+
+        print(emails)

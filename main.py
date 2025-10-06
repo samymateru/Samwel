@@ -80,7 +80,7 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        consumer.start()
+        pass
     except Exception as e:
         print(e)
     yield
@@ -134,9 +134,14 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home():
     with exception_response():
-        pass
+        consumer.publish(
+            "user",
+            body={
+                "mode": "single",
+                "data": {}
+            })
 
-
+        return True
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

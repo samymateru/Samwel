@@ -9,7 +9,7 @@ class ResponsiblePeople(BaseModel):
     name: str
     email: str
     role: str
-    mod_usr_role : str
+    mod_usr_role : Optional[str] = None
 
 
 class IssuesFinding(BaseModel):

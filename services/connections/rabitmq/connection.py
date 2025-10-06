@@ -42,6 +42,7 @@ class AsyncRabbitMQSingleton:
             )
         return self._connection
 
+
     async def get_channel(self) -> AbstractRobustChannel:
         """
         Open a new channel from the RabbitMQ connection.
@@ -50,12 +51,14 @@ class AsyncRabbitMQSingleton:
         channel = await connection.channel()
         return channel
 
+
     async def close_connection(self):
         """
         Close the RabbitMQ connection if it exists.
         """
         if self._connection and not self._connection.is_closed:
             await self._connection.close()
+
 
 
 # Dependency for FastAPI

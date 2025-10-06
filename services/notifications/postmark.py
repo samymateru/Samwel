@@ -41,21 +41,10 @@ class AsyncPostmarkEmailService:
         return await asyncio.gather(*tasks)
 
 
-    # async def send_issue_notification(service, template_id, template_model, users):
-    #     """Send templated emails concurrently with graceful error handling."""
-    #
-    #     async def send_email(email: str):
-    #         try:
-    #             await service.send_with_template(
-    #                 to=email,
-    #                 template_id=template_id,
-    #                 template_model=template_model,
-    #             )
-    #
-    #         except Exception as _:
-    #             global_logger.exception("Failed While Tying To Send Issue Notifications")
-    #
-    #     await asyncio.gather(*(send_email(email) for email in users))
+    async def send_issue_notification(self, data: Dict):
+        """Send templated emails concurrently with graceful error handling."""
+        tasks = [ self.send_with_template({"to": e, "TemplateModel": data["TemplateModel"], "TemplateId": data["TemplateId"]}) for e in data.users]
+        return await asyncio.gather(*tasks)
 
 
 email_service = AsyncPostmarkEmailService()

@@ -214,13 +214,13 @@ async def save_issue_implementation(
 async def send_issue_to_owner(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user),
+        #auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
         results = await send_issue_to_owner_model(
             connection=connection,
             issue_id=issue_id,
-            user_id=auth.user_id
+            user_id="3de9c6f361f0"
         )
 
         return await return_checker(
