@@ -6,26 +6,41 @@ from AuditNew.Internal.dashboards.databases import *
 
 router = APIRouter(prefix="/dashboards")
 
-@router.get("/eauditNext/{company_module_id}")
+@router.get("/eauditNext/{module_id}")
 async def fetch_main_dashboard(
-        company_module_id: str,
-        db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        module_id: str,
+        connection=Depends(get_async_db_connection),
+        _: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-        issues_data = await query_all_issues(connection=db, company_module_id=company_module_id)
-        audit_summary = await query_audit_summary(connection=db, company_module_id=company_module_id)
-        engagement_summary = await all_engagement_summary(connection=db, company_module_id=company_module_id)
-        if issues_data is  None and audit_summary is None:
-            raise HTTPException(status_code=400, detail="No data to show")
-        data = {
-            "issues_data": issues_data,
-            "audits_summary": audit_summary.get("annual_plans_summary"),
-            "engagements_summary": engagement_summary.get("engagements_summary")
+        issues = await fetch_all_issue_data(connection=connection, module_id=module_id)
+
+        process_summary = await summarize_field(field="process", issues=issues)
+
+        impact_summary = await summarize_field(field="impact_category", issues=issues)
+
+        risk_ratings = await summarize_field(field="risk_rating", issues=issues)
+
+        root_cause_summary = await summarize_field(field="root_cause", issues=issues)
+
+        status = await summarize_status(issues=issues)
+
+        over_due = await get_overdue_issues(issues)
+
+        data = await summarize_engagements(
+            connection=connection,
+            module_id=module_id
+        )
+
+        return {
+            "risk_rating": risk_ratings,
+            "process": process_summary,
+            "impact_category": impact_summary,
+            "root_cause": root_cause_summary,
+            "issue_status": status,
+            "over_due": over_due,
+            "audit_summary": data
         }
-        return data
 
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

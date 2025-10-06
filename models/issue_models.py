@@ -586,6 +586,18 @@ def user_has_role(user_id: str, role: str, issue_actors: List[ReadIssueActors]) 
 
 
 
+async def fetch_all_issue_in_module(connection: AsyncConnection, module_id: str):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value)
+            .where(IssueColumns.MODULE_ID.value, module_id)
+            .fetch_all()
+        )
+
+        return builder
+
+
 
 async def generate_and_send_issue_notification_model(
         connection: AsyncConnection,

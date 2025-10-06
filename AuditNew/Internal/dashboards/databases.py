@@ -1,5 +1,5 @@
 from collections import Counter
-
+from typing import List, Dict, Any
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from datetime import datetime
@@ -7,8 +7,10 @@ from datetime import datetime
 from AuditNew.Internal.dashboards.schemas import ModuleHomeDashboard, _Issue_, _EngagementStatus_
 from AuditNew.Internal.reports.databases import count_issue_statuses
 from core.tables import Tables
+from models.issue_models import fetch_all_issue_in_module
+from schemas.annual_plan_schemas import AnnualPlanColumns
 from schemas.engagement_schemas import EngagementColumns
-from schemas.issue_schemas import IssueColumns
+from schemas.issue_schemas import IssueColumns, ReadIssues
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response
 
@@ -63,6 +65,8 @@ async def query_annual_plans_summary(
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching summary of annual plans {e}")
+
+
 
 async def query_audit_summary(
         connection: AsyncConnection,
@@ -150,26 +154,30 @@ async def all_engagement_summary(connection: AsyncConnection, company_module_id:
             'total', COUNT(*),
             'pending', COUNT(*) FILTER (WHERE eng.status = 'Pending'),
             'ongoing', COUNT(*) FILTER (WHERE eng.status = 'Ongoing'),
-            'completed', COUNT(*) FILTER (WHERE eng.status = 'Completed')
+            'completed', COUNT(*) FILTER (WHERE eng.status IN ('Completed', 'Archived'))
         ) AS engagements_summary
         FROM engagements eng
-        JOIN annual_plans ap ON ap.id = eng.plan_id
-        JOIN modules m ON m.id = ap.module
-        WHERE m.id = {company_module_id};
+        WHERE eng.plan_id = (
+            SELECT ap.id
+            FROM annual_plans ap
+            WHERE ap.module = %s
+            ORDER BY ap.year DESC
+            LIMIT 1
+        );
         """
-    ).format(company_module_id=sql.Literal(company_module_id))
+    )
+
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            data = [dict(zip(column_names, row_)) for row_ in rows]
-            if data.__len__() == 0:
+            await cursor.execute(query, (company_module_id,))
+            row = await cursor.fetchone()
+            if row is None:
                 raise HTTPException(status_code=400, detail="No engagements found")
-            return data[0]
+            return row[0]  # JSON object from jsonb_build_object
     except Exception as e:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching engagements {e}")
+        print("Error:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 async def query_all_issues(connection: AsyncConnection, company_module_id: str):
     query = sql.SQL(
@@ -567,7 +575,6 @@ def separate_engagements_and_issues(rows):
         "issues": list(issues_dict.values())
     }
 
-
 def count_engagement_statuses(rows):
     status_counter = Counter()
 
@@ -584,10 +591,6 @@ def count_engagement_statuses(rows):
         archived=status_counter.get("Archived", 0),
         deleted=status_counter.get("Deleted", 0),
     )
-
-
-
-
 
 
 async def get_engagement_metrics_model(
@@ -626,7 +629,206 @@ async def get_issue_metrics_model(
 
 
 
+#################EAUDIT NEXT DASHBOARD  #########################
+STATUS_MAPPING = {
+    "Not started": "Not started",
+    "Open": "In progress",
+    "In progress -> implementer": "In progress",
+    "In progress -> owner": "In progress",
+    "Closed -> not verified": "Completed",
+    "Closed -> verified by risk": "Completed",
+    "Closed -> risk N/A": "Completed",
+    "Closed -> risk accepted": "Completed",
+    "Closed -> verified by audit": "Completed"
+}
+
+
+async def fetch_all_issue_data(connection: AsyncConnection, module_id: str):
+    data = await fetch_all_issue_in_module(
+        connection=connection,
+        module_id=module_id
+    )
+
+    return data
 
 
 
+async def fetch_current_plan_engagement_details(connection: AsyncConnection, module_id: str):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ANNUAL_PLANS.value, alias="pln")
+            .join(
+                "LEFT",
+                Tables.ENGAGEMENTS.value,
+                "eng.plan_id = pln.id",
+                alias="eng",
+                use_prefix=False
+            )
+            .where("pln."+AnnualPlanColumns.MODULE.value, module_id)
+            .where("pln."+AnnualPlanColumns.YEAR.value, "2022")
+            .fetch_all()
+        )
+
+        return builder
+
+
+async def summarize_field(field: str, issues: List) -> Dict[str, Any]:
+    """
+    Summarize issues by a given field and include total count.
+
+    Args:
+        field: The field name to summarize (e.g., "process", "impact_category")
+
+    Returns:
+        Dictionary with counts per field value + total issues.
+        :param field:
+        :param issues:
+    """
+
+    # Extract the desired field from each issue
+    values = [issue.get(field) for issue in issues]
+
+    summary = dict(Counter(values))
+    summary["total"] = len(issues)
+    return summary
+
+
+async def summarize_status(issues: List) -> Dict[str, Any]:
+    """
+    Summarize issues by normalized status: Not started, Inprogress, Completed.
+    """
+
+    normalized_statuses = []
+    for issue in issues:
+        raw_status = issue.get("status")
+        normalized = STATUS_MAPPING.get(raw_status, "Unknown")
+        normalized_statuses.append(normalized)
+
+    summary = dict(Counter(normalized_statuses))
+    summary["total"] = len(issues)
+    return summary
+
+
+async def summarize_overdue_issues(issues: List[Dict]) -> Dict[str, Any]:
+    """
+    Summarize overdue issues based on 'date_revised'.
+
+    Args:
+        issues: List of issue dictionaries with 'date_revised' field (datetime).
+
+    Returns:
+        Dictionary with counts of overdue and on-time issues, plus total.
+    """
+    overdue_count = 0
+    ontime_count = 0
+
+    now = datetime.now()
+
+    for issue in issues:
+        date_revised = issue.get("date_revised")
+        if not date_revised:
+            continue  # skip if missing date
+        # Ensure it's a datetime object
+        if isinstance(date_revised, str):
+            date_revised = datetime.fromisoformat(date_revised)
+
+        if date_revised < now:
+            overdue_count += 1
+        else:
+            ontime_count += 1
+
+    return {
+        "overdue": overdue_count,
+        "on_time": ontime_count,
+        "total": len(issues)
+    }
+
+
+async def get_overdue_issues(issues: List[Dict]):
+    """
+    Return all issues that are overdue based on 'date_revised'.
+
+    Args:
+        issues: List of issue dictionaries with 'date_revised' field (datetime or ISO string).
+
+    Returns:
+        List of overdue issue dictionaries.
+    """
+    now = datetime.now()
+    overdue_issues = []
+
+    for issue in issues:
+        date_revised = issue.get("date_revised")
+        if not date_revised:
+            continue  # skip if missing date
+
+        # Convert string to datetime if needed
+        if isinstance(date_revised, str):
+            date_revised = datetime.fromisoformat(date_revised)
+
+        if date_revised < now:
+            overdue_issues.append(issue)
+
+    data = await summarize_field(field="risk_rating", issues=overdue_issues)
+
+    return data
+
+
+
+
+
+
+
+async def summarize_engagements(connection: AsyncConnection, module_id: str) -> Dict[str, int]:
+    """
+    Summarize engagements by normalized status for the latest annual plan year.
+    """
+
+    try:
+        query = sql.SQL(
+            """
+            SELECT eng.status
+            FROM engagements eng
+            JOIN annual_plans ap ON ap.id = eng.plan_id
+            WHERE ap.module = %s
+              AND ap.year = (
+                  SELECT MAX(year)
+                  FROM annual_plans
+                  WHERE module = %s
+              );
+            """
+        )
+
+        async with connection.cursor() as cursor:
+            await cursor.execute(query, (module_id, module_id))
+            rows = await cursor.fetchall()
+
+        if not rows:
+            raise HTTPException(status_code=404, detail="No engagements found for this module.")
+
+        # Flatten the list of tuples -> ['Pending', 'Completed', ...]
+        statuses = [row[0] for row in rows]
+
+        # Normalize statuses
+        def normalize_status(status: str) -> str:
+            s = status.lower()
+            if s in {"deleted", "closed", "archived", "completed"}:
+                return "Completed"
+            elif s in {"ongoing", "open"}:
+                return "In progress"
+            elif s in {"not started", "pending"}:
+                return "Pending"
+            return "Unknown"
+
+        normalized = [normalize_status(s) for s in statuses]
+
+        # Count each normalized status
+        summary = dict(Counter(normalized))
+        summary["total"] = len(statuses)
+
+        return summary
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error occurred while fetching data: {str(e)}")
 
