@@ -10,7 +10,7 @@ from core.tables import Tables
 from models.issue_models import fetch_all_issue_in_module
 from schemas.annual_plan_schemas import AnnualPlanColumns
 from schemas.engagement_schemas import EngagementColumns
-from schemas.issue_schemas import IssueColumns, ReadIssues
+from schemas.issue_schemas import IssueColumns
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response
 
@@ -119,6 +119,8 @@ async def query_audit_summary(
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching audit plans {e}")
+
+
 
 async def all_engagement_with_status(connection: AsyncConnection, plan_id: str):
     query = sql.SQL(
@@ -775,18 +777,18 @@ async def get_overdue_issues(issues: List[Dict]):
     return data
 
 
-
-async def summarize_engagements(connection: AsyncConnection, module_id: str) -> Dict[str, int]:
+async def summarize_engagement_status(connection: AsyncConnection, module_id: str):
     """
-    Summarize engagements by normalized status for the latest annual plan year.
+    Summarize engagement statuses (normalized) for the latest annual plan year.
+    Includes only engagements that have related issues.
     """
 
     try:
         query = sql.SQL(
             """
-            SELECT eng.status
-            FROM engagements eng
-            JOIN annual_plans ap ON ap.id = eng.plan_id
+            SELECT eng.status, eng.id
+            FROM engagements AS eng
+            JOIN annual_plans AS ap ON ap.id = eng.plan_id
             WHERE ap.module = %s
               AND ap.year = (
                   SELECT MAX(year)
@@ -799,35 +801,53 @@ async def summarize_engagements(connection: AsyncConnection, module_id: str) -> 
         async with connection.cursor() as cursor:
             await cursor.execute(query, (module_id, module_id))
             rows = await cursor.fetchall()
+            issues = []
+
+            for row in rows:
+                issues_data = await pull_engagement_issues(
+                    connection=connection,
+                    engagement_id=row[1]
+                )
+
+                issues.extend(issues_data)
+
+
+
+            issue_stats = await summarize_status(issues)
 
         if not rows:
-            raise HTTPException(status_code=404, detail="No engagements found for this module.")
+            raise HTTPException(
+                status_code=404,
+                detail="No engagements found for the latest annual plan."
+            )
 
-        # Flatten the list of tuples -> ['Pending', 'Completed', ...]
-        statuses = [row[0] for row in rows]
+        # Flatten results: [('Open',), ('Completed',), ...] -> ['Open', 'Completed', ...]
+        statuses = [row[0] for row in rows if row[0]]
 
-        # Normalize statuses
+        # Normalize all statuses to 3 categories
         def normalize_status(status: str) -> str:
-            s = status.lower()
+            s = status.strip().lower()
             if s in {"deleted", "closed", "archived", "completed"}:
                 return "Completed"
             elif s in {"ongoing", "open"}:
                 return "In progress"
             elif s in {"not started", "pending"}:
                 return "Pending"
-            return "Unknown"
+            else:
+                return "Unknown"
 
         normalized = [normalize_status(s) for s in statuses]
 
-        # Count each normalized status
+        # Count normalized statuses
         summary = dict(Counter(normalized))
         summary["total"] = len(statuses)
+        summary["issue_data"] = issue_stats
 
         return summary
 
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred while fetching data: {str(e)}")
-
 
 
 async def summarize_recurring_status(issues: List) -> dict:
@@ -850,3 +870,16 @@ async def summarize_recurring_status(issues: List) -> dict:
     }
 
     return summary
+
+
+
+async def pull_engagement_issues(connection: AsyncConnection, engagement_id: str):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES.value)
+            .where(IssueColumns.ENGAGEMENT.value, engagement_id)
+            .fetch_all()
+        )
+
+        return builder

@@ -1,5 +1,6 @@
 from typing import Dict
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from pydantic import BaseModel
 from typing import Optional
@@ -45,10 +46,8 @@ async def publish(channel: str, payload: Payload):
 
 
 
-
 async def load_message():
     pool = await AsyncDBPoolSingleton.get_instance().get_pool()
-
 
     async with pool.connection() as conn:
         builder = await (
@@ -57,6 +56,24 @@ async def load_message():
             .fetch_one()
         )
 
+        return builder
+
+
+
+async def delete_message(queue_id: str):
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+
+    async with pool.connection() as conn:
+        builder = await (
+            DeleteQueryBuilder(connection=conn)
+            .from_table("notification_queue")
+            .check_exists({"queue_id": queue_id})
+            .where({"queue_id": queue_id})
+            .returning("queue_id")
+            .execute()
+        )
+
+        return builder
 
 
 

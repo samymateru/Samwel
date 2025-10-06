@@ -27,7 +27,7 @@ async def fetch_main_dashboard(
 
         over_due = await get_overdue_issues(issues)
 
-        data = await summarize_engagements(
+        data = await summarize_engagement_status(
             connection=connection,
             module_id=module_id
         )
