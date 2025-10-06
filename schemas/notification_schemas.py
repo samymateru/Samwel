@@ -64,7 +64,7 @@ class SingleIssueNotification(BaseModel):
     engagement: str
     title: str
     rating: str
-    due_date: datetime
+    due_date: str
 
 
 

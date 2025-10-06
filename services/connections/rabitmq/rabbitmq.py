@@ -1,64 +1,88 @@
 import os
 import json
-import asyncio
-from aio_pika import connect_robust, ExchangeType, Message
-from aio_pika.abc import AbstractRobustConnection, AbstractRobustChannel
+import pika
+from threading import Lock
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class RabbitMQ:
-    """Singleton RabbitMQ connection manager."""
+    """Singleton RabbitMQ connection manager using pika (synchronous)."""
+
     _instance = None
+    _lock = Lock()
 
     def __init__(self):
-        self._connection: AbstractRobustConnection | None = None
-        self._channels: set[AbstractRobustChannel] = set()
-        self._lock = asyncio.Lock()
+        self._connection = None
+        self._channel = None
 
-        self.amqp_url = os.getenv(
-            "AMQP_URL",
-            f"amqp://{os.getenv('RABBITMQ_USER')}:{os.getenv('RABBITMQ_PASSWORD')}@"
-            f"{os.getenv('RABBITMQ_HOST')}:{os.getenv('RABBITMQ_PORT')}/"
+        self.exchange_name = "my_exchange"
+        self.connection_params = pika.ConnectionParameters(
+            host=os.getenv("RABBITMQ_HOST", "localhost"),
+            port=int(os.getenv("RABBITMQ_PORT", 5672)),
+            heartbeat=600,
+            blocked_connection_timeout=300,
         )
 
     @classmethod
-    def instance(cls) -> "RabbitMQ":
-        if cls._instance is None:
-            cls._instance = RabbitMQ()
+    def instance(cls):
+        """Thread-safe singleton instance."""
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = RabbitMQ()
         return cls._instance
 
-    async def get_connection(self) -> AbstractRobustConnection:
+    def _ensure_connection(self):
+        """Ensure there is a valid open connection and channel."""
         if self._connection is None or self._connection.is_closed:
-            self._connection = await connect_robust(self.amqp_url)
-        return self._connection
+            self._connection = pika.BlockingConnection(self.connection_params)
+            self._channel = self._connection.channel()
 
-    async def get_channel(self) -> AbstractRobustChannel:
-        async with self._lock:
-            connection = await self.get_connection()
-            channel = await connection.channel()
-            self._channels.add(channel)
-            return channel
+            # Ensure the exchange exists
+            self._channel.exchange_declare(
+                exchange=self.exchange_name,
+                exchange_type="direct",
+                durable=True
+            )
 
-    async def close(self):
-        for ch in self._channels:
-            if not ch.is_closed:
-                await ch.close()
-        if self._connection and not self._connection.is_closed:
-            await self._connection.close()
+        elif self._channel is None or self._channel.is_closed:
+            self._channel = self._connection.channel()
 
+    def publish(self, queue_name: str, payload: dict):
+        """Publish a JSON message to a queue via exchange."""
+        self._ensure_connection()
 
+        # Ensure queue exists and is bound
+        self._channel.queue_declare(queue=queue_name, durable=True)
+        self._channel.queue_bind(
+            exchange=self.exchange_name,
+            queue=queue_name,
+            routing_key=queue_name
+        )
 
-# --- Publisher helper ---
-async def publish(queue_name: str, payload: dict, exchange_name: str = "my_exchange"):
-    rmq = RabbitMQ.instance()
-    channel = await rmq.get_channel()
-    exchange = await channel.declare_exchange(exchange_name, ExchangeType.DIRECT, durable=True)
-    queue = await channel.declare_queue(queue_name, durable=True)
-    await queue.bind(exchange, routing_key=queue_name)
+        # Convert payload to JSON safely (handling datetimes)
+        body = json.dumps(payload, default=str).encode()
 
-    await exchange.publish(
-        Message(body=json.dumps(payload).encode(), content_type="application/json"),
-        routing_key=queue_name
-    )
-    await channel.close()
+        # Publish the message
+        self._channel.basic_publish(
+            exchange=self.exchange_name,
+            routing_key=queue_name,
+            body=body,
+            properties=pika.BasicProperties(
+                content_type="application/json",
+                delivery_mode=2,  # persistent message
+            ),
+        )
+
+        print(f"[>] Sent to '{queue_name}': {payload}")
+
+    def close(self):
+        """Close channel and connection gracefully."""
+        try:
+            if self._channel and self._channel.is_open:
+                self._channel.close()
+            if self._connection and self._connection.is_open:
+                self._connection.close()
+        except Exception:
+            pass

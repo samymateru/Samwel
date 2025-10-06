@@ -30,3 +30,7 @@ class UpdateMainProgram(NewMainProgram):
 
 class UpdateMainProgramProcessRating(BaseModel):
     process_rating: str
+
+
+class ReadMainProgramOnPRCM(BaseModel):
+    name: str

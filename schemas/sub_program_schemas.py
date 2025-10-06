@@ -72,3 +72,7 @@ class UpdateSubProgram(BaseModel):
     reviewed_by: Optional[ReviewPrepareUser] = None
     prepared_by: Optional[ReviewPrepareUser] = None
     conclusion: str
+
+
+class ReadSubProgramOnPRCM(BaseModel):
+    title: str

@@ -274,7 +274,7 @@ async def query_planning_details(connection: AsyncConnection, plan_id: str):
             'total', COUNT(*),
             'pending', COUNT(*) FILTER (WHERE eng.status = 'Pending'),
             'ongoing', COUNT(*) FILTER (WHERE eng.status = 'Ongoing'),
-            'completed', COUNT(*) FILTER (WHERE eng.status = 'Completed')
+            'completed', COUNT(*) FILTER (WHERE eng.status = 'Completed' OR eng.status = 'Archived')
         ) AS planning_summary
 
         FROM engagements eng

@@ -46,14 +46,13 @@ async def fetch_module_dashboard(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @router.get("/eauditNext/plan_details/{plan_id}", response_model=PlanDetails)
 async def fetch_plan_details(
         plan_id: str,
         db=Depends(get_async_db_connection),
-        user: CurrentUser = Depends(get_current_user)
+        #user: CurrentUser = Depends(get_current_user)
 ):
-    if user.status_code != 200:
-        raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await query_planning_details(connection=db, plan_id=plan_id)
         if data is None:

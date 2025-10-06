@@ -12,8 +12,21 @@ class AsyncPostmarkEmailService:
         self.From = os.getenv("SYSTEM_FROM_EMAIL")
 
 
-    async def send_with_template(self, data: Dict) -> dict:
-        """Send an email using a Postmark template asynchronously."""
+
+    def send_with_template(self, data: dict) -> dict:
+        """
+        Send an email using a Postmark template (synchronous version).
+
+        Args:
+            data (dict): {
+                "to": "recipient@example.com",
+                "template_model": {...},
+                "template_id": "your-template-id"
+            }
+
+        Returns:
+            dict: API response from Postmark.
+        """
         kwargs = {
             "From": self.From,
             "To": data["to"],
@@ -21,30 +34,62 @@ class AsyncPostmarkEmailService:
             "TemplateId": data["template_id"]
         }
 
-        return await asyncio.to_thread(
-            self.client.emails.send_with_template,
-            **kwargs
-        )
+        # Call the Postmark SDK synchronously
+        return self.client.emails.send_with_template(**kwargs)
 
 
 
-    async def send_bulk_with_template(
-        self,
-        emails: List[Dict]
-    ) -> List[dict]:
+    def send_bulk_with_template(self, emails: list[dict]) -> list[dict]:
         """
-        Send multiple templated emails asynchronously.
-        Each dict should have: to_email, template (alias or id), template_model
+        Send multiple templated emails synchronously.
+        Each dict should have: to, template_id, template_model
+
+        Example:
+            emails = [
+                {"to": "a@example.com", "template_id": "123", "template_model": {...}},
+                {"to": "b@example.com", "template_id": "123", "template_model": {...}},
+            ]
         """
-        tasks = [ self.send_with_template(e) for e in emails ]
+        results = []
+        for e in emails:
+            try:
+                res = self.client.emails.send_with_template(
+                    From=self.From,
+                    To=e["to"],
+                    TemplateModel=e["template_model"],
+                    TemplateId=e["template_id"],
+                )
+                results.append(res)
+            except Exception as ex:
+                results.append({"error": str(ex), "to": e.get("to")})
 
-        return await asyncio.gather(*tasks)
+        return results
 
 
-    async def send_issue_notification(self, data: Dict):
-        """Send templated emails concurrently with graceful error handling."""
-        tasks = [ self.send_with_template({"to": e, "TemplateModel": data["TemplateModel"], "TemplateId": data["TemplateId"]}) for e in data.users]
-        return await asyncio.gather(*tasks)
+
+    def send_issue_notification(self, data: dict) -> list[dict]:
+        """
+        Send templated issue notification emails synchronously.
+        data should include:
+            - users: list of email addresses
+            - TemplateModel: dict
+            - TemplateId: str
+        """
+        results = []
+
+        for email in data["users"]:
+            try:
+                res = self.client.emails.send_with_template(
+                    From=self.From,
+                    To=email,
+                    TemplateModel=data["TemplateModel"],
+                    TemplateId=data["TemplateId"],
+                )
+                results.append(res)
+            except Exception as ex:
+                results.append({"error": str(ex), "to": email})
+
+        return results
 
 
 email_service = AsyncPostmarkEmailService()

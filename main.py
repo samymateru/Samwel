@@ -1,4 +1,3 @@
-import threading
 import uuid
 from typing import Optional
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
@@ -29,9 +28,10 @@ from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.organization_schemas import ReadOrganization
-from services.connections.rabitmq.consumer import start_consumer
-from services.connections.rabitmq.rabbitmq import publish
+from services.connections.rabitmq.consumer import start_rabbitmq_consumer_thread
+from services.connections.rabitmq.rabbitmq import RabbitMQ
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -82,9 +82,7 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-
-        asyncio.create_task(start_consumer())
-
+        start_rabbitmq_consumer_thread()
     except Exception as e:
         print(e)
     yield
@@ -138,6 +136,21 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home():
     with exception_response():
+        data = SendUserInvitationNotification(
+            to="samymateru1999@gmail.com",
+            template_id=41703594,
+            template_model=NewUserInvitation(
+                name="Samwel",
+                email="samymateru1999@gmail.com",
+                password="12345"
+            )
+        )
+
+        payload = { "mode": "single", "data": data.model_dump() }
+
+        rmq = RabbitMQ.instance()
+        rmq.publish("users", payload)
+
         return True
 
 

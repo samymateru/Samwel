@@ -1,12 +1,16 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.PRCM_schemas import NewPRCM, CreatePRCM, PRCMColumns, UpdatePRCM, AddToAuditProgram
+from schemas.PRCM_schemas import NewPRCM, CreatePRCM, PRCMColumns, UpdatePRCM, AddToAuditProgram, ReadPRCM
+from schemas.main_program_schemas import ReadMainProgramOnPRCM
+from schemas.sub_program_schemas import ReadSubProgramOnPRCM
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 from datetime import datetime
+
+
 
 async def create_new_prcm_model(
         connection: AsyncConnection,
@@ -66,13 +70,28 @@ async def get_summary_audit_program_model(
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
-            .from_table(Tables.RISK_CONTROL.value)
-            .where_raw(
-                "summary_audit_program IS NOT NULL AND engagement = %(engagement_id)s",
-                {
-                "engagement_id": engagement_id
-                }
+            .from_table(Tables.RISK_CONTROL.value, alias="risk_control")
+            .select(ReadPRCM)
+            .join(
+                "LEFT",
+                Tables.SUB_PROGRAM.value,
+                "procedure.id = risk_control.summary_audit_program",
+                "procedure",
+                use_prefix=True,
+                model=ReadSubProgramOnPRCM
             )
+            .join(
+                "LEFT",
+                Tables.MAIN_PROGRAM.value,
+                "program.id = procedure.program",
+                "program",
+                use_prefix=True,
+                model=ReadMainProgramOnPRCM
+            )
+            .where_raw(
+                "risk_control.summary_audit_program IS NOT NULL AND risk_control.engagement = %(engagement_id)s", {"engagement_id": engagement_id}
+            )
+            .select_joins()
             .fetch_all()
         )
 

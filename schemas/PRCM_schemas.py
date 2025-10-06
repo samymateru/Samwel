@@ -47,3 +47,10 @@ class AddPRCMToWorkProgram(BaseModel):
     program: str
     description: str
     procedure: str
+
+
+
+class ReadPRCM(CreatePRCM):
+    summary_audit_program: str
+
+
