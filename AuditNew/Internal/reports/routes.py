@@ -1,5 +1,3 @@
-from typing import List
-
 from AuditNew.Internal.reports.schemas import ReportIssues
 from core.utils import extract_text
 from models.issue_actor_models import get_all_issue_actors_on_issue_model

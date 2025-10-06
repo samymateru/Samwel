@@ -10,7 +10,7 @@ router = APIRouter(prefix="/dashboards")
 async def fetch_main_dashboard(
         module_id: str,
         connection=Depends(get_async_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
 ):
     try:
         issues = await fetch_all_issue_data(connection=connection, module_id=module_id)
@@ -32,6 +32,8 @@ async def fetch_main_dashboard(
             module_id=module_id
         )
 
+        recurring = await summarize_recurring_status(issues=issues)
+
         return {
             "risk_rating": risk_ratings,
             "process": process_summary,
@@ -39,7 +41,8 @@ async def fetch_main_dashboard(
             "root_cause": root_cause_summary,
             "issue_status": status,
             "over_due": over_due,
-            "audit_summary": data
+            "audit_summary": data,
+            "recurring": recurring
         }
 
     except HTTPException as e:

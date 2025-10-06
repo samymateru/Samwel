@@ -776,10 +776,6 @@ async def get_overdue_issues(issues: List[Dict]):
 
 
 
-
-
-
-
 async def summarize_engagements(connection: AsyncConnection, module_id: str) -> Dict[str, int]:
     """
     Summarize engagements by normalized status for the latest annual plan year.
@@ -832,3 +828,25 @@ async def summarize_engagements(connection: AsyncConnection, module_id: str) -> 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred while fetching data: {str(e)}")
 
+
+
+async def summarize_recurring_status(issues: List) -> dict:
+    """
+    Summarize issues by recurring_status (True/False) and total.
+    """
+    # Fetch issues
+
+    # Extract recurring_status values (default to False if missing)
+    recurring_values = [bool(issue.get("recurring_status", False)) for issue in issues]
+
+    # Count True/False occurrences
+    summary = dict(Counter(recurring_values))
+
+    # Rename keys for clarity
+    summary = {
+        "true": summary.get(True, 0),
+        "false": summary.get(False, 0),
+        "total": len(issues)
+    }
+
+    return summary
