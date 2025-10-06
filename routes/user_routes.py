@@ -8,7 +8,7 @@ from schemas.notification_schemas import SendUserInvitationNotification, NewUser
 from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
 ReadOrganizationUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.connections.rabitmq.consumer_thread import consumer
+from services.connections.rabitmq.rabbitmq import publish
 from services.logging.logger import global_logger
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -75,13 +75,9 @@ async def create_new_user(
             )
         )
 
+        payload = { "mode": "single", "data": data.model_dump() }
 
-        consumer.publish(
-            "user",
-            body={
-                "mode": "single",
-                "data": data.model_dump()
-            })
+        await publish(queue_name="users", payload=payload)
 
         global_logger.info("User Successfully Created")
 

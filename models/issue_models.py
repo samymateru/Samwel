@@ -18,7 +18,6 @@ from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
-from services.connections.rabitmq.consumer_thread import consumer
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
@@ -640,11 +639,11 @@ async def generate_and_send_issue_notification_model(
 
 
 
-        consumer.publish(
-            "user",
-            body={
-                "mode": "single",
-                "data": notify.model_dump()
-            })
+        # consumer.publish(
+        #     "user",
+        #     body={
+        #         "mode": "single",
+        #         "data": notify.model_dump()
+        #     })
 
         print(emails)

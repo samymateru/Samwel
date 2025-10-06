@@ -1,3 +1,4 @@
+import threading
 import uuid
 from typing import Optional
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
@@ -29,8 +30,8 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
-from services.connections.rabitmq.connection import AsyncRabbitMQSingleton
-from services.connections.rabitmq.consumer_thread import consumer
+from services.connections.rabitmq.consumer import start_consumer
+from services.connections.rabitmq.rabbitmq import publish
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -77,17 +78,20 @@ if sys.platform == "win32":
 
 session_storage = PopDict()
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        pass
+
+        asyncio.create_task(start_consumer())
+
     except Exception as e:
         print(e)
     yield
 
     try:
-        await AsyncRabbitMQSingleton.get_instance().close_connection()
-        consumer.stop()
+        pass
+
     except Exception as e:
         print(e)
 
@@ -134,13 +138,6 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home():
     with exception_response():
-        consumer.publish(
-            "user",
-            body={
-                "mode": "single",
-                "data": {}
-            })
-
         return True
 
 
