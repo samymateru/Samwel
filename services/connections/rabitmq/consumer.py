@@ -17,7 +17,7 @@ async def message_handler(message: IncomingMessage):
 
         if queue_name == "users" and data.get("mode") == "single":
             await email_service.send_with_template(data["data"])
-            global_logger.info(f"Mail sent successfully {data["data"].get("to")}")
+            global_logger.info(f"Mail sent successfully")
         elif queue_name == "issue" and data.get("mode") == "single":
             await email_service.send_issue_notification(data["data"])
             global_logger.info("Issue notification sent")
