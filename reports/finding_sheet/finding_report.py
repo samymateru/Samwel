@@ -71,10 +71,7 @@ async def generate_finding_report(
 
         )
 
-
         table_of_content.save(table_of_content_path)
-
-
 
         table_of_content_sub_doc = doc.new_subdoc(table_of_content_path)
 
@@ -87,6 +84,7 @@ async def generate_finding_report(
             converter(filename=management_action_plan, data=da.management_action_plan)
             converter(filename=root_cause_description_path, data=da.root_cause_description)
             converter(filename=impact_description_path, data=da.impact_description)
+
 
             finding_sub_doc = doc.new_subdoc(finding_path)
             criteria_sub_doc = doc.new_subdoc(criteria_path)
@@ -117,8 +115,6 @@ async def generate_finding_report(
                 "responsible_people": da.responsible_people,
                 "implementation_date": da.estimated_implementation_date.strftime("%d %b %Y")
             })
-
-            print(da.responsible_people)
 
 
         context = {

@@ -305,6 +305,7 @@ async def query_planning_details(connection: AsyncConnection, plan_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
 
+
 async def query_engagement_details(connection: AsyncConnection, engagement_id: str):
     query_procedures = sql.SQL(
         """

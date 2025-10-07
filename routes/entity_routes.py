@@ -31,6 +31,7 @@ async def create_new_entity(
             type=UserTypes.AUDIT.value
         )
 
+
         user_data = await register_new_user(
             connection=connection,
             user=user,
@@ -66,7 +67,6 @@ async def create_new_entity(
             user_id=user_data.get("id"),
             administrator=True,
             owner=True,
-            category="Module",
             management_title="Organization Owner"
         )
 

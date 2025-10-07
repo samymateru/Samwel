@@ -105,6 +105,7 @@ def create_styled_table(
         )
 
         hdr_cells[i]._element.get_or_add_tcPr().append(shading)
+        hdr_cells[i].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
         # Apply column width
         hdr_cells[i].width = column_widths[i]
@@ -142,10 +143,25 @@ def create_styled_table(
 
                 row_cells[j]._element.get_or_add_tcPr().append(shading)
 
+                shading_elm = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{color_shading(cell_value)}"/>')
+
+                row_cells[j]._element.get_or_add_tcPr().append(shading_elm)
+
+
             row_cells[j].width = column_widths[j]
 
     return table
 
+
+def color_shading(value: str):
+    rating_map = {
+        "Unacceptable": "FF0000",
+        "Significant Improvement Required": "FF22FF",
+        "Improvement Required": "FFFF00",
+        "Acceptable": "9250D0"
+    }
+
+    return rating_map.get(value) or "FFFFFF"
 
 
 
