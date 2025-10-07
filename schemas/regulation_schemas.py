@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
 
+from schemas.attachement_schemas import ReadAttachment
+
 
 class RegulationColumns(str, Enum):
     ID = "id"
@@ -32,4 +34,4 @@ class BaseRegulation(CreateRegulation):
 
 
 class ReadRegulation(BaseRegulation):
-    pass
+    attachment: ReadAttachment

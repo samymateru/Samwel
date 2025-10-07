@@ -1,7 +1,8 @@
 from psycopg import AsyncConnection
 
 from core.tables import Tables
-from schemas.policy_schemas import NewPolicy, UpdatePolicy, CreatePolicy, PolicyColumns
+from schemas.attachement_schemas import ReadAttachment
+from schemas.policy_schemas import NewPolicy, UpdatePolicy, CreatePolicy, PolicyColumns, BasePolicy, ReadPolicy
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -46,12 +47,46 @@ async def get_engagement_policies_model(
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
-            .from_table(Tables.POLICIES.value)
-            .where(PolicyColumns.ENGAGEMENT.value, engagement_id)
+            .from_table(Tables.POLICIES.value, alias="pol")
+            .select(BasePolicy)
+            .join(
+                "LEFT",
+                Tables.ATTACHMENTS.value,
+                "attachment.item_id = pol.id",
+                "attachment",
+                use_prefix=True,
+                model=ReadAttachment,
+            )
+            .select_joins()
+            .where("pol."+PolicyColumns.ENGAGEMENT.value, engagement_id)
             .fetch_all()
         )
 
-        return builder
+        policies = []
+
+        for policy in builder:
+            data = ReadPolicy(
+                id=policy.get("id"),
+                engagement=policy.get("engagement"),
+                name=policy.get("name"),
+                version=policy.get("version"),
+                key_areas=policy.get("key_areas"),
+                attachment=ReadAttachment(
+                    attachment_id=policy.get("attachment_attachment_id"),
+                    module_id=policy.get("attachment_attachment_id"),
+                    item_id=policy.get("attachment_item_id"),
+                    filename=policy.get("attachment_filename"),
+                    category=policy.get("attachment_category"),
+                    url=policy.get("attachment_url"),
+                    size=policy.get("attachment_size"),
+                    type=policy.get("attachment_type"),
+                    created_at=policy.get("attachment_created_at")
+                )
+            )
+
+            policies.append(data)
+
+        return policies
 
 
 

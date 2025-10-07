@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum
 
+from schemas.attachement_schemas import ReadAttachment
 
 
 class PolicyColumns(str, Enum):
@@ -32,6 +33,7 @@ class UpdatePolicy(NewPolicy):
 
 class BasePolicy(BaseModel):
     id: str
+    engagement: str
     name: str
     version: str
     key_areas: str
@@ -39,5 +41,5 @@ class BasePolicy(BaseModel):
 
 
 class ReadPolicy(BasePolicy):
-    pass
+    attachment: ReadAttachment
 

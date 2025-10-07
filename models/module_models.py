@@ -4,7 +4,7 @@ from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.module_schemas import NewModule, CreateModule, ModuleStatus, ModulesColumns, CreateModuleActivation, \
     ActivationColumns, ActivateModule, CreateAuditLicence, AuditLicenceColumns, EAuditLicence, DeleteModuleTemporarily, \
-    ModuleDataReference
+    ModuleDataReference, ReadLicence, BaseModule
 from schemas.user_schemas import ModuleUserColumns
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -73,10 +73,21 @@ async def get_organization_modules(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.MODULES.value, alias="mod")
+            .select(BaseModule)
+            .join(
+                "LEFT",
+                "audit_licences",
+                "licence.module_id = mod.id",
+                "licence",
+                use_prefix=True,
+                model=ReadLicence
+            )
+            .select_joins()
             .where("mod."+ModulesColumns.ORGANIZATION.value, organization_id)
             .fetch_all()
         )
         return builder
+
 
 
 async def get_module_details(

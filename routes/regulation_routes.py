@@ -1,10 +1,15 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, Form, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, Form, UploadFile, File, HTTPException, BackgroundTasks
+
+from core.utils import upload_attachment
+from models.attachment_model import add_new_attachment
 from models.regulation_models import create_new_regulation_model, update_engagement_regulation_model, \
     get_engagement_regulations_model, get_single_engagement_regulation_model, delete_engagement_regulation_model
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
+from schemas.attachement_schemas import AttachmentCategory
 from schemas.regulation_schemas import NewRegulation, UpdateRegulation
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/engagements")
@@ -17,6 +22,8 @@ async def create_new_regulation(
         key_areas: str = Form(...),
         attachment: UploadFile = File(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks(),
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         regulation = NewRegulation(
@@ -25,14 +32,30 @@ async def create_new_regulation(
             key_areas=key_areas,
         )
 
-        results = await create_new_regulation_model(
+        regulation_results = await create_new_regulation_model(
             connection=connection,
             regulation=regulation,
             engagement_id=engagement_id
         )
 
+
+        await add_new_attachment(
+            connection=connection,
+            attachment=attachment,
+            item_id=regulation_results.get("id"),
+            module_id=auth.module_id,
+            url=upload_attachment(
+            category=AttachmentCategory.REGULATION,
+            background_tasks=background_tasks,
+            file=attachment
+            ),
+            category=AttachmentCategory.REGULATION
+        )
+
+
+
         return await return_checker(
-            data=results,
+            data=regulation_results,
             passed="Regulation Successfully Created",
             failed="Failed Creating  Regulation"
         )
@@ -45,7 +68,6 @@ async def update_engagement_regulation(
         name: str = Form(...),
         issue_date: datetime = Form(...),
         key_areas: str = Form(...),
-        attachment: UploadFile = File(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():

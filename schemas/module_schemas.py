@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, model_validator, PrivateAttr
 
 
 class ModuleDataReference(str, Enum):
@@ -22,6 +22,7 @@ class ModulesColumns(str, Enum):
     PLAN_REFERENCE = "plan_reference"
     CREATED_AT = "created_at"
 
+
 class ModuleName(str, Enum):
     E_AUDIT_NEXT = "eAuditNext"
     E_RISK = "eRisk"
@@ -29,15 +30,18 @@ class ModuleName(str, Enum):
     E_COMPLIANCE = "eCompliance"
     E_FRAUD = "eFraud"
 
+
 class ModuleStatus(str, Enum):
     PENDING = "Pending"
     ACTIVE = "Active"
     CLOSED = "Closed"
 
+
 class ActivationColumns(str, Enum):
     ACTIVATION_TOKEN = "activation_token"
     MODULE_ID = "module_id"
     CREATED_AT = "created_at"
+
 
 class AuditLicenceColumns(str, Enum):
     LICENCE_ID = "licence_id"
@@ -52,9 +56,11 @@ class AuditLicenceColumns(str, Enum):
     PRICE = "price"
     FOLLOW_UP = "follow_up"
 
+
 class NewModule(BaseModel):
     licence_id: str
     name: ModuleName
+
 
 class CreateModule(BaseModel):
     id: str
@@ -64,10 +70,12 @@ class CreateModule(BaseModel):
     purchase_date: Optional[datetime] = None
     created_at: datetime
 
+
 class CreateModuleActivation(BaseModel):
     activation_token: str
     module_id: str
     created_at: datetime
+
 
 class CreateAuditLicence(BaseModel):
     licence_id: str
@@ -82,6 +90,7 @@ class CreateAuditLicence(BaseModel):
     price: int
     follow_up: bool
 
+
 class EAuditLicence(BaseModel):
     licence_id: str
     name: str
@@ -93,6 +102,7 @@ class EAuditLicence(BaseModel):
     follow_up: bool
     price: int
 
+
 class ActivateModule(BaseModel):
     status: ModuleStatus
     purchase_date: datetime
@@ -100,14 +110,28 @@ class ActivateModule(BaseModel):
 class BaseModule(CreateModule):
     pass
 
-class ReadModule(BaseModule):
+
+
+class ReadModule(BaseModel):
     id: str
     organization: str
     name: str
-    status: ModuleStatus
+    status: str  # or ModuleStatus
     purchase_date: Optional[datetime] = None
     created_at: datetime
     expired_at: Optional[datetime] = None
+    licence_name: Optional[str] = None
+    licence_id: Optional[str] = None
+
+    # private attribute (not a field)
+    __licence_licence_id: Optional[str] = PrivateAttr(default=None)
+
+    @model_validator(mode="before")
+    def move_licence_id(cls, values: dict):
+        # if licence_licence_id exists, move it to licence_id
+        if "licence_licence_id" in values and not values.get("licence_id"):
+            values["licence_id"] = values.pop("licence_licence_id")
+        return values
 
     @model_validator(mode="after")
     def compute_expiration(self):
@@ -115,19 +139,30 @@ class ReadModule(BaseModule):
             self.expired_at = self.purchase_date + timedelta(days=365)
         return self
 
+    class Config:
+        extra = "ignore"
 
 
 class IncrementInternalIssues(BaseModel):
     internal_issues: int
 
+
 class IncrementExternalIssues(BaseModel):
     external_issues: int
+
 
 class IncrementPlanReferences(BaseModel):
     plan_reference: int
 
+
 class IncrementProcedureReferences(BaseModel):
     procedure_reference: int
 
+
 class DeleteModuleTemporarily(BaseModel):
     status: ModuleStatus
+
+
+class ReadLicence(BaseModel):
+    name: str
+    licence_id: str

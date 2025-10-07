@@ -1,6 +1,8 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
-from schemas.regulation_schemas import NewRegulation, CreateRegulation, RegulationColumns, UpdateRegulation
+from schemas.attachement_schemas import ReadAttachment
+from schemas.regulation_schemas import NewRegulation, CreateRegulation, RegulationColumns, UpdateRegulation, \
+    ReadRegulation, BaseRegulation
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -45,13 +47,46 @@ async def get_engagement_regulations_model(
     with exception_response():
         builder = await (
             ReadBuilder(connection=connection)
-            .from_table(Tables.REGULATIONS.value)
-            .where(RegulationColumns.ENGAGEMENT.value, engagement_id)
+            .from_table(Tables.REGULATIONS.value, alias="reg")
+            .select(BaseRegulation)
+            .join(
+                "LEFT",
+                Tables.ATTACHMENTS.value,
+                "attachment.item_id = reg.id",
+                "attachment",
+                use_prefix=True,
+                model=ReadAttachment,
+            )
+            .select_joins()
+            .where("reg."+RegulationColumns.ENGAGEMENT.value, engagement_id)
             .fetch_all()
         )
 
-        return builder
+        regulations = []
 
+        for regulation in builder:
+            data = ReadRegulation(
+                id=regulation.get("id"),
+                engagement=regulation.get("engagement"),
+                name=regulation.get("name"),
+                issue_date=regulation.get("issue_date"),
+                key_areas=regulation.get("key_areas"),
+                attachment=ReadAttachment(
+                    attachment_id=regulation.get("attachment_attachment_id"),
+                    module_id=regulation.get("attachment_attachment_id"),
+                    item_id=regulation.get("attachment_item_id"),
+                    filename=regulation.get("attachment_filename"),
+                    category=regulation.get("attachment_category"),
+                    url=regulation.get("attachment_url"),
+                    size=regulation.get("attachment_size"),
+                    type=regulation.get("attachment_type"),
+                    created_at=regulation.get("attachment_created_at")
+                )
+            )
+
+            regulations.append(data)
+
+        return regulations
 
 async def get_single_engagement_regulation_model(
         connection: AsyncConnection,

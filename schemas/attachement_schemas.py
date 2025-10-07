@@ -14,6 +14,7 @@ class AttachmentCategory(str, Enum):
     ANNUAL_PLAN = "annual_plan"
     ISSUE_RESPONSES = "issue_responses"
     POLICY = "policy"
+    REGULATION = "regulation"
     ENGAGEMENT_PROCESS = "engagement_process"
     FOlLOW_UP = "follow_up"
     FOLLOW_UP_TEST = "follow_up_test"
