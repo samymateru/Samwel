@@ -27,6 +27,7 @@ async def load_engagement_report_data(
             engagement_id=engagement_id
         )
 
+
         engagement_profile_data = await fetch_engagement_administration_profile_model(
             connection=connection,
             engagement_id=engagement_id

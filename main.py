@@ -22,6 +22,10 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
+from reports.finding_sheet.finding_report import generate_finding_report
+from reports.models.engagement_report_model import get_engagement_report_details
+from reports.models.issue_model import load_engagement_report_data
+from reports.models.issue_report_model import engagement_report_data_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -30,8 +34,7 @@ from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.organization_schemas import ReadOrganization
-from services.connections.rabitmq.consumer import start_rabbitmq_consumer_thread
-from services.connections.rabitmq.rabbitmq import RabbitMQ
+from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -68,7 +71,6 @@ from routes.planning_routes import router as planning_routes
 from services.ai.base_ai import router as ai
 
 
-
 load_dotenv()
 
 
@@ -82,18 +84,15 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        start_rabbitmq_consumer_thread()
+        pass
     except Exception as e:
         print(e)
     yield
 
     try:
         pass
-
     except Exception as e:
         print(e)
-
-
 
 
 
@@ -134,24 +133,27 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 
 @app.get("/{engagement_id}")
-async def home():
+async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
     with exception_response():
-        data = SendUserInvitationNotification(
-            to="samymateru1999@gmail.com",
-            template_id=41703594,
-            template_model=NewUserInvitation(
-                name="Samwel",
-                email="samymateru1999@gmail.com",
-                password="12345"
-            )
+        data = await generate_finding_report(
+            connection=connection,
+            engagement_id="4b15ba494eb9",
         )
 
-        payload = { "mode": "single", "data": data.model_dump() }
+        return data
 
-        rmq = RabbitMQ.instance()
-        rmq.publish("users", payload)
-
-        return True
+        # data = SendUserInvitationNotification(
+        #     to="samymateru1999@gmail.com",
+        #     template_id=41703594,
+        #     template_model=NewUserInvitation(
+        #         name="Samwel",
+        #         email="samymateru1999@gmail.com",
+        #         password="12345"
+        #     )
+        # )
+        #
+        # payload = { "mode": "single", "data": data.model_dump() }
+        # return payload
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

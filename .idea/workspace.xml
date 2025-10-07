@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="removing old files">
+      <change afterPath="$PROJECT_DIR$/reports/models/engagement_report_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/models/issue_report_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reports/schemas/engagement_report_schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/draft_report/draft_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/draft_report/draft_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/engagement_letter/engagement_letter.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/engagement_letter/engagement_letter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/finding_report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/finding_sheet/template.docx" beforeDir="false" afterPath="$PROJECT_DIR$/reports/finding_sheet/template.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/models/issue_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/models/issue_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/reports/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/consumer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/rabitmq/rabbitmq.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +91,7 @@
     "Python.database.executor": "Run",
     "Python.databases.executor": "Run",
     "Python.detection.executor": "Run",
+    "Python.draft_report.executor": "Run",
     "Python.eyes.executor": "Run",
     "Python.face_detect.executor": "Run",
     "Python.finder.executor": "Run",
@@ -155,14 +167,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00814" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759433515041</created>
-      <option name="number" value="00814" />
-      <option name="presentableId" value="LOCAL-00814" />
-      <option name="project" value="LOCAL" />
-      <updated>1759433515041</updated>
     </task>
     <task id="LOCAL-00815" summary="removing old files">
       <option name="closed" value="true" />
@@ -548,7 +552,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759825578607</updated>
     </task>
-    <option name="localTasksCounter" value="863" />
+    <task id="LOCAL-00863" summary="removing old files">
+      <option name="closed" value="true" />
+      <created>1759826685697</created>
+      <option name="number" value="00863" />
+      <option name="presentableId" value="LOCAL-00863" />
+      <option name="project" value="LOCAL" />
+      <updated>1759826685697</updated>
+    </task>
+    <option name="localTasksCounter" value="864" />
     <servers />
   </component>
   <component name="UnknownFeatures">

@@ -1,14 +1,16 @@
-import os
 import warnings
 
+from reports.models.engagement_report_model import get_engagement_report_details
+from reports.models.issue_report_model import engagement_report_data_model
+from reports.utils import create_styled_table
+
+warnings.filterwarnings("ignore")
+import os
 from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
 from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
 from conv import converter
-from reports.models.issue_model import load_engagement_report_data
 from utils import exception_response
-warnings.filterwarnings("ignore")
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,40 +20,67 @@ table_of_content_path = os.path.join(BASE_DIR, "table_of_content.docx")
 
 async def generate_finding_report(
     engagement_id: str,
-    module_id: str,
     connection: AsyncConnection,
 ):
     with exception_response():
-        finding_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-finding.docx")
-        criteria_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-criteria.docx")
-        recommendation_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-recommendation.docx")
-        management_action_plan = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-management_action_plan.docx")
-        root_cause_description_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-root_cause_description.docx")
-        impact_description_path = os.path.join(BASE_DIR, f"{module_id}{engagement_id}-impact_description.docx")
+        finding_path = os.path.join(BASE_DIR, f"{engagement_id}-finding.docx")
+        criteria_path = os.path.join(BASE_DIR, f"{engagement_id}-criteria.docx")
+        recommendation_path = os.path.join(BASE_DIR, f"{engagement_id}-recommendation.docx")
+        management_action_plan = os.path.join(BASE_DIR, f"{engagement_id}-management_action_plan.docx")
+        root_cause_description_path = os.path.join(BASE_DIR, f"{engagement_id}-root_cause_description.docx")
+        impact_description_path = os.path.join(BASE_DIR, f"{engagement_id}-impact_description.docx")
 
-        data = await load_engagement_report_data(
+        engagement_data = await get_engagement_report_details(
             connection=connection,
-            engagement_id=engagement_id,
-            module_id=module_id
+            engagement_id=engagement_id
+        )
+
+
+        issue_data = await engagement_report_data_model(
+            connection=connection,
+            engagement_id=engagement_id
         )
 
 
         doc = DocxTemplate(template_path)
         table_of_content = Document()
+        table_of_content_headers = ["No", "Finding Title", "Finding Risk Rating"]
 
 
-        create_table_of_content(
-            issues=data.issues,
-            doc=table_of_content
+
+
+        table_of_content_data = []
+
+
+        for index, issue in enumerate(issue_data, start=1):
+            entry = [index, issue.title, issue.risk_rating]
+            table_of_content_data.append(entry)
+
+
+        create_styled_table(
+            table_of_content,
+            columns=3,
+            headers=table_of_content_headers,
+            data=table_of_content_data,
+            column_widths=[0.1, 1.5, 2.5],
+            header_bg="000094",          # dark blue header
+            header_font_color="FFFFFF",  # white text
+            row_bg="FFFFFF",             # light blue for data rows
+            alt_row_bg="FFFFFF" ,         # white for alternating rows
+            row_height=0.3
+
         )
 
+
         table_of_content.save(table_of_content_path)
+
+
 
         table_of_content_sub_doc = doc.new_subdoc(table_of_content_path)
 
         issues_context = []
 
-        for da in data.issues:
+        for da in issue_data:
             converter(filename=finding_path, data=da.finding)
             converter(filename=criteria_path, data=da.criteria)
             converter(filename=recommendation_path, data=da.recommendation)
@@ -89,40 +118,22 @@ async def generate_finding_report(
                 "implementation_date": da.estimated_implementation_date.strftime("%d %b %Y")
             })
 
+            print(da.responsible_people)
+
 
         context = {
-            "organization_name": data.organization_name,
-            'engagement_code': data.engagement_code,
-            "engagement_name": data.engagement_name,
+            "organization_name": engagement_data.organization_name,
+            'engagement_code': engagement_data.engagement_code,
+            "engagement_name": engagement_data.engagement_name,
             "table1": table_of_content_sub_doc,
             "issues": issues_context
         }
 
         doc.render(context)
         doc.save(output_path)
-        return output_path, data.engagement_name
 
+        return output_path, engagement_data.engagement_name
 
-
-
-def create_table_of_content(issues, doc: Document):
-    table = doc.add_table(rows=1, cols=3)
-    table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.style = 'Table Grid'
-
-    hdr_cells = table.rows[0].cells
-    hdr_cells[0].text = 'No'
-    hdr_cells[1].text = 'Title'
-    hdr_cells[2].text = 'Audit Finding Rating'
-
-
-
-
-    for idx, d in enumerate(issues, start=1):
-        row_cells = table.add_row().cells
-        row_cells[0].text = str(idx)
-        row_cells[1].text = d.title
-        row_cells[2].text = d.risk_rating
 
 
 

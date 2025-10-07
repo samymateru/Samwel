@@ -1,12 +1,12 @@
-import os
 import warnings
+warnings.filterwarnings("ignore")
+import os
 from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
 from conv import converter
 from reports.models.issue_model import load_engagement_report_data
 from utils import exception_response
 
-warnings.filterwarnings("ignore")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(BASE_DIR, "template.docx")

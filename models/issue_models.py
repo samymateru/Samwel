@@ -18,7 +18,6 @@ from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
-from services.connections.rabitmq.rabbitmq import RabbitMQ
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
@@ -410,6 +409,8 @@ async def send_issue_for_implementation_model(
                 issue_id=issue_id
             )
 
+        return True
+
 
 
 async def save_issue_implementation_model(
@@ -654,7 +655,7 @@ async def generate_and_send_issue_notification_model(
 
         payload = { "mode": "single", "data": data.model_dump() }
 
-        rmq = RabbitMQ.instance()
-        rmq.publish("issue", payload)
+        print(payload)
+
 
 
