@@ -40,6 +40,11 @@ class UserStatus(str, Enum):
     IN_ACTIVE = "In Active"
 
 
+class OrganizationUserRolesTypes(str, Enum):
+    UPGRADE = "upgrade"
+    DOWNGRADE = "downgrade"
+
+
 class User(BaseModel):
     id: str
     name: Optional[str] = None
@@ -143,3 +148,5 @@ class UpdateEntityUser(BaseModel):
     telephone: Optional[str]
 
 
+class UpdateOrganizationUserRole(BaseModel):
+    administrator: bool

@@ -93,13 +93,14 @@ async def get_module_details(
         return builder
 
 
+
 async def generate_module_activation_data(
         connection: AsyncConnection,
         module_id: str
 ):
     with exception_response():
         __activation_module__ = CreateModuleActivation(
-            activation_token=get_unique_key(),
+            activation_token=get_unique_key().upper(),
             module_id=module_id,
             created_at=datetime.now()
         )

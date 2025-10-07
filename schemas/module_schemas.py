@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
+
 
 class ModuleDataReference(str, Enum):
     PROCEDURE_REFERENCE = "procedure_reference"
@@ -100,7 +101,21 @@ class BaseModule(CreateModule):
     pass
 
 class ReadModule(BaseModule):
-    pass
+    id: str
+    organization: str
+    name: str
+    status: ModuleStatus
+    purchase_date: Optional[datetime] = None
+    created_at: datetime
+    expired_at: Optional[datetime] = None
+
+    @model_validator(mode="after")
+    def compute_expiration(self):
+        if self.purchase_date and not self.expired_at:
+            self.expired_at = self.purchase_date + timedelta(days=365)
+        return self
+
+
 
 class IncrementInternalIssues(BaseModel):
     internal_issues: int

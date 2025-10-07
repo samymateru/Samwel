@@ -15,7 +15,7 @@ procedure_category = {
 
 procedure_reference = {
     "Planning": "PLN",
-    "Reporting": "PRT",
+    "Reporting": "RPT",
     "Finalization": "FNL"
 }
 
@@ -24,20 +24,16 @@ async def create_new_standard_template_model(
         connection: AsyncConnection,
         procedure: NewStandardTemplate,
         type_: ProcedureTypes,
-        engagement_id: str
+        engagement_id: str,
+        reference: str = ""
 ):
     with exception_response():
-        reference = await get_reference_model(
-            connection=connection,
-            type_=type_,
-            engagement_id=engagement_id
-        )
 
         __standard_template__ = CreateStandardTemplate(
             id=get_unique_key(),
             engagement=engagement_id,
             title=procedure.title,
-            reference=reference or "PLN-001",
+            reference=reference,
             tests=Section(value=""),
             objectives = Section(value=""),
             observation = Section(value=""),
@@ -48,6 +44,7 @@ async def create_new_standard_template_model(
             prepared_by=None,
             reviewed_by=None
         )
+
 
         builder = await (
             InsertQueryBuilder(connection=connection)

@@ -5,14 +5,14 @@ from core.tables import Tables
 from models.attachment_model import fetch_item_attachment
 from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
 from models.engagement_models import get_single_engagement_details, register_new_engagement
-from models.engagement_process_models import get_single_engagement_process_model, get_engagement_processes_model, \
+from models.engagement_process_models import get_engagement_processes_model, \
     create_engagement_process_model
 from models.main_program_models import export_main_audit_program_to_library_model, fetch_main_programs_models, \
     import_main_audit_program_to_library_model
 from models.policy_models import get_engagement_policies_model, \
     create_new_policy_model
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
-from models.standard_template_models import read_standard_template_model, get_reference_model, \
+from models.standard_template_models import read_standard_template_model, \
     create_new_standard_template_model
 from schemas.attachement_schemas import AttachmentCategory, CreateAttachment, AttachmentColumns
 from schemas.engagement_administration_profile_schemas import EngagementProfileColumns, \
@@ -282,11 +282,15 @@ async def standard_template_roll(
 
                 __std_procedure = CreateStandardTemplate(**data)
 
+                if __std_procedure.reference is None:
+                    raise HTTPException(status_code=400, detail="Engagement Cant Be Roll Forwarded Now")
+
                 await create_new_standard_template_model(
                     connection=connection,
                     procedure=__std_procedure,
                     type_=section,
-                    engagement_id=new_engagement_id
+                    engagement_id=new_engagement_id,
+                    reference=__std_procedure.reference
                 )
 
 

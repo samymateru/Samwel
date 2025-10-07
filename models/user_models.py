@@ -148,7 +148,8 @@ async def get_organization_users(
         connection: AsyncConnection,
         organization_id: str,
 ):
-    query = sql.SQL("""
+    query = sql.SQL(
+    """
         SELECT 
           usr.id,
           usr.entity,
@@ -172,7 +173,7 @@ async def get_organization_users(
                 'type',  mod_usr.type,
                 'name',  mod.name
               )
-            ) FILTER (WHERE mod_usr.module_id IS NOT NULL),
+            ) FILTER (WHERE mod.id IS NOT NULL),
             '[]'::json
           ) AS modules
         FROM public.organizations_users org_usr
@@ -182,6 +183,7 @@ async def get_organization_users(
           ON mod_usr.user_id = usr.id
         LEFT JOIN public.modules mod 
           ON mod.id = mod_usr.module_id
+          AND mod.organization = org_usr.organization_id
         WHERE org_usr.organization_id = %(org_id)s
         GROUP BY 
           usr.id,
@@ -196,7 +198,7 @@ async def get_organization_users(
           org_usr.administrator,
           org_usr.management_title,
           org_usr.category,
-          org_usr.owner
+          org_usr.owner;
     """)
 
     async with connection.cursor() as cursor:
@@ -205,6 +207,8 @@ async def get_organization_users(
         column_names = [desc[0] for desc in cursor.description]
         result = [dict(zip(column_names, row)) for row in rows]
         return result
+
+
 
 
 async def get_entity_users(

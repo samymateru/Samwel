@@ -82,7 +82,7 @@ async def fetch_user_modules(
 async def fetch_organization_modules(
         organization_id: str,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         data = await get_organization_modules(

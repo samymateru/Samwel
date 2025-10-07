@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter
 from models.standard_template_models import create_new_standard_template_model, delete_standard_template_model, \
-    read_standard_template_model, update_standard_template_model
+    read_standard_template_model, update_standard_template_model, get_reference_model
 from schema import ResponseMessage
 from schemas.standard_template_schemas import NewStandardTemplate, ProcedureTypes, UpdateStandardProcedure
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -16,11 +16,19 @@ async def create_standard_procedure(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+
+        reference = await get_reference_model(
+            connection=connection,
+            type_=type_,
+            engagement_id=engagement_id
+        )
+
         results = await create_new_standard_template_model(
             connection=connection,
             procedure=procedure,
             type_=type_,
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
+            reference=reference
         )
 
         return await return_checker(

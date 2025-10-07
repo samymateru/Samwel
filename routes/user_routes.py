@@ -1,14 +1,16 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
+
+from core.tables import Tables
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
     get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
     edit_entity_user, edit_module_user
 from schema import ResponseMessage, CurrentUser
 from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
-ReadOrganizationUser
+    ReadOrganizationUser, OrganizationUserColumns, UpdateOrganizationUserRole, OrganizationUserRolesTypes
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.connections.rabitmq.rabbitmq import RabbitMQ
+from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -76,12 +78,8 @@ async def create_new_user(
         )
 
 
-        payload = { "mode": "single", "data": data.model_dump() }
+        _ = { "mode": "single", "data": data.model_dump() }
 
-        rmq = RabbitMQ.instance()
-        rmq.publish("users", payload)
-
-        global_logger.info("User Successfully Created")
 
         return await return_checker(
             data=module_user_data,
@@ -107,7 +105,7 @@ async def fetch_entity_users(
 
 
 
-@router.get("/organization/{organization_id}", response_model=List[ReadOrganizationUser])
+@router.get("/organization/{organization_id}")
 async def fetch_organization_users(
         organization_id: Optional[str] = None,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
@@ -151,6 +149,7 @@ async def fetch_module_user_details(
         if data is None:
             raise HTTPException(status_code=404, detail="User Not Found")
         return data
+
 
 
 @router.put("/entity_user/{user_id}")
@@ -210,6 +209,41 @@ async def remove_user_in_module(
             data=results,
             passed="User Successfully Deleted",
             failed="Failed Deleting  User"
+        )
+
+
+
+@router.put("/organization_roles/{organization_id}")
+async def change_organization_user_role(
+        organization_id: str,
+        action: OrganizationUserRolesTypes,
+        user_id: str = Query(...),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        _: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+
+        __user__ = UpdateOrganizationUserRole(
+            administrator=True if action.value == OrganizationUserRolesTypes.UPGRADE else False
+        )
+
+
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ORGANIZATIONS_USERS.value)
+            .values(__user__)
+            .where({OrganizationUserColumns.ORGANIZATION_ID.value: organization_id})
+            .where({OrganizationUserColumns.USER_ID.value: user_id})
+            .check_exists({OrganizationUserColumns.USER_ID.value: user_id})
+            .returning(OrganizationUserColumns.ORGANIZATION_USER_ID.value)
+            .execute()
+        )
+
+
+        return await return_checker(
+            data=builder,
+            passed="User Role Successfully Updated",
+            failed="Failed Updating  User Role"
         )
 
 
