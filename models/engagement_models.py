@@ -1,13 +1,25 @@
+from typing import Dict
+
+from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from core.tables import Tables
+from models.engagement_staff_models import create_new_engagement_staff_model
+from models.notification_models import add_notification_to_user_model
+from models.recent_activity_models import add_new_recent_activity
 from schemas.annual_plan_schemas import ReadAnnualPlan
 from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, CompleteEngagement, EngagementStatus, \
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
     UpdateEngagement_, Engagement, EngagementRiskMaturityRating, UpdateEngagementRiskMaturityRating, \
     UpdateRiskMaturityRatingLowerPart
+from schemas.engagement_staff_schemas import NewEngagementStaff
+from schemas.notification_schemas import CreateNotifications, NotificationsStatus
+from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
+from schemas.user_schemas import UserColumns
+from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
+from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
 
@@ -244,6 +256,7 @@ async def remove_engagement_partially(
 
 
 
+
 async def update_engagement_opinion_rating(
         connection: AsyncConnection,
         opinion_rating: AddOpinionRating,
@@ -261,6 +274,7 @@ async def update_engagement_opinion_rating(
         )
 
         return builder
+
 
 
 
@@ -348,7 +362,7 @@ async def update_risk_maturity_rating_table_model(
 async def update_risk_maturity_rating_lower_section_model(
         connection: AsyncConnection,
         engagement: UpdateRiskMaturityRatingLowerPart,
-        engagement_id: str
+        engagement_id: str,
 ):
     with exception_response():
 
@@ -363,3 +377,103 @@ async def update_risk_maturity_rating_lower_section_model(
         )
 
         return builder
+
+
+
+async def adding_engagement_staff_model(
+        head_of_audit: Dict,
+        engagement_id: str,
+        engagement: NewEngagement,
+        module_id: str
+):
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+
+    with exception_response():
+        async with pool.connection() as connection:
+            entity_user_data = await (
+                ReadBuilder(connection=connection)
+                .from_table(Tables.USERS.value)
+                .where(UserColumns.ID.value, head_of_audit.get("user_id"))
+                .fetch_one()
+            )
+
+
+            if entity_user_data is None:
+                global_logger.exception("No Head Of Audit Found, Cant Create Engagement")
+                raise HTTPException(status_code=400, detail="No Head Of Audit Found, Cant Create Engagement")
+
+
+            staff = NewEngagementStaff(
+                name=entity_user_data.get("name"),
+                role=head_of_audit.get("role"),
+                email=entity_user_data.get("email"),
+                start_date=datetime.now(),
+                end_date=datetime.now(),
+                tasks=""
+            )
+
+
+            await create_new_engagement_staff_model(
+                connection=connection,
+                staff=staff,
+                engagement_id=engagement_id
+            )
+
+
+
+            await add_notification_to_user_model(
+                connection=connection,
+                notification=CreateNotifications(
+                    id=get_unique_key(),
+                    title="Engagement invitation",
+                    user_id=entity_user_data.get("id"),
+                    message=f"Your have been invited to engagement {engagement.name} as Head Of Audit",
+                    status=NotificationsStatus.NEW,
+                    created_at=datetime.now()
+                )
+            )
+
+
+            for lead in engagement.leads:
+                staff = NewEngagementStaff(
+                    name=lead.name,
+                    role="Audit Lead",
+                    email=lead.email,
+                    start_date=datetime.now(),
+                    end_date=datetime.now(),
+                    tasks=""
+                )
+
+                await create_new_engagement_staff_model(
+                    connection=connection,
+                    staff=staff,
+                    engagement_id=engagement_id
+                )
+
+
+                await add_notification_to_user_model(
+                    connection=connection,
+                    notification=CreateNotifications(
+                        id=get_unique_key(),
+                        title="Engagement invitation",
+                        user_id=lead.id,
+                        message=f"Your have been invited to engagement {engagement.name} as Engagement lead",
+                        status=NotificationsStatus.NEW,
+                        created_at=datetime.now()
+                    )
+                )
+
+
+            await add_new_recent_activity(
+                connection=connection,
+                recent_activity=RecentActivities(
+                    activity_id=get_unique_key(),
+                    module_id=module_id,
+                    name=engagement.name,
+                    description="New Engagement Created",
+                    category=RecentActivityCategory.ENGAGEMENT_CREATED,
+                    created_by="",
+                    created_at=datetime.now()
+                )
+            )
+

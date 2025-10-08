@@ -14,6 +14,7 @@ from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
 
+
 router = APIRouter(prefix="/annual_plans")
 
 
@@ -137,13 +138,13 @@ async def update_annual_plan_data(
 
 
 
-
 @router.delete("/{annual_plan_id}", response_model=ResponseMessage)
 async def remove_annual_plan_data(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
+
         results = await remove_annual_plan_partially(
             connection=connection,
             annual_plan_id=annual_plan_id

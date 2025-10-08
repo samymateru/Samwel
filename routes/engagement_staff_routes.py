@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
     update_staff_model, delete_staff_model
@@ -58,18 +57,20 @@ async def create_new_engagement_staff(
         )
 
 
+
 @router.get("/staff/{engagement_id}", response_model=List[ReadEngagementStaff])
 async def fetch_engagement_staff(
         engagement_id: str,
-        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection)
 ):
     with exception_response():
         data = await fetch_engagement_staff_model(
             connection=connection,
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
         )
 
         return data
+
 
 
 @router.put("/staff/{staff_id}", response_model=ResponseMessage)
@@ -90,6 +91,7 @@ async def update_staff(
             passed="Engagement Staff Successfully Updated",
             failed="Failed Updating  Engagement Staff"
         )
+
 
 
 @router.delete("/staff/{staff_id}", response_model=ResponseMessage)

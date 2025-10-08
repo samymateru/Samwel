@@ -60,7 +60,7 @@ async def get_engagement_report_details(
 
         engagement_leads_data = await fetch_engagement_staff_model(
             connection=connection,
-            engagement_id=engagement_id
+            engagement_id=engagement_id,
         )
 
         leads = [ReportLead(**item) for item in engagement_leads_data]

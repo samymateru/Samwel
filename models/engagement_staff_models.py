@@ -56,6 +56,7 @@ async def fetch_engagement_staff_model(
         return builder
 
 
+
 async def update_staff_model(
         connection: AsyncConnection,
         staff: UpdateStaff,
@@ -73,6 +74,7 @@ async def update_staff_model(
         )
 
         return builder
+
 
 
 async def delete_staff_model(

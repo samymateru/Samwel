@@ -109,6 +109,7 @@ async def update_user_notification_after_read_model(
         return builder
 
 
+
 async def get_organization_managers_model(
         connection: AsyncConnection,
         organization_id: str,
@@ -120,6 +121,7 @@ async def get_organization_managers_model(
         )
 
         return data
+
 
 
 

@@ -4,17 +4,14 @@ from typing import List, Optional
 from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
-    complete_annual_plan_engagement, remove_engagement_partially, update_engagement_opinion_rating, \
-    update_engagement_data, update_risk_maturity_rating_table_model, update_risk_maturity_rating_lower_section_model
-from models.engagement_staff_models import create_new_engagement_staff_model
-from models.notification_models import add_notification_to_user_model
+    complete_annual_plan_engagement, remove_engagement_partially, \
+    update_engagement_data, update_risk_maturity_rating_table_model, update_risk_maturity_rating_lower_section_model, \
+    adding_engagement_staff_model
 from models.recent_activity_models import add_new_recent_activity
 from models.roll_forwar_model import engagement_roll_forward_model
+from models.user_models import get_module_users
 from schema import ResponseMessage, CurrentUser
-from schemas.engagement_schemas import NewEngagement, ReadEngagement, \
-    AddOpinionRating, UpdateEngagement_, EngagementRiskMaturityRating, UpdateRiskMaturityRatingLowerPart
-from schemas.engagement_staff_schemas import NewEngagementStaff
-from schemas.notification_schemas import CreateNotifications, NotificationsStatus
+from schemas.engagement_schemas import NewEngagement, ReadEngagement,  UpdateEngagement_, EngagementRiskMaturityRating, UpdateRiskMaturityRatingLowerPart
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
@@ -32,8 +29,6 @@ async def create_new_engagement(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-
-
         results = await register_new_engagement(
             connection=connection,
             engagement=engagement,
@@ -41,51 +36,33 @@ async def create_new_engagement(
             module_id=module_id
         )
 
+
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Create Engagement")
 
-        for lead in engagement.leads:
-            staff = NewEngagementStaff(
-                name=lead.name,
-                role="Audit Lead",
-                email=lead.email,
-                start_date=datetime.now(),
-                end_date=datetime.now(),
-                tasks=""
-            )
 
-            await create_new_engagement_staff_model(
-                connection=connection,
-                staff=staff,
-                engagement_id=results.get("id")
-            )
-
-            await add_notification_to_user_model(
-                connection=connection,
-                notification=CreateNotifications(
-                    id=get_unique_key(),
-                    title="Engagement invitation",
-                    user_id=lead.id,
-                    message=f"Your have been invited to engagement {engagement.name} as Engagement lead",
-                    status=NotificationsStatus.NEW,
-                    created_at=datetime.now()
-                )
-            )
-
-        await add_new_recent_activity(
+        module_users = await get_module_users(
             connection=connection,
-            recent_activity=RecentActivities(
-                activity_id=get_unique_key(),
-                module_id=module_id,
-                name=engagement.name,
-                description="New Engagement Created",
-                category=RecentActivityCategory.ENGAGEMENT_CREATED,
-                created_by="",
-                created_at=datetime.now()
-            )
+            module_id=module_id
         )
 
+        head_users = [user for user in module_users if user["role"] == "Head of Audit"]
+
+
+        if head_users.__len__() == 0:
+            raise HTTPException(status_code=400, detail="No Head Of Audit Found, Cant Create Engagement")
+
+
+
         asyncio.create_task(set_engagement_templates(engagement_id=results.get("id")))
+
+
+        asyncio.create_task(adding_engagement_staff_model(
+            engagement=engagement,
+            engagement_id=results.get("id"),
+            module_id=module_id,
+            head_of_audit=head_users[0]
+        ))
 
 
         return await return_checker(
