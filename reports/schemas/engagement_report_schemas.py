@@ -16,6 +16,8 @@ class BusinessContacts(BaseModel):
 
 
 class EngagementReportSchema(BaseModel):
+    engagement_id: str
+    module_id: str
     organization_name: str
     engagement_name: str
     engagement_code: str

@@ -7,7 +7,7 @@ from services.connections.postgres.read import ReadBuilder
 from utils import exception_response
 
 
-async def engagement_report_data_model(
+async def issue_report_data_model(
     connection: AsyncConnection,
     engagement_id: str,
 ):
@@ -24,12 +24,12 @@ async def engagement_report_data_model(
         issues = []
 
         for issue in builder:
-            user_details = await get_all_issue_actors_on_issue_by_status_model(
+            responsible_people = await get_all_issue_actors_on_issue_by_status_model(
                 connection=connection,
-                issue_id=issue.get("id")
+                issue_id=issue.get("id"),
+                module_id=issue.get("module_id")
             )
 
-            responsible_people = [ResponsiblePeople(**user) for user in user_details]
             issue["responsible_people"] = responsible_people
             issues.append(IssuesFinding(**issue))
 

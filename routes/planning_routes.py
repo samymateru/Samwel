@@ -32,7 +32,7 @@ async def generate_report(
         background_tasks: BackgroundTasks,
         module_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         if category.value == ReportType.ENGAGEMENT_REPORT:
@@ -46,14 +46,12 @@ async def generate_report(
             output_path, engagement_name = await generate_finding_report(
                 connection=connection,
                 engagement_id=engagement_id,
-                module_id=module_id
             )
 
         elif category.value == ReportType.ENGAGEMENT_LETTER:
             output_path, engagement_name = await generate_draft_engagement_letter_model(
                 connection=connection,
                 engagement_id=engagement_id,
-                module_id=module_id
             )
 
         else:

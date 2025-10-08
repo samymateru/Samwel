@@ -46,7 +46,8 @@ async def load_engagement_report_data(
         for issue in issue_data:
             user_details = await get_all_issue_actors_on_issue_by_status_model(
                 connection=connection,
-                issue_id=issue.get("id")
+                issue_id=issue.get("id"),
+                module_id=module_id
             )
 
 

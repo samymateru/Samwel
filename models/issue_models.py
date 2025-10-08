@@ -10,7 +10,7 @@ from schemas.issue_actor_schemas import ReadIssueActors
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
     IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared, \
-    IssueReviseActors, RevisionStatus
+    IssueReviseActors, RevisionStatus, ReviewPrepare, MarkIssueReview
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from schemas.notification_schemas import SendSingleIssueNotification, SingleIssueNotification
 from schemas.user_schemas import BaseUser
@@ -564,20 +564,46 @@ async def fetch_issue_responses_model(
 
 async def mark_issue_prepared_model(
         connection: AsyncConnection,
-        issue: MarkIssuePrepared,
+        prepare: ReviewPrepare,
+        issue_id: str
 ):
     with exception_response():
-        pass
+        __prepare__ = MarkIssuePrepared(
+            prepared_by=prepare
+        )
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+            .values(__prepare__)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return  builder
 
 
-
-
-async def mark_issue_review_model(
+async def mark_issue_reviewed_model(
         connection: AsyncConnection,
-        issue: MarkIssuePrepared,
+        review: ReviewPrepare,
+        issue_id: str
 ):
     with exception_response():
-        pass
+        __review__ = MarkIssueReview(
+            reviewed_by=review
+        )
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ISSUES.value)
+            .values(__review__)
+            .check_exists({IssueColumns.ID.value: issue_id})
+            .where({IssueColumns.ID.value: issue_id})
+            .returning(IssueColumns.ID.value)
+            .execute()
+        )
+
+        return builder
 
 
 
@@ -600,6 +626,8 @@ async def fetch_all_issue_in_module(connection: AsyncConnection, module_id: str)
 
 
 
+
+###################  fixing by pass the module id  #################################
 async def generate_and_send_issue_notification_model(
         connection: AsyncConnection,
         issue_id: str,
@@ -609,7 +637,8 @@ async def generate_and_send_issue_notification_model(
         issue_actors = await get_all_issue_actors_on_issue_by_status_model(
             connection=connection,
             issue_id=issue_id,
-            roles=roles
+            roles=roles,
+            module_id=""
         )
 
         if issue_actors is None:
@@ -637,7 +666,7 @@ async def generate_and_send_issue_notification_model(
 
 
 
-        # emails = [actor["email"] for actor in issue_actors]
+        # emails = [actor.email for actor in issue_actors]
         emails = ["samymateru1999@gmail.com"]
 
         data = SendSingleIssueNotification(

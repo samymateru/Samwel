@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
 from enum import Enum
 from datetime import datetime
 
@@ -128,8 +128,13 @@ class Engagement(CreateEngagement):
     pass
 
 
+
 class ReadEngagement(Engagement):
-    leads: List[Lead]
+    leads: Optional[List[Lead]] = None
+    risk_maturity_rating: Optional[Dict] = None
+    opinion_rating: Optional[str] = None
+    opinion_conclusion: Optional[str] = None
+
 
 
 class MaturityRating(BaseModel):

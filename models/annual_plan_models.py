@@ -1,32 +1,44 @@
 from psycopg import AsyncConnection
 from core.tables import Tables
+from models.module_models import get_data_reference_in_module, increment_module_reference
 from schemas.annual_plan_schemas import NewAnnualPlan, CreateAnnualPlan, AnnualPlanStatus, AnnualPlanColumns, \
     UpdateAnnualPlan, RemoveAnnualPlanPartially, ReadAnnualPlan, AnnualPlan
 from schemas.attachement_schemas import ReadAttachment
+from schemas.module_schemas import ModuleDataReference, IncrementPlanReferences
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
+from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
 from datetime import datetime
+
 
 async def register_new_annual_plan(
         connection: AsyncConnection,
         annual_plan: NewAnnualPlan,
-        module_id: str
+        module_id: str,
+        user_id: str
 ):
     with exception_response():
+        reference = await generate_plan_reference(
+            connection=connection,
+            module_id=module_id,
+            year=annual_plan.year
+        )
+
         __annual_plan__ = CreateAnnualPlan(
             id=get_unique_key(),
             module=module_id,
-            reference="",
+            reference=reference or "P-0001",
             name=annual_plan.name,
             year=annual_plan.year,
             start=annual_plan.start,
             end=annual_plan.end,
             status=AnnualPlanStatus.PENDING,
-            creator="",
+            creator=user_id,
             created_at=datetime.now()
         )
+
 
         builder = await (
             InsertQueryBuilder(connection=connection)
@@ -38,7 +50,10 @@ async def register_new_annual_plan(
             .execute()
         )
 
+
         return builder
+
+
 
 async def get_module_annual_plans(
         connection: AsyncConnection,
@@ -95,6 +110,7 @@ async def get_module_annual_plans(
         return plans
 
 
+
 async def get_annual_plan_details(
         connection: AsyncConnection,
         annual_plan_id: str
@@ -129,6 +145,7 @@ async def edit_annual_plan_details(
         return builder
 
 
+
 async def remove_annual_plan_partially(
         connection: AsyncConnection,
         annual_plan_id: str
@@ -149,3 +166,41 @@ async def remove_annual_plan_partially(
         )
 
         return builder
+
+
+
+async def generate_plan_reference(
+    connection: AsyncConnection,
+    module_id: str,
+    year: str
+):
+    with exception_response():
+        count = await get_data_reference_in_module(
+            connection=connection,
+            module_id=module_id,
+            sections=ModuleDataReference.PLAN_REFERENCE
+        )
+
+
+        if count is None:
+            count = 0
+            global_logger.exception(
+                "Error While Fetching Plan Reference"
+            )
+
+
+        value = IncrementPlanReferences(
+            plan_reference=count + 1
+        )
+
+        results = await increment_module_reference(
+            connection=connection,
+            module_id=module_id,
+            value=value
+        )
+
+        if results is None:
+            global_logger.exception("Error While Incrementing Plan Reference")
+
+
+        return f"P{count + 1:04d}-{year}"

@@ -40,7 +40,8 @@ async def create_new_annual_plan(
         annual_plan_results = await register_new_annual_plan(
             connection=connection,
             annual_plan=annual_plan,
-            module_id=module_id
+            module_id=module_id,
+            user_id=""
         )
 
         if annual_plan_results is None:

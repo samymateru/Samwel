@@ -22,17 +22,15 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
+from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
+from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
 from reports.finding_sheet.finding_report import generate_finding_report
-from reports.models.engagement_report_model import get_engagement_report_details
-from reports.models.issue_model import load_engagement_report_data
-from reports.models.issue_report_model import engagement_report_data_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
-from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
@@ -123,6 +121,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 # noinspection PyTypeChecker
 app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(_request: Request, exc: HTTPException):
     global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
@@ -135,12 +134,19 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
     with exception_response():
-        data = await generate_finding_report(
+
+        data = await generate_draft_engagement_letter_model(
             connection=connection,
-            engagement_id="4b15ba494eb9",
+            engagement_id='0a69c33424be',
         )
 
         return data
+        # data = await generate_finding_report(
+        #     connection=connection,
+        #     engagement_id="4b15ba494eb9",
+        # )
+        #
+        # return data
 
         # data = SendUserInvitationNotification(
         #     to="samymateru1999@gmail.com",
@@ -185,6 +191,7 @@ async def module_redirection(
         session_storage.put(session_code, token)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error while refresh token {e}")
+
 
     if sub_domain == "eRisk":
         redirect_url = f"http://{request.headers.get('origin').split('//')[1]}/auth?session_code={session_code}"

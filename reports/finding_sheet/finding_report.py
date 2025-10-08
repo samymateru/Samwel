@@ -1,9 +1,7 @@
 import warnings
-
 from reports.models.engagement_report_model import get_engagement_report_details
-from reports.models.issue_report_model import engagement_report_data_model
+from reports.models.issue_report_model import issue_report_data_model
 from reports.utils import create_styled_table
-
 warnings.filterwarnings("ignore")
 import os
 from docx import Document
@@ -13,16 +11,18 @@ from conv import converter
 from utils import exception_response
 
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(BASE_DIR, "template.docx")
 output_path = os.path.join(BASE_DIR, "final.docx")
 table_of_content_path = os.path.join(BASE_DIR, "table_of_content.docx")
 
+
 async def generate_finding_report(
     engagement_id: str,
     connection: AsyncConnection,
 ):
-    with exception_response():
+    with (exception_response()):
         finding_path = os.path.join(BASE_DIR, f"{engagement_id}-finding.docx")
         criteria_path = os.path.join(BASE_DIR, f"{engagement_id}-criteria.docx")
         recommendation_path = os.path.join(BASE_DIR, f"{engagement_id}-recommendation.docx")
@@ -36,7 +36,7 @@ async def generate_finding_report(
         )
 
 
-        issue_data = await engagement_report_data_model(
+        issue_data = await issue_report_data_model(
             connection=connection,
             engagement_id=engagement_id
         )
@@ -45,8 +45,6 @@ async def generate_finding_report(
         doc = DocxTemplate(template_path)
         table_of_content = Document()
         table_of_content_headers = ["No", "Finding Title", "Finding Risk Rating"]
-
-
 
 
         table_of_content_data = []
@@ -68,8 +66,8 @@ async def generate_finding_report(
             row_bg="FFFFFF",             # light blue for data rows
             alt_row_bg="FFFFFF" ,         # white for alternating rows
             row_height=0.3
-
         )
+
 
         table_of_content.save(table_of_content_path)
 

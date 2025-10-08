@@ -6,10 +6,13 @@ from schemas.engagement_administration_profile_schemas import ReadEngagementAdmi
 
 
 class ResponsiblePeople(BaseModel):
+    id: str
     name: str
     email: str
     role: str
+    title: str
     mod_usr_role : Optional[str] = None
+
 
 
 class IssuesFinding(BaseModel):

@@ -333,6 +333,18 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         JOIN engagements e ON rp.engagement = e.id
         WHERE e.id = {engagement_id}
         ),
+        profile_summary AS (
+        SELECT
+        COUNT(*) AS total_profile_summary,
+        jsonb_build_object(
+            'pending', COUNT(*) FILTER (WHERE pr.prepared_by IS NULL AND pr.reviewed_by IS NULL),
+            'in_progress', COUNT(*) FILTER (WHERE pr.prepared_by IS NOT NULL AND pr.reviewed_by IS NULL),
+            'completed', COUNT(*) FILTER (WHERE pr.prepared_by IS NOT NULL AND pr.reviewed_by IS NOT NULL)
+        ) AS profile_status_summary
+        FROM profile pr
+        JOIN engagements e ON pr.engagement = e.id
+        WHERE e.id = {engagement_id}
+        ),
         planning_summary AS (
         SELECT
         COUNT(*) AS total_planning_procedures,
@@ -364,16 +376,20 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         rs.total_reporting_procedures,
         rs.report_status_summary,
 	    ps.total_planning_procedures,
-        ps.planning_status_summary,
+	    ps.planning_status_summary,
+	    pr.profile_status_summary,
+	    pr.total_profile_summary,
 	    wp.total_work_program_procedures,
 	    wp.work_program_procedure_status_summary
         FROM 
 	    finalization_summary fs, 
 	    reporting_summary rs, 
 	    planning_summary ps,
+	    profile_summary pr,
 	    work_program_summary wp;
         """
     ).format(engagement_id=sql.Literal(engagement_id))
+
 
     query_root_cause_rating = sql.SQL(
         """
@@ -434,29 +450,35 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             if procedure_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="No data found")
             data = procedure_data[0]
+
             total_procedure = data.get("total_finalization_procedures") + data.get("total_reporting_procedures") + \
-                              data.get("total_planning_procedures") + data.get("total_work_program_procedures")
+                              data.get("total_planning_procedures") + data.get("total_work_program_procedures") + data.get("total_profile_summary")
 
             total_pending = data.get("finalization_status_summary").get("pending") + data.get(
                 "report_status_summary").get("pending") + \
                             data.get("planning_status_summary").get("pending") + data.get(
-                "work_program_procedure_status_summary").get("pending")
+                "work_program_procedure_status_summary").get("pending") + data.get(
+                "profile_status_summary").get("pending")
 
             total_in_progress = data.get("finalization_status_summary").get("in_progress") + data.get(
                 "report_status_summary").get("in_progress") + \
                                 data.get("planning_status_summary").get("in_progress") + data.get(
-                "work_program_procedure_status_summary").get("in_progress")
+                "work_program_procedure_status_summary").get("in_progress") + data.get(
+                "profile_status_summary").get("in_progress")
 
             total_completed = data.get("finalization_status_summary").get("completed") + data.get(
                 "report_status_summary").get("completed") + \
                               data.get("planning_status_summary").get("completed") + data.get(
-                "work_program_procedure_status_summary").get("completed")
+                "work_program_procedure_status_summary").get("completed") + data.get(
+                "profile_status_summary").get("completed")
+
             engagement_data = {
                 "total_procedure": total_procedure,
                 "pending": total_pending,
                 "in_progress": total_in_progress,
                 "completed": total_completed
             }
+
             await cursor.execute(query_root_cause_rating)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]

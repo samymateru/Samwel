@@ -153,6 +153,7 @@ async def activate_module(
         return builder
 
 
+
 async def get_activation_data(
         connection: AsyncConnection,
         activation_token: str
@@ -166,6 +167,7 @@ async def get_activation_data(
         )
 
         return builder
+
 
 
 async def add_licence_to_module(
@@ -218,6 +220,7 @@ async def get_module_licence_data(
         return builder
 
 
+
 async def delete_module_temporarily_model(
         connection: AsyncConnection,
         module_id: str
@@ -240,6 +243,7 @@ async def delete_module_temporarily_model(
         return builder
 
 
+
 async def increment_module_reference(
         connection: AsyncConnection,
         module_id: str,
@@ -256,6 +260,7 @@ async def increment_module_reference(
             .execute()
         )
         return builder
+
 
 
 async def get_data_reference_in_module(

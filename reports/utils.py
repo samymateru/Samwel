@@ -49,7 +49,6 @@ def set_cell_text_color(cell, color_hex: str):
 def create_styled_table(
     doc,
     columns: int,
-    headers: list[str],
     data: list[list[str]],
     column_widths: list[float] = None,
     header_bg: str = "00FFC0",
@@ -57,14 +56,15 @@ def create_styled_table(
     row_bg: str = None,
     alt_row_bg: str = None,
     full_width: bool = True,
-    row_height: float = None
+    row_height: float = None,
+    headers: list[str] = None,
 ):
     """
     Create a full-width, centered Word table with styled header and rows.
     """
 
     # --- Create table ---
-    table = doc.add_table(rows=1, cols=columns)
+    table = doc.add_table(rows=1 if headers else 0, cols=columns)
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER  # ✅ Center table on page
 
@@ -83,32 +83,33 @@ def create_styled_table(
     elif not column_widths:
         column_widths = [Inches(1.5)] * columns  # fallback
 
+    if headers:
+        # --- Header Row ---
+        header_row = table.rows[0]
+        header_row.height = Inches(row_height)
+        header_row.height_rule = WD_ROW_HEIGHT_RULE.AT_LEAST
+        hdr_cells = table.rows[0].cells
 
-    # --- Header Row ---
-    header_row = table.rows[0]
-    header_row.height = Inches(row_height)
-    header_row.height_rule = WD_ROW_HEIGHT_RULE.AT_LEAST
-    hdr_cells = table.rows[0].cells
 
-    for i, header_text in enumerate(headers):
-        p = hdr_cells[i].paragraphs[0]
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run = p.add_run(header_text)
-        run.bold = True
-        run.font.size = Pt(10)
-        run.font.color.rgb = RGBColor.from_string(header_font_color)
-        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        for i, header_text in enumerate(headers):
+            p = hdr_cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header_text)
+            run.bold = True
+            run.font.size = Pt(10)
+            run.font.color.rgb = RGBColor.from_string(header_font_color)
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-        # Set header background color
-        shading = parse_xml(
-            f'<w:shd {nsdecls("w")} w:fill="{header_bg}"/>'
-        )
+            # Set header background color
+            shading = parse_xml(
+                f'<w:shd {nsdecls("w")} w:fill="{header_bg}"/>'
+            )
 
-        hdr_cells[i]._element.get_or_add_tcPr().append(shading)
-        hdr_cells[i].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+            hdr_cells[i]._element.get_or_add_tcPr().append(shading)
+            hdr_cells[i].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
-        # Apply column width
-        hdr_cells[i].width = column_widths[i]
+            # Apply column width
+            hdr_cells[i].width = column_widths[i]
 
     # --- Data Rows ---
     for row_index, row_data in enumerate(data):
@@ -156,7 +157,7 @@ def create_styled_table(
 def color_shading(value: str):
     rating_map = {
         "Unacceptable": "FF0000",
-        "Significant Improvement Required": "FF22FF",
+        "Significant Improvement Required": "FFC000",
         "Improvement Required": "FFFF00",
         "Acceptable": "9250D0"
     }

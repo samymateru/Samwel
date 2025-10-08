@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 from psycopg import AsyncConnection
-
 from AuditNew.Internal.engagements.administration.databases import get_business_contacts
 from core.tables import Tables
 from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
@@ -100,6 +99,8 @@ async def get_engagement_report_details(
 
 
         data = EngagementReportSchema(
+            engagement_id=engagement_data.get("id"),
+            module_id=engagement_data.get("name"),
             organization_name=organization_data.get("name"),
             engagement_name=engagement_data.get("name"),
             engagement_code=engagement_data.get("code"),

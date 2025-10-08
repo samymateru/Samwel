@@ -21,6 +21,15 @@ class User(BaseModel):
     date_issued: Optional[datetime] = None
 
 
+
+class ReviewPrepare(BaseModel):
+    id: str
+    name: Optional[str] = None
+    email: Optional[str] = None
+    date_issued: Optional[str] = None
+
+
+
 class IssueColumns(str, Enum):
     ID = "id"
     MODULE_ID = "module_id"
@@ -249,8 +258,8 @@ class ReadIssues(BaseModel):
     management_action_plan: Optional[Dict] | Optional[str] = None
     provisional_response: Optional[str] = None
     revision_status: Optional[str] = None
-    prepared_by: Optional[Dict] = None
-    reviewed_by: Optional[Dict] = None
+    prepared_by: Optional[ReviewPrepare] = None
+    reviewed_by: Optional[ReviewPrepare] = None
     date_revised: datetime
     revised_count: Optional[int] = 0
     revised_status: Optional[bool] = False
@@ -261,13 +270,14 @@ class MarkIssueReportable(BaseModel):
     reportable: bool
 
 
+
 class MarkIssuePrepared(BaseModel):
-    prepared_by: User
+    prepared_by: ReviewPrepare
 
 
 
 class MarkIssueReview(BaseModel):
-    reviewed_by: User
+    reviewed_by: ReviewPrepare
 
 
 

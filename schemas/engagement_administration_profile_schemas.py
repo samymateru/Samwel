@@ -2,6 +2,14 @@ from pydantic import BaseModel
 from typing import Optional, Dict, List
 from enum import Enum
 
+from schemas.user_schemas import User
+
+class PrepareReview(BaseModel):
+    id: str
+    name: Optional[str] = None
+    email: Optional[str] = None
+    date_issued: Optional[str] = None
+
 
 class EngagementProfileColumns(str, Enum):
     ID = "id"
@@ -32,5 +40,15 @@ class CreateEngagementAdministrationProfile(NewEngagementAdministrationProfile):
     engagement: str
 
 
+
 class ReadEngagementAdministrationProfile(CreateEngagementAdministrationProfile):
-    pass
+    reviewed_by: Optional[PrepareReview] = None
+    prepared_by: Optional[PrepareReview] = None
+
+
+class ReviewEngagementProfile(BaseModel):
+    reviewed_by: PrepareReview
+
+
+class PrepareEngagementProfile(BaseModel):
+    prepared_by: PrepareReview

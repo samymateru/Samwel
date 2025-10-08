@@ -7,12 +7,13 @@ from models.issue_actor_models import initialize_issue_actors
 from models.issue_models import create_new_issue_model, fetch_single_issue_item_model, update_issue_details_model, \
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
     revise_issue_model, generate_issue_reference, fetch_issue_responses_model, \
-    save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model
+    save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model, \
+    mark_issue_prepared_model, mark_issue_reviewed_model
 from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
-    ReadIssueResponse, IssueActors
+    ReadIssueResponse, IssueActors, ReviewPrepare
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
@@ -140,6 +141,49 @@ async def mark_issue_reportable(
 
 
 
+@router.put("/prepare/{issue_id}", response_model=ResponseMessage)
+async def mark_issue_prepared(
+        issue_id: str,
+        prepare: ReviewPrepare,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+
+        results = await mark_issue_prepared_model(
+            connection=connection,
+            issue_id=issue_id,
+            prepare=prepare
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Marked Prepared Successfully",
+            failed="Failed Mark Issue Prepared"
+        )
+
+
+
+
+@router.put("/reviewed/{issue_id}", response_model=ResponseMessage)
+async def mark_issue_reviewed(
+        issue_id: str,
+        review: ReviewPrepare,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await mark_issue_reviewed_model(
+            connection=connection,
+            issue_id=issue_id,
+            review=review
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Issue Marked Prepared Successfully",
+            failed="Failed Mark Issue Prepared"
+        )
+
+
 
 
 @router.put("/send_implementor/")
@@ -160,7 +204,6 @@ async def send_issue_for_implementation(
             passed="Successfully Send Issue",
             failed="Fail Sending Issue"
         )
-
 
 
 
@@ -214,13 +257,13 @@ async def save_issue_implementation(
 async def send_issue_to_owner(
         issue_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user),
+        auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
         results = await send_issue_to_owner_model(
             connection=connection,
             issue_id=issue_id,
-            user_id="3de9c6f361f0"
+            user_id=auth.user_id
         )
 
         return await return_checker(
@@ -259,13 +302,13 @@ async def issue_accept_response(
         background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
-        status = None
-
         if accept_actor == IssueActors.OWNER:
             status = IssueStatus.CLOSED_NOT_VERIFIED
         elif accept_actor == IssueActors.AUDIT_MANAGER:
             status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT
         else:
+            if lod2_feedback is None:
+                raise HTTPException(status_code=400, detail="Sorry Provide LOD2 Feedback")
             status = lod2_feedback
 
         results = await issue_accept_model(
@@ -310,7 +353,6 @@ async def issue_decline_response(
         auth: CurrentUser = Depends(get_current_user),
 ):
     with exception_response():
-        status = None
         if issue.actor == IssueActors.OWNER:
             status = IssueStatus.IN_PROGRESS_IMPLEMENTER
         elif issue.actor == IssueActors.RISK_MANAGER or issue.actor == IssueActors.COMPLIANCE_OFFICER:
@@ -318,12 +360,12 @@ async def issue_decline_response(
         elif issue.actor == IssueActors.AUDIT_MANAGER:
             status = IssueStatus.CLOSED_NOT_VERIFIED
         else:
-            status = None
+            raise HTTPException(status_code=405,detail="Access denied: invalid actor role")
 
         response = NewIssueResponse(
             notes=issue.decline_notes,
             type=IssueResponseTypes.DECLINE,
-            issued_by=auth.user_id
+            issued_by=auth.user_id or ""
         )
 
         results = await issue_accept_model(

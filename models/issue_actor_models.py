@@ -2,9 +2,11 @@ from fastapi import HTTPException
 from psycopg import AsyncConnection
 from pydantic import BaseModel
 from core.tables import Tables
-from schemas.issue_actor_schemas import CreateIssueActor, IssueActors, IssueActorColumns, ReadIssueActors
+from models.user_models import get_module_user_details
+from reports.schemas.issue_finding_schema import ResponsiblePeople
+from schemas.issue_actor_schemas import CreateIssueActor, IssueActors, IssueActorColumns
 from schemas.issue_schemas import NewIssue, IssueColumns
-from schemas.user_schemas import User, ModuleUserColumns, UserModuleSection
+from schemas.user_schemas import User
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -64,12 +66,14 @@ async def get_all_issue_actors_on_issue_model(
 
 class UserIssueRole(BaseModel):
     role: str
+    module_id: str
 
 
 async def get_all_issue_actors_on_issue_by_status_model(
         connection: AsyncConnection,
         issue_id: str,
-        roles=None
+        module_id: str,
+        roles=None,
 ):
     if roles is None:
         roles = ["lod2_risk_manager", "lod2_compliance_officer", "lod1_implementer", "lod1_owner"]
@@ -78,22 +82,36 @@ async def get_all_issue_actors_on_issue_by_status_model(
         builder = await (
             ReadBuilder(connection=connection)
             .from_table(Tables.ISSUE_ACTORS.value, alias="iss_act")
-            .select(ReadIssueActors)
-            .join(
-                "LEFT",
-                Tables.MODULES_USERS.value,
-                "mod_usr.user_id = iss_act.user_id",
-                "mod_usr",
-                use_prefix=True,
-                model=UserIssueRole
-            )
-            .select_joins()
             .where("iss_act."+IssueActorColumns.ISSUE_ID.value, issue_id)
             .where("iss_act."+IssueActorColumns.ROLE.value, roles)
             .fetch_all()
         )
 
-        return builder
+        users = []
+
+        for user in builder:
+            data = await get_module_user_details(
+                connection=connection,
+                module_id=module_id,
+                user_id=user.get("user_id")
+            )
+
+            if data is None:
+                continue
+
+            __user__ = ResponsiblePeople(
+                id=user.get("user_id"),
+                name=user.get("name"),
+                email=user.get("email"),
+                role=user.get("role"),
+                title=data.get("title"),
+                mod_usr_role=data.get("role")
+            )
+
+            users.append(__user__)
+
+        return users
+
 
 
 async def get_issue_actors_on_issue_based_on_role_model(
