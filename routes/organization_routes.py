@@ -32,6 +32,7 @@ async def create_new_organization(
         )
 
 
+
 @router.get("/user/{user_id}", response_model=List[ReadOrganization])
 async def fetch_user_organizations(
         user_id: str,
@@ -44,6 +45,7 @@ async def fetch_user_organizations(
             user_id=user_id
         )
         return data
+
 
 
 @router.get("/entity/{entity_id}", response_model=List[ReadOrganization])
@@ -76,6 +78,7 @@ async def fetch_module_organization(
         return data
 
 
+
 @router.get("/{organization_id}", response_model=ReadOrganization)
 async def fetch_single_organization_details(
         organization_id: str,
@@ -88,6 +91,7 @@ async def fetch_single_organization_details(
             organization_id=organization_id
         )
         return data
+
 
 
 @router.delete("/{organization_id}")
@@ -107,6 +111,7 @@ async def remove_organization(
             passed="Organization Remove Successfully",
             failed="Failed Removing  Organization"
         )
+
 
 
 @router.put("/{organization_id}")

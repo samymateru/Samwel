@@ -35,6 +35,7 @@ class NewOrganization(BaseModel):
     email: str
     type: str
 
+
 class CreateOrganization(NewOrganization):
     id: str
     entity: str
@@ -54,8 +55,12 @@ class UpdateOrganization(BaseModel):
     telephone: Optional[str] = None
     website: Optional[str] = None
 
+
+
 class DeleteOrganization(BaseModel):
     status: OrganizationStatus
+    name: str
+
 
 class Organization(CreateOrganization):
     pass

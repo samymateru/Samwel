@@ -11,6 +11,7 @@ from services.connections.postgres.update import UpdateQueryBuilder
 from utils import exception_response, get_unique_key
 
 
+
 async def register_new_organization(
         connection: AsyncConnection,
         organization: NewOrganization,
@@ -35,7 +36,6 @@ async def register_new_organization(
             .into_table(Tables.ORGANIZATIONS.value)
             .values(__organization__)
             .check_exists({OrganizationsColumns.NAME.value: organization.name})
-            .check_exists({OrganizationsColumns.EMAIL.value: organization.email})
             .returning(OrganizationsColumns.ID.value)
             .execute()
         )
@@ -58,9 +58,11 @@ async def get_user_organizations(connection: AsyncConnection, user_id: str):
                 use_prefix=False
             )
             .where("org_usr."+OrganizationUserColumns.USER_ID.value, user_id)
+            .where_raw("org.status IN ('Active')")
             .fetch_all()
         )
         return builder
+
 
 
 async def get_entity_organizations(connection: AsyncConnection, entity_id: str):
@@ -69,10 +71,12 @@ async def get_entity_organizations(connection: AsyncConnection, entity_id: str):
             ReadBuilder(connection=connection)
             .from_table(Tables.ORGANIZATIONS.value, alias="org")
             .where("org."+OrganizationsColumns.ENTITY.value, entity_id)
+            .where_raw("org.status IN ('Active')")
             .fetch_all()
         )
 
         return builder
+
 
 
 async def get_module_organization(connection: AsyncConnection, module_id: str):
@@ -88,10 +92,13 @@ async def get_module_organization(connection: AsyncConnection, module_id: str):
                 use_prefix=False
             )
             .where("mod."+ModulesColumns.ID, module_id)
+            .where_raw("org.status IN ('Active')")
             .fetch_one()
         )
 
         return builder
+
+
 
 async def get_organization_details(connection: AsyncConnection, organization_id: str):
     with exception_response():
@@ -99,10 +106,13 @@ async def get_organization_details(connection: AsyncConnection, organization_id:
             ReadBuilder(connection=connection)
             .from_table(Tables.ORGANIZATIONS.value, alias="org")
             .where("org."+OrganizationsColumns.ID.value, organization_id)
+            .where_raw("org.status IN ('Active')")
             .fetch_one()
         )
 
         return builder
+
+
 
 async def edit_organization_details(connection: AsyncConnection, organization: UpdateOrganization, organization_id: str):
     with exception_response():
@@ -118,10 +128,13 @@ async def edit_organization_details(connection: AsyncConnection, organization: U
 
         return builder
 
+
+
 async def delete_organization(connection: AsyncConnection, organization_id: str):
     with exception_response():
         __status__ = DeleteOrganization(
-            status=OrganizationStatus.DELETED
+            status=OrganizationStatus.DELETED,
+            name=get_unique_key()
         )
 
         builder = await (

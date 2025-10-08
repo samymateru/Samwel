@@ -162,6 +162,7 @@ async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
         # return payload
 
 
+
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)
 async def module_redirection(
         module_id: str,
