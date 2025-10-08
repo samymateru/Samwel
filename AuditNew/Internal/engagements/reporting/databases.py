@@ -15,26 +15,45 @@ async def get_summary_findings(connection: AsyncConnection, engagement_id: str):
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching issue based on engagement {e}")
 
+
+
 async def get_summary_audit_process(connection: AsyncConnection, engagement_id: str):
     query = sql.SQL(
         """
+        SELECT
+            mp.id AS main_program_id,
+            mp.name AS program,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                         'sub_program_id', sp.id,
+                         'title', sp.title,
+                         'effectiveness', sp.effectiveness,
+                         'issue_counts', COALESCE(risk_stats.counts, '{}'),
+                         'total_very_high_risk', COALESCE(risk_stats.counts->>'very_high_risk', '0')::int,
+                         'total_moderate_risk', COALESCE(risk_stats.counts->>'moderate_risk', '0')::int,
+                         'total_recurring_issues', COALESCE(risk_stats.counts->>'recurring_count', '0')::int
+                    )
+                ) FILTER (WHERE sp.id IS NOT NULL),
+                '[]'
+            ) AS sub_programs
+        FROM main_program mp
+        LEFT JOIN sub_program sp ON sp.program = mp.id
+        LEFT JOIN (
             SELECT 
-            main_program.id,
-            main_program.name,
-            main_program.status,
-            main_program.process_rating,
-            COUNT(issue.id) AS issue_count,
-            COUNT(CASE WHEN issue.risk_rating = 'Acceptable' THEN 1 END) AS acceptable,
-            COUNT(CASE WHEN issue.risk_rating = 'Improvement Required' THEN 1 END) AS improvement_required,
-            COUNT(CASE WHEN issue.risk_rating = 'Significant Improvement Required' THEN 1 END) AS significant_improvement_required,
-            COUNT(CASE WHEN issue.risk_rating = 'Unacceptable' THEN 1 END) AS Unacceptable,
-            COUNT(CASE WHEN issue.recurring_status = true THEN 1 END) AS recurring_issues
-            FROM engagements 
-            JOIN main_program ON main_program.engagement = engagements.id
-            LEFT JOIN sub_program ON sub_program.program = main_program.id
-            LEFT JOIN issue ON sub_program.id = issue.sub_program
-            WHERE main_program.engagement = %s
-            GROUP BY main_program.name, main_program.status, main_program.process_rating, main_program.id; 
+                i.sub_program,
+                json_build_object(
+                    'total', COUNT(*) ,
+                    'very_high_risk', COUNT(*) FILTER (WHERE i.risk_rating IN ('Significant Improvement Required', 'Unacceptable')),
+                    'moderate_risk', COUNT(*) FILTER (WHERE i.risk_rating IN ('Improvement Required', 'Acceptable')),
+                    'recurring_count', COUNT(*) FILTER (WHERE i.recurring_status = TRUE)
+                ) AS counts
+            FROM issue i
+            GROUP BY i.sub_program
+        ) AS risk_stats ON risk_stats.sub_program = sp.id
+        WHERE mp.engagement = %s
+        GROUP BY mp.id, mp.name
+        ORDER BY mp.name;
         """)
     try:
         async with connection.cursor() as cursor:

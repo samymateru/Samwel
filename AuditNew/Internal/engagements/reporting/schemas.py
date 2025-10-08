@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 from typing import Optional, List
 from enum import Enum
 from datetime import datetime
@@ -52,43 +52,29 @@ class LOD2Feedback(str, Enum):
     CLOSED_RISK_ACCEPTED = "Closed -> risk accepted"
 
 
-class SummaryFinding(BaseModel):
-    id: Optional[str] = None
-    title: Optional[str]
-    ref: Optional[str] = None
-    criteria: Optional[str]
-    finding: Optional[str]
-    risk_rating: Optional[str]
-    process: Optional[str]
-    source: Optional[str]
-    sdi_name: Optional[str] = None
-    sub_process: Optional[str]
-    root_cause_description: Optional[str]
-    root_cause: Optional[str]
-    sub_root_cause: Optional[str]
-    risk_category: Optional[str]
-    sub_risk_category: Optional[str]
-    impact_description: Optional[str]
-    impact_category: Optional[str]
-    impact_sub_category: Optional[str]
-    recurring_status: Optional[bool]
-    recommendation: Optional[str]
-    management_action_plan: Optional[str]
-    regulatory: Optional[bool]
-    estimated_implementation_date: Optional[datetime]
-    prepared_by: Optional[User] = None
-    reviewed_by: Optional[User] = None
-    status: Optional[IssueStatus] | None = IssueStatus.NOT_STARTED
-    reportable: Optional[bool] = None
-    lod1_implementer: List[User]
-    lod1_owner: List[User]
-    observers: Optional[List[User]] = None
-    lod2_risk_manager: Optional[List[User]]
-    lod2_compliance_officer: Optional[List[User]] = None
-    lod3_audit_manager: List[User]
-    date_opened: Optional[datetime] = None
-    date_closed: Optional[datetime] = None
-    date_revised: Optional[datetime] = None
-    revised_status: Optional[bool] = False
-    revised_count: Optional[int] = 0
-    created_at: Optional[datetime] = None
+class IssueCounts(BaseModel):
+    total: int
+    very_high_risk: int
+    moderate_risk: int
+    recurring_count: int
+
+
+class SubProgram(BaseModel):
+    sub_program_id: str
+    title: str
+    effectiveness: Optional[str] = None
+    issue_counts: IssueCounts
+    total_very_high_risk: int
+    total_moderate_risk: int
+    total_recurring_issues: int
+
+
+class MainProgram(BaseModel):
+    main_program_id: str
+    program: str
+    sub_programs: List[SubProgram]
+
+
+# Root model for a list of MainProgram
+class EngagementPrograms(RootModel[List[MainProgram]]):
+    pass

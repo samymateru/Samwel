@@ -38,6 +38,7 @@ class ProcedureTypes(str, Enum):
     FINALIZATION = "Finalization"
 
 
+
 class PreparedReviewedBy(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None

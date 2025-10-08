@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+
+from models.engagement_models import get_single_engagement_details
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
     update_staff_model, delete_staff_model
 from models.notification_models import add_notification_to_user_model
@@ -9,6 +11,7 @@ from schema import ResponseMessage
 from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, ReadEngagementStaff
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.logging.logger import global_logger
 from utils import exception_response, return_checker, get_unique_key
 
 router = APIRouter(prefix="/engagements")
@@ -36,6 +39,14 @@ async def create_new_engagement_staff(
             email=staff.email
         )
 
+        engagement_data = await get_single_engagement_details(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        if engagement_data is None:
+            global_logger.exception("Engagement Not Found")
+
 
         await add_notification_to_user_model(
             connection=connection,
@@ -43,7 +54,7 @@ async def create_new_engagement_staff(
                 id=get_unique_key(),
                 title="Engagement invitation",
                 user_id=user_data.get("id"),
-                message=f"Your have been invited to engagement as {staff.role} from {staff.start_date} to {staff.end_date}",
+                message=f"Your have been invited to Engagement: {engagement_data.get('name')} as {staff.role} from {staff.start_date} to {staff.end_date}",
                 status=NotificationsStatus.NEW,
                 created_at=datetime.now()
             )

@@ -30,9 +30,9 @@ class NewSubProgram(BaseModel):
 
 
 class ReviewPrepareUser(BaseModel):
-    name: str
-    email: str
-    date_issued: datetime
+    name: Optional[str]
+    email: Optional[str] = None
+    date_issued: Optional[str] = None
 
 
 class CreateSubProgram(NewSubProgram):

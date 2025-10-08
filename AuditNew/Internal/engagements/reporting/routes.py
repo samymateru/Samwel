@@ -1,4 +1,4 @@
-from AuditNew.Internal.engagements.reporting.schemas import ProgramSummary
+from AuditNew.Internal.engagements.reporting.schemas import ProgramSummary, EngagementPrograms
 from schemas.issue_schemas import ReadIssues
 from fastapi import APIRouter, Depends
 from utils import  get_async_db_connection
@@ -22,14 +22,12 @@ async def fetch_summary_of_findings(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.get("/summary_audit_process/{engagement_id}", response_model=List[ProgramSummary])
+@router.get("/summary_audit_process/{engagement_id}", response_model=EngagementPrograms)
 async def fetch_summary_of_audit_process(
         engagement_id: str,
         db=Depends(get_async_db_connection),
         #user: CurrentUser = Depends(get_current_user)
 ):
-    #if user.status_code != 200:
-        #raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
         data = await get_summary_audit_process(connection=db, engagement_id=engagement_id)
         return data

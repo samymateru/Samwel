@@ -6,7 +6,11 @@ from schemas.standard_template_schemas import NewStandardTemplate, ProcedureType
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
 
+
+
 router = APIRouter(prefix="/engagements")
+
+
 
 @router.post("/std_template/{engagement_id}", status_code=201, response_model=ResponseMessage)
 async def create_standard_procedure(
@@ -53,7 +57,6 @@ async def get_standard_standard_procedure(
         )
 
         return data
-
 
 
 

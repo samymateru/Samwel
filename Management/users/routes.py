@@ -36,6 +36,7 @@ async def fetch_organization_users(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @router.get("/module/{module_id}", response_model=List[ModuleUser])
 async def fetch_module_users(
         module_id: str,

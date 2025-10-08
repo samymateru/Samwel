@@ -23,8 +23,10 @@ from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_r
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
+from reports.draft_report.draft_report import generate_draft_report_model
 from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
 from reports.finding_sheet.finding_report import generate_finding_report
+from reports.models.process_summary_rating_model import process_summary_rating_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -134,13 +136,21 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
     with exception_response():
+        # data = await generate_draft_engagement_letter_model(
+        #     connection=connection,
+        #     engagement_id='0a69c33424be',
+        # )
+        #
+        # return data
 
-        data = await generate_draft_engagement_letter_model(
+        data = await process_summary_rating_model(
             connection=connection,
-            engagement_id='0a69c33424be',
+            engagement_id='4b15ba494eb9',
         )
 
         return data
+
+
         # data = await generate_finding_report(
         #     connection=connection,
         #     engagement_id="4b15ba494eb9",
