@@ -18,18 +18,18 @@ def apply_marks(run, marks):
         elif mtype == "underline":
             run.underline = True
         elif mtype == "fontfamily":
-            font_name = mark.get("attrs", {}).get("name")
+            font_name = mark.get("attrs", {}).get("name", "")
             if font_name:
                 run.font.name = font_name
                 from docx.oxml.ns import qn
                 run._element.rPr.rFonts.set(qn('w:eastAsia'), font_name)
         elif mtype == "color":
-            color_code = mark.get("attrs", {}).get("color")
+            color_code = mark.get("attrs", {}).get("color", "")
             if color_code:
                 r, g, b = hex_to_rgb(color_code)
                 run.font.color.rgb = RGBColor(r, g, b)
         elif mtype == "fontsize":
-            size = mark.get("attrs", {}).get("size")
+            size = mark.get("attrs", {}).get("size", "")
             if size:
                 run.font.size = Pt(size)
 

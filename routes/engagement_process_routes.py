@@ -46,7 +46,6 @@ async def get_engagement_processes(
 
 
 
-
 @router.get("/context/engagement_process/single/{engagement_process_id}")
 async def get_single_engagement_process(
         engagement_process_id: str,
@@ -62,8 +61,6 @@ async def get_single_engagement_process(
             raise HTTPException(status_code=404, detail="Engagement Process Not Found")
 
         return data
-
-
 
 
 @router.put("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
@@ -88,7 +85,7 @@ async def update_engagement_process(
 
 
 
-@router.put("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
+@router.delete("/context/engagement_process/{engagement_process_id}", response_model=ResponseMessage)
 async def delete_single_engagement_process(
         engagement_process_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

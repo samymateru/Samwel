@@ -23,6 +23,7 @@ async def create_engagement_process_model(
             process=engagement_process.process,
             sub_process=engagement_process.sub_process,
             description=engagement_process.description,
+            business_unit=engagement_process.business_unit
         )
 
         builder = await (
@@ -104,6 +105,7 @@ async def delete_single_engagement_process_model(
             .from_table(Tables.ENGAGEMENT_PROCESS.value)
             .check_exists({EngagementProcessColumns.ID.value: engagement_process_id})
             .where({EngagementProcessColumns.ID.value: engagement_process_id})
+            .returning(EngagementProcessColumns.ID.value)
             .execute()
         )
 

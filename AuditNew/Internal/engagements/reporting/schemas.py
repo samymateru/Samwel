@@ -1,4 +1,4 @@
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel, RootModel, Field
 from typing import Optional, List
 from enum import Enum
 from datetime import datetime
@@ -53,28 +53,27 @@ class LOD2Feedback(str, Enum):
 
 
 class IssueCounts(BaseModel):
-    total: int
-    very_high_risk: int
-    moderate_risk: int
-    recurring_count: int
+    total: Optional[int] = 0
+    very_high_risk: Optional[int] = 0
+    moderate_risk: Optional[int] = 0
+    recurring_count: Optional[int] = 0
 
 
 class SubProgram(BaseModel):
     sub_program_id: str
     title: str
     effectiveness: Optional[str] = None
-    issue_counts: IssueCounts
-    total_very_high_risk: int
-    total_moderate_risk: int
-    total_recurring_issues: int
+    issue_counts: Optional[IssueCounts] = Field(default_factory=IssueCounts)
+    total_very_high_risk: int = 0
+    total_moderate_risk: int = 0
+    total_recurring_issues: int = 0
 
 
 class MainProgram(BaseModel):
     main_program_id: str
     program: str
-    sub_programs: List[SubProgram]
+    sub_programs: List[SubProgram] = Field(default_factory=list)
 
 
-# Root model for a list of MainProgram
 class EngagementPrograms(RootModel[List[MainProgram]]):
     pass

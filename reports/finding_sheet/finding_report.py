@@ -2,6 +2,8 @@ import warnings
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
 from reports.utils import create_styled_table
+from services.logging.logger import global_logger
+
 warnings.filterwarnings("ignore")
 import os
 from docx import Document
@@ -76,12 +78,12 @@ async def generate_finding_report(
         issues_context = []
 
         for da in issue_data:
-            converter(filename=finding_path, data=da.finding)
-            converter(filename=criteria_path, data=da.criteria)
-            converter(filename=recommendation_path, data=da.recommendation)
-            converter(filename=management_action_plan, data=da.management_action_plan)
-            converter(filename=root_cause_description_path, data=da.root_cause_description)
-            converter(filename=impact_description_path, data=da.impact_description)
+            converter(filename=finding_path, data=da.finding or {})
+            converter(filename=criteria_path, data=da.criteria or {})
+            converter(filename=recommendation_path, data=da.recommendation or {})
+            converter(filename=management_action_plan, data=da.management_action_plan or {})
+            converter(filename=root_cause_description_path, data=da.root_cause_description or {})
+            converter(filename=impact_description_path, data=da.impact_description or {})
 
 
             finding_sub_doc = doc.new_subdoc(finding_path)
@@ -122,6 +124,24 @@ async def generate_finding_report(
             "table1": table_of_content_sub_doc,
             "issues": issues_context
         }
+
+
+        temp_files = [
+            finding_path,
+            criteria_path,
+            recommendation_path,
+            management_action_plan,
+            root_cause_description_path,
+            impact_description_path,
+            table_of_content_path
+        ]
+
+        for f in temp_files:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception as e:
+                    global_logger(f"Could not delete {f}: {e}")
 
         doc.render(context)
         doc.save(output_path)

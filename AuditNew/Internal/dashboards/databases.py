@@ -806,6 +806,7 @@ async def get_overdue_issues(issues: List[Dict]):
     return data
 
 
+
 async def summarize_engagement_status(connection: AsyncConnection, module_id: str):
     """
     Summarize engagement statuses (normalized) for the latest annual plan year.
@@ -827,6 +828,7 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
             """
         )
 
+
         async with connection.cursor() as cursor:
             await cursor.execute(query, (module_id, module_id))
             rows = await cursor.fetchall()
@@ -841,14 +843,8 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
                 issues.extend(issues_data)
 
 
-
             issue_stats = await summarize_status(issues)
 
-        if not rows:
-            raise HTTPException(
-                status_code=404,
-                detail="No engagements found for the latest annual plan."
-            )
 
         # Flatten results: [('Open',), ('Completed',), ...] -> ['Open', 'Completed', ...]
         statuses = [row[0] for row in rows if row[0]]

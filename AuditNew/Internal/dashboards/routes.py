@@ -45,6 +45,7 @@ async def fetch_main_dashboard(
             "recurring": recurring
         }
 
+
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 

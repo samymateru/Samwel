@@ -4,6 +4,7 @@ from docx import Document
 
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.utils import create_styled_table
+from services.logging.logger import global_logger
 
 warnings.filterwarnings("ignore")
 import os
@@ -71,7 +72,6 @@ async def generate_draft_engagement_letter_model(
             distribution_list.append([__data__.name, __data__.title, "Business Contacts"])
 
 
-
         create_styled_table(
             business_contacts_table,
             columns=3,
@@ -131,6 +131,25 @@ async def generate_draft_engagement_letter_model(
             "business_contacts": data.engagement_business_contacts,
             "distribution_list": distribution_list_sub_doc
         }
+
+        temp_files = [
+            audit_background_path,
+            key_legislations_path,
+            key_changes_path,
+            system_path,
+            reliance_path,
+            audit_objectives_path,
+            business_contacts_table_path,
+            distribution_list_path
+        ]
+
+
+        for f in temp_files:
+            if os.path.exists(f):
+                try:
+                    os.remove(f)
+                except Exception as e:
+                    global_logger(f"Could not delete {f}: {e}")
 
 
         doc.render(context)

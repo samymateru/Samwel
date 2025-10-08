@@ -1,5 +1,8 @@
 import os
 import warnings
+
+from services.logging.logger import global_logger
+
 warnings.filterwarnings("ignore")
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
@@ -51,11 +54,11 @@ async def generate_draft_report_model(
 
         doc = DocxTemplate(template_path)
 
-        converter(filename=audit_background_path, data=engagement_data.engagement_profile.audit_background)
-        converter(filename=key_legislations_path, data=engagement_data.engagement_profile.key_legislations)
-        converter(filename=key_changes_path, data=engagement_data.engagement_profile.key_changes)
-        converter(filename=system_path, data=engagement_data.engagement_profile.relevant_systems)
-        converter(filename=reliance_path, data=engagement_data.engagement_profile.reliance)
+        converter(filename=audit_background_path, data=engagement_data.engagement_profile.audit_background or {})
+        converter(filename=key_legislations_path, data=engagement_data.engagement_profile.key_legislations or {})
+        converter(filename=key_changes_path, data=engagement_data.engagement_profile.key_changes or {})
+        converter(filename=system_path, data=engagement_data.engagement_profile.relevant_systems or {})
+        converter(filename=reliance_path, data=engagement_data.engagement_profile.reliance or {})
 
 
         audit_background_sub_doc = doc.new_subdoc(audit_background_path)
@@ -140,7 +143,8 @@ async def generate_draft_report_model(
                 try:
                     os.remove(f)
                 except Exception as e:
-                    print(f"Could not delete {f}: {e}")
+                    global_logger(f"Could not delete {f}: {e}")
+
 
 
         doc.render(context)

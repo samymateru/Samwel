@@ -39,7 +39,6 @@ async def generate_report(
             output_path, engagement_name = await generate_draft_report_model(
                 connection=connection,
                 engagement_id=engagement_id,
-                module_id=module_id
             )
 
         elif category.value == ReportType.FINDING_LETTER:

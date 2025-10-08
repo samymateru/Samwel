@@ -49,6 +49,8 @@ async def get_engagement_report_details(
             engagement_id=engagement_id
         )
 
+        print(engagement_profile_data)
+
         if engagement_profile_data is None:
             global_logger.exception("Engagement Profile Not Found")
             raise HTTPException(status_code=404, detail="Engagement Profile Not Found")

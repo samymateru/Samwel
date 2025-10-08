@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional, Dict, List
 from enum import Enum
 
-from schemas.user_schemas import User
 
 class PrepareReview(BaseModel):
     id: str
@@ -25,13 +24,13 @@ class EngagementProfileColumns(str, Enum):
 
 
 class NewEngagementAdministrationProfile(BaseModel):
-    audit_background: Dict
-    audit_objectives: Dict
-    key_legislations: Dict
-    relevant_systems: Dict
-    key_changes: Dict
-    reliance: Dict
-    scope_exclusion: Dict
+    audit_background: Optional[Dict] = None
+    audit_objectives: Optional[Dict] = None
+    key_legislations: Optional[Dict] = None
+    relevant_systems: Optional[Dict] = None
+    key_changes: Optional[Dict]
+    reliance: Optional[Dict]
+    scope_exclusion: Optional[Dict]
     core_risk: Optional[List[str]] = None
 
 
