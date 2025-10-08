@@ -74,6 +74,7 @@ async def get_module_annual_plans(
             )
             .select_joins()
             .where(AnnualPlanColumns.MODULE.value, module_id)
+            .where_raw("pln.status IN ('Pending')")
             .fetch_all()
         )
 
@@ -120,10 +121,12 @@ async def get_annual_plan_details(
             ReadBuilder(connection=connection)
             .from_table(Tables.ANNUAL_PLANS.value)
             .where(AnnualPlanColumns.ID.value, annual_plan_id)
+            .where_raw("status IN ('Pending')")
             .fetch_one()
         )
 
         return builder
+
 
 
 async def edit_annual_plan_details(
@@ -152,7 +155,8 @@ async def remove_annual_plan_partially(
 ):
     with exception_response():
         __annual_plan__ = RemoveAnnualPlanPartially(
-            status=AnnualPlanStatus.DELETED
+            status=AnnualPlanStatus.DELETED,
+            name=get_unique_key()
         )
 
         builder = await (

@@ -82,6 +82,7 @@ async def create_new_annual_plan(
         )
 
 
+
 @router.get("/{module_id}")
 async def fetch_all_module_annual_plans(
         module_id: str,
@@ -93,6 +94,8 @@ async def fetch_all_module_annual_plans(
             module_id=module_id
         )
         return data
+
+
 
 
 @router.get("/single_plan/{annual_plan_id}", response_model=ReadAnnualPlan)
@@ -110,6 +113,8 @@ async def fetch_single_plan_data(
         if data is None:
             raise HTTPException(status_code=404, detail="Annual Plan Not Found")
         return data
+
+
 
 @router.put("/{annual_plan_id}", response_model=ResponseMessage)
 async def update_annual_plan_data(
@@ -129,6 +134,8 @@ async def update_annual_plan_data(
             passed="Annual Plan Successfully Updated",
             failed="Failed Updating  Annual Plan"
         )
+
+
 
 
 @router.delete("/{annual_plan_id}", response_model=ResponseMessage)

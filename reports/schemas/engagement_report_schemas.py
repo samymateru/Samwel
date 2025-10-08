@@ -13,6 +13,8 @@ class BusinessContacts(BaseModel):
     name: str
     email: str
     role: Optional[str] = None
+    title: Optional[str] = None
+    type: Optional[str] = None
 
 
 class EngagementReportSchema(BaseModel):

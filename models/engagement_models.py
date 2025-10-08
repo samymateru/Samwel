@@ -113,7 +113,6 @@ async def get_all_annual_plan_engagement(
 
 
 
-
 async def get_module_engagement_model(
         connection: AsyncConnection,
         status: EngagementStatus,
@@ -220,13 +219,15 @@ async def complete_annual_plan_engagement(
         return builder
 
 
+
 async def remove_engagement_partially(
         connection: AsyncConnection,
         engagement_id: str
 ):
     with exception_response():
         __remove__ =  DeleteEngagementPartially(
-            status=EngagementStatus.DELETED
+            status=EngagementStatus.DELETED,
+            name=get_unique_key(),
         )
 
         builder = await (
@@ -260,6 +261,7 @@ async def update_engagement_opinion_rating(
         )
 
         return builder
+
 
 
 async def update_engagement_data(

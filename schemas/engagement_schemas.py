@@ -122,6 +122,7 @@ class CompleteEngagement(BaseModel):
 
 class DeleteEngagementPartially(BaseModel):
     status: EngagementStatus
+    name: str
 
 
 class Engagement(CreateEngagement):

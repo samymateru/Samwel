@@ -63,7 +63,7 @@ async def get_engagement_report_details(
             engagement_id=engagement_id
         )
 
-        leads = [ReportLead(**item) for item in engagement_leads_data if item["role"] == "Audit Lead"]
+        leads = [ReportLead(**item) for item in engagement_leads_data]
 
 
 
@@ -73,10 +73,12 @@ async def get_engagement_report_details(
             engagement_id=engagement_id
         )
 
+
         if business_contact_data.__len__() < 2:
             raise HTTPException(status_code=404, detail="Business Contacts Not Found")
 
         business_contacts = []
+
 
         for user in business_contact_data[0]["user"] + business_contact_data[1]["user"]:
             data = await (
@@ -94,8 +96,6 @@ async def get_engagement_report_details(
             )
 
             business_contacts.append(BusinessContacts(**data))
-
-
 
 
         data = EngagementReportSchema(
