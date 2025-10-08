@@ -409,6 +409,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         ) AS root_cause_summary
         ) AS root_cause_summary,
 
+
         -- Risk rating summary as JSON
         (
         SELECT jsonb_object_agg(risk_rating, count)
@@ -426,6 +427,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         JOIN engagements e ON i.engagement = e.id
         WHERE e.id = {engagement_id};
         """).format(engagement_id=sql.Literal(engagement_id))
+
 
     query_review_comment = sql.SQL(
         """
@@ -502,6 +504,8 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching planning details {e}")
 
+
+
 async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     query_current_plan_engagements = sql.SQL(
         """
@@ -527,14 +531,15 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         JOIN public.engagements eng ON pln.id = eng.plan_id
         LEFT JOIN public.issue isu ON eng.id = isu.engagement
         WHERE pln.module = %s
-        AND pln.year = (
-          SELECT MAX(year)
+        AND ap.year::int = (
+          SELECT MAX(year::int)
           FROM annual_plans
           WHERE module = %s
         )
         ORDER BY eng.id, isu.id
         LIMIT 20;
         """)
+
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query_current_plan_engagements, (
@@ -544,9 +549,6 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-
-
-            print(data)
 
 
             dashboard_data = separate_engagements_and_issues(data)
@@ -566,6 +568,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying module home dashboard {e}")
+
 
 
 def separate_engagements_and_issues(rows):
@@ -820,8 +823,8 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
             FROM engagements AS eng
             JOIN annual_plans AS ap ON ap.id = eng.plan_id
             WHERE ap.module = %s
-              AND ap.year = (
-                  SELECT MAX(year)
+              AND ap.year::int = (
+                  SELECT MAX(year::int)
                   FROM annual_plans
                   WHERE module = %s
               );
@@ -833,6 +836,8 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
             await cursor.execute(query, (module_id, module_id))
             rows = await cursor.fetchall()
             issues = []
+
+            print(rows)
 
             for row in rows:
                 issues_data = await pull_engagement_issues(

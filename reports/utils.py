@@ -1,3 +1,5 @@
+import html
+import re
 import warnings
 warnings.filterwarnings("ignore")
 from docx import Document
@@ -94,7 +96,7 @@ def create_styled_table(
         for i, header_text in enumerate(headers):
             p = hdr_cells[i].paragraphs[0]
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            run = p.add_run(header_text)
+            run = p.add_run(sanitize_for_xml(header_text))
             run.bold = True
             run.font.size = Pt(10)
             run.font.color.rgb = RGBColor.from_string(header_font_color)
@@ -125,7 +127,7 @@ def create_styled_table(
         for j, cell_value in enumerate(row_data):
             p = row_cells[j].paragraphs[0]
             p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            run = p.add_run(str(cell_value))
+            run = p.add_run(sanitize_for_xml(str(cell_value)))
             run.font.size = Pt(10)
             row_cells[j].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
 
@@ -164,6 +166,21 @@ def color_shading(value: str):
 
     return rating_map.get(value) or "FFFFFF"
 
+
+
+def sanitize_for_xml(text: str) -> str:
+    if not text:
+        return ""
+
+    text = str(text)
+    # Remove control chars
+    text = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", "", text)
+    # Escape unsafe XML entities
+    text = re.sub(r"&(?!(?:[a-zA-Z]+|#\d+);)", "&amp;", text)
+    text = text.replace("<", "&lt;").replace(">", "&gt;")
+    # Remove invalid surrogates
+    text = text.encode("utf-8", "ignore").decode("utf-8")
+    return html.escape(text)
 
 
 #

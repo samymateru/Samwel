@@ -1,6 +1,7 @@
 import os
 import warnings
 
+from reports.utils import sanitize_for_xml
 from services.logging.logger import global_logger
 
 warnings.filterwarnings("ignore")
@@ -67,17 +68,16 @@ async def generate_draft_report_model(
         system_sub_doc = doc.new_subdoc(system_path)
         reliance_sub_doc = doc.new_subdoc(reliance_path)
 
-
-
         issues_context = []
 
+
         for da in issue_data:
-            converter(filename=finding_path, data=da.finding)
-            converter(filename=criteria_path, data=da.criteria)
-            converter(filename=recommendation_path, data=da.recommendation)
-            converter(filename=management_action_plan, data=da.management_action_plan)
-            converter(filename=root_cause_description_path, data=da.root_cause_description)
-            converter(filename=impact_description_path, data=da.impact_description)
+            converter(filename=finding_path, data=da.finding or {})
+            converter(filename=criteria_path, data=da.criteria or {})
+            converter(filename=recommendation_path, data=da.recommendation or {})
+            converter(filename=management_action_plan, data=da.management_action_plan or {})
+            converter(filename=root_cause_description_path, data=da.root_cause_description or {})
+            converter(filename=impact_description_path, data=da.impact_description or {})
 
 
             finding_sub_doc = doc.new_subdoc(finding_path)
@@ -89,18 +89,18 @@ async def generate_draft_report_model(
 
             # Append to context list
             issues_context.append({
-                "title": da.title,
-                "process": da.process,
-                "sub_process": da.sub_process,
-                "risk_category": da.risk_category,
-                "sub_risk_category": da.sub_risk_category,
+                "title": sanitize_for_xml(da.title),
+                "process": sanitize_for_xml(da.process),
+                "sub_process": sanitize_for_xml(da.sub_process),
+                "risk_category": sanitize_for_xml(da.risk_category),
+                "sub_risk_category": sanitize_for_xml(da.sub_risk_category),
                 "recurring": "Yes" if da.recurring_status else "No",
-                "rating": da.risk_rating,
-                "root_cause": da.root_cause,
-                "sub_root_cause": da.sub_root_cause,
+                "rating": sanitize_for_xml(da.risk_rating),
+                "root_cause": sanitize_for_xml(da.root_cause),
+                "sub_root_cause": sanitize_for_xml(da.sub_root_cause),
                 "root_cause_description": root_cause_description_sub_doc,
-                "impact_category": da.impact_category,
-                "impact_sub_category": da.impact_sub_category,
+                "impact_category": sanitize_for_xml(da.impact_category),
+                "impact_sub_category": sanitize_for_xml(da.impact_sub_category),
                 "impact_description": impact_description_sub_doc,
                 "finding": finding_sub_doc,
                 "criteria": criteria_sub_doc,
@@ -126,14 +126,14 @@ async def generate_draft_report_model(
 
 
         context = {
-            "organization_name": engagement_data.organization_name,
+            "organization_name": sanitize_for_xml(engagement_data.organization_name),
             "audit_background": audit_background_sub_doc,
             "key_legislations": key_legislations_sub_doc,
             "key_changes": key_changes_sub_doc,
             "relevant_systems": system_sub_doc,
             "reliance": reliance_sub_doc,
-            'engagement_code': engagement_data.engagement_code,
-            "engagement_name": engagement_data.engagement_name,
+            'engagement_code': sanitize_for_xml(engagement_data.engagement_code),
+            "engagement_name": sanitize_for_xml(engagement_data.engagement_name),
             "issues": issues_context
         }
 
@@ -144,7 +144,6 @@ async def generate_draft_report_model(
                     os.remove(f)
                 except Exception as e:
                     global_logger(f"Could not delete {f}: {e}")
-
 
 
         doc.render(context)

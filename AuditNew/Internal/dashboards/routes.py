@@ -85,6 +85,7 @@ async def fetch_plan_details(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
+
 @router.get("/eauditNext/engagement_details/{engagement_id}")
 async def fetch_engagement_details(
         engagement_id: str,

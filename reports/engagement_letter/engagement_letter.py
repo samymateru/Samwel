@@ -3,7 +3,7 @@ import warnings
 from docx import Document
 
 from reports.models.engagement_report_model import get_engagement_report_details
-from reports.utils import create_styled_table
+from reports.utils import create_styled_table, sanitize_for_xml
 from services.logging.logger import global_logger
 
 warnings.filterwarnings("ignore")
@@ -113,24 +113,21 @@ async def generate_draft_engagement_letter_model(
         distribution_list_sub_doc = doc.new_subdoc(distribution_list_path)
 
 
-
-
-
-
         context = {
-            "organization_name": data.organization_name,
+            "organization_name": sanitize_for_xml(data.organization_name),
             "audit_background": audit_background_sub_doc,
             "key_legislations": key_legislations_sub_doc,
             "key_changes": key_changes_sub_doc,
             "relevant_systems": system_sub_doc,
             "reliance": reliance_sub_doc,
             "audit_objectives": audit_objectives_sub_doc,
-            'engagement_code': data.engagement_code,
-            "engagement_name": data.engagement_name,
+            'engagement_code': sanitize_for_xml(data.engagement_code),
+            "engagement_name": sanitize_for_xml(data.engagement_name),
             "business_contact": business_contacts_table_sub_doc,
             "business_contacts": data.engagement_business_contacts,
             "distribution_list": distribution_list_sub_doc
         }
+
 
         temp_files = [
             audit_background_path,

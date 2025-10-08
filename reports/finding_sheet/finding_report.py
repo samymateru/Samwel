@@ -1,7 +1,7 @@
 import warnings
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
-from reports.utils import create_styled_table
+from reports.utils import create_styled_table, sanitize_for_xml
 from services.logging.logger import global_logger
 
 warnings.filterwarnings("ignore")
@@ -36,6 +36,7 @@ async def generate_finding_report(
             connection=connection,
             engagement_id=engagement_id
         )
+
 
 
         issue_data = await issue_report_data_model(
@@ -95,19 +96,19 @@ async def generate_finding_report(
 
 
             issues_context.append({
-                "title": da.title,
-                "process": da.process,
-                "sub_process": da.sub_process,
-                "risk_category": da.risk_category,
-                "sub_risk_category": da.sub_risk_category,
+                "title": sanitize_for_xml(da.title),
+                "process": sanitize_for_xml(da.process),
+                "sub_process": sanitize_for_xml(da.sub_process),
+                "risk_category": sanitize_for_xml(da.risk_category),
+                "sub_risk_category": sanitize_for_xml(da.sub_risk_category),
                 "recurring": "Yes" if da.recurring_status else "No",
-                "rating": da.risk_rating,
-                "root_cause": da.root_cause,
-                "sub_root_cause": da.sub_root_cause,
-                "root_cause_description": root_cause_description_sub_doc,
-                "impact_category": da.impact_category,
-                "impact_sub_category": da.impact_sub_category,
-                "impact_description": impact_description_sub_doc,
+                "rating": sanitize_for_xml(da.risk_rating),
+                "root_cause": sanitize_for_xml(da.root_cause),
+                "sub_root_cause": sanitize_for_xml(da.sub_root_cause),
+                "impact_category": sanitize_for_xml(da.impact_category),
+                "impact_sub_category": sanitize_for_xml(da.impact_sub_category),
+                "impact_description": sanitize_for_xml(impact_description_sub_doc),
+                "root_cause_description": sanitize_for_xml(root_cause_description_sub_doc),
                 "finding": finding_sub_doc,
                 "criteria": criteria_sub_doc,
                 "recommendation": recommendation_sub_doc,
@@ -118,9 +119,9 @@ async def generate_finding_report(
 
 
         context = {
-            "organization_name": engagement_data.organization_name,
-            'engagement_code': engagement_data.engagement_code,
-            "engagement_name": engagement_data.engagement_name,
+            "organization_name": sanitize_for_xml(engagement_data.organization_name),
+            'engagement_code': sanitize_for_xml(engagement_data.engagement_code),
+            "engagement_name": sanitize_for_xml(engagement_data.engagement_name),
             "table1": table_of_content_sub_doc,
             "issues": issues_context
         }

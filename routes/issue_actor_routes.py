@@ -56,7 +56,7 @@ async def fetch_all_actor_issues(
             module_id=module_id
         )
 
-        return data
+        return data.__len__()
 
 
 

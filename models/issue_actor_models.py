@@ -64,6 +64,7 @@ async def get_all_issue_actors_on_issue_model(
 
 
 
+
 class UserIssueRole(BaseModel):
     role: str
     module_id: str
@@ -269,6 +270,7 @@ async def get_all_actor_issues_model(
             )
             .where("iss_act."+IssueActorColumns.USER_ID.value, user_id)
             .where("iss."+IssueColumns.MODULE_ID.value, module_id)
+            .where_raw("iss.status NOT IN ('Not started')")
             .distinct("iss.id")
             .fetch_all()
         )
