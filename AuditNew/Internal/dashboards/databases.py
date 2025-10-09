@@ -506,6 +506,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 
 
 
+
 async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     query_current_plan_engagements = sql.SQL(
         """
@@ -531,7 +532,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         JOIN public.engagements eng ON pln.id = eng.plan_id
         LEFT JOIN public.issue isu ON eng.id = isu.engagement
         WHERE pln.module = %s
-        AND ap.year::int = (
+         AND pln.year::int = (
           SELECT MAX(year::int)
           FROM annual_plans
           WHERE module = %s

@@ -1,6 +1,8 @@
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
+
+from AuditNew.Internal.dashboards.databases import query_engagement_details
 from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
@@ -51,7 +53,6 @@ async def create_new_engagement(
 
         if head_users.__len__() == 0:
             raise HTTPException(status_code=400, detail="No Head Of Audit Found, Cant Create Engagement")
-
 
 
         asyncio.create_task(set_engagement_templates(engagement_id=results.get("id")))
@@ -174,6 +175,7 @@ async def archive_engagement(
 
 
 
+
 @router.put("/complete/{engagement_id}")
 async def complete_engagement(
         engagement_id: str,
@@ -187,14 +189,22 @@ async def complete_engagement(
             engagement_id=engagement_id
         )
 
+        data = await query_engagement_details(
+            connection=connection,
+            engagement_id=engagement_id
+        )
+
+        print(data)
+
+
         await add_new_recent_activity(
             connection=connection,
             recent_activity=RecentActivities(
                 activity_id=get_unique_key(),
                 module_id=auth.module_id,
                 name=name,
-                description="Engagement Archived",
-                category=RecentActivityCategory.ENGAGEMENT_ARCHIVED,
+                description="Engagement Completed",
+                category=RecentActivityCategory.ENGAGEMENT_COMPLETED,
                 created_by=auth.user_id,
                 created_at=datetime.now()
             )

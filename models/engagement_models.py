@@ -477,3 +477,25 @@ async def adding_engagement_staff_model(
                 )
             )
 
+
+
+async def update_engagement_to_in_progress(
+        engagement_id: str
+):
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+    with exception_response():
+        async with pool.connection() as connection:
+            data = await (
+                UpdateQueryBuilder(connection=connection)
+                .into_table(Tables.ENGAGEMENTS.value)
+                .values({"status": EngagementStatus.ONGOING.value})
+                .where({EngagementColumns.ID.value: engagement_id})
+                .check_exists({EngagementColumns.ID.value: engagement_id})
+                .returning(EngagementColumns.ID.value)
+                .execute()
+            )
+
+            if data is None:
+                global_logger.exception("Fail To Update Engagement To In Progress")
+
+

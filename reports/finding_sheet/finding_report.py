@@ -137,12 +137,12 @@ async def generate_finding_report(
             table_of_content_path
         ]
 
-        for f in temp_files:
-            if os.path.exists(f):
-                try:
-                    os.remove(f)
-                except Exception as e:
-                    global_logger(f"Could not delete {f}: {e}")
+        # for f in temp_files:
+        #     if os.path.exists(f):
+        #         try:
+        #             os.remove(f)
+        #         except Exception as e:
+        #             global_logger(f"Could not delete {f}: {e}")
 
         doc.render(context)
         doc.save(output_path)

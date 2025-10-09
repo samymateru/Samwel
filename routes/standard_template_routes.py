@@ -1,4 +1,5 @@
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Query, BackgroundTasks
+from models.engagement_models import update_engagement_to_in_progress
 from models.standard_template_models import create_new_standard_template_model, delete_standard_template_model, \
     read_standard_template_model, update_standard_template_model, get_reference_model
 from schema import ResponseMessage
@@ -66,7 +67,9 @@ async def update_standard_standard_procedure(
         procedure_id: str,
         procedure: UpdateStandardProcedure,
         type_: ProcedureTypes,
+        engagement_id: str = Query(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         results = await update_standard_template_model(
@@ -75,6 +78,8 @@ async def update_standard_standard_procedure(
             procedure=procedure,
             procedure_id=procedure_id
         )
+
+        background_tasks.add_task(update_engagement_to_in_progress, engagement_id)
 
         return await return_checker(
             data=results,

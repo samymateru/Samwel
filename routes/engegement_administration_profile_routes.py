@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from models.engagement_administration_profile_models import update_engagement_profile_model, \
     fetch_engagement_administration_profile_model, review_engagement_administration_profile_model, \
     prepare_engagement_administration_profile_model
+from models.engagement_models import update_engagement_to_in_progress
 from schemas.engagement_administration_profile_schemas import NewEngagementAdministrationProfile, \
     ReadEngagementAdministrationProfile, ReviewEngagementProfile, PrepareEngagementProfile
 from services.connections.postgres.connections import AsyncDBPoolSingleton
@@ -31,6 +32,8 @@ async def update_engagement_administration_profile(
         profile: NewEngagementAdministrationProfile,
         engagement_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
+
 ):
     with exception_response():
         results = await update_engagement_profile_model(
@@ -38,6 +41,8 @@ async def update_engagement_administration_profile(
             profile=profile,
             engagement_id=engagement_id
         )
+
+        background_tasks.add_task(update_engagement_to_in_progress, engagement_id)
 
         return await return_checker(
             data=results,

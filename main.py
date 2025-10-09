@@ -158,43 +158,41 @@ async def home(
         # return data
 
 
-        # data = await generate_finding_report(
-        #     connection=connection,
-        #     engagement_id="4b15ba494eb9",
-        # )
-        #
-        # return data
-
-        issue_details = {
-            "ref": "ISSUE-2025-001",
-            "risk_rating": "High"
-        }
-
-        engagement_details = {
-            "name": "Credit Risk Assessment FY2025"
-        }
-
-        emails = [
-            "bonnywilson43@gmail.com",
-        ]
-
-        data = SendSingleIssueNotification(
-            template_model=SingleIssueNotification(
-                title=issue_details.get("ref"),
-                reference=issue_details.get("ref"),
-                rating=issue_details.get("risk_rating"),
-                engagement=engagement_details.get("name"),
-                due_date=datetime.now().isoformat()
-            ),
-            users=emails,
-            template_id=41703998
+        data = await generate_finding_report(
+            connection=connection,
+            engagement_id="4b15ba494eb9",
         )
 
-
-
-        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
-
         return data
+
+        # issue_details = {
+        #     "ref": "ISSUE-2025-001",
+        #     "risk_rating": "High"
+        # }
+        #
+        # engagement_details = {
+        #     "name": "Credit Risk Assessment FY2025"
+        # }
+        #
+        # emails = [
+        #     "bonnywilson43@gmail.com",
+        # ]
+        #
+        # data = SendSingleIssueNotification(
+        #     template_model=SingleIssueNotification(
+        #         title=issue_details.get("ref"),
+        #         reference=issue_details.get("ref"),
+        #         rating=issue_details.get("risk_rating"),
+        #         engagement=engagement_details.get("name"),
+        #         due_date=datetime.now().isoformat()
+        #     ),
+        #     users=emails,
+        #     template_id=41703998
+        # )
+        #
+        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+        #
+        # return data
 
 
 
