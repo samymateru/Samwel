@@ -15,6 +15,7 @@ from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseA
     NewDeclineResponse, UpdateIssueDetails, NewIssueResponse, IssueResponseTypes, IssueStatus, ReadIssues, \
     ReadIssueResponse, IssueActors, ReviewPrepare
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.notifications.postmark import email_service
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
@@ -350,7 +351,7 @@ async def issue_accept_response(
             roles=actors
         )
 
-        #background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
 
         if accept_attachment is not None:
@@ -432,7 +433,7 @@ async def issue_decline_response(
         )
 
 
-        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
         return await return_checker(
             data=results,
@@ -493,7 +494,7 @@ async def request_issue_revise(
         )
 
 
-        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
 
 

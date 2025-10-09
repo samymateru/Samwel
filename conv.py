@@ -2,7 +2,7 @@ import re
 
 from docx import Document
 from docx.oxml.ns import qn
-from docx.shared import RGBColor
+from docx.shared import RGBColor, Inches
 from docx.shared import Pt
 from reports.utils import sanitize_for_xml
 
@@ -96,6 +96,7 @@ def render_node(node, document):
                     apply_marks(run, child["marks"])
 
     elif ntype == "bullet_list":
+        print("bullet ditected")
         for item in node.get("content", []):
             p = document.add_paragraph(style='List Bullet')
             for child in item.get("content", []):

@@ -424,7 +424,7 @@ async def send_issue_for_implementation_model(
                 ]
             )
 
-            # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+            background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
         return True
 
@@ -516,7 +516,7 @@ async def send_issue_to_owner_model(
             roles=[IssueActors.OWNER.value],
         )
 
-        #background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
 
         return results

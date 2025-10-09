@@ -25,6 +25,7 @@ async def get_engagement_report_details(
             engagement_id=engagement_id
         )
 
+
         if engagement_data is None:
             global_logger.exception("Engagement Not Found")
             raise HTTPException(status_code=404, detail="Engagement Not Found")
@@ -49,7 +50,6 @@ async def get_engagement_report_details(
             engagement_id=engagement_id
         )
 
-        print(engagement_profile_data)
 
         if engagement_profile_data is None:
             global_logger.exception("Engagement Profile Not Found")
@@ -106,6 +106,10 @@ async def get_engagement_report_details(
             organization_name=organization_data.get("name"),
             engagement_name=engagement_data.get("name"),
             engagement_code=engagement_data.get("code"),
+            engagement_type=engagement_data.get("type"),
+            engagement_opinion_rating=engagement_data.get("opinion_rating"),
+            engagement_opinion_conclusion=engagement_data.get("opinion_conclusion"),
+            engagement_risk_maturity_rating=engagement_data.get("risk_maturity_rating"),
             engagement_profile=profile,
             engagement_leads=leads,
             engagement_business_contacts=business_contacts

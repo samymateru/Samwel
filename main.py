@@ -158,7 +158,7 @@ async def home(
         # return data
 
 
-        data = await generate_finding_report(
+        data = await generate_draft_report_model(
             connection=connection,
             engagement_id="fc2fe4f9d4ca",
         )

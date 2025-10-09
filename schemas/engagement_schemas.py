@@ -142,6 +142,7 @@ class MaturityRating(BaseModel):
     maturity_rating: str
     rating_rationale: str
 
+
 class EngagementRiskMaturityRating(BaseModel):
     operational_risk: MaturityRating
     strategic_risk: MaturityRating
