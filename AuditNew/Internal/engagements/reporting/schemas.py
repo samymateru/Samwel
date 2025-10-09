@@ -62,6 +62,7 @@ class IssueCounts(BaseModel):
 class SubProgram(BaseModel):
     sub_program_id: str
     title: str
+    status: str
     effectiveness: Optional[str] = None
     issue_counts: Optional[IssueCounts] = Field(default_factory=IssueCounts)
     total_very_high_risk: int = 0

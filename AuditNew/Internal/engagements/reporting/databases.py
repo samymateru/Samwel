@@ -32,7 +32,13 @@ async def get_summary_audit_process(connection: AsyncConnection, engagement_id: 
                          'issue_counts', COALESCE(risk_stats.counts, '{}'),
                          'total_very_high_risk', COALESCE(risk_stats.counts->>'very_high_risk', '0')::int,
                          'total_moderate_risk', COALESCE(risk_stats.counts->>'moderate_risk', '0')::int,
-                         'total_recurring_issues', COALESCE(risk_stats.counts->>'recurring_count', '0')::int
+                         'total_recurring_issues', COALESCE(risk_stats.counts->>'recurring_count', '0')::int,
+                         'status',
+                            CASE
+                                WHEN sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NOT NULL THEN 'Reviewed'
+                                WHEN sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NULL THEN 'Prepared'
+                                ELSE 'Pending'
+                            END
                     )
                 ) FILTER (WHERE sp.id IS NOT NULL),
                 '[]'
