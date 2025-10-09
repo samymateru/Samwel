@@ -38,7 +38,6 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
             buffer.seek(0)
             return doc.new_subdoc(buffer)
 
-        # Create subdocs for engagement background sections
         audit_background_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.audit_background or {})
         key_legislations_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.key_legislations or {})
         key_changes_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.key_changes or {})

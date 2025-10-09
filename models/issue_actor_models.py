@@ -271,6 +271,13 @@ async def get_all_actor_issues_model(
                 "iss",
                 use_prefix=False
             )
+            .join(
+                "LEFT",
+                Tables.ENGAGEMENTS.value,
+                "eng.id = iss.engagement",
+                "eng",
+                use_prefix=False
+            )
             .where("iss_act."+IssueActorColumns.USER_ID.value, user_id)
             .where("iss."+IssueColumns.MODULE_ID.value, module_id)
             .where_raw("iss.status NOT IN ('Not started')")

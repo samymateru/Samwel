@@ -60,7 +60,11 @@ async def generate_report(
 
         return FileResponse(
             path=output_path,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             filename=f"{engagement_name}-{category.value}.docx",
+            headers={
+                "Content-Disposition": f'attachment; filename="{engagement_name}-{category.value}.docx"'
+            },
             background=background_tasks
         )
 
