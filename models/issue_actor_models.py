@@ -255,6 +255,7 @@ async def initialize_issue_actors(
 
 
 
+
 async def get_all_actor_issues_model(
         connection: AsyncConnection,
         user_id: str,
@@ -269,13 +270,6 @@ async def get_all_actor_issues_model(
                 Tables.ISSUES.value,
                 "iss.id = iss_act.issue_id",
                 "iss",
-                use_prefix=False
-            )
-            .join(
-                "LEFT",
-                Tables.ENGAGEMENTS.value,
-                "eng.id = iss.engagement",
-                "eng",
                 use_prefix=False
             )
             .where("iss_act."+IssueActorColumns.USER_ID.value, user_id)

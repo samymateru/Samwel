@@ -333,6 +333,33 @@ async def issue_accept_response(
             status = lod2_feedback
 
 
+            issue_data = await fetch_single_issue_item_model(
+                connection=connection,
+                issue_id=issue_id
+            )
+
+
+            if issue_data.get("provisional_response"):
+                status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT
+
+                results = await issue_accept_model(
+                    connection=connection,
+                    response=NewIssueResponse(
+                        notes=accept_notes,
+                        type=IssueResponseTypes.ACCEPT,
+                        issued_by=auth.user_id
+                    ),
+                    issue_id=issue_id,
+                    status=status
+                )
+
+                return await return_checker(
+                    data=results,
+                    passed="Issue Successfully Closed By Audit",
+                    failed="Failed Closing Using Auto Closure"
+                )
+
+
         results = await issue_accept_model(
             connection=connection,
             response=NewIssueResponse(
