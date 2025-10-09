@@ -536,7 +536,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
           SELECT MAX(year::int)
           FROM annual_plans
           WHERE module = %s
-        )
+        ) AND (isu.status != 'Not started')
         ORDER BY eng.id, isu.id
         LIMIT 20;
         """)
@@ -684,7 +684,9 @@ async def fetch_all_issue_data(connection: AsyncConnection, module_id: str):
         module_id=module_id
     )
 
-    return data
+    filtered_data = [item for item in data if item.get("status") != "Not started"]
+
+    return filtered_data
 
 
 
