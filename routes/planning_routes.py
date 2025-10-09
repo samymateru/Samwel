@@ -74,7 +74,7 @@ async def attach_report(
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         background_tasks: BackgroundTasks = BackgroundTasks(),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await attach_draft_engagement_report_model(

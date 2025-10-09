@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
@@ -16,7 +16,7 @@ class MainProgramColumns(str, Enum):
 
 class NewMainProgram(BaseModel):
     name: str
-    description: str
+    description: Optional[str] = None
 
 
 class CreateMainProgram(NewMainProgram):

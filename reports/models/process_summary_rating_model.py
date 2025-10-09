@@ -1,4 +1,3 @@
-from docx import Document
 from psycopg import AsyncConnection
 from AuditNew.Internal.engagements.reporting.databases import get_summary_audit_process
 from utils import exception_response

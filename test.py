@@ -1,19 +1,19 @@
 from typing import List
+from io import BytesIO
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-
 # Font settings
 FONT_NAME = "Arial Narrow"
 FONT_SIZE = 12
 
-# Map effectiveness to background color
+# Map effectiveness to background color (cell background)
 effectiveness_bg_colors = {
-    "Effective": "00FF00",          # Green
-    "Partially Effective": "FFFF00",  # Yellow
-    "Ineffective": "FF0000",       # Red
+    "Effective": "00FF00",           # Green
+    "Partially Effective": "FFFF00", # Yellow
+    "Ineffective": "FF0000",         # Red
 }
 
 def set_cell_background(cell, hex_color):
@@ -24,12 +24,15 @@ def set_cell_background(cell, hex_color):
     shd.set(qn('w:fill'), hex_color)
     tcPr.append(shd)
 
-document = Document()
+def process_summary_page(programs: List, filename_or_buffer):
+    """
+    Create a process summary table document.
+    If `filename_or_buffer` is a BytesIO, it writes in-memory.
+    Otherwise, it treats it as a path string and saves to file.
+    """
+    document = Document()
+    headers = ["Procedure", "Effectiveness", "Total Findings"]
 
-# Table headers
-headers = ["Procedure", "Effectiveness", "Total Findings"]
-
-def process_summary_page(programs: List, filename: str):
     # Numbering main programs
     for idx, program in enumerate(programs, start=1):
         document.add_paragraph(f"{idx}. {program['program']}", style="Heading 2")
@@ -71,4 +74,10 @@ def process_summary_page(programs: List, filename: str):
                 set_cell_background(row_cells[1], effectiveness_bg_colors[eff_text])
 
         document.add_paragraph()  # spacing
-    document.save(filename)
+
+    # Save either to file path or BytesIO
+    if isinstance(filename_or_buffer, BytesIO):
+        document.save(filename_or_buffer)
+        filename_or_buffer.seek(0)  # reset buffer pointer
+    else:
+        document.save(filename_or_buffer)
