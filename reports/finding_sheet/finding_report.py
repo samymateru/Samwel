@@ -32,6 +32,7 @@ async def generate_finding_report(
         root_cause_description_path = os.path.join(BASE_DIR, f"{engagement_id}-root_cause_description.docx")
         impact_description_path = os.path.join(BASE_DIR, f"{engagement_id}-impact_description.docx")
 
+
         engagement_data = await get_engagement_report_details(
             connection=connection,
             engagement_id=engagement_id
@@ -107,8 +108,8 @@ async def generate_finding_report(
                 "sub_root_cause": sanitize_for_xml(da.sub_root_cause),
                 "impact_category": sanitize_for_xml(da.impact_category),
                 "impact_sub_category": sanitize_for_xml(da.impact_sub_category),
-                "impact_description": sanitize_for_xml(impact_description_sub_doc),
-                "root_cause_description": sanitize_for_xml(root_cause_description_sub_doc),
+                "impact_description": impact_description_sub_doc,
+                "root_cause_description": root_cause_description_sub_doc,
                 "finding": finding_sub_doc,
                 "criteria": criteria_sub_doc,
                 "recommendation": recommendation_sub_doc,

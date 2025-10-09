@@ -194,8 +194,6 @@ async def complete_engagement(
             engagement_id=engagement_id
         )
 
-        print(data)
-
 
         await add_new_recent_activity(
             connection=connection,

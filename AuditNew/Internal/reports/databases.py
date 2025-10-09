@@ -133,6 +133,7 @@ async def get_all_issue_reports(
             )
             .select_joins()
             .where("iss."+IssueColumns.MODULE_ID.value, module_id)
+            .where_raw("iss.status NOT IN ('Not started')")
             .fetch_all()
         )
 

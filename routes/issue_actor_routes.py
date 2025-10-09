@@ -56,9 +56,7 @@ async def fetch_all_actor_issues(
             module_id=module_id
         )
 
-        return data.__len__()
-
-
+        return data
 
 
 @router.get("/{issue_id}")
