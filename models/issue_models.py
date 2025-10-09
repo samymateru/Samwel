@@ -1,7 +1,8 @@
 from typing import List, Optional
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from psycopg import AsyncConnection
 from core.tables import Tables
+from core.utils import convert_to_capstone_email
 from models.engagement_models import get_single_engagement_with_plan_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model, get_all_issue_actors_on_issue_model
 from models.module_models import increment_module_reference
@@ -19,9 +20,9 @@ from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
+from services.notifications.postmark import email_service
 from utils import exception_response, get_unique_key
-from datetime import datetime
-
+from datetime import datetime, date
 
 
 async def create_new_issue_model(
@@ -390,6 +391,7 @@ async def send_issue_for_implementation_model(
         connection: AsyncConnection,
         user_id: str,
         issue_ids: SendIssueImplementor,
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         for issue_id in issue_ids.issue_ids:
@@ -408,6 +410,21 @@ async def send_issue_for_implementation_model(
                 ),
                 issue_id=issue_id
             )
+
+            data = await generate_issue_notification_model(
+                connection=connection,
+                issue_id=issue_id,
+                roles=[
+                    IssueActors.IMPLEMENTER.value,
+                    IssueActors.OWNER.value,
+                    IssueActors.RISK_MANAGER.value,
+                    IssueActors.COMPLIANCE_OFFICER.value,
+                    IssueActors.OBSERVERS.value,
+                    IssueActors.AUDIT_MANAGER.value
+                ]
+            )
+
+            # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
         return True
 
@@ -455,7 +472,8 @@ async def save_issue_implementation_model(
 async def send_issue_to_owner_model(
         connection: AsyncConnection,
         user_id: str,
-        issue_id: str
+        issue_id: str,
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
 
@@ -487,15 +505,19 @@ async def send_issue_to_owner_model(
             notes="Issue Sent To Owner",
             type=IssueResponseTypes.SEND,
             issued_by=user_id
-        ),
+            ),
             issue_id=issue_id
         )
 
-        await generate_and_send_issue_notification_model(
+
+        data = await generate_issue_notification_model(
             connection=connection,
             issue_id=issue_id,
-            roles=[IssueActors.OWNER.value]
+            roles=[IssueActors.OWNER.value],
         )
+
+        #background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+
 
         return results
 
@@ -584,6 +606,7 @@ async def mark_issue_prepared_model(
         return  builder
 
 
+
 async def mark_issue_reviewed_model(
         connection: AsyncConnection,
         review: ReviewPrepare,
@@ -627,32 +650,36 @@ async def fetch_all_issue_in_module(connection: AsyncConnection, module_id: str)
 
 
 
+
+
 ###################  fixing by pass the module id  #################################
-async def generate_and_send_issue_notification_model(
+async def generate_issue_notification_model(
         connection: AsyncConnection,
         issue_id: str,
-        roles: List[IssueActors]
+        roles: List[IssueActors],
 ):
     with exception_response():
-        issue_actors = await get_all_issue_actors_on_issue_by_status_model(
-            connection=connection,
-            issue_id=issue_id,
-            roles=roles,
-            module_id=""
-        )
-
-        if issue_actors is None:
-            global_logger.exception("Error Fetching Issue Actors")
-
-
         issue_details = await fetch_single_issue_item_model(
             connection=connection,
             issue_id=issue_id
         )
 
-
         if issue_details is None:
-            global_logger.exception("Error Fetching Issue Details")
+            global_logger.exception("Issue Not Found")
+            raise HTTPException(status_code=404, detail="Issue Not Found")
+
+
+        issue_actors = await get_all_issue_actors_on_issue_by_status_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=roles,
+            module_id=issue_details.get("module_id")
+        )
+
+
+        if issue_actors is None:
+            global_logger.exception("Error Fetching Issue Actors")
+
 
 
         engagement_details = await get_single_engagement_with_plan_details(
@@ -661,30 +688,35 @@ async def generate_and_send_issue_notification_model(
         )
 
 
-        if issue_details is None:
+        if engagement_details is None:
             global_logger.exception("Error Fetching Engagement Details")
 
 
+        emails = list({convert_to_capstone_email(actor.email) for actor in issue_actors})
 
-        # emails = [actor.email for actor in issue_actors]
-        emails = ["samymateru1999@gmail.com"]
+        date_revised = issue_details.get("date_revised")
+
+        if isinstance(date_revised, (datetime, date)):
+            due_date = date_revised.strftime("%Y-%m-%d")  # safely format
+        else:
+            # fallback: if it's already a string or None
+            due_date = str(date_revised) if date_revised else ""
+
 
         data = SendSingleIssueNotification(
             template_model=SingleIssueNotification(
-                title=issue_details.get("ref"),
+                title=issue_details.get("title"),
                 reference=issue_details.get("ref"),
                 rating=issue_details.get("risk_rating"),
                 engagement=engagement_details.get("name"),
-                due_date=datetime.now().isoformat()
+                due_date=due_date
             ),
             users=emails,
             template_id=41703998
         )
 
 
-        payload = { "mode": "single", "data": data.model_dump() }
-
-        print(payload)
+        return data
 
 
 

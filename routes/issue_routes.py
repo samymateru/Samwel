@@ -8,7 +8,7 @@ from models.issue_models import create_new_issue_model, fetch_single_issue_item_
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
     revise_issue_model, generate_issue_reference, fetch_issue_responses_model, \
     save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model, \
-    mark_issue_prepared_model, mark_issue_reviewed_model
+    mark_issue_prepared_model, mark_issue_reviewed_model, generate_issue_notification_model
 from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
@@ -253,6 +253,7 @@ async def save_issue_implementation(
 
 
 
+
 @router.put("/send_owner/{issue_id}")
 async def send_issue_to_owner(
         issue_id: str,
@@ -263,7 +264,7 @@ async def send_issue_to_owner(
         results = await send_issue_to_owner_model(
             connection=connection,
             issue_id=issue_id,
-            user_id=auth.user_id
+            user_id=auth.user_id,
         )
 
         return await return_checker(
@@ -303,13 +304,33 @@ async def issue_accept_response(
 ):
     with exception_response():
         if accept_actor == IssueActors.OWNER:
+            actors = [
+                IssueActors.RISK_MANAGER.value,
+                IssueActors.COMPLIANCE_OFFICER.value
+            ]
             status = IssueStatus.CLOSED_NOT_VERIFIED
+
+
         elif accept_actor == IssueActors.AUDIT_MANAGER:
+            actors = [
+                IssueActors.RISK_MANAGER.value,
+                IssueActors.COMPLIANCE_OFFICER.value,
+                IssueActors.OWNER.value,
+                IssueActors.IMPLEMENTER.value,
+                IssueActors.AUDIT_MANAGER.value
+            ]
+
             status = IssueStatus.CLOSED_VERIFIED_BY_AUDIT
+
+
         else:
             if lod2_feedback is None:
                 raise HTTPException(status_code=400, detail="Sorry Provide LOD2 Feedback")
+            actors = [
+                IssueActors.AUDIT_MANAGER.value
+            ]
             status = lod2_feedback
+
 
         results = await issue_accept_model(
             connection=connection,
@@ -321,6 +342,16 @@ async def issue_accept_response(
             issue_id=issue_id,
             status=status
         )
+
+
+        data = await generate_issue_notification_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=actors
+        )
+
+        #background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+
 
         if accept_attachment is not None:
             await add_new_attachment(
@@ -351,16 +382,34 @@ async def issue_decline_response(
         issue: NewDeclineResponse,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         if issue.actor == IssueActors.OWNER:
+            actors = [
+                IssueActors.IMPLEMENTER.value,
+            ]
             status = IssueStatus.IN_PROGRESS_IMPLEMENTER
+
+
         elif issue.actor == IssueActors.RISK_MANAGER or issue.actor == IssueActors.COMPLIANCE_OFFICER:
+            actors = [
+                IssueActors.OWNER.value,
+            ]
             status = IssueStatus.IN_PROGRESS_OWNER
+
+
         elif issue.actor == IssueActors.AUDIT_MANAGER:
+            actors = [
+                IssueActors.RISK_MANAGER.value,
+                IssueActors.COMPLIANCE_OFFICER.value,
+            ]
             status = IssueStatus.CLOSED_NOT_VERIFIED
+
+
         else:
             raise HTTPException(status_code=405,detail="Access denied: invalid actor role")
+
 
         response = NewIssueResponse(
             notes=issue.decline_notes,
@@ -368,12 +417,22 @@ async def issue_decline_response(
             issued_by=auth.user_id or ""
         )
 
+
         results = await issue_accept_model(
             connection=connection,
             response=response,
             issue_id=issue_id,
             status=status
         )
+
+        data = await generate_issue_notification_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=actors
+        )
+
+
+        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
 
         return await return_checker(
             data=results,
@@ -407,6 +466,7 @@ async def request_issue_revise(
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Save Revise Issue")
 
+
         response_result = await save_issue_responses(
             connection=connection,
             response=NewIssueResponse(
@@ -416,6 +476,25 @@ async def request_issue_revise(
             ),
             issue_id=issue_id
         )
+
+        actors = [
+            IssueActors.IMPLEMENTER.value,
+            IssueActors.OWNER.value,
+            IssueActors.RISK_MANAGER.value,
+            IssueActors.COMPLIANCE_OFFICER.value,
+            IssueActors.AUDIT_MANAGER.value,
+        ]
+
+
+        data = await generate_issue_notification_model(
+            connection=connection,
+            issue_id=issue_id,
+            roles=actors
+        )
+
+
+        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+
 
 
         if attachment is not None:

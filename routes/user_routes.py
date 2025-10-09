@@ -1,5 +1,5 @@
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 
 from core.tables import Tables
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
@@ -12,6 +12,7 @@ from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntit
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
+from services.notifications.postmark import email_service
 from services.security.security import get_current_user
 from utils import exception_response, return_checker
 
@@ -24,7 +25,8 @@ async def create_new_user(
         user: NewUser,
         module_id: str = Query(...),
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
+        auth: CurrentUser = Depends(get_current_user),
+        background_tasks: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         password = "123456"
@@ -78,7 +80,7 @@ async def create_new_user(
         )
 
 
-        _ = { "mode": "single", "data": data.model_dump() }
+        background_tasks.add_task(email_service.send_with_template, data.model_dump())
 
 
         return await return_checker(

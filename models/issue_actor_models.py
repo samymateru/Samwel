@@ -76,6 +76,7 @@ async def get_all_issue_actors_on_issue_by_status_model(
         module_id: str,
         roles=None,
 ):
+
     if roles is None:
         roles = ["lod2_risk_manager", "lod2_compliance_officer", "lod1_implementer", "lod1_owner"]
 
@@ -115,6 +116,7 @@ async def get_all_issue_actors_on_issue_by_status_model(
 
 
 
+
 async def get_issue_actors_on_issue_based_on_role_model(
         connection: AsyncConnection,
         issue_id: str,
@@ -148,6 +150,7 @@ async def remove_issue_actor_model(
         )
 
         return builder
+
 
 
 

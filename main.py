@@ -1,6 +1,7 @@
 import uuid
+from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
+from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException, BackgroundTasks
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -33,9 +34,12 @@ from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
+from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation, SendSingleIssueNotification, \
+    SingleIssueNotification
 from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
+from services.notifications.postmark import email_service
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
@@ -134,7 +138,10 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 
 @app.get("/{engagement_id}")
-async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
+async def home(
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
+):
     with exception_response():
         # data = await generate_draft_engagement_letter_model(
         #     connection=connection,
@@ -143,12 +150,12 @@ async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
         #
         # return data
 
-        data = await process_summary_rating_model(
-            connection=connection,
-            engagement_id='4b15ba494eb9',
-        )
+        # data = await process_summary_rating_model(
+        #     connection=connection,
+        #     engagement_id='4b15ba494eb9',
+        # )
 
-        return data
+        # return data
 
 
         # data = await generate_finding_report(
@@ -158,18 +165,36 @@ async def home(connection=Depends(AsyncDBPoolSingleton.get_db_connection)):
         #
         # return data
 
-        # data = SendUserInvitationNotification(
-        #     to="samymateru1999@gmail.com",
-        #     template_id=41703594,
-        #     template_model=NewUserInvitation(
-        #         name="Samwel",
-        #         email="samymateru1999@gmail.com",
-        #         password="12345"
-        #     )
-        # )
-        #
-        # payload = { "mode": "single", "data": data.model_dump() }
-        # return payload
+        issue_details = {
+            "ref": "ISSUE-2025-001",
+            "risk_rating": "High"
+        }
+
+        engagement_details = {
+            "name": "Credit Risk Assessment FY2025"
+        }
+
+        emails = [
+            "bonnywilson43@gmail.com",
+        ]
+
+        data = SendSingleIssueNotification(
+            template_model=SingleIssueNotification(
+                title=issue_details.get("ref"),
+                reference=issue_details.get("ref"),
+                rating=issue_details.get("risk_rating"),
+                engagement=engagement_details.get("name"),
+                due_date=datetime.now().isoformat()
+            ),
+            users=emails,
+            template_id=41703998
+        )
+
+
+
+        background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
+
+        return data
 
 
 

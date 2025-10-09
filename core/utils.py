@@ -76,3 +76,15 @@ def extract_text(doc):
 
     walk(doc)
     return "\n".join(lines)
+
+
+def convert_to_capstone_email(email: str) -> str:
+    """
+    Convert any email address to the @capstone.co.tz domain.
+
+    Example:
+        user@gmail.com -> user@capstone.co.tz
+        someone@hotmail.com -> someone@capstone.co.tz
+    """
+    local_part = email.split("@")[0]  # keep the username before @
+    return f"{local_part}@capstone.co.tz"
