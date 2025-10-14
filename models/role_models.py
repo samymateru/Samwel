@@ -146,6 +146,7 @@ async def generate_role_reference_model(
                 "eng.risk": 'Medium'
             }
         )
+
         .where("eng.plan_id", module_id)
         .select_joins()
         .fetch_all()
