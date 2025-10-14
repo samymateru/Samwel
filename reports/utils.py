@@ -183,6 +183,34 @@ def sanitize_for_xml(text: str) -> str:
     return html.escape(text)
 
 
+def add_hyperlink(paragraph, url, text, color="0000EE", underline=True):
+    """
+    Adds a clickable hyperlink to a paragraph (internal or external).
+    """
+    part = paragraph.part
+    r_id = part.relate_to(str(url), 1, is_external=True)
+
+
+    hyperlink = OxmlElement('w:hyperlink')
+    hyperlink.set(qn('r:id'), r_id)
+    new_run = OxmlElement('w:r')
+    rPr = OxmlElement('w:rPr')
+    if color:
+        c = OxmlElement('w:color')
+        c.set(qn('w:val'), color)
+        rPr.append(c)
+    if underline:
+        u = OxmlElement('w:u')
+        u.set(qn('w:val'), 'single')
+        rPr.append(u)
+    new_run.append(rPr)
+    new_run_text = OxmlElement('w:t')
+    new_run_text.text = str(text)
+    new_run.append(new_run_text)
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return hyperlink
+
 #
 # doc = Document()
 #

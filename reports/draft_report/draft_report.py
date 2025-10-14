@@ -12,7 +12,7 @@ from psycopg import AsyncConnection
 from reports.models.process_summary_rating_model import process_summary_rating_model
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
-from reports.utils import sanitize_for_xml, create_styled_table
+from reports.utils import sanitize_for_xml, create_styled_table, add_hyperlink
 from test import process_summary_page
 from utils import exception_response
 
@@ -77,8 +77,6 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
         table_of_findings_sub_doc = doc.new_subdoc(findings_buffer)
 
 
-
-
         process_summary_data = await process_summary_rating_model(connection, engagement_id)
         process_summary_buffer = BytesIO()
         process_summary_page(programs=process_summary_data, filename_or_buffer=process_summary_buffer)
@@ -137,6 +135,7 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
 
         # Render and save the final report
         doc.render(context)
+
         doc.save(output_path)
 
         return output_path, engagement_data.engagement_name
