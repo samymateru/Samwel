@@ -142,7 +142,7 @@ async def generate_role_reference_model(
             model=JoinEngagementTest,
             use_prefix=True,
             filter_condition={
-                "eng.status__in": ['Pending', 'Deleted'],
+                "eng.status__notin": ['Pending', 'Deleted'],
                 "eng.risk": 'Medium'
             }
         )

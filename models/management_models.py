@@ -29,7 +29,7 @@ async def create_new_management_model(
             .into_table(Tables.MANAGEMENT.value)
             .values(__create_organization__)
             .check_exists({ManagementColumns.EMAIL.value: management.email})
-            .check_exists({ManagementColumns.TITLE.value: management.title})
+            .check_exists({ManagementColumns.NAME.value: management.name})
             .returning(ManagementColumns.MANAGEMENT_ID.value)
             .execute()
         )

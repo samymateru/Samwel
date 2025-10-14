@@ -1,6 +1,9 @@
 import os
 import warnings
 from io import BytesIO
+
+from fastapi import HTTPException
+
 from conv import converter
 warnings.filterwarnings("ignore")
 from docx import Document
@@ -27,6 +30,9 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
         engagement_data = await get_engagement_report_details(connection, engagement_id)
         issue_data = await issue_report_data_model(connection, engagement_id)
 
+        if not os.path.exists(template_path):
+            raise HTTPException(status_code=400, detail=f"Template not found: {template_path}")
+
         # Load main template
         doc = DocxTemplate(template_path)
 
@@ -34,13 +40,15 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
             buffer = BytesIO()
             converter(filename=buffer, data=data_dict)  # Assuming your converter can accept file-like object
             buffer.seek(0)
-            return doc.new_sub_doc(buffer)
+            return doc.new_subdoc(buffer)
+
 
         audit_background_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.audit_background or {})
         key_legislations_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.key_legislations or {})
         key_changes_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.key_changes or {})
         system_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.relevant_systems or {})
         reliance_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.reliance or {})
+
 
         # Table of findings as in-memory DOCX
         table_of_findings = Document()
@@ -67,6 +75,8 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
         table_of_findings.save(findings_buffer)
         findings_buffer.seek(0)
         table_of_findings_sub_doc = doc.new_subdoc(findings_buffer)
+
+
 
 
         process_summary_data = await process_summary_rating_model(connection, engagement_id)

@@ -1,12 +1,12 @@
 from typing import List
 from fastapi import APIRouter, Depends
-
 from models.management_models import create_new_management_model, fetch_organization_management_model, \
     update_organization_management_model, delete_organization_management_model
 from schema import ResponseMessage
 from schemas.management_schemas import NewManagement, UpdateManagement, ReadManagement
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, return_checker
+
 
 router = APIRouter(prefix="/management")
 
