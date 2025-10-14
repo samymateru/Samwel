@@ -55,6 +55,7 @@ async def get_engagement_report_details(
             global_logger.exception("Engagement Profile Not Found")
             raise HTTPException(status_code=404, detail="Engagement Profile Not Found")
 
+
         profile = NewEngagementAdministrationProfile(**engagement_profile_data)
 
 

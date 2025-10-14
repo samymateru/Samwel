@@ -1,5 +1,7 @@
 import asyncio
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Path
 from background import set_company_profile
 from models.entity_models import register_new_entity, get_entity_details, get_organization_entity_details, \
     delete_entity_completely, edit_entity_data
@@ -10,6 +12,7 @@ from schemas.entity_schemas import NewEntity, ReadEntity, UpdateEntity
 from schemas.organization_schemas import NewOrganization
 from schemas.user_schemas import NewUser, UserTypes
 from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.logging.logger import global_logger
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/entity")
@@ -20,46 +23,59 @@ async def create_new_entity(
         entity: NewEntity,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
+    """
+    Endpoint to create a new entity along with its owner user and default organization.
+
+    Workflow:
+    1. Register the entity.
+    2. Create the owner user with administrative privileges.
+    3. Create the default organization for the entity.
+    4. Link the user to the organization as an administrator/owner.
+    5. Trigger asynchronous company profile setup in background.
+    """
+
     with exception_response():
         entity_data = await register_new_entity(connection=connection, entity=entity)
-        if entity_data is None:
-            raise HTTPException(status_code=400, detail="Failed Creating  Entity")
 
-        user = NewUser(
-            name=entity.owner,
-            email=entity.email,
-            type=UserTypes.AUDIT.value
-        )
+        if entity_data is None:
+            global_logger.exception("Failed Creating  Entity")
+            raise HTTPException(status_code=400, detail="Failed Creating  Entity")
 
 
         user_data = await register_new_user(
             connection=connection,
-            user=user,
+            user=NewUser(
+            name=entity.owner,
+            email=entity.email,
+            type=UserTypes.AUDIT.value
+            ),
             entity_id=entity_data.get("id"),
             password=entity.password,
             administrator=True,
             owner=True
         )
 
+
         if user_data is None:
             raise HTTPException(status_code=400, detail="Failed Creating  User During Entity Creation")
 
-        organization = NewOrganization(
-            name=entity.name,
-            email=entity.email,
-            type=entity.type
-        )
 
         organization_data = await register_new_organization(
             connection=connection,
-            organization=organization,
+            organization=NewOrganization(
+            name=entity.name,
+            email=entity.email,
+            type=entity.type
+            ),
             entity_id=entity_data.get("id"),
             creator=user_data.get("id"),
             default=True
         )
 
+
         if organization_data is None:
             raise HTTPException(status_code=400, detail="Failed Creating  Organization During Entity Creation")
+
 
         organization_user_data = await create_new_organization_user(
             connection=connection,
@@ -70,7 +86,9 @@ async def create_new_entity(
             management_title="Organization Owner"
         )
 
+
         asyncio.create_task(set_company_profile(company_id=entity_data.get("id")))
+
 
         return await return_checker(
             data=organization_user_data,
@@ -79,19 +97,38 @@ async def create_new_entity(
         )
 
 
+
 @router.get("/{entity_id}", response_model=ReadEntity)
 async def fetch_entity_data(
-        entity_id: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+    entity_id: str,
+    connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
+    """
+    Fetch detailed information about a specific entity by its ID.
+
+    Args:
+        entity_id (str): The unique identifier of the entity to fetch.
+        connection
+
+    Returns:
+        ReadEntity: The entity data if found.
+    Raises:
+        HTTPException 404: If the entity with the given ID does not exist.
+    """
     with exception_response():
-        data = await get_entity_details(
+        entity_data = await get_entity_details(
             connection=connection,
             entity_id=entity_id
         )
-        if data is None:
-            raise HTTPException(status_code=404, detail="Entity Not Found")
-        return data
+
+        if not entity_data:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Entity with ID '{entity_id}' was not found."
+            )
+
+
+        return entity_data
 
 
 @router.get("/organization/{organization_id}", response_model=ReadEntity)
@@ -107,6 +144,7 @@ async def fetch_organization_entity_data(
         if data is None:
             raise HTTPException(status_code=404, detail="Organization Entity Not Found")
         return data
+
 
 
 @router.delete("/{entity_id}", )
@@ -127,12 +165,24 @@ async def remove_entity(
         )
 
 
-@router.put("/{entity_id}", )
-async def update_entity_data(
-        entity_id: str,
+
+@router.put(
+    "/{entity_id}",
+    summary="Update an existing entity",
+    response_description="Entity updated successfully.",
+)
+async def update_entity(
+        entity_id: Annotated[str, Path(..., description="Unique identifier of the entity to update")],
         entity: UpdateEntity,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
+    """
+    Update an existing entity in the database.
+
+    - **entity_id**: Unique identifier of the entity to update
+    - **entity**: Request body containing fields to update
+    - **returns**: Success message with updated entity data, or failure message
+    """
     with exception_response():
         results = await edit_entity_data(
             connection=connection,

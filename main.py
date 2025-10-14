@@ -1,7 +1,6 @@
 import uuid
-from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
 from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -23,23 +22,16 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model
-from reports.draft_report.draft_report import generate_draft_report_model
-from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
-from reports.finding_sheet.finding_report import generate_finding_report
-from reports.models.process_summary_rating_model import process_summary_rating_model
+from models.role_models import generate_role_reference_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
 from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
-from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation, SendSingleIssueNotification, \
-    SingleIssueNotification
 from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from services.notifications.postmark import email_service
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
@@ -72,6 +64,7 @@ from routes.regulation_routes import router as regulation_routes
 from routes.engagement_process_routes import router as engagement_process_routes
 from routes.standard_template_routes import router as standard_template_routes
 from routes.planning_routes import router as planning_routes
+from routes.role_routes import router as role_routes
 from services.ai.base_ai import router as ai
 
 
@@ -140,59 +133,15 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.get("/{engagement_id}")
 async def home(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        background_tasks: BackgroundTasks = BackgroundTasks()
+
 ):
     with exception_response():
-        # data = await generate_draft_engagement_letter_model(
-        #     connection=connection,
-        #     engagement_id='0a69c33424be',
-        # )
-        #
-        # return data
-
-        # data = await process_summary_rating_model(
-        #     connection=connection,
-        #     engagement_id='4b15ba494eb9',
-        # )
-
-        # return data
-
-
-        data = await generate_draft_report_model(
+        data = await generate_role_reference_model(
             connection=connection,
-            engagement_id="fc2fe4f9d4ca",
+            module_id="427db88bfbe8"
         )
 
         return data
-
-        # issue_details = {
-        #     "ref": "ISSUE-2025-001",
-        #     "risk_rating": "High"
-        # }
-        #
-        # engagement_details = {
-        #     "name": "Credit Risk Assessment FY2025"
-        # }
-        #
-        # emails = [
-        #     "bonnywilson43@gmail.com",
-        # ]
-        #
-        # data = SendSingleIssueNotification(
-        #     template_model=SingleIssueNotification(
-        #         title=issue_details.get("ref"),
-        #         reference=issue_details.get("ref"),
-        #         rating=issue_details.get("risk_rating"),
-        #         engagement=engagement_details.get("name"),
-        #         due_date=datetime.now().isoformat()
-        #     ),
-        #     users=emails,
-        #     template_id=41703998
-        # )
-        #
-        # background_tasks.add_task(email_service.send_issue_notification, data.model_dump())
-        #
-        # return data
 
 
 
@@ -364,6 +313,7 @@ app.include_router(engagement_staff_routes, tags=["Engagements Staff Routes"])
 app.include_router(standard_template_routes, tags=["Standard Templates Procedure Routes"])
 app.include_router(planning_routes, tags=["Planning  Routes"])
 
+app.include_router(role_routes, tags=["Roles  Routes"])
 
 app.include_router(PRCM_routes, tags=["PRCM  Routes"])
 app.include_router(issue_routes, tags=["Issue Routes"])

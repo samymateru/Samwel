@@ -1,7 +1,6 @@
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
-
 from AuditNew.Internal.dashboards.databases import query_engagement_details
 from background import set_engagement_templates
 from models.engagement_models import register_new_engagement, \
@@ -179,7 +178,6 @@ async def archive_engagement(
 @router.put("/complete/{engagement_id}")
 async def complete_engagement(
         engagement_id: str,
-        name: Optional[str] = Query(None),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user)
 ):
@@ -189,7 +187,7 @@ async def complete_engagement(
             engagement_id=engagement_id
         )
 
-        data = await query_engagement_details(
+        engagement_data = await query_engagement_details(
             connection=connection,
             engagement_id=engagement_id
         )
@@ -200,7 +198,7 @@ async def complete_engagement(
             recent_activity=RecentActivities(
                 activity_id=get_unique_key(),
                 module_id=auth.module_id,
-                name=name,
+                name=engagement_data.get("name") or "",
                 description="Engagement Completed",
                 category=RecentActivityCategory.ENGAGEMENT_COMPLETED,
                 created_by=auth.user_id,

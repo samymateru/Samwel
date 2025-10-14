@@ -1,18 +1,17 @@
 import os
 import warnings
 from io import BytesIO
+from conv import converter
 warnings.filterwarnings("ignore")
 from docx import Document
 from docxtpl import DocxTemplate
 from psycopg import AsyncConnection
-
 from reports.models.process_summary_rating_model import process_summary_rating_model
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
 from reports.utils import sanitize_for_xml, create_styled_table
 from test import process_summary_page
 from utils import exception_response
-from conv import converter
 
 
 
@@ -22,7 +21,7 @@ output_path = os.path.join(BASE_DIR, "final.docx")
 
 
 async def generate_draft_report_model(engagement_id: str, connection: AsyncConnection):
-    """Generate engagement report with all sections as in-memory subdocuments"""
+    """Generate engagement report with all sections as in-memory sub documents"""
     with exception_response():
         # Fetch engagement and issue data
         engagement_data = await get_engagement_report_details(connection, engagement_id)
@@ -31,33 +30,34 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
         # Load main template
         doc = DocxTemplate(template_path)
 
-        # Helper function to create subdoc from data
-        def create_subdoc_from_data(data_dict):
+        def create_sub_doc_from_data(data_dict):
             buffer = BytesIO()
-            docx_obj = converter(filename=buffer, data=data_dict)  # Assuming your converter can accept file-like object
+            converter(filename=buffer, data=data_dict)  # Assuming your converter can accept file-like object
             buffer.seek(0)
-            return doc.new_subdoc(buffer)
+            return doc.new_sub_doc(buffer)
 
-        audit_background_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.audit_background or {})
-        key_legislations_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.key_legislations or {})
-        key_changes_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.key_changes or {})
-        system_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.relevant_systems or {})
-        reliance_sub_doc = create_subdoc_from_data(engagement_data.engagement_profile.reliance or {})
+        audit_background_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.audit_background or {})
+        key_legislations_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.key_legislations or {})
+        key_changes_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.key_changes or {})
+        system_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.relevant_systems or {})
+        reliance_sub_doc = create_sub_doc_from_data(engagement_data.engagement_profile.reliance or {})
 
         # Table of findings as in-memory DOCX
         table_of_findings = Document()
         table_of_findings_headers = ["No", "Matter Raised", "Finding Rating", "Department"]
+
         table_of_findings_data = [
             [idx + 1, issue.title, issue.risk_rating, issue.process]
             for idx, issue in enumerate(issue_data)
         ]
+
         create_styled_table(
             table_of_findings,
             columns=4,
             headers=table_of_findings_headers,
             data=table_of_findings_data,
             column_widths=[0, 2.5, 1.5, 1.5],
-            header_bg="CEDEE5",
+            header_bg="CEDE5",
             header_font_color="000000",
             row_bg="FFFFFF",
             alt_row_bg="FFFFFF",
@@ -78,12 +78,12 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
 
         issues_context = []
         for da in issue_data:
-            finding_sub_doc = create_subdoc_from_data(da.finding or {})
-            criteria_sub_doc = create_subdoc_from_data(da.criteria or {})
-            recommendation_sub_doc = create_subdoc_from_data(da.recommendation or {})
-            management_action_plan_sub_doc = create_subdoc_from_data(da.management_action_plan or {})
-            root_cause_description_sub_doc = create_subdoc_from_data(da.root_cause_description or {})
-            impact_description_sub_doc = create_subdoc_from_data(da.impact_description or {})
+            finding_sub_doc = create_sub_doc_from_data(da.finding or {})
+            criteria_sub_doc = create_sub_doc_from_data(da.criteria or {})
+            recommendation_sub_doc = create_sub_doc_from_data(da.recommendation or {})
+            management_action_plan_sub_doc = create_sub_doc_from_data(da.management_action_plan or {})
+            root_cause_description_sub_doc = create_sub_doc_from_data(da.root_cause_description or {})
+            impact_description_sub_doc = create_sub_doc_from_data(da.impact_description or {})
 
             issues_context.append({
                 "title": sanitize_for_xml(da.title),

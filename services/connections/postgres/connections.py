@@ -1,6 +1,5 @@
 import os
 from typing import Optional
-
 from psycopg_pool import AsyncConnectionPool
 from dotenv import load_dotenv
 

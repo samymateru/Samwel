@@ -160,3 +160,13 @@ class UpdateEngagementRiskMaturityRating(BaseModel):
 class UpdateRiskMaturityRatingLowerPart(BaseModel):
     opinion_rating: str
     opinion_conclusion: str
+
+
+class JoinEngagementTest(BaseModel):
+    id: str
+    plan_id: str
+    name: str
+    type: str
+    risk: Risk
+    status: str
+

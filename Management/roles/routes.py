@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-
 from services.connections.postgres.read import ReadBuilder
 from utils import get_current_user, get_async_db_connection
 from schema import *
@@ -7,6 +6,7 @@ from Management.roles.databases import *
 from Management.roles.schemas import *
 from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
     risk_manager, compliance_manager
+
 
 roles_map = {
     "Administrator": administrator,
@@ -20,7 +20,9 @@ roles_map = {
     "Compliance Manager": compliance_manager
 }
 
+
 router = APIRouter(prefix="/roles")
+
 
 @router.get("/{module_id}", response_model=List[Roles])
 async def fetch_roles(
@@ -47,6 +49,7 @@ async def fetch_roles(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @router.get("/role/{role_id}", response_model=Roles)
 async def fetch_role(
         role_id: str,
@@ -70,6 +73,7 @@ async def fetch_role(
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @router.post("/{module_id}", response_model=ResponseMessage)
 async def add_roles(
         module_id: str,
@@ -84,6 +88,8 @@ async def add_roles(
         return ResponseMessage(detail="Role added successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
 
 @router.put("/{role_id}", response_model=ResponseMessage)
 async def edit_roles(

@@ -49,7 +49,7 @@ async def create_new_annual_plan(
             global_logger.error(f"Failed to Create Annual Plan Module: {module_id}")
 
 
-        results = await add_new_attachment(
+        await add_new_attachment(
             connection=connection,
             attachment=attachment,
             item_id=annual_plan_results.get("id"),
@@ -77,7 +77,7 @@ async def create_new_annual_plan(
 
 
         return await return_checker(
-            data=results,
+            data=annual_plan_results,
             passed="Annual Plan Successfully Created",
             failed="Failed Creating  Annual Plan"
         )

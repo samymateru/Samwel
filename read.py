@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from psycopg import sql, AsyncConnection
-from typing import Type, TypeVar, Optional, Dict, Any
+from typing import Type, TypeVar, Optional
 from pydantic import BaseModel
 
 schema_type = TypeVar("schema_type", bound=BaseModel)
@@ -63,15 +63,7 @@ class ReadBuilder:
 
     def build_group_by_clause(self):
         if self._group_by_fields:
-            identifiers = []
-            for col in self._group_by_fields:
-                if "." in col:
-                    table_alias, column_name = col.split(".", 1)
-                    identifiers.append(
-                        sql.SQL("{}.{}").format(sql.Identifier(table_alias), sql.Identifier(column_name))
-                    )
-                else:
-                    identifiers.append(sql.Identifier(col))
+            identifiers = [sql.Identifier(col) for col in self._group_by_fields]
             return sql.SQL(" GROUP BY ") + sql.SQL(", ").join(identifiers)
         return sql.SQL("")
 
@@ -80,7 +72,6 @@ class ReadBuilder:
         self._select = [(field, None) for field in columns.model_fields.keys()]
         return self
 
-
     def select_fields(self, *fields: str, alias_map: Optional[dict[str, str]] = None):
         alias_map = alias_map or {}
         for field in fields:
@@ -88,12 +79,10 @@ class ReadBuilder:
             self._select.append((field, alias))
         return self
 
-
     def from_table(self, table: str, alias: Optional[str] = None):
         self._table = table
         self._table_alias = alias
         return self
-
 
     def where(self, column: str, value):
         if column is None:
@@ -108,7 +97,6 @@ class ReadBuilder:
         self._params[column] = list(value) if isinstance(value, set) else value
         return self
 
-
     def where_raw(self, condition: str, params: Optional[dict] = None):
         """
         Add a raw WHERE condition with optional bound parameters.
@@ -121,14 +109,12 @@ class ReadBuilder:
             self._params.update(params)
         return self
 
-
     def order_by(self, column: str, descending=False):
         if column is None:
             raise ValueError("Value of column can't be None")
 
         self._order_by_fields.append((column, descending))
         return self
-
 
     def group_by(self, column: str):
         if column is None:
@@ -144,7 +130,6 @@ class ReadBuilder:
         self._offset = count
         return self
 
-
     def build(self):
         if not self._table:
             raise ValueError("Table name cannot be empty")
@@ -154,32 +139,27 @@ class ReadBuilder:
         else:
             select_parts = []
             for col, alias in self._select:
-                if isinstance(col, sql.Composable):
-                    if alias:
-                        select_parts.append(sql.SQL("{} AS {}").format(col, sql.Identifier(alias)))
-                    else:
-                        select_parts.append(col)
+                # Handle already qualified fields like "bp.id"
+                if "." in col:
+                    table_alias, column_name = col.split(".", 1)
+                    column_sql = sql.SQL("{}.{}").format(
+                        sql.Identifier(table_alias), sql.Identifier(column_name)
+                    )
                 else:
-                    # Handle strings / identifiers as before
-                    if "." in col:
-                        table_alias, column_name = col.split(".", 1)
+                    # If no table prefix, assume it's from the base table
+                    if self._table_alias:
                         column_sql = sql.SQL("{}.{}").format(
-                            sql.Identifier(table_alias), sql.Identifier(column_name)
+                            sql.Identifier(self._table_alias), sql.Identifier(col)
                         )
                     else:
-                        if self._table_alias:
-                            column_sql = sql.SQL("{}.{}").format(
-                                sql.Identifier(self._table_alias), sql.Identifier(col)
-                            )
-                        else:
-                            column_sql = sql.Identifier(col)
+                        column_sql = sql.Identifier(col)
 
-                    if alias:
-                        select_parts.append(
-                            sql.SQL("{} AS {}").format(column_sql, sql.Identifier(alias))
-                        )
-                    else:
-                        select_parts.append(column_sql)
+                if alias:
+                    select_parts.append(
+                        sql.SQL("{} AS {}").format(column_sql, sql.Identifier(alias))
+                    )
+                else:
+                    select_parts.append(column_sql)
 
             select_clause = sql.SQL(", ").join(select_parts)
 
@@ -244,7 +224,6 @@ class ReadBuilder:
 
         return query, self._params
 
-
     async def fetch_all(self):
         query, param = self.build()
         try:
@@ -256,129 +235,6 @@ class ReadBuilder:
                 return result
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error occurred while fetching data: {e}")
-
-
-    def join_aggregate(
-        self,
-        table: str,
-        alias: str,
-        on: str,
-        aggregate_column: str,
-        json_field_name: str,
-        model: Optional[Type[BaseModel]] = None,
-        use_prefix: bool = True,
-        filter_condition: Optional[Dict[str, Any]] = None
-    ):
-        """
-        Adds a LEFT JOIN with JSON aggregation.
-        Example:
-            .join_aggregate(
-                table="engagements",
-                alias="eng",
-                on="ap.id = eng.plan_id",
-                aggregate_column="id",
-                json_field_name="engagements",
-                model=ReadEngagement
-            )
-        """
-        # --- Build jsonb_build_object(...) ---
-        if model:
-            fields_sql = []
-            for field_name in model.model_fields.keys():
-                col_ref = (
-                    sql.SQL("{}.{}").format(sql.Identifier(alias), sql.Identifier(field_name))
-                    if use_prefix
-                    else sql.Identifier(field_name)
-                )
-
-                fields_sql.append(sql.SQL("{} , {}").format(sql.Literal(field_name), col_ref))
-
-            json_object = sql.SQL("jsonb_build_object({})").format(
-                sql.SQL(", ").join(fields_sql)
-            )
-
-        else:
-            json_object = sql.SQL("{}.{}").format(
-                sql.Identifier(alias),
-                sql.Identifier(aggregate_column)
-            )
-
-
-        if filter_condition:
-            filter_sql = self.build_filter_sql(filter_condition) # type: ignore[arg-type]
-        else:
-            alias_col = sql.SQL("{}.{}").format(
-                sql.Identifier(alias),
-                sql.Identifier(aggregate_column)
-            )
-            filter_sql = sql.SQL("{} IS NOT NULL").format(alias_col)
-
-
-        json_agg = sql.SQL(
-            "COALESCE(jsonb_agg({json_obj}) FILTER (WHERE {filter_sql}), '[]')"
-        ).format(json_obj=json_object, filter_sql=filter_sql)
-
-
-        # Add JOIN
-        self.join("LEFT", table, on, alias)
-
-        # Add aggregated field to SELECT
-        self._select.append((json_agg, json_field_name))
-
-        # Automatically group by parent table id
-        if self._table_alias:
-            self._group_by_fields.append(f"{self._table_alias}.id")
-        else:
-            self._group_by_fields.append("id")
-
-        return self
-
-
-    @staticmethod
-    def build_filter_sql(conditions: Dict[str, Any]) -> sql.Composed:
-        clauses = []
-
-        for key, value in conditions.items():
-            if "__" in key:
-                col, op = key.split("__", 1)
-            else:
-                col, op = key, "eq"
-
-            table_name, col_name = col.split(".")
-            col_ref = sql.SQL("{}.{}").format(
-                sql.Identifier(table_name), sql.Identifier(col_name)
-            )
-
-            if op == "eq":
-                clauses.append(sql.SQL("{} = {}").format(col_ref, sql.Literal(value)))
-            elif op == "ne":
-                clauses.append(sql.SQL("{} != {}").format(col_ref, sql.Literal(value)))
-            elif op == "gt":
-                clauses.append(sql.SQL("{} > {}").format(col_ref, sql.Literal(value)))
-            elif op == "lt":
-                clauses.append(sql.SQL("{} < {}").format(col_ref, sql.Literal(value)))
-            elif op == "gte":
-                clauses.append(sql.SQL("{} >= {}").format(col_ref, sql.Literal(value)))
-            elif op == "lte":
-                clauses.append(sql.SQL("{} <= {}").format(col_ref, sql.Literal(value)))
-            elif op == "in":
-                values_sql = sql.SQL(", ").join(sql.Literal(v) for v in value)
-                clauses.append(sql.SQL("{} IN ({})").format(col_ref, values_sql))
-            elif op == "notin":
-                values_sql = sql.SQL(", ").join(sql.Literal(v) for v in value)
-                clauses.append(sql.SQL("{} NOT IN ({})").format(col_ref, values_sql))
-            elif op == "isnull":
-                if value:
-                    clauses.append(sql.SQL("{} IS NULL").format(col_ref))
-                else:
-                    clauses.append(sql.SQL("{} IS NOT NULL").format(col_ref))
-            elif op == "notnull":
-                clauses.append(sql.SQL("{} IS NOT NULL").format(col_ref))
-            else:
-                raise ValueError(f"Unsupported operator: {op}")
-
-        return sql.SQL(" AND ").join(clauses)
-
 
     async def fetch_one(self):
         query, param = self.build()
@@ -393,11 +249,9 @@ class ReadBuilder:
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error occurred while fetching one: {e}")
 
-
     def debug_sql(self):
         query, params = self.build()
         return query.as_string(self.connection), params
-
 
     @staticmethod
     def get_field_name(model: Type[BaseModel], field_name: str) -> Optional[str]:

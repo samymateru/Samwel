@@ -41,6 +41,8 @@ async def get_module_user(connection: AsyncConnection, module_id: str, user_id: 
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying users by email {e}")
 
+
+
 async def get_role(connection: AsyncConnection, name: str, module_id: str):
     query = sql.SQL("SELECT * FROM public.roles WHERE name = %s AND module = %s")
     try:
@@ -52,6 +54,7 @@ async def get_role(connection: AsyncConnection, name: str, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying roles {e}")
+
 
 async def get_engagement_role(connection: AsyncConnection, engagement_id: str, user_email: str):
     query = sql.SQL("SELECT * FROM public.staff WHERE engagement = %s AND email = %s")

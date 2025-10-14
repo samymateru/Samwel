@@ -4,6 +4,7 @@ from psycopg import AsyncConnection, sql
 from utils import get_unique_key, get_latest_reference_number
 
 
+
 async def get_roles(connection: AsyncConnection, module_id: str):
     query = sql.SQL("SELECT * FROM public.roles WHERE module = %s")
     try:
@@ -15,6 +16,8 @@ async def get_roles(connection: AsyncConnection, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying roles {e}")
+
+
 
 async def add_role(connection: AsyncConnection, role: Roles, module_id: str):
     query = sql.SQL(

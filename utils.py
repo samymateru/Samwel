@@ -11,10 +11,7 @@ import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, BackgroundTasks, UploadFile
 import uuid
-from Management.roles.schemas import Roles, Permissions, RolesSections
-from commons import get_role, get_engagement_role
-from constants import administrator, head_of_audit, member, audit_lead, audit_reviewer, audit_member, business_manager, \
-    risk_manager, compliance_manager
+from Management.roles.schemas import Roles
 from s3 import upload_file
 from schema import CurrentUser, ResponseMessage
 import secrets
@@ -35,17 +32,6 @@ class SupportsWrite(Protocol):
     def write(self, b: bytes) -> int:
         ...
 
-roles_map = {
-    "Administrator": administrator,
-    "Head of Audit": head_of_audit,
-    "Member": member,
-    "Audit Lead": audit_lead,
-    "Audit Reviewer": audit_reviewer,
-    "Audit Member": audit_member,
-    "Business Manager": business_manager,
-    "Risk Manager": risk_manager,
-    "Compliance Manager": compliance_manager
-}
 
 
 load_dotenv()
@@ -181,71 +167,7 @@ async def get_reference(connection: AsyncConnection, resource: str, __id__: str)
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error fetching reference {e}")
 
-async def get_role_from_token(token: str = Depends(oauth2_scheme)):
-    if not token:
-        return CurrentUser(status_code=401, description="auth token not provided")
-    try:
-        user_dict = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-        user = CurrentUser(**user_dict)
-        async for connection in get_async_db_connection():
-            if user.module_id is not None and user.role is not None:
-                role_data = await get_role(connection=connection, name=user.role, module_id=user.module_id)
-                roles: List[Roles] = [Roles(**role_dict) for role_dict in role_data]
-                if roles.__len__() != 0:
-                    return roles[0]
-                else:
-                    return roles_map.get(user.role)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid token make sure to re-authorize")
 
-    except jwt.ExpiredSignatureError:
-        return CurrentUser(status_code=401, description="token expired")
-    except jwt.InvalidTokenError:
-        return CurrentUser(status_code=401, description="invalid token")
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
-
-async def get_role_from_engagement(engagement_id: str, user: CurrentUser):
-    try:
-        async for connection in get_async_db_connection():
-            if user.module_id is not None and user.role is not None:
-                engagement_role = await get_engagement_role(connection=connection, engagement_id=engagement_id, user_email=user.user_email)
-                if engagement_role.__len__() == 0:
-                    raise HTTPException(status_code=400, detail="Oops sorry role unavailable on the engagement")
-                role_data = await get_role(connection=connection, name=engagement_role[0], module_id=user.module_id)
-                roles: List[Roles] = [Roles(**role_dict) for role_dict in role_data]
-                if roles.__len__() != 0:
-                    return roles[0]
-                else:
-                    return roles_map.get(user.role)
-            else:
-                raise HTTPException(status_code=400, detail="Invalid token make sure to re-authorize")
-
-    except jwt.ExpiredSignatureError:
-        return CurrentUser(status_code=401, description="token expired")
-    except jwt.InvalidTokenError:
-        return CurrentUser(status_code=401, description="invalid token")
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error in authorization check {e}")
-
-def check_permission(section: RolesSections, action: Permissions):
-    def inner(role: Roles = Depends(get_role_from_token)):
-        if role == None:
-            raise HTTPException(
-                status_code=403,
-                detail=f"System cant retrieve role information"
-            )
-        if not has_permission([role], section=section.value, action=action.value):
-            raise HTTPException(
-                status_code=403,
-                detail=f"Access denied to {action.value.upper().title()} {section.value.upper().replace('_', ' ').title()}"
-            )
-        return True
-    return inner
 
 def get_unique_key():
     uuid_str = str(uuid.uuid4()).split("-")

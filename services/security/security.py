@@ -24,11 +24,13 @@ password_hasher = PasswordHasher(
     salt_len=16         # Salt length
 )
 
+
 def hash_password(password: str) -> str:
     """
     Hashes a plain-text password using Argon2.
     """
     return password_hasher.hash(password)
+
 
 def generate_hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -40,6 +42,7 @@ def generate_password(length: int = 6) -> str:
     alphabet = string.ascii_letters + string.digits + string.punctuation
     return ''.join(secrets.choice(alphabet) for _ in range(length))
 
+
 def verify_password(hashed_password: str, plain_password: str) -> bool:
     """
     Verifies a plain-text password against its hashed version.
@@ -49,6 +52,7 @@ def verify_password(hashed_password: str, plain_password: str) -> bool:
         return password_hasher.verify(hashed_password, plain_password)
     except VerifyMismatchError:
         return False
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     """
@@ -85,3 +89,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="auth token is invalid")
 
 
+
+async def check_permission():
+    pass
