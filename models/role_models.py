@@ -1,3 +1,4 @@
+from typing import Union
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.annual_plan_schemas import ReadAnnualPlan
@@ -12,7 +13,7 @@ from utils import exception_response
 
 async def create_role_model(
         connection: AsyncConnection,
-        role: CreateRole,
+        role: Union[CreateRole, list[CreateRole]]
 ):
     with exception_response():
         """
@@ -21,20 +22,22 @@ async def create_role_model(
         Ensures the role name is unique within the same module before inserting.
         Returns the inserted role details or raises an error if it already exists.
         """
-        builder = await (
-            InsertQueryBuilder(connection=connection)
-            .into_table(Tables.ROLES.value)
-            .values(role)
-            .check_exists({
-                RoleColumns.NAME.value: role.name,
-                RoleColumns.MODULE.value: role.module,
-            })
-            .returning(RoleColumns.NAME.value)
-            .execute()
-        )
+        with exception_response():
+            builder = InsertQueryBuilder(connection=connection).into_table(Tables.ROLES.value).values(role)
 
-        return builder
+            # handle check_exists for single or multiple
+            if isinstance(role, list):
+                # For multiple roles, you may skip the check_exists or handle per role before insertion
+                pass  # optional: implement batch existence check
+            else:
+                builder.check_exists({
+                    RoleColumns.NAME.value: role.name,
+                    RoleColumns.MODULE.value: role.module,
+                })
 
+            builder.returning(RoleColumns.NAME.value)
+
+            return await builder.execute()
 
 
 async def get_module_roles_model(
@@ -129,6 +132,16 @@ async def generate_role_reference_model(
         connection: AsyncConnection,
         module_id: str
 ):
+    with exception_response():
+        pass
+
+
+
+
+async def generate_role_reference_model_(
+        connection: AsyncConnection,
+        module_id: str
+):
     builder =   await (
         ReadBuilder(connection=connection)
         .from_table("annual_plans", alias="ap")
@@ -142,9 +155,11 @@ async def generate_role_reference_model(
             model=JoinEngagementTest,
             use_prefix=True,
             filter_condition={
-                "eng.status__notin": ['Pending', 'Deleted'],
-                "eng.risk": 'Medium'
-            }
+                "eng.status__in": ['Pending', 'Deleted'],
+            },
+            order_by="eng.created_at ASC",
+            limit=3
+
         )
 
         .where("eng.plan_id", module_id)

@@ -8,6 +8,7 @@ from schemas.organization_schemas import ReadOrganization
 class Endpoints(BaseModel):
     pass
 
+
 class CurrentUser(BaseModel):
     user_id: Optional[str] = None
     user_name: Optional[str] = None
@@ -17,10 +18,12 @@ class CurrentUser(BaseModel):
     module_id: Optional[str] = None
     module_name: Optional[str] = None
     role: Optional[str] = None
+    role_id: Optional[str] = None
     title: Optional[str] = None
     type: Optional[str] = None
     status_code: Optional[int] = None
     description: Optional[str] = None
+
 
 class UserData(BaseModel):
     id: Optional[str]

@@ -1,5 +1,4 @@
 from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from models.role_models import create_role_model, get_module_roles_model, get_role_data_model, update_role_model, \
     delete_role_model
@@ -17,7 +16,7 @@ async def create_module_role(
         new_role: NewRole,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
-    with exception_response():
+    with (exception_response()):
         """
         Create a new role for a given module.
         - Ensures role name uniqueness per module.
@@ -31,7 +30,6 @@ async def create_module_role(
             module=module_id,
             created_at=datetime.now()
         )
-
 
         results = await create_role_model(
             connection=connection,

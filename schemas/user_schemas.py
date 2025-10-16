@@ -15,7 +15,6 @@ class UserColumns(str, Enum):
     IMAGE = "image"
     CREATE_AT = "created_at"
 
-
 class OrganizationUserColumns(str, Enum):
     ORGANIZATION_USER_ID = "organization_user_id"
     ORGANIZATION_ID = "organization_id"
@@ -30,6 +29,7 @@ class ModuleUserColumns(str, Enum):
     MODULE_ID = "module_id"
     USER_ID = "user_id"
     ROLE = "role"
+    ROLE_ID = "role_id"
     TITLE = "title"
     TYPE ="type"
     CREATE_AT = "created_at"
@@ -64,6 +64,7 @@ class NewUser(BaseModel):
     type: UserTypes
     telephone: Optional[str] = None
     role: Optional[str] = None
+    role_id: Optional[str] = None
     title: Optional[str] = None
 
 
@@ -98,8 +99,10 @@ class CreateModuleUser(BaseModel):
     user_id: str
     title: str
     role: str
+    role_id: Optional[str] = None
     type: str
     created_at: datetime
+
 
 
 class BaseUser(BaseModel):
@@ -119,6 +122,7 @@ class BaseUser(BaseModel):
 class ReadModuleUsers(BaseUser):
     type: str
     role: str
+    role_id: Optional[str] = None
     title: Optional[str] = None
 
 
@@ -127,6 +131,7 @@ class UserModuleSection(BaseModel):
     id: str
     title: str
     role: str
+    role_id: Optional[str] = None
     type: str
     name: str
 
@@ -136,16 +141,16 @@ class ReadOrganizationUser(BaseUser):
     modules: List[UserModuleSection]
 
 
-
 class UpdateModuleUser(BaseModel):
     title: str
     role: str
+    role_id: Optional[str] = None
     type: str
 
 
 class UpdateEntityUser(BaseModel):
     name: str
-    telephone: Optional[str]
+    telephone: Optional[str] = None
 
 
 class UpdateOrganizationUserRole(BaseModel):

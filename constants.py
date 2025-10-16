@@ -114,7 +114,8 @@ administrator = CreateRole(
         Permissions.VIEW,
         Permissions.CREATE,
         Permissions.EDIT,
-        Permissions.APPROVE
+        Permissions.APPROVE,
+        Permissions.DELETE
     ],
     audit_plans=[Permissions.VIEW],
     engagements=[Permissions.VIEW],
@@ -321,6 +322,7 @@ audit_reviewer = CreateRole(
     created_at=datetime.now() + timedelta(seconds=2)
 )
 
+
 audit_member = CreateRole(
     id=get_unique_key(),
     reference="ROLE-006",
@@ -436,6 +438,7 @@ risk_manager = CreateRole(
     created_at=datetime.now() + timedelta(seconds=6)
 )
 
+
 compliance_manager = CreateRole(
     id=get_unique_key(),
     reference="ROLE-009",
@@ -463,4 +466,6 @@ compliance_manager = CreateRole(
     un_archive_audit=Archive.NO,
     created_at=datetime.now() + timedelta(seconds=6)
 )
+
+
 

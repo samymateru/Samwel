@@ -1,13 +1,14 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from core.constants import plans
 from models.module_models import register_new_module, get_user_modules, get_organization_modules, get_module_details, \
-    generate_module_activation_data, get_activation_data, activate_module, add_licence_to_module, \
+ get_activation_data, activate_module, \
     delete_module_temporarily_model
 from schema import ResponseMessage, CurrentUser
 from schemas.module_schemas import NewModule, ReadModule, ModuleStatus
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
+from services.tasks.module_create_task import module_create_task
 from utils import exception_response, return_checker
 
 router = APIRouter(prefix="/modules")
@@ -17,10 +18,10 @@ async def create_new_module(
         organization_id: str,
         module: NewModule,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        background_tasks: BackgroundTasks = BackgroundTasks()
         #_: CurrentUser = Depends(get_current_user)
     ):
     with exception_response():
-
         status = ModuleStatus.ACTIVE if module.licence_id == "cb67a203f8da" else ModuleStatus.PENDING
 
         results = await register_new_module(
@@ -29,6 +30,7 @@ async def create_new_module(
             organization_id=organization_id,
             status=status
         )
+
 
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Register Module")
@@ -39,23 +41,16 @@ async def create_new_module(
         if licence is None:
             raise HTTPException(status_code=404, detail="Licence Not Found")
 
-        licence_data = await add_licence_to_module(
-            connection=connection,
-            module_id=results.get("id"),
-            plan_id=module.licence_id,
-            licence=licence
-        )
 
-        if licence_data is None:
-            raise HTTPException(status_code=400, detail="Failed To Add Licence To Module")
-
-        activation_data = await generate_module_activation_data(
-            connection=connection,
-            module_id=results.get("id")
+        background_tasks.add_task(
+            module_create_task,
+            module = module,
+            module_id = results.get("id"),
+            licence = licence
         )
 
         return await return_checker(
-            data=activation_data,
+            data=results,
             passed="Module Successfully Created",
             failed="Failed Creating  Module"
         )
@@ -76,6 +71,7 @@ async def fetch_user_modules(
         )
 
         return data
+
 
 
 @router.get("/organization/{organization_id}", response_model=List[ReadModule])

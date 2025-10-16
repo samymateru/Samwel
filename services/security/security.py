@@ -1,8 +1,6 @@
 import os
 import secrets
 import string
-from random import random, choice
-
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -10,7 +8,13 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 import bcrypt
+from starlette import status
+
+from models.role_models import get_role_data_model
 from schema import CurrentUser
+from schemas.role_schemas import RolesSections, Permissions
+from services.connections.postgres.connections import AsyncDBPoolSingleton
+from utils import exception_response
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -90,5 +94,40 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 
-async def check_permission():
-    pass
+def check_permission(section: RolesSections, permission: Permissions):
+    """
+    Dependency factory that checks if the current user's role has
+    the required permission in the specified section.
+
+    This function returns an async dependency used with FastAPI's `Depends()`.
+    When included in a route, it verifies whether the logged-in user has
+    the given permission within the given section.
+
+    Args:
+        section (RolesSections): The section to check (e.g., RolesSections.REPORTING).
+        permission (Permissions): The required permission (e.g., Permissions.APPROVE).
+
+    Raises:
+        HTTPException (403): If the user does not have the specified permission.
+    """
+    async def dependency(auth: CurrentUser = Depends(get_current_user)):
+        pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+        with exception_response():
+            async with pool.connection() as connection:
+                role_data = await get_role_data_model(
+                    connection=connection,
+                    role_id=auth.role_id,
+                )
+
+                section_permissions = role_data.get(section.value)
+
+                has_access = permission.value in section_permissions
+
+                if not has_access:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail=f"Missing {permission.value} permission in {section.value}.",
+                    )
+
+    return dependency
+

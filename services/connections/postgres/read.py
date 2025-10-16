@@ -267,7 +267,9 @@ class ReadBuilder:
         json_field_name: str,
         model: Optional[Type[BaseModel]] = None,
         use_prefix: bool = True,
-        filter_condition: Optional[Dict[str, Any]] = None
+        filter_condition: Optional[Dict[str, Any]] = None,
+        order_by: Optional[str] = None,
+        limit: Optional[int] = None
     ):
         """
         Adds a LEFT JOIN with JSON aggregation.
@@ -313,19 +315,35 @@ class ReadBuilder:
             )
             filter_sql = sql.SQL("{} IS NOT NULL").format(alias_col)
 
+        subquery_parts = [
+            sql.SQL("SELECT {json_obj}").format(json_obj=json_object),
+            sql.SQL("FROM {table} {alias}").format(
+                table=sql.Identifier(table),
+                alias=sql.Identifier(alias)
+            ),
+            sql.SQL("WHERE {on} AND {filter_sql}").format(
+                on=sql.SQL(on), # type: ignore[arg-type]
+                filter_sql=filter_sql
+            ),
+        ]
 
+        if order_by:
+            subquery_parts.append(sql.SQL(f"ORDER BY {order_by}")) # type: ignore[arg-type]
+        if limit:
+            subquery_parts.append(sql.SQL(f"LIMIT {limit}")) # type: ignore[arg-type]
+
+        subquery = sql.SQL(" ").join(subquery_parts)
+
+        # --- Step 4: JSON aggregation of subquery (no wrapper key) ---
         json_agg = sql.SQL(
-            "COALESCE(jsonb_agg({json_obj}) FILTER (WHERE {filter_sql}), '[]')"
-        ).format(json_obj=json_object, filter_sql=filter_sql)
+            "COALESCE((SELECT jsonb_agg(subq.elem) FROM ({subquery}) AS subq(elem)), '[]')"
+        ).format(subquery=subquery)
 
-
-        # Add JOIN
+        # --- Step 5: Register JOIN and SELECT field ---
         self.join("LEFT", table, on, alias)
-
-        # Add aggregated field to SELECT
         self._select.append((json_agg, json_field_name))
 
-        # Automatically group by parent table id
+        # --- Step 6: Ensure GROUP BY parent ID ---
         if self._table_alias:
             self._group_by_fields.append(f"{self._table_alias}.id")
         else:

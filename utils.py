@@ -374,6 +374,7 @@ def has_permission(roles: List[Roles], section: str, action: str) -> bool:
             return True
     return False
 
+
 async def generate_user_token(connection: AsyncConnection, module_id: str, user_id: str):
     query_module_data = sql.SQL(
         """
@@ -387,6 +388,7 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
         mod.name as module_name,
         mod_usr.title,
         mod_usr.role,
+        mod_usr.role_id,
         mod_usr.type
         FROM modules_users mod_usr
         JOIN users usr ON usr.id = mod_usr.user_id
@@ -400,6 +402,7 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
+
             current_user = CurrentUser(
                 user_id=data[0].get("id"),
                 user_name=data[0].get("name"),
@@ -409,9 +412,11 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
                 module_id=data[0].get("module_id"),
                 module_name=data[0].get("module_name"),
                 role=data[0].get("role"),
+                role_id=data[0].get("role_id"),
                 title=data[0].get("title"),
                 type=data[0].get("type"),
             )
+
             return current_user
     except Exception as e:
         await connection.rollback()
@@ -419,8 +424,6 @@ async def generate_user_token(connection: AsyncConnection, module_id: str, user_
 
 
 async def generate_risk_user_token(connection: AsyncConnection, module_id: str, user_id: str):
-    print(module_id)
-    print(user_id)
     query_module_data = sql.SQL(
         """
         SELECT 

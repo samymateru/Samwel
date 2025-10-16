@@ -81,6 +81,7 @@ class InsertQueryBuilder:
         self._throw_error_on_exists = value
         return self
 
+
     def _convert_params(self, params: dict) -> dict:
         """
         Convert unsupported Python types (like dict) into PostgreSQL-compatible types.
@@ -92,17 +93,8 @@ class InsertQueryBuilder:
         return params
 
 
-    def values(self, data: schema_type) -> "InsertQueryBuilder":
-        """
-        Provide the data to insert using a Pydantic model.
-
-        Args:
-            data (schema_type): A Pydantic model instance containing the column-value pairs
-                                to be inserted.
-
-        Returns:
-            InsertQueryBuilder: The current instance for method chaining.
-        """
+    def values(self, data: Union[schema_type, list[schema_type]]) -> "InsertQueryBuilder":
+        """Accept a single Pydantic model or a list of them."""
         self._data = data
         return self
 
@@ -169,23 +161,32 @@ class InsertQueryBuilder:
         if not self._table or not self._data:
             raise ValueError("Table and data must be provided.")
 
-        fields = list(self._data.model_fields.keys())
-        values = self._data.model_dump()
-
+        models = self._data if isinstance(self._data, list) else [self._data]
+        fields = list(models[0].model_fields.keys())
         columns_sql = sql.SQL(', ').join(map(sql.Identifier, fields))
-        placeholders = sql.SQL(', ').join(sql.Placeholder(k) for k in fields)
 
-        query = sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
+        value_groups = []
+        all_params = {}
+
+        for i, model in enumerate(models):
+            row = self._convert_params(model.model_dump())
+            placeholders = sql.SQL(', ').join(sql.Placeholder(f"{k}_{i}") for k in row.keys())
+            value_groups.append(sql.SQL("({})").format(placeholders))
+            for k, v in row.items():
+                all_params[f"{k}_{i}"] = v
+
+        values_sql = sql.SQL(', ').join(value_groups)
+        query = sql.SQL("INSERT INTO {} ({}) VALUES {}").format(
             sql.Identifier(self._table),
             columns_sql,
-            placeholders
+            values_sql
         )
 
         if self._returning_fields:
             returning_sql = sql.SQL(', ').join(map(sql.Identifier, self._returning_fields))
             query += sql.SQL(" RETURNING ") + returning_sql
 
-        return query, values
+        return query, all_params
 
 
     async def execute(self):
@@ -268,10 +269,16 @@ class InsertQueryBuilder:
                 await cursor.execute(query, params)
 
                 if self._returning_fields:
-                    row = await cursor.fetchone()
-                    if row is not None:
-                        column_names = [desc[0] for desc in cursor.description]
-                        return dict(zip(column_names, row))
+                    rows = await cursor.fetchall()
+                    column_names = [desc[0] for desc in cursor.description]
+                    result_list = [dict(zip(column_names, row)) for row in rows]
+
+                    # Return single dict if input was single, list if multiple
+                    if isinstance(self._data, list):
+                        return result_list
+                    else:
+                        return result_list[0] if result_list else None
+
                 return None
 
         except Exception as e:

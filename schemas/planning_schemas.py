@@ -39,3 +39,8 @@ class Reports(BaseModel):
     category: ReportType
     created_at: datetime
 
+
+class UserCirculate(BaseModel):
+    user_id: str
+    email: str
+

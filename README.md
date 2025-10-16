@@ -36,7 +36,7 @@ This project is a Audit system backend.
    ```
 ## Usage
 ```bash
-  python main.py
+  python client.py
 ```
 
 

@@ -22,7 +22,7 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from models.role_models import generate_role_reference_model
+from models.role_models import generate_role_reference_model, generate_role_reference_model_
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -30,9 +30,11 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
+from schemas.role_schemas import RolesSections, Permissions
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from services.security.security import verify_password
+from services.security.security import verify_password, check_permission
+from services.sockets.client import socket_client
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
 from dotenv import load_dotenv
@@ -81,13 +83,13 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        pass
+        await socket_client.connect()
     except Exception as e:
         print(e)
     yield
 
     try:
-        pass
+        await socket_client.close()
     except Exception as e:
         print(e)
 
@@ -103,6 +105,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 @app.middleware("http")
@@ -123,23 +126,27 @@ app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(_request: Request, exc: HTTPException):
-    global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
+    #global_logger.error(f"HTTPException: {exc.detail} | Status Code: {exc.status_code}")
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail}
     )
 
 
+
 @app.get("/{engagement_id}")
 async def home(
+        message: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 
 ):
     with exception_response():
-        data = await generate_role_reference_model(
+        data = await generate_role_reference_model_(
             connection=connection,
             module_id="427db88bfbe8"
         )
+
+        await socket_client.send_message(message)
 
         return data
 
@@ -251,6 +258,7 @@ async def login(
             raise HTTPException(detail="Invalid password", status_code=400)
 
 
+
 @app.put("/change_password", tags=["Authentication"])
 async def change_password(
         old_password: str = Form(...),
@@ -261,7 +269,6 @@ async def change_password(
     if user.status_code != 200:
         raise HTTPException(status_code=user.status_code, detail=user.description)
     try:
-
         await update_user_password(
             connection=db,
             user_id=user.user_id,
@@ -272,6 +279,7 @@ async def change_password(
         return ResponseMessage(detail="Password updated successfully")
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 
 app.include_router(administration_router, tags=["Engagement Administration"])

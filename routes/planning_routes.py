@@ -1,4 +1,5 @@
 import os
+from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks, HTTPException, Query
 from starlette.responses import FileResponse
 from models.planning_models import attach_draft_engagement_report_model, fetch_report_on_engagement, \
@@ -6,8 +7,8 @@ from models.planning_models import attach_draft_engagement_report_model, fetch_r
 from reports.draft_report.draft_report import generate_draft_report_model
 from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
 from reports.finding_sheet.finding_report import generate_finding_report
-from schema import CurrentUser
-from schemas.planning_schemas import ReportType
+from schema import CurrentUser, ResponseMessage
+from schemas.planning_schemas import ReportType, UserCirculate
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import get_current_user, exception_response, return_checker
 
@@ -139,3 +140,90 @@ async def fetch_engagement_report(
             passed="Report Successfully Deleted",
             failed="Failed Deleting Report"
         )
+
+
+
+#############################################
+#   REPORT CIRCULATE
+#############################################
+@router.post(
+    "/reports/circulate/{engagement_id}",
+    response_model=ResponseMessage,
+    description="""
+    Sends the finalized engagement report to a list of specified users by email.
+
+    Each user in the request must include their `user_id` and `email`. The report
+    related to the given `engagement_id` will be emailed to all listed recipients.
+
+    **Example request body:**
+    ```json
+    [
+        { "user_id": "40501a58d0ea", "email": "john@example.com" },
+        { "user_id": "50921b38e7af", "email": "sarah@example.com" }
+    ]
+    ```
+
+    **Example response:**
+    ```json
+    { "message": "Report sent to 2 users." }
+    ```
+    """
+)
+async def circulate_main_report(
+        engagement_id: str,
+        users: List[UserCirculate],
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        # _: CurrentUser = Depends(get_current_user)
+):
+    """
+    Circulate the engagement report to a list of users via email.
+
+    Args:
+        engagement_id (str): The engagement ID of the report to send.
+        users (List[UserCirculate]): List of recipients with `user_id` and `email`.
+        connection (AsyncConnection): Database connection.
+
+    Returns:
+        ResponseMessage: Success message after sending the report.
+    """
+    with exception_response():
+        pass
+
+
+
+################################################################################
+#   REPORT PUBLISH
+################################################################################
+@router.post(
+    "/reports/publish/{engagement_id}",
+    response_model=ResponseMessage,
+    description="""
+    Publishes the finalized engagement report and automatically sends it 
+    to the responsible user.
+
+    The system identifies the responsible user for the given `engagement_id`
+    and emails them the generated report.
+
+    **Example response:**
+    ```json
+    { "message": "Report successfully sent to the responsible user." }
+    ```
+    """
+)
+async def publish_main_report(
+        engagement_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        # _: CurrentUser = Depends(get_current_user)
+):
+    """
+    Publish and send the engagement report to the responsible user.
+
+    Args:
+        engagement_id (str): The unique ID of the engagement to publish.
+        connection (AsyncConnection): Database connection.
+
+    Returns:
+        ResponseMessage: Success message after sending the report.
+    """
+    with exception_response():
+        pass

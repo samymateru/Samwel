@@ -169,4 +169,5 @@ class JoinEngagementTest(BaseModel):
     type: str
     risk: Risk
     status: str
+    created_at: datetime
 
