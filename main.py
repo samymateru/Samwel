@@ -2,7 +2,6 @@ import uuid
 from typing import Optional
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
-from Management.roles.routes import router as roles_router
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
 from Management.entity.profile.control_weakness_rating.routes import router as control_weakness
 from Management.entity.profile.issue_source.routes import router as issue_source
@@ -22,7 +21,7 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from models.role_models import generate_role_reference_model, generate_role_reference_model_
+from models.role_models import generate_role_reference_model_
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -30,10 +29,9 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
-from schemas.role_schemas import RolesSections, Permissions
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from services.security.security import verify_password, check_permission
+from services.security.security import verify_password
 from services.sockets.client import socket_client
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
@@ -285,7 +283,6 @@ async def change_password(
 app.include_router(administration_router, tags=["Engagement Administration"])
 app.include_router(fieldwork_router, tags=["Engagement Fieldwork"])
 app.include_router(reporting_router, tags=["Engagement Reporting"])
-app.include_router(roles_router, tags=["Roles"])
 app.include_router(risk_maturity, tags=["Risk Maturity Rating"])
 app.include_router(control_weakness, tags=["Control Weakness Rating"])
 app.include_router(issue_source, tags=["Issue Source"])

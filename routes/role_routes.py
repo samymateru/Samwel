@@ -7,7 +7,7 @@ from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import exception_response, get_unique_key, return_checker
 from datetime import datetime
 
-router = APIRouter(prefix="/role")
+router = APIRouter(prefix="/roles")
 
 
 @router.post("/{module_id}")

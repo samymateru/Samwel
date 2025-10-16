@@ -21,7 +21,7 @@ roles_map = {
 }
 
 
-router = APIRouter(prefix="/roles")
+router = APIRouter(prefix="/role")
 
 
 @router.get("/{module_id}", response_model=List[Roles])
