@@ -54,18 +54,15 @@ async def create_new_organization_user(
         connection: AsyncConnection,
         organization_id: str,
         user_id: str,
-        management_title: str = "Management Title Not Set",
         administrator: bool = False,
         owner: bool = False,
         check_exists: bool = False,
-
 ):
     with exception_response():
         __organization_user__ = CreateOrganizationUser(
             organization_user_id=get_unique_key(),
             organization_id=organization_id,
             user_id=user_id,
-            management_title=management_title,
             administrator=administrator,
             owner=owner,
             created_at=datetime.now()
@@ -101,6 +98,7 @@ async def create_new_module_user(
             module_id=module_id,
             user_id=user_id,
             role=user.role,
+            role_id=user.role_id,
             title=user.title,
             type=user.type,
             created_at=datetime.now()

@@ -11,7 +11,7 @@ from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, Complet
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
     UpdateEngagement_, Engagement, EngagementRiskMaturityRating, UpdateEngagementRiskMaturityRating, \
     UpdateRiskMaturityRatingLowerPart
-from schemas.engagement_staff_schemas import NewEngagementStaff
+from schemas.engagement_staff_schemas import NewEngagementStaff, Stage
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from schemas.user_schemas import UserColumns
@@ -101,10 +101,7 @@ async def get_all_annual_plan_engagement(
                         'id', stf.id,
                         'name', stf.name,
                         'email', stf.email,
-                        'role', stf.role,
-                        'start_date', stf.start_date,
-                        'end_date', stf.end_date,
-                        'tasks', stf.tasks
+                        'role', stf.role
                     )
                 ) FILTER (WHERE stf.id IS NOT NULL AND stf.role = 'Audit Lead'),
                 '[]'::json
@@ -113,7 +110,7 @@ async def get_all_annual_plan_engagement(
             LEFT JOIN staff stf 
                 ON stf.engagement = eng.id
             WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted')
-            GROUP BY eng.id, eng.plan_id, eng.name, eng.start_date, eng.end_date, eng.status;
+            GROUP BY eng.id, eng.plan_id, eng.name, eng.status;
             """)
 
         async with connection.cursor() as cursor:
@@ -407,9 +404,27 @@ async def adding_engagement_staff_model(
                 name=entity_user_data.get("name"),
                 role=head_of_audit.get("role"),
                 email=entity_user_data.get("email"),
-                start_date=datetime.now(),
-                end_date=datetime.now(),
-                tasks=""
+                role_id="",
+                planning=Stage(
+                    hours=10,
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
+                ),
+                fieldwork=Stage(
+                    hours=10,
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
+                ),
+                reporting=Stage(
+                    hours=10,
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
+                ),
+                finalization=Stage(
+                    hours=10,
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
+                )
             )
 
 
@@ -438,10 +453,28 @@ async def adding_engagement_staff_model(
                 staff = NewEngagementStaff(
                     name=lead.name,
                     role="Audit Lead",
+                    role_id="",
                     email=lead.email,
-                    start_date=datetime.now(),
-                    end_date=datetime.now(),
-                    tasks=""
+                    planning=Stage(
+                        hours=10,
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
+                    ),
+                    fieldwork = Stage(
+                        hours=10,
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
+                    ),
+                    reporting=Stage(
+                        hours=10,
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
+                    ),
+                    finalization=Stage(
+                        hours=10,
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
+                    )
                 )
 
                 await create_new_engagement_staff_model(

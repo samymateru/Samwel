@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from psycopg import AsyncConnection
 
 from core.tables import Tables
@@ -17,14 +19,10 @@ async def create_new_engagement_staff_model(
 ):
     with exception_response():
         __staff__ = CreateEngagementStaff(
+            **staff.model_dump(),
             id=get_unique_key(),
             engagement=engagement_id,
-            name=staff.name,
-            email=staff.email,
-            role=staff.role,
-            start_date=staff.start_date,
-            end_date=staff.end_date,
-            tasks=staff.tasks
+            created_at=datetime.now()
         )
 
         builder = await (

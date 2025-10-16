@@ -8,7 +8,7 @@ from models.user_models import register_new_user, create_new_organization_user, 
 from schema import ResponseMessage, CurrentUser
 from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
 from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
-    ReadOrganizationUser, OrganizationUserColumns, UpdateOrganizationUserRole, OrganizationUserRolesTypes
+ OrganizationUserColumns, UpdateOrganizationUserRole, OrganizationUserRolesTypes
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
@@ -52,7 +52,6 @@ async def create_new_user(
             user_id=new_user_data.get("id"),
             administrator=False,
             owner=False,
-            management_title=user.title
         )
 
 

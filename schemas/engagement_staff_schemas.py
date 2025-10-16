@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
@@ -16,33 +14,40 @@ class EngagementStaffColumns(str, Enum):
     TASKS = "tasks"
 
 
+class Stage(BaseModel):
+    hours: int
+    start_date: datetime
+    end_date: datetime
+
+
 
 class NewEngagementStaff(BaseModel):
     name:  str
     email: str
     role: str
-    start_date: datetime
-    end_date: datetime
-    tasks: Optional[str] = None
+    role_id: str
+    planning: Stage
+    fieldwork: Stage
+    reporting: Stage
+    finalization: Stage
 
 
 class CreateEngagementStaff(NewEngagementStaff):
     id: str
     engagement: str
-    name:  str
-    email: str
-    role: str
-    start_date: datetime
-    end_date: datetime
-    tasks: Optional[str] = None
+    created_at: datetime
+
 
 
 class ReadEngagementStaff(CreateEngagementStaff):
     pass
 
 
+
 class UpdateStaff(BaseModel):
     role: str
-    start_date: datetime
-    end_date: datetime
-    tasks: Optional[str] = None
+    role_id: str
+    planning: Stage
+    fieldwork: Stage
+    reporting: Stage
+    finalization: Stage

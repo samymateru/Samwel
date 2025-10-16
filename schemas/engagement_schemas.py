@@ -56,6 +56,7 @@ class NewEngagement(BaseModel):
     name: str
     type: str
     risk: Risk
+    quarter: str
     leads: List[Lead]
     department: Department
     sub_departments: List[str]
@@ -93,6 +94,7 @@ class UpdateEngagement_(BaseModel):
     sub_departments: List[str]
     start_date: datetime
     end_date: datetime
+
 
 class UpdateEngagement(BaseModel):
     name: str

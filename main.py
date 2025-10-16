@@ -21,7 +21,6 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from models.role_models import generate_role_reference_model_
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -32,7 +31,6 @@ from schemas.organization_schemas import ReadOrganization
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
 from services.security.security import verify_password
-from services.sockets.client import socket_client
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
 from dotenv import load_dotenv
@@ -81,13 +79,15 @@ session_storage = PopDict()
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     try:
-        await socket_client.connect()
+        pass
+        #await socket_client.connect()
     except Exception as e:
         print(e)
     yield
 
     try:
-        await socket_client.close()
+        pass
+        #await socket_client.close()
     except Exception as e:
         print(e)
 
@@ -131,6 +131,8 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
     )
 
 
+from constants import head_of_audit, administrator, member, business_manager, risk_manager, compliance_manager, \
+    audit_reviewer, audit_lead, audit_member
 
 @app.get("/{engagement_id}")
 async def home(
@@ -139,14 +141,16 @@ async def home(
 
 ):
     with exception_response():
-        data = await generate_role_reference_model_(
-            connection=connection,
-            module_id="427db88bfbe8"
-        )
+        pass
+        # data = await generate_role_reference_model_(
+        #     connection=connection,
+        #     module_id="427db88bfbe8"
+        # )
+        #
+        # await socket_client.send_message(message)
+        #
+        # return data
 
-        await socket_client.send_message(message)
-
-        return data
 
 
 

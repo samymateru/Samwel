@@ -47,7 +47,8 @@ async def create_new_entity(
             user=NewUser(
             name=entity.owner,
             email=entity.email,
-            type=UserTypes.AUDIT.value
+            type=UserTypes.AUDIT.value,
+            role_id=""
             ),
             entity_id=entity_data.get("id"),
             password=entity.password,
@@ -82,8 +83,7 @@ async def create_new_entity(
             organization_id=organization_data.get("id"),
             user_id=user_data.get("id"),
             administrator=True,
-            owner=True,
-            management_title="Organization Owner"
+            owner=True
         )
 
 

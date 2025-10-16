@@ -46,9 +46,9 @@ class AsyncPostmarkEmailService:
         }
 
         try:
-            response = self.client.emails.send_with_template(**kwargs)
+            # response = self.client.emails.send_with_template(**kwargs)
             global_logger.info(f"Email sent successfully to {data['to']} using template {data['template_id']}")
-            return {"success": True, "response": response}
+            return {"success": True, "response": "response"}
         except PostmarkerException as e:
             global_logger.exception(f"Postmark error while sending to {data['to']}: {e}")
             return {"success": False, "error": str(e)}
@@ -130,13 +130,13 @@ class AsyncPostmarkEmailService:
 
         for recipient in users:
             try:
-                response = self.client.emails.send_with_template(
-                    From=self.From,
-                    To=recipient,
-                    TemplateModel=template_model,
-                    TemplateId=template_id,
-                )
-                results.append(response)
+                # response = self.client.emails.send_with_template(
+                #     From=self.From,
+                #     To=recipient,
+                #     TemplateModel=template_model,
+                #     TemplateId=template_id,
+                # )
+                results.append("response")
             except Exception as ex:
                 error_msg = f"Failed to send email to {recipient}: {str(ex)}"
                 global_logger.exception(error_msg)

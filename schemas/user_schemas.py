@@ -68,6 +68,16 @@ class NewUser(BaseModel):
     title: Optional[str] = None
 
 
+class NewModule(BaseModel):
+    name: Optional[str]
+    email: str
+    type: UserTypes
+    telephone: Optional[str] = None
+    role: Optional[str] = None
+    role_id: str
+    title: Optional[str] = None
+
+
 class CreateUser(BaseModel):
     id: str
     entity: str
@@ -86,7 +96,6 @@ class CreateOrganizationUser(BaseModel):
     organization_user_id: str
     organization_id: str
     user_id: str
-    management_title: str
     administrator: bool
     owner: bool
     created_at: datetime
@@ -99,7 +108,7 @@ class CreateModuleUser(BaseModel):
     user_id: str
     title: str
     role: str
-    role_id: Optional[str] = None
+    role_id: str
     type: str
     created_at: datetime
 
@@ -122,7 +131,7 @@ class BaseUser(BaseModel):
 class ReadModuleUsers(BaseUser):
     type: str
     role: str
-    role_id: Optional[str] = None
+    role_id: str
     title: Optional[str] = None
 
 
@@ -131,7 +140,7 @@ class UserModuleSection(BaseModel):
     id: str
     title: str
     role: str
-    role_id: Optional[str] = None
+    role_id: str
     type: str
     name: str
 
@@ -144,7 +153,7 @@ class ReadOrganizationUser(BaseUser):
 class UpdateModuleUser(BaseModel):
     title: str
     role: str
-    role_id: Optional[str] = None
+    role_id: str
     type: str
 
 
