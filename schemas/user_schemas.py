@@ -64,7 +64,7 @@ class NewUser(BaseModel):
     type: UserTypes
     telephone: Optional[str] = None
     role: Optional[str] = None
-    role_id: Optional[str] = None
+    role_id: str
     title: Optional[str] = None
 
 
