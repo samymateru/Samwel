@@ -22,7 +22,7 @@ async def create_new_engagement_staff_model(
             **staff.model_dump(),
             id=get_unique_key(),
             engagement=engagement_id,
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
 
         builder = await (

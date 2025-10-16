@@ -59,7 +59,7 @@ async def fetch_module_roles(
 
 
 
-@router.get("/single/{role_id}", response_model=ReadRole)
+@router.get("/role/{role_id}", response_model=ReadRole)
 async def fetch_single_role_data(
         role_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),

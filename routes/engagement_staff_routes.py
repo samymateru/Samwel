@@ -39,6 +39,9 @@ async def create_new_engagement_staff(
             email=staff.email
         )
 
+        if user_data is None:
+            raise HTTPException(status_code=404, detail=f"User With Email {staff.email} Not Found")
+
         engagement_data = await get_single_engagement_details(
             connection=connection,
             engagement_id=engagement_id
@@ -54,7 +57,7 @@ async def create_new_engagement_staff(
                 id=get_unique_key(),
                 title="Engagement invitation",
                 user_id=user_data.get("id"),
-                message=f"Your have been invited to Engagement: {engagement_data.get('name')} as {staff.role} from {staff.start_date} to {staff.end_date}",
+                message=f"Your have been invited to Engagement: {engagement_data.get('name')} as {staff.role}",
                 status=NotificationsStatus.NEW,
                 created_at=datetime.now()
             )

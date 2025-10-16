@@ -9,19 +9,18 @@ class EngagementStaffColumns(str, Enum):
     NAME = "name"
     EMAIL = "email"
     ROLE = "role"
-    START_DATE = "start_date"
-    END_DATE = "end_date"
-    TASKS = "tasks"
+    ROLE_ID = "role_id"
 
 
 class Stage(BaseModel):
     hours: int
-    start_date: datetime
-    end_date: datetime
+    start_date: str
+    end_date: str
 
 
 
 class NewEngagementStaff(BaseModel):
+    user_id: str
     name:  str
     email: str
     role: str

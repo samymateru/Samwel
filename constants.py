@@ -9,6 +9,7 @@ head_of_audit = CreateRole(
     reference="ROLE-001",
     default=Default.YES,
     name="Head of Audit",
+    head=True,
     section=Section.E_AUDIT,
     type=Type.AUDIT,
     settings=[

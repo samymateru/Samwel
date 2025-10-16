@@ -70,6 +70,7 @@ class RoleColumns(str, Enum):
     ARCHIVE_AUDIT = "archive_audit"
     UN_ARCHIVE_AUDIT = "un_archive_audit"
     OTHERS = "others"
+    HEAD = "head"
     CREATED_AT = "created_at"
 
 
@@ -100,6 +101,7 @@ class CreateRole(NewRole):
     reference: str
     module: Optional[str] = None
     default: Default
+    head: bool = False
     created_at: datetime
 
 

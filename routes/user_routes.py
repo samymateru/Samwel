@@ -2,6 +2,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 
 from core.tables import Tables
+from models.role_models import get_role_data_model
 from models.user_models import register_new_user, create_new_organization_user, create_new_module_user, \
     get_module_users, get_organization_users, get_entity_users, get_module_user_details, delete_user_in_module, \
     edit_entity_user, edit_module_user
@@ -57,6 +58,16 @@ async def create_new_user(
 
         if organization_user_data is None:
             raise HTTPException(status_code=400, detail="Failed To Attach User To Organization")
+
+
+        role_data = await get_role_data_model(
+            connection=connection,
+            role_id=user.role_id
+        )
+
+
+        if role_data.get("head"):
+            raise HTTPException(status_code=400, detail="You Cant Create Head Just Change The User Name And Email Of The Current")
 
 
         module_user_data = await create_new_module_user(
