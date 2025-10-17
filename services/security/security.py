@@ -129,6 +129,7 @@ def check_permission(section: RolesSections, permission: Permissions):
                         status_code=status.HTTP_403_FORBIDDEN,
                         detail=f"Missing {permission.value} permission in {section.value}.",
                     )
+                return auth
 
     return dependency
 
@@ -151,14 +152,14 @@ def check_engagement_permission(section: RolesSections, permission: Permissions,
             HTTPException (403): If the user does not have the specified permission.
 
         """
-    async def dependency():
+    async def dependency(auth: CurrentUser = Depends(get_current_user)):
         pool = await AsyncDBPoolSingleton.get_instance().get_pool()
         with exception_response():
             async with pool.connection() as connection:
                 staff_data = await fetch_engagement_staff_data_model(
                     connection=connection,
                     engagement_id=engagement_id,
-                    user_id="9d687ee45071"
+                    user_id=auth.user_id
                 )
 
                 if staff_data is None:
@@ -185,6 +186,8 @@ def check_engagement_permission(section: RolesSections, permission: Permissions,
                         status_code=status.HTTP_403_FORBIDDEN,
                         detail=f"Missing {permission.value} permission in {section.value}.",
                     )
+
+                return auth
 
     return dependency
 

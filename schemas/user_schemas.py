@@ -150,6 +150,15 @@ class ReadOrganizationUser(BaseUser):
     modules: List[UserModuleSection]
 
 
+class UpdateUser(BaseUser):
+    name: str
+    email: str
+    telephone: Optional[str] = None
+    title: str
+    role: str
+    role_id: str
+
+
 class UpdateModuleUser(BaseModel):
     title: str
     role: str
@@ -158,6 +167,7 @@ class UpdateModuleUser(BaseModel):
 
 class UpdateEntityUser(BaseModel):
     name: str
+    email: str
     telephone: Optional[str] = None
 
 

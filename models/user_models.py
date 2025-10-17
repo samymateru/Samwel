@@ -2,7 +2,7 @@ from datetime import datetime
 from psycopg import AsyncConnection, sql
 from core.tables import Tables
 from schemas.user_schemas import NewUser, CreateUser, UserStatus, UserColumns, CreateOrganizationUser, \
-    OrganizationUserColumns, CreateModuleUser, ModuleUserColumns, UpdateModuleUser, UpdateEntityUser
+    OrganizationUserColumns, CreateModuleUser, ModuleUserColumns, UpdateModuleUser, UpdateEntityUser, UpdateUser
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -311,15 +311,27 @@ async def delete_user_in_module(
 
 async def edit_module_user(
         connection: AsyncConnection,
-        user: UpdateModuleUser,
+        user: UpdateUser,
         user_id: str,
         module_id: str
 ):
     with exception_response():
+        module_user = UpdateModuleUser(
+            title=user.title,
+            role=user.role,
+            role_id=user.role_id
+        )
+
+        update_entity_user = UpdateEntityUser(
+            name=user.name,
+            email=user.email,
+            telephone=user.telephone
+        )
+
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.MODULES_USERS.value)
-            .values(user)
+            .values(module_user)
             .check_exists({
                 ModuleUserColumns.USER_ID.value: user_id,
                 ModuleUserColumns.MODULE_ID.value: module_id
@@ -330,6 +342,12 @@ async def edit_module_user(
             })
             .returning(ModuleUserColumns.USER_ID.value, ModuleUserColumns.MODULE_ID.value)
             .execute()
+        )
+
+        await edit_entity_user(
+            connection=connection,
+            user=update_entity_user,
+            user_id=user_id
         )
 
         return builder

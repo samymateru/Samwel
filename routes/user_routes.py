@@ -8,8 +8,8 @@ from models.user_models import register_new_user, create_new_organization_user, 
     edit_entity_user, edit_module_user
 from schema import ResponseMessage, CurrentUser
 from schemas.notification_schemas import SendUserInvitationNotification, NewUserInvitation
-from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, UpdateModuleUser, \
- OrganizationUserColumns, UpdateOrganizationUserRole, OrganizationUserRolesTypes
+from schemas.user_schemas import NewUser, BaseUser, ReadModuleUsers, UpdateEntityUser, \
+    OrganizationUserColumns, UpdateOrganizationUserRole, OrganizationUserRolesTypes, UpdateUser
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
@@ -187,7 +187,7 @@ async def updating_entity_user_details(
 @router.put("/module_user/{user_id}")
 async def updating_module_user_details(
         user_id: str,
-        user: UpdateModuleUser,
+        user: UpdateUser,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user)
     ):
