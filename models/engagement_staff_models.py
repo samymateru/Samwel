@@ -1,10 +1,9 @@
 from datetime import datetime
-
 from psycopg import AsyncConnection
-
 from core.tables import Tables
 from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, CreateEngagementStaff, \
-    EngagementStaffColumns
+    EngagementStaffColumns, ReadEngagementStaff
+from schemas.role_schemas import BaseRole
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
@@ -29,8 +28,8 @@ async def create_new_engagement_staff_model(
             InsertQueryBuilder(connection=connection)
             .into_table(Tables.ENGAGEMENT_STAFF.value)
             .values(__staff__)
-            .check_exists({EngagementStaffColumns.NAME.value: staff.name})
-            .check_exists({EngagementStaffColumns.ROLE.value: staff.role})
+            .check_exists({EngagementStaffColumns.USER_ID.value: staff.user_id})
+            .check_exists({EngagementStaffColumns.ROLE_ID.value: staff.role_id})
             .check_exists({EngagementStaffColumns.ENGAGEMENT.value: engagement_id})
             .returning(EngagementStaffColumns.ID.value)
             .execute()
@@ -53,6 +52,35 @@ async def fetch_engagement_staff_model(
 
         return builder
 
+
+async def fetch_engagement_staff_data_model(
+        connection: AsyncConnection,
+        engagement_id: str,
+        user_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ENGAGEMENT_STAFF.value, alias="eng_staff")
+            .select(ReadEngagementStaff)
+            .join_aggregate(
+                join_type="LEFT",
+                table=Tables.ROLES.value,
+                on="roles.id = eng_staff.role_id",
+                alias="roles",
+                aggregate_column="id",
+                json_field_name="role",
+                model=BaseRole,
+                use_prefix=True,
+                as_object=True
+            )
+            .where(EngagementStaffColumns.ENGAGEMENT.value, engagement_id)
+            .where(EngagementStaffColumns.USER_ID.value, user_id)
+            .select_joins()
+            .fetch_one()
+        )
+
+        return builder
 
 
 async def update_staff_model(

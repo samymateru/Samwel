@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import bcrypt
 from starlette import status
 
+from models.engagement_staff_models import fetch_engagement_staff_data_model
 from models.role_models import get_role_data_model
 from schema import CurrentUser
 from schemas.role_schemas import RolesSections, Permissions
@@ -130,4 +131,62 @@ def check_permission(section: RolesSections, permission: Permissions):
                     )
 
     return dependency
+
+
+def check_engagement_permission(section: RolesSections, permission: Permissions, engagement_id: str):
+    """
+        Dependency factory that checks if the current user's role has
+        the required permission in the specified Engagement.
+
+        This function returns an async dependency used with FastAPI's `Depends()`.
+        When included in a route, it verifies whether the logged-in user has
+        the given permission within the given section.
+
+        Args:
+            :param permission: (Permissions): The required permission (e.g., Permissions.APPROVE)
+            :param section: (RolesSections) : The role section (e.g., RolesSections.PLANNING
+            :param engagement_id:
+
+        Raises:
+            HTTPException (403): If the user does not have the specified permission.
+
+        """
+    async def dependency():
+        pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+        with exception_response():
+            async with pool.connection() as connection:
+                staff_data = await fetch_engagement_staff_data_model(
+                    connection=connection,
+                    engagement_id=engagement_id,
+                    user_id="9d687ee45071"
+                )
+
+                if staff_data is None:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail=f"During Staff Check We Cant Get Your Data Please Contact The Audit Leads",
+                    )
+
+                role_data = staff_data.get("role")
+
+                if role_data is None:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail=f"Missing {permission.value} permission in {section.value}.",
+                    )
+
+
+                section_permissions = role_data.get(section.value)
+
+                has_access = permission.value in section_permissions
+
+                if not has_access:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail=f"Missing {permission.value} permission in {section.value}.",
+                    )
+
+    return dependency
+
+
 

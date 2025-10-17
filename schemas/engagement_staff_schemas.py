@@ -10,6 +10,7 @@ class EngagementStaffColumns(str, Enum):
     EMAIL = "email"
     ROLE = "role"
     ROLE_ID = "role_id"
+    USER_ID = "user_id"
 
 
 class Stage(BaseModel):
@@ -37,8 +38,11 @@ class CreateEngagementStaff(NewEngagementStaff):
     created_at: datetime
 
 
+class BaseEngagementStaff(CreateEngagementStaff):
+    pass
 
-class ReadEngagementStaff(CreateEngagementStaff):
+
+class ReadEngagementStaff(BaseEngagementStaff):
     pass
 
 

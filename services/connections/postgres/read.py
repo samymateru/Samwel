@@ -269,7 +269,9 @@ class ReadBuilder:
         use_prefix: bool = True,
         filter_condition: Optional[Dict[str, Any]] = None,
         order_by: Optional[str] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
+        join_type: str = "LEFT",
+        as_object: bool = False
     ):
         """
         Adds a LEFT JOIN with JSON aggregation.
@@ -335,12 +337,18 @@ class ReadBuilder:
         subquery = sql.SQL(" ").join(subquery_parts)
 
         # --- Step 4: JSON aggregation of subquery (no wrapper key) ---
-        json_agg = sql.SQL(
-            "COALESCE((SELECT jsonb_agg(subq.elem) FROM ({subquery}) AS subq(elem)), '[]')"
-        ).format(subquery=subquery)
+        if as_object:
+            # 🔸 Return a single JSON object (first element or empty)
+            json_agg = sql.SQL(
+                 "(SELECT jsonb_agg(subq.elem)->0 FROM ({subquery}) AS subq(elem))"
+            ).format(subquery=subquery)
+        else:
+            json_agg = sql.SQL(
+                "COALESCE((SELECT jsonb_agg(subq.elem) FROM ({subquery}) AS subq(elem)), '[]')"
+            ).format(subquery=subquery)
 
         # --- Step 5: Register JOIN and SELECT field ---
-        self.join("LEFT", table, on, alias)
+        self.join(join_type, table, on, alias)
         self._select.append((json_agg, json_field_name))
 
         # --- Step 6: Ensure GROUP BY parent ID ---

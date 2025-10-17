@@ -189,12 +189,14 @@ async def updating_module_user_details(
         user_id: str,
         user: UpdateModuleUser,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
     ):
     with exception_response():
-        result = edit_module_user(
+        result = await edit_module_user(
             connection=connection,
             user=user,
-            user_id=user_id
+            user_id=user_id,
+            module_id=auth.module_id
         )
 
         return await return_checker(

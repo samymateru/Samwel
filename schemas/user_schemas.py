@@ -154,7 +154,6 @@ class UpdateModuleUser(BaseModel):
     title: str
     role: str
     role_id: str
-    type: str
 
 
 class UpdateEntityUser(BaseModel):

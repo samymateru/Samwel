@@ -313,15 +313,22 @@ async def edit_module_user(
         connection: AsyncConnection,
         user: UpdateModuleUser,
         user_id: str,
+        module_id: str
 ):
     with exception_response():
         builder = await (
             UpdateQueryBuilder(connection=connection)
             .into_table(Tables.MODULES_USERS.value)
             .values(user)
-            .check_exists({ModuleUserColumns.USER_ID.value: user_id})
-            .where({ModuleUserColumns.USER_ID.value: user_id})
-            .returning(ModuleUserColumns.USER_ID.value)
+            .check_exists({
+                ModuleUserColumns.USER_ID.value: user_id,
+                ModuleUserColumns.MODULE_ID.value: module_id
+            })
+            .where({
+                ModuleUserColumns.USER_ID.value: user_id,
+                ModuleUserColumns.MODULE_ID.value: module_id
+            })
+            .returning(ModuleUserColumns.USER_ID.value, ModuleUserColumns.MODULE_ID.value)
             .execute()
         )
 
