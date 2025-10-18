@@ -183,7 +183,6 @@ async def updating_entity_user_details(
             failed="Failed Updating  Entity User"
         )
 
-
 @router.put("/module_user/{user_id}")
 async def updating_module_user_details(
         user_id: str,
