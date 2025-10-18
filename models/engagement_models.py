@@ -53,7 +53,7 @@ async def register_new_engagement(
             end_date=engagement.end_date,
             created_at=datetime.now(),
             code=code,
-            quarter="Q1",
+            quarter=engagement.quarter,
         )
 
         builder = await (
@@ -499,7 +499,7 @@ async def adding_engagement_staff_model(
                 )
 
 
-            recent_activity = await add_new_recent_activity(
+            await add_new_recent_activity(
                 connection=connection,
                 recent_activity=RecentActivities(
                     activity_id=get_unique_key(),

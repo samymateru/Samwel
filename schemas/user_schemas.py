@@ -150,7 +150,7 @@ class ReadOrganizationUser(BaseUser):
     modules: List[UserModuleSection]
 
 
-class UpdateUser(BaseUser):
+class UpdateUser(BaseModel):
     name: str
     email: str
     telephone: Optional[str] = None

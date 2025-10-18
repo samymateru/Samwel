@@ -21,7 +21,6 @@ from AuditNew.Internal.engagements.reporting.routes import router as reporting_r
 from AuditNew.Internal.engagements.fieldwork.routes import router as fieldwork_router
 from AuditNew.Internal.dashboards.routes import router as dashboards
 from Management.subscriptions.routes import router as subscriptions
-from models.engagement_staff_models import fetch_engagement_staff_data_model
 from routes.attachment_routes import router as attachment_routes
 from AuditNew.Internal.reports.routes import router as reports
 from contextlib import asynccontextmanager
@@ -132,9 +131,6 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
         content={"detail": exc.detail}
     )
 
-
-from constants import head_of_audit, administrator, member, business_manager, risk_manager, compliance_manager, \
-    audit_reviewer, audit_lead, audit_member
 
 @app.get("/{engagement_id}")
 async def home(

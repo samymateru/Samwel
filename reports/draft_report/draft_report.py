@@ -12,7 +12,7 @@ from psycopg import AsyncConnection
 from reports.models.process_summary_rating_model import process_summary_rating_model
 from reports.models.engagement_report_model import get_engagement_report_details
 from reports.models.issue_report_model import issue_report_data_model
-from reports.utils import sanitize_for_xml, create_styled_table, add_hyperlink
+from reports.utils import sanitize_for_xml, create_styled_table
 from test import process_summary_page
 from utils import exception_response
 
@@ -64,13 +64,15 @@ async def generate_draft_report_model(engagement_id: str, connection: AsyncConne
             columns=4,
             headers=table_of_findings_headers,
             data=table_of_findings_data,
-            column_widths=[0, 2.5, 1.5, 1.5],
+            column_widths=[0.3, 2.5, 2, 1.5],
             header_bg="CEDE5",
             header_font_color="000000",
             row_bg="FFFFFF",
             alt_row_bg="FFFFFF",
-            row_height=0.3
+            row_height=0.3,
+            full_width=True
         )
+
         findings_buffer = BytesIO()
         table_of_findings.save(findings_buffer)
         findings_buffer.seek(0)
