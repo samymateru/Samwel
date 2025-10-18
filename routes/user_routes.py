@@ -1,4 +1,4 @@
-from typing import Optional, List, Any
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 
 from core.tables import Tables
@@ -186,7 +186,7 @@ async def updating_entity_user_details(
 @router.put("/module_user/{user_id}")
 async def updating_module_user_details(
         user_id: str,
-        user: Any,
+        user: UpdateUser,
         connection = Depends(AsyncDBPoolSingleton.get_db_connection),
         auth: CurrentUser = Depends(get_current_user)
     ):
