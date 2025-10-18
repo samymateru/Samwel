@@ -11,7 +11,7 @@ from schemas.engagement_schemas import NewEngagement, ArchiveEngagement, Complet
     DeleteEngagementPartially, CreateEngagement, EngagementStage, EngagementColumns, AddOpinionRating, UpdateEngagement, \
     UpdateEngagement_, Engagement, EngagementRiskMaturityRating, UpdateEngagementRiskMaturityRating, \
     UpdateRiskMaturityRatingLowerPart
-from schemas.engagement_staff_schemas import NewEngagementStaff, Stage
+from schemas.engagement_staff_schemas import NewEngagementStaff, NewStage
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from schemas.user_schemas import UserColumns
@@ -406,25 +406,25 @@ async def adding_engagement_staff_model(
                 email=entity_user_data.get("email"),
                 user_id=head_of_audit.get("user_id") or "",
                 role_id=head_of_audit.get("role_id") or "",
-                planning=Stage(
+                planning=NewStage(
                     hours=10,
-                    start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
                 ),
-                fieldwork=Stage(
+                fieldwork=NewStage(
                     hours=10,
-                    start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
                 ),
-                reporting=Stage(
+                reporting=NewStage(
                     hours=10,
-                    start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
                 ),
-                finalization=Stage(
+                finalization=NewStage(
                     hours=10,
-                    start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    start_date=datetime.now(),
+                    end_date=datetime.now()
                 )
             )
 
@@ -456,25 +456,25 @@ async def adding_engagement_staff_model(
                     role="Audit Lead",
                     role_id="",
                     email=lead.email,
-                    planning=Stage(
+                    planning=NewStage(
                         hours=10,
-                        start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
                     ),
-                    fieldwork = Stage(
+                    fieldwork = NewStage(
                         hours=10,
-                        start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
                     ),
-                    reporting=Stage(
+                    reporting=NewStage(
                         hours=10,
-                        start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
                     ),
-                    finalization=Stage(
+                    finalization=NewStage(
                         hours=10,
-                        start_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        end_date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        start_date=datetime.now(),
+                        end_date=datetime.now()
                     )
                 )
 

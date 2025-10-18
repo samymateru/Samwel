@@ -18,6 +18,12 @@ class Stage(BaseModel):
     start_date: str
     end_date: str
 
+class NewStage(BaseModel):
+    hours: int
+    start_date: datetime
+    end_date: datetime
+
+
 
 
 class NewEngagementStaff(BaseModel):
@@ -26,15 +32,24 @@ class NewEngagementStaff(BaseModel):
     email: str
     role: str
     role_id: str
+    planning: NewStage
+    fieldwork: NewStage
+    reporting: NewStage
+    finalization: NewStage
+
+
+class CreateEngagementStaff(BaseModel):
+    id: str
+    engagement: str
+    user_id: str
+    name: str
+    email: str
+    role: str
+    role_id: str
     planning: Stage
     fieldwork: Stage
     reporting: Stage
     finalization: Stage
-
-
-class CreateEngagementStaff(NewEngagementStaff):
-    id: str
-    engagement: str
     created_at: datetime
 
 

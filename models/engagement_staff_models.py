@@ -2,7 +2,7 @@ from datetime import datetime
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, CreateEngagementStaff, \
-    EngagementStaffColumns, ReadEngagementStaff
+    EngagementStaffColumns, ReadEngagementStaff, Stage
 from schemas.role_schemas import BaseRole
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -18,7 +18,31 @@ async def create_new_engagement_staff_model(
 ):
     with exception_response():
         __staff__ = CreateEngagementStaff(
-            **staff.model_dump(),
+            user_id=staff.user_id,
+            role_id=staff.role_id,
+            role=staff.role,
+            name=staff.name,
+            email=staff.email,
+            planning=Stage(
+                hours=staff.planning.hours,
+                start_date=staff.planning.start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                end_date=staff.planning.end_date.strftime("%Y-%m-%d %H:%M:%S"),
+            ),
+            fieldwork=Stage(
+                hours=staff.planning.hours,
+                start_date=staff.fieldwork.start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                end_date=staff.fieldwork.end_date.strftime("%Y-%m-%d %H:%M:%S"),
+            ),
+            reporting=Stage(
+                hours=staff.reporting.hours,
+                start_date=staff.reporting.start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                end_date=staff.reporting.end_date.strftime("%Y-%m-%d %H:%M:%S"),
+            ),
+            finalization=Stage(
+                hours=staff.reporting.hours,
+                start_date=staff.finalization.start_date.strftime("%Y-%m-%d %H:%M:%S"),
+                end_date=staff.finalization.end_date.strftime("%Y-%m-%d %H:%M:%S"),
+            ),
             id=get_unique_key(),
             engagement=engagement_id,
             created_at=datetime.now(),
