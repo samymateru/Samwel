@@ -198,6 +198,7 @@ async def updating_module_user_details(
             module_id=auth.module_id
         )
 
+
         return await return_checker(
             data=result,
             passed="Module User Successfully Updated",
