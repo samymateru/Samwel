@@ -1218,7 +1218,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
         "attachments": [""],
         "conclusion": {"value": ""},
         "objectives": {"value": ""},
-        "type": "standard",
+        "type": "closure",
         "prepared_by": None,
         "reviewed_by": None
     },
