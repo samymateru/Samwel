@@ -519,15 +519,15 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             task_data = [dict(zip(column_names, row_)) for row_ in rows]
 
 
-            comments = review_comment_data[0].get("review_status") or {}
+            comments = review_comment_data[0].get("review_status")
 
-            tasks = task_data[0].get("task_status") or {}
+            tasks = task_data[0].get("task_status")
 
             total = {
-                "pending": comments.get("pending") or 0 + tasks.get("pending") or 0,
-                "in_progress": comments.get("in_progress") or 0 + tasks.get("in_progress") or 0,
-                "closed": comments.get("closed") or 0 + tasks.get("closed") or 0,
-                "total": comments.get("total") or 0 + tasks.get("total") or 0,
+                "pending": comments.get("pending") + tasks.get("pending"),
+                "in_progress": comments.get("in_progress") + tasks.get("in_progress"),
+                "closed": comments.get("closed") + tasks.get("closed"),
+                "total": comments.get("total") + tasks.get("total"),
             }
 
 
@@ -588,8 +588,6 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
-
-            print(data)
 
 
             dashboard_data = separate_engagements_and_issues(data)
