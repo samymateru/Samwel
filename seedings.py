@@ -1109,18 +1109,6 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
         "type": "standard",
         "prepared_by": None,
         "reviewed_by": None
-    },
-    {
-        "title": "Audit closure meeting",
-        "tests": {"value": ""},
-        "results": {"value": ""},
-        "observation": {"value": ""},
-        "attachments": [""],
-        "conclusion": {"value": ""},
-        "objectives": {"value": ""},
-        "type": "standard",
-        "prepared_by": None,
-        "reviewed_by": None
     }
 ]
 

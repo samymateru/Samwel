@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="changing the read builder">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="engagement dashboard review and task data to be total" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -158,110 +156,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00852" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759686759855</created>
-      <option name="number" value="00852" />
-      <option name="presentableId" value="LOCAL-00852" />
-      <option name="project" value="LOCAL" />
-      <updated>1759686759855</updated>
-    </task>
-    <task id="LOCAL-00853" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759735327493</created>
-      <option name="number" value="00853" />
-      <option name="presentableId" value="LOCAL-00853" />
-      <option name="project" value="LOCAL" />
-      <updated>1759735327493</updated>
-    </task>
-    <task id="LOCAL-00854" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759742810522</created>
-      <option name="number" value="00854" />
-      <option name="presentableId" value="LOCAL-00854" />
-      <option name="project" value="LOCAL" />
-      <updated>1759742810522</updated>
-    </task>
-    <task id="LOCAL-00855" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759743297733</created>
-      <option name="number" value="00855" />
-      <option name="presentableId" value="LOCAL-00855" />
-      <option name="project" value="LOCAL" />
-      <updated>1759743297734</updated>
-    </task>
-    <task id="LOCAL-00856" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759755780376</created>
-      <option name="number" value="00856" />
-      <option name="presentableId" value="LOCAL-00856" />
-      <option name="project" value="LOCAL" />
-      <updated>1759755780376</updated>
-    </task>
-    <task id="LOCAL-00857" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759766735785</created>
-      <option name="number" value="00857" />
-      <option name="presentableId" value="LOCAL-00857" />
-      <option name="project" value="LOCAL" />
-      <updated>1759766735785</updated>
-    </task>
-    <task id="LOCAL-00858" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759771047865</created>
-      <option name="number" value="00858" />
-      <option name="presentableId" value="LOCAL-00858" />
-      <option name="project" value="LOCAL" />
-      <updated>1759771047865</updated>
-    </task>
-    <task id="LOCAL-00859" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759772095051</created>
-      <option name="number" value="00859" />
-      <option name="presentableId" value="LOCAL-00859" />
-      <option name="project" value="LOCAL" />
-      <updated>1759772095051</updated>
-    </task>
-    <task id="LOCAL-00860" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759776286451</created>
-      <option name="number" value="00860" />
-      <option name="presentableId" value="LOCAL-00860" />
-      <option name="project" value="LOCAL" />
-      <updated>1759776286451</updated>
-    </task>
-    <task id="LOCAL-00861" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759820685740</created>
-      <option name="number" value="00861" />
-      <option name="presentableId" value="LOCAL-00861" />
-      <option name="project" value="LOCAL" />
-      <updated>1759820685740</updated>
-    </task>
-    <task id="LOCAL-00862" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759825578607</created>
-      <option name="number" value="00862" />
-      <option name="presentableId" value="LOCAL-00862" />
-      <option name="project" value="LOCAL" />
-      <updated>1759825578607</updated>
-    </task>
-    <task id="LOCAL-00863" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759826685697</created>
-      <option name="number" value="00863" />
-      <option name="presentableId" value="LOCAL-00863" />
-      <option name="project" value="LOCAL" />
-      <updated>1759826685697</updated>
-    </task>
-    <task id="LOCAL-00864" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759849179032</created>
-      <option name="number" value="00864" />
-      <option name="presentableId" value="LOCAL-00864" />
-      <option name="project" value="LOCAL" />
-      <updated>1759849179032</updated>
     </task>
     <task id="LOCAL-00865" summary="removing old files">
       <option name="closed" value="true" />
@@ -551,7 +445,111 @@
       <option name="project" value="LOCAL" />
       <updated>1760801541900</updated>
     </task>
-    <option name="localTasksCounter" value="901" />
+    <task id="LOCAL-00901" summary="changing the read builder">
+      <option name="closed" value="true" />
+      <created>1760948736545</created>
+      <option name="number" value="00901" />
+      <option name="presentableId" value="LOCAL-00901" />
+      <option name="project" value="LOCAL" />
+      <updated>1760948736547</updated>
+    </task>
+    <task id="LOCAL-00902" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760950639039</created>
+      <option name="number" value="00902" />
+      <option name="presentableId" value="LOCAL-00902" />
+      <option name="project" value="LOCAL" />
+      <updated>1760950639039</updated>
+    </task>
+    <task id="LOCAL-00903" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760955018735</created>
+      <option name="number" value="00903" />
+      <option name="presentableId" value="LOCAL-00903" />
+      <option name="project" value="LOCAL" />
+      <updated>1760955018735</updated>
+    </task>
+    <task id="LOCAL-00904" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760957539623</created>
+      <option name="number" value="00904" />
+      <option name="presentableId" value="LOCAL-00904" />
+      <option name="project" value="LOCAL" />
+      <updated>1760957539623</updated>
+    </task>
+    <task id="LOCAL-00905" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760958399237</created>
+      <option name="number" value="00905" />
+      <option name="presentableId" value="LOCAL-00905" />
+      <option name="project" value="LOCAL" />
+      <updated>1760958399238</updated>
+    </task>
+    <task id="LOCAL-00906" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760962513585</created>
+      <option name="number" value="00906" />
+      <option name="presentableId" value="LOCAL-00906" />
+      <option name="project" value="LOCAL" />
+      <updated>1760962513585</updated>
+    </task>
+    <task id="LOCAL-00907" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760964481702</created>
+      <option name="number" value="00907" />
+      <option name="presentableId" value="LOCAL-00907" />
+      <option name="project" value="LOCAL" />
+      <updated>1760964481702</updated>
+    </task>
+    <task id="LOCAL-00908" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760977058590</created>
+      <option name="number" value="00908" />
+      <option name="presentableId" value="LOCAL-00908" />
+      <option name="project" value="LOCAL" />
+      <updated>1760977058590</updated>
+    </task>
+    <task id="LOCAL-00909" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760977866621</created>
+      <option name="number" value="00909" />
+      <option name="presentableId" value="LOCAL-00909" />
+      <option name="project" value="LOCAL" />
+      <updated>1760977866621</updated>
+    </task>
+    <task id="LOCAL-00910" summary="fixing the creator and review exchnage in followup">
+      <option name="closed" value="true" />
+      <created>1760978839729</created>
+      <option name="number" value="00910" />
+      <option name="presentableId" value="LOCAL-00910" />
+      <option name="project" value="LOCAL" />
+      <updated>1760978839729</updated>
+    </task>
+    <task id="LOCAL-00911" summary="fixing the home dashboard engagement where not seen correctly due to query issue">
+      <option name="closed" value="true" />
+      <created>1760979723551</created>
+      <option name="number" value="00911" />
+      <option name="presentableId" value="LOCAL-00911" />
+      <option name="project" value="LOCAL" />
+      <updated>1760979723551</updated>
+    </task>
+    <task id="LOCAL-00912" summary="engagement dashboard review and task data to be total">
+      <option name="closed" value="true" />
+      <created>1760980431337</created>
+      <option name="number" value="00912" />
+      <option name="presentableId" value="LOCAL-00912" />
+      <option name="project" value="LOCAL" />
+      <updated>1760980431337</updated>
+    </task>
+    <task id="LOCAL-00913" summary="engagement dashboard review and task data to be total">
+      <option name="closed" value="true" />
+      <created>1760981202823</created>
+      <option name="number" value="00913" />
+      <option name="presentableId" value="LOCAL-00913" />
+      <option name="project" value="LOCAL" />
+      <updated>1760981202823</updated>
+    </task>
+    <option name="localTasksCounter" value="914" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -583,9 +581,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="initial commit" />
-    <MESSAGE value="adding annual plans and fixing login issue" />
-    <MESSAGE value="removing annual plans permission for sometime" />
     <MESSAGE value="adding the constraints  to fetch the the annual plans" />
     <MESSAGE value="fixing upload file issue" />
     <MESSAGE value="adding work flows" />
@@ -608,7 +603,10 @@
     <MESSAGE value="fixing auth and token generation" />
     <MESSAGE value="removing old files" />
     <MESSAGE value="changing the read builder" />
-    <option name="LAST_COMMIT_MESSAGE" value="changing the read builder" />
+    <MESSAGE value="fixing the creator and review exchnage in followup" />
+    <MESSAGE value="fixing the home dashboard engagement where not seen correctly due to query issue" />
+    <MESSAGE value="engagement dashboard review and task data to be total" />
+    <option name="LAST_COMMIT_MESSAGE" value="engagement dashboard review and task data to be total" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
