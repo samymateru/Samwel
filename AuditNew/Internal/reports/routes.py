@@ -27,6 +27,7 @@ async def fetch_detailed_issue_reports(
 
             refined = {
                 **x,
+                "issue_rating": x.get("risk_rating"),
                 "criteria": extract_text(x.get("criteria")),
                 "recommendation": extract_text(x.get("recommendation")),
                 "finding": extract_text(x.get("finding")),

@@ -310,8 +310,6 @@ app.include_router(task_, tags=["Task"])
 app.include_router(review_comment_, tags=["Review Comment"])
 app.include_router(dashboards, tags=["System Dashboards"])
 app.include_router(reports, tags=["System Reports"])
-
-
 app.include_router(ai, tags=["AI Generation Routes"])
 app.include_router(attachment_routes, tags=["Attachments Routes"])
 app.include_router(subscriptions, tags=["Subscriptions"])

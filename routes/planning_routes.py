@@ -187,7 +187,7 @@ async def circulate_main_report(
         ResponseMessage: Success message after sending the report.
     """
     with exception_response():
-        pass
+        return ResponseMessage(detail="Report Circulated")
 
 
 
@@ -226,4 +226,4 @@ async def publish_main_report(
         ResponseMessage: Success message after sending the report.
     """
     with exception_response():
-        pass
+        return ResponseMessage(detail="Report Published")
