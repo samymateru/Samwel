@@ -843,20 +843,7 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
         "reviewed_by": None
     },
     {
-        "id": 0,
         "title": "Collection & Analyze of client information",
-        "tests": {"value": ""},
-        "results": {"value": ""},
-        "observation": {"value": ""},
-        "attachments": [""],
-        "conclusion": {"value": ""},
-        "objectives": {"value": ""},
-        "type": "standard",
-        "prepared_by": None,
-        "reviewed_by": None
-    },
-    {
-        "title": "Analyze client information",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
