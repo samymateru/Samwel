@@ -521,7 +521,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 
             comments = review_comment_data[0].get("review_status") or {}
 
-            tasks = task_data[0].get("review_status") or {}
+            tasks = task_data[0].get("task_status") or {}
 
             total = {
                 "pending": comments.get("pending") or 0 + tasks.get("pending") or 0,
