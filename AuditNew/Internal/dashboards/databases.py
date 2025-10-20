@@ -288,7 +288,7 @@ async def query_planning_details(connection: AsyncConnection, plan_id: str):
         ) AS planning_summary
 
         FROM engagements eng
-        WHERE eng.plan_id = %s;
+        WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted');
         """
     )
     try:

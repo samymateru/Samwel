@@ -72,7 +72,8 @@ async def register_new_engagement(
 
 async def get_all_annual_plan_engagement(
         connection: AsyncConnection,
-        annual_plan_id: str
+        annual_plan_id: str,
+        user_id: str
 ):
     with exception_response():
         query = sql.SQL(
@@ -107,14 +108,13 @@ async def get_all_annual_plan_engagement(
                 '[]'::json
             ) AS leads
             FROM engagements eng
-            LEFT JOIN staff stf 
-                ON stf.engagement = eng.id
-            WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted')
+            LEFT JOIN staff stf ON stf.engagement = eng.id
+            WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted') AND stf.user_id = %s
             GROUP BY eng.id, eng.plan_id, eng.name, eng.status;
             """)
 
         async with connection.cursor() as cursor:
-            await cursor.execute(query, (annual_plan_id,))
+            await cursor.execute(query, (annual_plan_id, user_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             result = [dict(zip(column_names, row)) for row in rows]

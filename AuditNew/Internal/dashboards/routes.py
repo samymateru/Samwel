@@ -69,7 +69,6 @@ async def fetch_module_dashboard(
 async def fetch_plan_details(
         plan_id: str,
         db=Depends(get_async_db_connection),
-        #user: CurrentUser = Depends(get_current_user)
 ):
     try:
         data = await query_planning_details(connection=db, plan_id=plan_id)

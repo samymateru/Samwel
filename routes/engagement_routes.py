@@ -14,8 +14,9 @@ from models.user_models import get_module_users
 from schema import ResponseMessage, CurrentUser
 from schemas.engagement_schemas import NewEngagement, ReadEngagement,  UpdateEngagement_, EngagementRiskMaturityRating, UpdateRiskMaturityRatingLowerPart
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
+from schemas.role_schemas import RolesSections
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from services.security.security import get_current_user
+from services.security.security import get_current_user, check_permission
 from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
@@ -77,11 +78,13 @@ async def create_new_engagement(
 async def fetch_all_annual_plan_engagements(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        auth: CurrentUser =Depends(get_current_user)
 ):
     with exception_response():
         data = await get_all_annual_plan_engagement(
             connection=connection,
-            annual_plan_id=annual_plan_id
+            annual_plan_id=annual_plan_id,
+            user_id=auth.user_id
         )
 
         return data
