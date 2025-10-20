@@ -16,6 +16,7 @@ class Permissions(str, Enum):
 class RolesSections(str, Enum):
     SETTINGS = "settings"
     AUDIT_PLAN = "audit_plans"
+    ENGAGEMENT = "engagements"
     ADMINISTRATION = "administration"
     PLANNING = "planning"
     FIELDWORK = "fieldwork"
