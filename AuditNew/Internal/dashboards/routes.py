@@ -54,7 +54,7 @@ async def fetch_main_dashboard(
 async def fetch_module_dashboard(
         module_id: str,
         db = Depends(get_async_db_connection),
-        #user: CurrentUser  = Depends(get_current_user)
+        _: CurrentUser  = Depends(get_current_user)
     ):
     try:
         data = await get_modules_dashboard(connection=db, module_id=module_id)

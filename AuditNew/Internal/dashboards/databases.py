@@ -566,13 +566,15 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         
         FROM public.annual_plans pln
         JOIN public.engagements eng ON pln.id = eng.plan_id
-        LEFT JOIN public.issue isu ON eng.id = isu.engagement
+        LEFT JOIN public.issue isu 
+        ON eng.id = isu.engagement
+        AND isu.status != 'Not started'
         WHERE pln.module = %s
          AND pln.year::int = (
           SELECT MAX(year::int)
           FROM annual_plans
           WHERE module = %s
-        ) AND (isu.status != 'Not started')
+        )
         ORDER BY eng.id, isu.id
         LIMIT 20;
         """)
@@ -586,6 +588,8 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
+
+            print(data)
 
 
             dashboard_data = separate_engagements_and_issues(data)
