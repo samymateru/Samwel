@@ -4,12 +4,14 @@ from models.annual_plan_models import register_new_annual_plan, get_module_annua
     remove_annual_plan_partially, edit_annual_plan_details
 from models.attachment_model import add_new_attachment
 from models.recent_activity_models import add_new_recent_activity
-from schema import ResponseMessage
+from schema import ResponseMessage, CurrentUser
 from schemas.annual_plan_schemas import NewAnnualPlan, ReadAnnualPlan, UpdateAnnualPlan
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
+from schemas.role_schemas import RolesSections, Permissions
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
+from services.security.security import check_permission
 from utils import exception_response, return_checker, get_unique_key
 from datetime import datetime
 
@@ -27,7 +29,8 @@ async def create_new_annual_plan(
         end: datetime = Form(...),
         attachment: UploadFile = File(...),
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        background_tasks: BackgroundTasks = BackgroundTasks()
+        background_tasks: BackgroundTasks = BackgroundTasks(),
+        _: CurrentUser = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.CREATE))
 ):
     with exception_response():
 
@@ -88,6 +91,7 @@ async def create_new_annual_plan(
 async def fetch_all_module_annual_plans(
         module_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        _: CurrentUser = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.VIEW))
 ):
     with exception_response():
         data = await get_module_annual_plans(
@@ -103,6 +107,7 @@ async def fetch_all_module_annual_plans(
 async def fetch_single_plan_data(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        _: CurrentUser = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.VIEW))
 ):
     with exception_response():
         data = await get_annual_plan_details(
@@ -122,6 +127,8 @@ async def update_annual_plan_data(
         annual_plan_id: str,
         annual_plan: UpdateAnnualPlan,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        _: CurrentUser = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.EDIT))
+
 ):
     with exception_response():
         results = await edit_annual_plan_details(
@@ -142,6 +149,7 @@ async def update_annual_plan_data(
 async def remove_annual_plan_data(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+        _: CurrentUser = Depends(check_permission(RolesSections.AUDIT_PLAN, Permissions.DELETE))
 ):
     with exception_response():
 

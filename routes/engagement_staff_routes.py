@@ -15,6 +15,7 @@ from utils import exception_response, return_checker, get_unique_key
 
 router = APIRouter(prefix="/engagements")
 
+
 @router.post("/staff/{engagement_id}", status_code=201, response_model=ResponseMessage)
 async def create_new_engagement_staff(
         engagement_id: str,
@@ -29,6 +30,7 @@ async def create_new_engagement_staff(
             engagement_id=engagement_id
         )
 
+
         if results is None:
             raise HTTPException(status_code=400, detail="Failed To Create Engagement Staff")
 
@@ -38,13 +40,16 @@ async def create_new_engagement_staff(
             email=staff.email
         )
 
+
         if user_data is None:
             raise HTTPException(status_code=404, detail=f"User With Email {staff.email} Not Found")
+
 
         engagement_data = await get_single_engagement_details(
             connection=connection,
             engagement_id=engagement_id
         )
+
 
         if engagement_data is None:
             global_logger.exception("Engagement Not Found")
