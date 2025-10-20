@@ -347,7 +347,7 @@ async def get_all_module_follow_up(
             .join(
                 "LEFT",
                 Tables.USERS.value,
-                "reviewer.id = follow_up.created_by",
+                "reviewer.id = follow_up.reviewed_by",
                 "reviewer",
                 use_prefix=True,
                 model=ReadFollowUpUser,
@@ -355,7 +355,7 @@ async def get_all_module_follow_up(
             .join(
                 "LEFT",
                 Tables.USERS.value,
-                "creator.id = follow_up.reviewed_by",
+                "creator.id = follow_up.created_by",
                 "creator",
                 use_prefix=True,
                 model=ReadFollowUpUser,
