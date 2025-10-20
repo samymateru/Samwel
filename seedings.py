@@ -817,9 +817,9 @@ async def impact_category(connection: AsyncConnection, company: str):
         logger.error(e)
 
 async def planning_procedures(connection: AsyncConnection, engagement_id: str):
-    values = data = [
+    values =  [
     {
-        "title": "Pre-engagement meeting",
+        "title": "Audit mobilization meeting",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
@@ -843,32 +843,8 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
         "reviewed_by": None
     },
     {
-        "title": "Audit mobilization meeting",
-        "tests": {"value": ""},
-        "results": {"value": ""},
-        "observation": {"value": ""},
-        "attachments": [""],
-        "conclusion": {"value": ""},
-        "objectives": {"value": ""},
-        "type": "standard",
-        "prepared_by": None,
-        "reviewed_by": None
-    },
-    {
-        "title": "Allocation of staff",
-        "tests": {"value": ""},
-        "results": {"value": ""},
-        "observation": {"value": ""},
-        "attachments": [""],
-        "conclusion": {"value": ""},
-        "objectives": {"value": ""},
-        "type": "standard",
-        "prepared_by": None,
-        "reviewed_by": None
-    },
-    {
         "id": 0,
-        "title": "Collection of client information",
+        "title": "Collection & Analyze of client information",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
@@ -1062,7 +1038,7 @@ async def planning_procedures(connection: AsyncConnection, engagement_id: str):
         raise HTTPException(status_code=400, detail="Error creating planning procedure")
 
 async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
-    values = data = [
+    values = [
     {
         "title": "Summary of audit findings",
         "tests": {"value": ""},
@@ -1124,14 +1100,14 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
         "reviewed_by": None
     },
     {
-        "title": "Final audit report",
+        "title": "Final  audit report & Circulation",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
         "attachments": [""],
         "conclusion": {"value": ""},
         "objectives": {"value": ""},
-        "type": "standard",
+        "type": "circulate",
         "prepared_by": None,
         "reviewed_by": None
     },
@@ -1149,18 +1125,6 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
     },
     {
         "title": "Audit closure meeting",
-        "tests": {"value": ""},
-        "results": {"value": ""},
-        "observation": {"value": ""},
-        "attachments": [""],
-        "conclusion": {"value": ""},
-        "objectives": {"value": ""},
-        "type": "standard",
-        "prepared_by": None,
-        "reviewed_by": None
-    },
-    {
-        "title": "Circulation of final audit report",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
@@ -1223,6 +1187,18 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
 
 async def finalization_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
+    {
+        "title": "Timesheet & audit resource utilization",
+        "tests": {"value": ""},
+        "results": {"value": ""},
+        "observation": {"value": ""},
+        "attachments": [""],
+        "conclusion": {"value": ""},
+        "objectives": {"value": ""},
+        "type": "timesheet",
+        "prepared_by": None,
+        "reviewed_by": None
+    },
     {
         "title": "Audit feedback process",
         "tests": {"value": ""},

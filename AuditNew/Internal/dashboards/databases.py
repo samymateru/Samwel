@@ -443,6 +443,22 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
         JOIN engagements e ON rc.engagement = e.id
         WHERE e.id = {engagement_id}
         """).format(engagement_id=sql.Literal(engagement_id))
+
+
+    query_task = sql.SQL(
+        """
+        SELECT
+        jsonb_build_object(
+            'pending', COUNT(*) FILTER (WHERE rc.status = 'Pending'),
+            'in_progress', COUNT(*) FILTER (WHERE rc.status = 'Ongoing'),
+            'closed', COUNT(*) FILTER (WHERE rc.status = 'Closed'),
+            'total', COUNT(*)
+        ) as task_status
+
+        FROM task rc
+        JOIN engagements e ON rc.engagement = e.id
+        WHERE e.id = {engagement_id}
+        """).format(engagement_id=sql.Literal(engagement_id))
     try:
         async with connection.cursor() as cursor:
             await cursor.execute(query_procedures)
@@ -451,7 +467,8 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             procedure_data = [dict(zip(column_names, row_)) for row_ in rows]
             if procedure_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="No data found")
-            data = procedure_data[0]
+
+            data = procedure_data[0] or {}
 
             total_procedure = data.get("total_finalization_procedures") + data.get("total_reporting_procedures") + \
                               data.get("total_planning_procedures") + data.get("total_work_program_procedures") + data.get("total_profile_summary")
@@ -481,6 +498,7 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
                 "completed": total_completed
             }
 
+
             await cursor.execute(query_root_cause_rating)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
@@ -488,17 +506,35 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
             if root_cause_rating_data.__len__() == 0:
                 raise HTTPException(status_code=400, detail="No data found")
 
+
             await cursor.execute(query_review_comment)
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             review_comment_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if root_cause_rating_data.__len__() == 0:
-                raise HTTPException(status_code=400, detail="No data found")
+
+
+            await cursor.execute(query_task)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            task_data = [dict(zip(column_names, row_)) for row_ in rows]
+
+
+            comments = review_comment_data[0].get("review_status") or {}
+
+            tasks = task_data[0].get("review_status") or {}
+
+            total = {
+                "pending": comments.get("pending") or 0 + tasks.get("pending") or 0,
+                "in_progress": comments.get("in_progress") or 0 + tasks.get("in_progress") or 0,
+                "closed": comments.get("closed") or 0 + tasks.get("closed") or 0,
+                "total": comments.get("total") or 0 + tasks.get("total") or 0,
+            }
+
 
             return {
                 "procedure_summary": engagement_data,
                 "issue_details": root_cause_rating_data[0],
-                "review_comment": review_comment_data[0].get("review_status")
+                "review_comment": total
             }
     except Exception as e:
         await connection.rollback()

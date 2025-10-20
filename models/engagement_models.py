@@ -28,7 +28,7 @@ async def register_new_engagement(
         connection: AsyncConnection,
         engagement: NewEngagement,
         annual_plan_id: str,
-        module_id: str,
+        module_id: str
 ):
     with exception_response():
         code = await generate_engagement_code(
@@ -330,7 +330,6 @@ async def generate_engagement_code(
 
 
 
-
 async def update_risk_maturity_rating_table_model(
         connection: AsyncConnection,
         engagement: EngagementRiskMaturityRating,
@@ -531,5 +530,3 @@ async def update_engagement_to_in_progress(
 
             if data is None:
                 global_logger.exception("Fail To Update Engagement To In Progress")
-
-

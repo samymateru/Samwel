@@ -2,7 +2,7 @@ from AuditNew.Internal.reports.schemas import ReportIssues
 from core.utils import extract_text
 from models.issue_actor_models import get_all_issue_actors_on_issue_model
 from services.connections.postgres.connections import AsyncDBPoolSingleton
-from utils import get_current_user, get_async_db_connection, exception_response
+from utils import get_current_user, get_async_db_connection
 from schema import CurrentUser
 from fastapi import APIRouter, Depends
 from AuditNew.Internal.reports.databases import *
@@ -28,6 +28,7 @@ async def fetch_detailed_issue_reports(
             refined = {
                 **x,
                 "issue_rating": x.get("risk_rating"),
+                "recurring_status": "Yes" if x.get("recurring_status") else "No",
                 "criteria": extract_text(x.get("criteria")),
                 "recommendation": extract_text(x.get("recommendation")),
                 "finding": extract_text(x.get("finding")),
