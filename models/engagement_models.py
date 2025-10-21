@@ -62,7 +62,7 @@ async def register_new_engagement(
             .values(__engagement__)
             .check_exists({EngagementColumns.PLAN_ID.value: annual_plan_id})
             .check_exists({EngagementColumns.NAME.value: engagement.name})
-            .returning(EngagementColumns.ID.value, EngagementColumns.CODE.value)
+            .returning(EngagementColumns.ID.value, EngagementColumns.CODE.value, EngagementColumns.NAME)
             .execute()
         )
 
