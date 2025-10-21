@@ -1187,7 +1187,7 @@ async def finalization_procedures(connection: AsyncConnection, engagement_id: st
         "reviewed_by": None
     },
     {
-        "title": "Post audit meeting",
+        "title": "Audit closure meeting",
         "tests": {"value": ""},
         "results": {"value": ""},
         "observation": {"value": ""},
