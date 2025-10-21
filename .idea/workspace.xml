@@ -5,19 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="changing the procedure,">
-      <change afterPath="$PROJECT_DIR$/services/file_storage/file_storage_strategy.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/file_storage/file_uploader.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/file_storage/local_file_storage.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/file_storage/s3_file_storage.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/file_storage/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/licencing/get_unique_identifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/planning_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/planning_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/s3.py" beforeDir="false" afterPath="$PROJECT_DIR$/s3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/notifications/email_notification.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/notifications/email_notification.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/notifications/notifications_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/notifications/notifications_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/planning_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/planning_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,14 +161,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00871" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759946180987</created>
-      <option name="number" value="00871" />
-      <option name="presentableId" value="LOCAL-00871" />
-      <option name="project" value="LOCAL" />
-      <updated>1759946180987</updated>
     </task>
     <task id="LOCAL-00872" summary="removing old files">
       <option name="closed" value="true" />
@@ -564,7 +546,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761033278462</updated>
     </task>
-    <option name="localTasksCounter" value="920" />
+    <task id="LOCAL-00920" summary="changing the procedure,">
+      <option name="closed" value="true" />
+      <created>1761054671262</created>
+      <option name="number" value="00920" />
+      <option name="presentableId" value="LOCAL-00920" />
+      <option name="project" value="LOCAL" />
+      <updated>1761054671262</updated>
+    </task>
+    <option name="localTasksCounter" value="921" />
     <servers />
   </component>
   <component name="UnknownFeatures">

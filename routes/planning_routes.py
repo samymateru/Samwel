@@ -8,7 +8,7 @@ from reports.draft_report.draft_report import generate_draft_report_model
 from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
 from reports.finding_sheet.finding_report import generate_finding_report
 from schema import CurrentUser, ResponseMessage
-from schemas.planning_schemas import ReportType, UserCirculate
+from schemas.planning_schemas import ReportType, UserCirculate, ReportAttachment
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from utils import get_current_user, exception_response, return_checker
 
@@ -100,12 +100,12 @@ async def attach_report(
 
 
 
-@router.get("/single/{engagement_id}")
+@router.get("/single/{engagement_id}", response_model=ReportAttachment)
 async def fetch_engagement_report(
         engagement_id: str,
         category: ReportType,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        _: CurrentUser = Depends(get_current_user)
+        #_: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         data = await fetch_report_on_engagement(
@@ -113,6 +113,9 @@ async def fetch_engagement_report(
             engagement_id=engagement_id,
             category=category
         )
+
+        if data is None:
+            raise HTTPException(status_code=204, detail="No Report Available")
 
         return data
 

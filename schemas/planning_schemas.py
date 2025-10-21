@@ -44,3 +44,10 @@ class UserCirculate(BaseModel):
     user_id: str
     email: str
 
+
+class ReportAttachment(BaseModel):
+    file_name: str
+    file_type: str
+    file_size: str
+    url: str
+
