@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import HTTPException
 from psycopg import AsyncConnection
 from core.tables import Tables
 from models.attachment_model import fetch_item_attachment
@@ -15,7 +15,7 @@ from models.policy_models import get_engagement_policies_model, \
     create_new_policy_model
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
 from models.standard_template_models import read_standard_template_model, \
-    create_new_standard_template_model
+     procedure_category
 from models.user_models import get_module_users
 from schemas.attachement_schemas import AttachmentCategory, CreateAttachment, AttachmentColumns
 from schemas.engagement_administration_profile_schemas import EngagementProfileColumns, \
@@ -24,7 +24,7 @@ from schemas.engagement_process_schemas import CreateEngagementProcess
 from schemas.engagement_schemas import EngagementStatus, EngagementStage, NewEngagement, Risk, Department
 from schemas.policy_schemas import CreatePolicy
 from schemas.regulation_schemas import CreateRegulation
-from schemas.standard_template_schemas import ProcedureTypes, CreateStandardTemplate
+from schemas.standard_template_schemas import ProcedureTypes, CreateStandardTemplate, StandardTemplateColumns
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
@@ -285,17 +285,19 @@ async def standard_template_roll(
 
                 __std_procedure = CreateStandardTemplate(**data)
 
+
                 if __std_procedure.reference is None:
                     raise HTTPException(status_code=400, detail="Engagement Cant Be Roll Forwarded Now")
 
-                await create_new_standard_template_model(
-                    connection=connection,
-                    procedure=__std_procedure,
-                    type_=section,
-                    engagement_id=new_engagement_id,
-                    reference=__std_procedure.reference
+                await (
+                    InsertQueryBuilder(connection=connection)
+                    .into_table(procedure_category.get(section.value))
+                    .values(__std_procedure)
+                    .check_exists({StandardTemplateColumns.ENGAGEMENT.value: new_engagement_id})
+                    .check_exists({StandardTemplateColumns.TITLE.value: procedure.title})
+                    .returning(StandardTemplateColumns.ID.value)
+                    .execute()
                 )
-
 
         return True
 
@@ -406,6 +408,7 @@ async def engagement_roll_forward_model(
             connection=connection,
             module_id=module_id
         )
+
 
         head_users = [user for user in module_users if user["role"] == "Head of Audit"]
 
