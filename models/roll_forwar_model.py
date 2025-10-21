@@ -1,10 +1,11 @@
 from datetime import datetime
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from psycopg import AsyncConnection
 from core.tables import Tables
 from models.attachment_model import fetch_item_attachment
 from models.engagement_administration_profile_models import fetch_engagement_administration_profile_model
-from models.engagement_models import get_single_engagement_details, register_new_engagement
+from models.engagement_models import get_single_engagement_details, register_new_engagement, \
+    adding_engagement_staff_model
 from models.engagement_process_models import get_engagement_processes_model, \
     create_engagement_process_model
 from models.main_program_models import export_main_audit_program_to_library_model, fetch_main_programs_models, \
@@ -14,11 +15,12 @@ from models.policy_models import get_engagement_policies_model, \
 from models.regulation_models import get_engagement_regulations_model, create_new_regulation_model
 from models.standard_template_models import read_standard_template_model, \
     create_new_standard_template_model
+from models.user_models import get_module_users
 from schemas.attachement_schemas import AttachmentCategory, CreateAttachment, AttachmentColumns
 from schemas.engagement_administration_profile_schemas import EngagementProfileColumns, \
     CreateEngagementAdministrationProfile
 from schemas.engagement_process_schemas import CreateEngagementProcess
-from schemas.engagement_schemas import EngagementStatus, EngagementStage, NewEngagement, Risk
+from schemas.engagement_schemas import EngagementStatus, EngagementStage, NewEngagement, Risk, Department
 from schemas.policy_schemas import CreatePolicy
 from schemas.regulation_schemas import CreateRegulation
 from schemas.standard_template_schemas import ProcedureTypes, CreateStandardTemplate
@@ -331,7 +333,8 @@ async def engagement_roll_forward_model(
         connection: AsyncConnection,
         engagement_id: str,
         annual_plan: str,
-        module_id: str
+        module_id: str,
+        background_task: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         data = await export_engagement_content_model(
@@ -339,6 +342,9 @@ async def engagement_roll_forward_model(
             engagement_id=engagement_id,
             annual_plan_id=annual_plan
         )
+
+        if data is None:
+            raise HTTPException(status_code=400, detail="Sorry Engagement Roll Forward Not Available")
 
         await engagement_profile_roll(
             connection=connection,
@@ -376,6 +382,46 @@ async def engagement_roll_forward_model(
             new_engagement_id=data.get("id"),
             module_id=module_id
         )
+
+        engagement = NewEngagement(
+            name=data.get("name"),
+            type="",
+            sub_departments=[],
+            department=Department(
+                name="",
+                code=""
+            ),
+            leads=[],
+            risk=Risk(
+                name="",
+                magnitude=0
+            ),
+            quarter="q1",
+            start_date=datetime.now(),
+            end_date=datetime.now()
+        )
+
+
+        module_users = await get_module_users(
+            connection=connection,
+            module_id=module_id
+        )
+
+        head_users = [user for user in module_users if user["role"] == "Head of Audit"]
+
+
+        if head_users.__len__() == 0:
+            raise HTTPException(status_code=400, detail="No Head Of Audit Found, Cant Create Engagement")
+
+
+        background_task.add_task(
+            adding_engagement_staff_model,
+            engagement=engagement,
+            engagement_id=data.get("id"),
+            module_id=module_id,
+            head_of_audit=head_users[0]
+        )
+
 
         return data
 

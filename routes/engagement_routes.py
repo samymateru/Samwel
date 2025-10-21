@@ -327,7 +327,7 @@ async def update_engagement_risk_maturity_rating_table(
         engagement_id: str,
         engagement: EngagementRiskMaturityRating,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user)
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await update_risk_maturity_rating_table_model(
@@ -350,7 +350,7 @@ async def update_engagement_risk_maturity_rating_lower_section_table(
         engagement_id: str,
         engagement: UpdateRiskMaturityRatingLowerPart,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #auth: CurrentUser = Depends(get_current_user)
+        auth: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await update_risk_maturity_rating_lower_section_model(
