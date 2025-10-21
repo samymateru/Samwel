@@ -14,6 +14,9 @@ class TemplateType(str, Enum):
     SHEET = "sheet"
     SURVEY = "survey"
     ARCHIVE = "archive"
+    CLOSURE = "closure"
+    TIMESHEET = "timesheet"
+    CIRCULATE = "circulate"
 
 
 class StandardTemplateColumns(str, Enum):
