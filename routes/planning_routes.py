@@ -100,7 +100,7 @@ async def attach_report(
 
 
 
-@router.post("/single/{engagement_id}")
+@router.get("/single/{engagement_id}")
 async def fetch_engagement_report(
         engagement_id: str,
         category: ReportType,
@@ -113,9 +113,6 @@ async def fetch_engagement_report(
             engagement_id=engagement_id,
             category=category
         )
-
-        if data is None:
-            raise HTTPException(status_code=404, detail=f"{category.value} Of Engagement Not Found")
 
         return data
 

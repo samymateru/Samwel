@@ -28,10 +28,8 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
-from schemas.role_schemas import RolesSections, Permissions
-from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
-from services.security.security import verify_password, check_engagement_permission
+from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
     update_user_password, generate_user_token, generate_risk_user_token, exception_response
 from dotenv import load_dotenv
@@ -133,12 +131,8 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 
 
-@app.get("/{engagement_id}")
-async def home(
-        message: str,
-        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        _=Depends(check_engagement_permission(RolesSections.PLANNING, Permissions.DELETE, "e071b46046af"))
-):
+@app.post("/")
+async def home():
     with exception_response():
         pass
         # data = await fetch_engagement_staff_data_model(

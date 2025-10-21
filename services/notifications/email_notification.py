@@ -22,16 +22,19 @@ class EmailNotification(NotificationStrategy):
     _initialized = False
     _workers = False
 
+
     def __new__(cls, *args, **kwargs):
         """Ensure only one instance of EmailNotification is created."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
+
     def __init__(self):
         # Ensure initialization is done only once
         if not hasattr(self, "_initialized"):
             super().__init__()
+
 
     async def init(self):
         """Initialize SMTP connection (only once)."""
@@ -50,11 +53,13 @@ class EmailNotification(NotificationStrategy):
             global_logger.critical(f"❌ Error during establishing SMTP connection: {e}")
             raise
 
+
     async def send(self, recipient: str, message: Dict) -> None:
         """Put email tasks in the queue."""
         if not self._smtp.is_connected:
             raise HTTPException(status_code=400, detail="SMTP server not connected")
         await email_queue.put(message)
+
 
     async def worker(self):
         """
@@ -83,12 +88,14 @@ class EmailNotification(NotificationStrategy):
                 global_logger.critical(f"❌ Failed to send email to {email['To']} with error {e}")
                 raise HTTPException(status_code=400, detail="Error connecting smtp server")
 
+
     async def start_worker(self):
         if self._workers:
             return
         if not any(task.get_name() == 'EmailWorker' for task in asyncio.all_tasks()):
             asyncio.create_task(self.worker(), name='EmailWorker')
             self._workers = True
+
 
     async def quit(self):
         """Gracefully close the SMTP connection."""

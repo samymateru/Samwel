@@ -18,11 +18,12 @@ class NotificationManager:
 
     async def start_worker(self):
         if self._strategy is None:
-            global_logger.critical("The notification strategy is not found")
+            global_logger.exception("The notification strategy is not found")
             raise RuntimeError("The notification strategy is not found")
 
         """Start the email worker"""
         await self._strategy.start_worker()
+
 
     async def connect(self):
         """Start the email worker"""
@@ -39,9 +40,11 @@ class NotificationManager:
         await self._strategy.start_worker()
         self._strategy = strategy
 
+
     def get_strategy(self) -> Optional[NotificationStrategy]:
         """Get the current notification strategy"""
         return self._strategy
+
 
     async def notify(self, recipient: str, message: Dict):
         """Notify using the current strategy"""

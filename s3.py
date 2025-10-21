@@ -1,10 +1,6 @@
-import shutil
-import tempfile
-import uuid
 import boto3
 import os
 from dotenv import load_dotenv
-from fastapi import UploadFile, BackgroundTasks
 from services.logging.logger import global_logger
 
 load_dotenv()
