@@ -547,62 +547,44 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     query_current_plan_engagements = sql.SQL(
         """
         SELECT
-        eng.id AS engagement_id,
-        eng.name AS engagement_name,
-        eng.code AS engagement_code,
-        eng.status AS engagement_status,
-        eng.type AS engagement_type,
-        eng.start_date AS engagement_start_date,
-        eng.end_date AS engagement_end_date,
-        eng.stage AS engagement_stage,
-        
-        isu.id AS issue_id,
-        isu.ref AS issue_reference,
-        isu.title AS issue_title,
-        isu.finding AS issue_finding,
-        isu.risk_rating AS issue_rating,
-        isu.process AS issue_process,
-        COALESCE(isu.status, 'N/A') AS issue_status
-        
+        JSON_BUILD_OBJECT(
+            'engagements_metrics', JSON_BUILD_OBJECT(
+                'total', COUNT(DISTINCT eng.id),
+                'pending', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Pending'),
+                'ongoing', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Ongoing'),
+                'completed', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Completed'),
+                'archived', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Archived'),
+                'deleted', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Deleted')
+            ),
+            'issues_metrics', JSON_BUILD_OBJECT(
+                'total', COUNT(DISTINCT isu.id),
+                'not_started', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Not started'),
+                'open', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Open' OR isu.status = 'Active'),
+                'in_progress', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'In progress'),
+                'closed', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Closed')
+            )
+        ) AS metrics
         FROM public.annual_plans pln
         JOIN public.engagements eng ON pln.id = eng.plan_id
-        LEFT JOIN public.issue isu 
-        ON eng.id = isu.engagement
-        AND isu.status != 'Not started'
+        LEFT JOIN public.issue isu
+            ON eng.id = isu.engagement
         WHERE pln.module = %s
-         AND pln.year::int = (
-          SELECT MAX(year::int)
-          FROM annual_plans
-          WHERE module = %s
-        )
-        ORDER BY eng.id, isu.id
-        LIMIT 20;
+          AND pln.year::int = (
+                SELECT MAX(year::int)
+                FROM annual_plans
+                WHERE module = %s
+            );
         """)
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query_current_plan_engagements, (
-                module_id,
-                module_id
-            ))
+            await cursor.execute(query_current_plan_engagements, (module_id, module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
 
+            return data[0].get("metrics")
 
-            dashboard_data = separate_engagements_and_issues(data)
-            engagements_metrics = count_engagement_statuses(data)
-
-            issues = [_Issue_(**eng) for eng in dashboard_data.get("issues", [])]
-            data = count_issue_statuses(issues)
-
-
-            final_data = ModuleHomeDashboard(
-                engagements_metrics=engagements_metrics,
-                issues_metrics=data,
-            )
-
-            return final_data
 
     except Exception as e:
         await connection.rollback()
