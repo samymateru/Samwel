@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from fastapi import HTTPException, BackgroundTasks
 from psycopg import AsyncConnection
@@ -414,12 +415,13 @@ async def engagement_roll_forward_model(
             raise HTTPException(status_code=400, detail="No Head Of Audit Found, Cant Create Engagement")
 
 
-        background_task.add_task(
-            adding_engagement_staff_model,
+        asyncio.create_task(
+            adding_engagement_staff_model(
             engagement=engagement,
             engagement_id=data.get("id"),
             module_id=module_id,
             head_of_audit=head_users[0]
+            )
         )
 
 
