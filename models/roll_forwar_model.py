@@ -335,7 +335,6 @@ async def engagement_roll_forward_model(
         engagement_id: str,
         annual_plan: str,
         module_id: str,
-        background_task: BackgroundTasks = BackgroundTasks()
 ):
     with exception_response():
         data = await export_engagement_content_model(
