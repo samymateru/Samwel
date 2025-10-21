@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
@@ -46,8 +48,9 @@ class UserCirculate(BaseModel):
 
 
 class ReportAttachment(BaseModel):
-    file_name: str
-    file_type: str
-    file_size: str
-    url: str
+    filename: Optional[str] = None
+    size: Optional[int] = None
+    type: Optional[str] = None
+    url: Optional[str] = None
+
 

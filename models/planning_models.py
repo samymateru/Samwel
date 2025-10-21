@@ -83,7 +83,7 @@ async def fetch_report_on_engagement(
 
 
 
-async def remove_engagement_report(
+async def remove_engagement_report_model(
     connection: AsyncConnection,
     engagement_id: str,
     category: ReportType,

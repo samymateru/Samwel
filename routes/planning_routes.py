@@ -1,9 +1,8 @@
 import os
-from typing import List
+from typing import List, Optional, Union
 from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks, HTTPException, Query
 from starlette.responses import FileResponse
-from models.planning_models import attach_draft_engagement_report_model, fetch_report_on_engagement, \
-    remove_engagement_report
+from models.planning_models import attach_draft_engagement_report_model, fetch_report_on_engagement, remove_engagement_report_model
 from reports.draft_report.draft_report import generate_draft_report_model
 from reports.engagement_letter.engagement_letter import generate_draft_engagement_letter_model
 from reports.finding_sheet.finding_report import generate_finding_report
@@ -100,12 +99,12 @@ async def attach_report(
 
 
 
-@router.get("/single/{engagement_id}", response_model=ReportAttachment)
+@router.get("/reports/single/{engagement_id}")
 async def fetch_engagement_report(
         engagement_id: str,
         category: ReportType,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        #_: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         data = await fetch_report_on_engagement(
@@ -115,21 +114,28 @@ async def fetch_engagement_report(
         )
 
         if data is None:
-            raise HTTPException(status_code=204, detail="No Report Available")
+            return None
 
-        return data
+        attachment = ReportAttachment(
+            filename=data.get("file_name",) ,
+            type=data.get("file_type"),
+            size=data.get("file_size"),
+            url=data.get("url")
+        )
+
+        return attachment
 
 
 
 @router.delete("/reports/{engagement_id}")
-async def fetch_engagement_report(
+async def remove_engagement_report(
         engagement_id: str,
         category: ReportType,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
         _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
-        results = await remove_engagement_report(
+        results = await remove_engagement_report_model(
             connection=connection,
             engagement_id=engagement_id,
             category=category
