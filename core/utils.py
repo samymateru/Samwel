@@ -114,3 +114,27 @@ def get_hits(data):
             hits.append(name)
 
     return ",".join(hits) if hits else "Pending"
+
+
+def determine_priority_stage(stage: str) -> str:
+    # Define your priority order
+    priority = [
+        "Administration",
+        "Planning",
+        "Fieldwork",
+        "Reporting",
+        "Finalization",
+    ]
+
+    if stage == "Pending":
+        return "Pending"
+
+    # Split the stage string into individual names
+    stages = [s.strip() for s in stage.split(",")]
+
+    # Find the one with the highest priority (last in order)
+    for p in reversed(priority):
+        if p in stages:
+            return p
+
+    return "Pending"  # fallback

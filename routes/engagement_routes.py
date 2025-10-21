@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from AuditNew.Internal.dashboards.databases import query_engagement_details
 from background import set_engagement_templates
-from core.utils import get_hits
+from core.utils import get_hits, determine_priority_stage
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, \
@@ -93,12 +93,13 @@ async def fetch_all_annual_plan_engagements(
                 engagement_id=engagement.get("id")
             )
 
-
             stage = get_hits(stage_data)
 
-            engagement["stage"] = stage
+            engagement["stage"] = determine_priority_stage(stage)
 
         return data
+
+
 
 
 
