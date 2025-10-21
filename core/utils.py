@@ -88,3 +88,28 @@ def convert_to_capstone_email(email: str) -> str:
     """
     local_part = email.split("@")[0]  # keep the username before @
     return f"{local_part}@capstone.co.tz"
+
+
+
+def get_hits(data):
+    if not data:
+        return "Pending"
+
+    record = data[0]  # only one item in your dataset
+    sections = {
+        "Finalization": "finalization_status_summary",
+        "Reporting": "report_status_summary",
+        "Profile": "profile_status_summary",
+        "Planning": "planning_status_summary",
+    }
+
+    hits = []
+    for name, key in sections.items():
+        summary = record.get(key, {})
+        completed = summary.get("completed", 0)
+        in_progress = summary.get("in_progress", 0)
+
+        if completed > 0 or in_progress > 0:
+            hits.append(name)
+
+    return ",".join(hits) if hits else "Pending"

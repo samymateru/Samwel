@@ -530,3 +530,103 @@ async def update_engagement_to_in_progress(
 
             if data is None:
                 global_logger.exception("Fail To Update Engagement To In Progress")
+
+
+
+async def get_engagement_stage(
+        connection: AsyncConnection,
+        engagement_id: str
+):
+    with exception_response():
+        query_procedures = sql.SQL(
+            """
+            WITH finalization_summary AS (
+            SELECT
+            COUNT(*) AS total_finalization_procedures,
+            jsonb_build_object(
+                'pending', COUNT(*) FILTER (WHERE fp.prepared_by IS NULL AND fp.reviewed_by IS NULL),
+                'in_progress', COUNT(*) FILTER (WHERE fp.prepared_by IS NOT NULL AND fp.reviewed_by IS NULL),
+                'completed', COUNT(*) FILTER (WHERE fp.prepared_by IS NOT NULL AND fp.reviewed_by IS NOT NULL)
+            ) AS finalization_status_summary
+            FROM finalization_procedure fp
+            JOIN engagements e ON fp.engagement = e.id
+            WHERE e.id = {engagement_id}
+            ),
+            reporting_summary AS (
+            SELECT
+            COUNT(*) AS total_reporting_procedures,
+            jsonb_build_object(
+                'pending', COUNT(*) FILTER (WHERE rp.prepared_by IS NULL AND rp.reviewed_by IS NULL),
+                'in_progress', COUNT(*) FILTER (WHERE rp.prepared_by IS NOT NULL AND rp.reviewed_by IS NULL),
+                'completed', COUNT(*) FILTER (WHERE rp.prepared_by IS NOT NULL AND rp.reviewed_by IS NOT NULL)
+            ) AS report_status_summary
+            FROM reporting_procedure rp
+            JOIN engagements e ON rp.engagement = e.id
+            WHERE e.id = {engagement_id}
+            ),
+            profile_summary AS (
+            SELECT
+            COUNT(*) AS total_profile_summary,
+            jsonb_build_object(
+                'pending', COUNT(*) FILTER (WHERE pr.prepared_by IS NULL AND pr.reviewed_by IS NULL),
+                'in_progress', COUNT(*) FILTER (WHERE pr.prepared_by IS NOT NULL AND pr.reviewed_by IS NULL),
+                'completed', COUNT(*) FILTER (WHERE pr.prepared_by IS NOT NULL AND pr.reviewed_by IS NOT NULL)
+            ) AS profile_status_summary
+            FROM profile pr
+            JOIN engagements e ON pr.engagement = e.id
+            WHERE e.id = {engagement_id}
+            ),
+            planning_summary AS (
+            SELECT
+            COUNT(*) AS total_planning_procedures,
+            jsonb_build_object(
+                'pending', COUNT(*) FILTER (WHERE tmp.prepared_by IS NULL AND tmp.reviewed_by IS NULL),
+                'in_progress', COUNT(*) FILTER (WHERE tmp.prepared_by IS NOT NULL AND tmp.reviewed_by IS NULL),
+                'completed', COUNT(*) FILTER (WHERE tmp.prepared_by IS NOT NULL AND tmp.reviewed_by IS NOT NULL)
+            ) AS planning_status_summary
+            FROM std_template tmp
+            JOIN engagements e ON tmp.engagement = e.id
+            WHERE e.id = {engagement_id}
+            ),
+            work_program_summary AS (
+            SELECT
+            COUNT(*) AS total_work_program_procedures,
+            jsonb_build_object(
+                'pending', COUNT(*) FILTER (WHERE sp.prepared_by IS NULL AND sp.reviewed_by IS NULL),
+                'in_progress', COUNT(*) FILTER (WHERE sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NULL),
+                'completed', COUNT(*) FILTER (WHERE sp.prepared_by IS NOT NULL AND sp.reviewed_by IS NOT NULL)
+            ) AS work_program_procedure_status_summary
+            FROM main_program mp
+            JOIN engagements e ON mp.engagement = e.id
+            JOIN sub_program sp ON sp.program = mp.id
+            WHERE e.id = {engagement_id}
+            )
+            SELECT
+            fs.total_finalization_procedures,
+            fs.finalization_status_summary,
+            rs.total_reporting_procedures,
+            rs.report_status_summary,
+            ps.total_planning_procedures,
+            ps.planning_status_summary,
+            pr.profile_status_summary,
+            pr.total_profile_summary,
+            wp.total_work_program_procedures,
+            wp.work_program_procedure_status_summary
+            FROM 
+            finalization_summary fs, 
+            reporting_summary rs, 
+            planning_summary ps,
+            profile_summary pr,
+            work_program_summary wp;
+            """
+        ).format(engagement_id=sql.Literal(engagement_id))
+
+
+        async with connection.cursor() as cursor:
+            await cursor.execute(query_procedures)
+            rows = await cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            procedure_data = [dict(zip(column_names, row_)) for row_ in rows]
+            if procedure_data.__len__() == 0:
+                raise HTTPException(status_code=400, detail="No data found")
+            return procedure_data

@@ -76,7 +76,7 @@ class CreateEngagement(BaseModel):
     department: Department
     sub_departments: List[str]
     status: EngagementStatus
-    stage: EngagementStage
+    stage: str
     archived: bool
     start_date: datetime
     end_date: datetime

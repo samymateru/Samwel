@@ -3,11 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from AuditNew.Internal.dashboards.databases import query_engagement_details
 from background import set_engagement_templates
+from core.utils import get_hits
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, \
     update_engagement_data, update_risk_maturity_rating_table_model, update_risk_maturity_rating_lower_section_model, \
-    adding_engagement_staff_model
+    adding_engagement_staff_model, get_engagement_stage
 from models.recent_activity_models import add_new_recent_activity
 from models.roll_forwar_model import engagement_roll_forward_model
 from models.user_models import get_module_users
@@ -78,14 +79,25 @@ async def create_new_engagement(
 async def fetch_all_annual_plan_engagements(
         annual_plan_id: str,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser =Depends(get_current_user)
+        #auth: CurrentUser =Depends(get_current_user)
 ):
     with exception_response():
         data = await get_all_annual_plan_engagement(
             connection=connection,
             annual_plan_id=annual_plan_id,
-            user_id=auth.user_id
+            user_id="7dec706051ff"
         )
+
+        for engagement in data:
+            stage_data = await get_engagement_stage(
+                connection=connection,
+                engagement_id=engagement.get("id")
+            )
+
+
+            stage = get_hits(stage_data)
+
+            engagement["stage"] = stage
 
         return data
 
