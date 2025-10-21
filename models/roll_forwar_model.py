@@ -294,7 +294,7 @@ async def standard_template_roll(
                     .into_table(procedure_category.get(section.value))
                     .values(__std_procedure)
                     .check_exists({StandardTemplateColumns.ENGAGEMENT.value: new_engagement_id})
-                    .check_exists({StandardTemplateColumns.TITLE.value: procedure.title})
+                    .check_exists({StandardTemplateColumns.TITLE.value: __std_procedure.title})
                     .returning(StandardTemplateColumns.ID.value)
                     .execute()
                 )
