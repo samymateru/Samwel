@@ -101,6 +101,7 @@ def get_hits(data):
         "Reporting": "report_status_summary",
         "Profile": "profile_status_summary",
         "Planning": "planning_status_summary",
+        "Fieldwork": "work_program_procedure_status_summary"
     }
 
     hits = []

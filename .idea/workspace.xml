@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="engagement dashboard review and task data to be total">
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="adding stage functionality in the system">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/engagement_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,22 +159,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00866" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759904825666</created>
-      <option name="number" value="00866" />
-      <option name="presentableId" value="LOCAL-00866" />
-      <option name="project" value="LOCAL" />
-      <updated>1759904825666</updated>
-    </task>
-    <task id="LOCAL-00867" summary="removing old files">
-      <option name="closed" value="true" />
-      <created>1759908031150</created>
-      <option name="number" value="00867" />
-      <option name="presentableId" value="LOCAL-00867" />
-      <option name="project" value="LOCAL" />
-      <updated>1759908031150</updated>
     </task>
     <task id="LOCAL-00868" summary="removing old files">
       <option name="closed" value="true" />
@@ -555,7 +536,23 @@
       <option name="project" value="LOCAL" />
       <updated>1760992774276</updated>
     </task>
-    <option name="localTasksCounter" value="915" />
+    <task id="LOCAL-00915" summary="adding stage functionality in the system">
+      <option name="closed" value="true" />
+      <created>1761026614766</created>
+      <option name="number" value="00915" />
+      <option name="presentableId" value="LOCAL-00915" />
+      <option name="project" value="LOCAL" />
+      <updated>1761026614767</updated>
+    </task>
+    <task id="LOCAL-00916" summary="adding stage functionality in the system">
+      <option name="closed" value="true" />
+      <created>1761027045948</created>
+      <option name="number" value="00916" />
+      <option name="presentableId" value="LOCAL-00916" />
+      <option name="project" value="LOCAL" />
+      <updated>1761027045948</updated>
+    </task>
+    <option name="localTasksCounter" value="917" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -587,7 +584,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adding the constraints  to fetch the the annual plans" />
     <MESSAGE value="fixing upload file issue" />
     <MESSAGE value="adding work flows" />
     <MESSAGE value="adding workflows yaml" />
@@ -612,7 +608,8 @@
     <MESSAGE value="fixing the creator and review exchnage in followup" />
     <MESSAGE value="fixing the home dashboard engagement where not seen correctly due to query issue" />
     <MESSAGE value="engagement dashboard review and task data to be total" />
-    <option name="LAST_COMMIT_MESSAGE" value="engagement dashboard review and task data to be total" />
+    <MESSAGE value="adding stage functionality in the system" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding stage functionality in the system" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
