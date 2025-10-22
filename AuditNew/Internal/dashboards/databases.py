@@ -573,7 +573,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
                 SELECT MAX(year::int)
                 FROM annual_plans
                 WHERE module = %s
-            );
+            ) AND eng.status NOT IN ('Deleted');
         """)
 
     try:
