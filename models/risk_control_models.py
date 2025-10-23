@@ -131,7 +131,7 @@ async def import_risk_control_from_library_model(
             risk_rating=risk_control.get("risk_rating") or "",
             control=risk_control.get("control") or "",
             control_type=risk_control.get("control_type") or "",
-            control_objective=risk_control.get("risk_rating") or ""
+            control_objective=risk_control.get("control_objective") or ""
         )
 
 

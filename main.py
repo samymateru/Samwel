@@ -134,23 +134,8 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 @app.post("/")
 async def home():
     with exception_response():
-        pass
-        # data = await fetch_engagement_staff_data_model(
-        #     connection=connection,
-        #     engagement_id="e071b46046af",
-        #     user_id="9d687ee45071"
-        # )
-        #
-        # return data.get("role")
 
-        # data = await generate_role_reference_model_(
-        #     connection=connection,
-        #     module_id="427db88bfbe8"
-        # )
-        #
-        # await socket_client.send_message(message)
-        #
-        # return data
+        return ""
 
 
 

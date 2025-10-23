@@ -1,9 +1,11 @@
 import os
-from typing import Optional
+from typing import Optional, AsyncGenerator
+
+import asyncpg
 from psycopg_pool import AsyncConnectionPool
 from dotenv import load_dotenv
-
 load_dotenv()
+
 
 
 class AsyncDBPoolSingleton:
@@ -91,4 +93,75 @@ class AsyncDBPoolSingleton:
 async def get_db_connection():
     pool = await AsyncDBPoolSingleton.get_instance().get_pool()
     async with pool.connection() as conn:
+        yield conn
+
+
+
+
+
+class AsyncPGPoolSingleton:
+    """
+    Singleton class that manages a single instance of an asyncpg connection pool.
+
+    All connections are eagerly initialized (not lazy), so the pool is ready
+    immediately after creation.
+
+    Environment variables required:
+        - DB_USER
+        - DB_PASSWORD
+        - DB_HOST
+        - DB_PORT
+        - DB_NAME
+    """
+
+    _instance = None
+
+    def __init__(self):
+        self._pool: asyncpg.pool.Pool | None = None
+
+    @classmethod
+    async def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = AsyncPGPoolSingleton()
+            await cls._instance._initialize_pool()
+        return cls._instance
+
+    async def _initialize_pool(self):
+        """Create the asyncpg pool and initialize all connections eagerly."""
+        self._pool = await asyncpg.create_pool(
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME"),
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", 5432)),
+            min_size=10,  # Minimum connections
+            max_size=100,  # Maximum connections
+        )
+
+
+        # Eagerly initialize all min_size connections
+        async with self._pool.acquire() as conn:
+            await conn.execute("SELECT 1")
+        # Repeat for min_size to warm up pool
+        for _ in range(9):  # min_size=10, already did 1 above
+            async with self._pool.acquire() as conn:
+                await conn.execute("SELECT 1")
+
+
+    async def close_pool(self):
+        """Close the connection pool."""
+        if self._pool:
+            await self._pool.close()
+
+
+    async def get_db_connection(self) -> AsyncGenerator[asyncpg.Connection, None]:
+        """Async generator to yield a connection from the pool."""
+        async with self._pool.acquire() as conn:
+            yield conn
+
+
+# Helper function for FastAPI dependencies
+async def get_db_connection_() -> AsyncGenerator[asyncpg.Connection, None]:
+    pool_singleton = await AsyncPGPoolSingleton.get_instance()
+    async for conn in pool_singleton.get_db_connection():
         yield conn

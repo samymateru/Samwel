@@ -435,23 +435,3 @@ class ReadBuilder:
             get_model_field_name(AnnualPlan, "fake")  ➜ None
         """
         return field_name if field_name in model.model_fields else None
-
-
-
-# class Dog(BaseModel):
-#     pop: str
-#     hell: str
-#
-# builder = (
-#     ReadBuilder()
-#     .distinct()
-#     .select_fields("hello", "power", alias_map={"hello": "he", "power": "po"})
-#     .from_table("table_a", alias="a")
-#     .join("LEFT", "table_b",  "a.b_id = b.id", alias="b")
-#     .join("RIGHT", "table_b", "a.b_id = b.id", alias="b")
-#     .where(ReadBuilder.get_field_name(Dog, "pop"), "active")
-# )
-#
-#
-#
-# print(builder.debug_sql())
