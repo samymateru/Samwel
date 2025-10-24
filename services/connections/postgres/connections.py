@@ -1,9 +1,15 @@
+import json
 import os
-from typing import Optional, AsyncGenerator
-
+from typing import Optional, Dict
 import asyncpg
 from psycopg_pool import AsyncConnectionPool
 from dotenv import load_dotenv
+
+from asyncpg import Connection
+
+
+DBConnection = Connection
+
 load_dotenv()
 
 
@@ -90,14 +96,9 @@ class AsyncDBPoolSingleton:
             yield conn
 
 
-async def get_db_connection():
-    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
-    async with pool.connection() as conn:
-        yield conn
 
 
-
-
+_prepared_statements: Dict[str, str] = {}
 
 class AsyncPGPoolSingleton:
     """
@@ -119,12 +120,49 @@ class AsyncPGPoolSingleton:
     def __init__(self):
         self._pool: asyncpg.pool.Pool | None = None
 
+
     @classmethod
     async def get_instance(cls):
         if cls._instance is None:
             cls._instance = AsyncPGPoolSingleton()
             await cls._instance._initialize_pool()
         return cls._instance
+
+
+    @staticmethod
+    async def _register_codecs(conn: asyncpg.Connection):
+        """Register JSON/JSONB codecs on a connection."""
+        await conn.set_type_codec(
+            'json',
+            encoder=json.dumps,
+            decoder=json.loads,
+            schema='pg_catalog',
+        )
+
+        await conn.set_type_codec(
+            'jsonb',
+            encoder=json.dumps,
+            decoder=json.loads,
+            schema='pg_catalog',
+        )
+
+        # --- Prepare reusable statements ---
+        _prepared_statements["get_user_by_id"] = await conn.prepare(
+            "SELECT * FROM users WHERE id = $1"
+        )
+        _prepared_statements["get_all_users"] = await conn.prepare(
+            "SELECT * FROM users ORDER BY created_at DESC"
+        )
+
+
+    @staticmethod
+    async def get_statement( name: str):
+        """Return a prepared statement (for debugging, reuse, or inspection)."""
+        if name not in _prepared_statements:
+            raise KeyError(f"Prepared statement '{name}' not found.")
+        return _prepared_statements[name]
+
+
 
     async def _initialize_pool(self):
         """Create the asyncpg pool and initialize all connections eagerly."""
@@ -136,16 +174,9 @@ class AsyncPGPoolSingleton:
             port=int(os.getenv("DB_PORT", 5432)),
             min_size=10,  # Minimum connections
             max_size=100,  # Maximum connections
+            init=self._register_codecs
         )
 
-
-        # Eagerly initialize all min_size connections
-        async with self._pool.acquire() as conn:
-            await conn.execute("SELECT 1")
-        # Repeat for min_size to warm up pool
-        for _ in range(9):  # min_size=10, already did 1 above
-            async with self._pool.acquire() as conn:
-                await conn.execute("SELECT 1")
 
 
     async def close_pool(self):
@@ -154,14 +185,20 @@ class AsyncPGPoolSingleton:
             await self._pool.close()
 
 
-    async def get_db_connection(self) -> AsyncGenerator[asyncpg.Connection, None]:
+    async def get_db_connection(self):
         """Async generator to yield a connection from the pool."""
         async with self._pool.acquire() as conn:
             yield conn
 
 
-# Helper function for FastAPI dependencies
-async def get_db_connection_() -> AsyncGenerator[asyncpg.Connection, None]:
+
+async def get_db_connection():
+    pool = await AsyncDBPoolSingleton.get_instance().get_pool()
+    async with pool.connection() as conn:
+        yield conn
+
+
+async def get_asyncpg_db_connection():
     pool_singleton = await AsyncPGPoolSingleton.get_instance()
     async for conn in pool_singleton.get_db_connection():
         yield conn

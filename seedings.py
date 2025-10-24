@@ -1160,6 +1160,7 @@ async def reporting_procedures(connection: AsyncConnection, engagement_id: str):
         logger.error(e)
         raise HTTPException(status_code=400, detail=f"Error adding report procedures {e}")
 
+
 async def finalization_procedures(connection: AsyncConnection, engagement_id: str):
     values = [
     {

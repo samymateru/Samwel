@@ -1,5 +1,4 @@
 from typing import Dict
-
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from core.tables import Tables

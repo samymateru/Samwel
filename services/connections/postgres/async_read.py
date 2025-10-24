@@ -18,7 +18,7 @@ class ReadBuilder:
         self._order_desc = False
         self._limit = None
         self._offset = None
-        self._params = {}
+        self._params = []
         self._joins = []
         self._table_alias = None
         self._distinct = False
@@ -98,15 +98,22 @@ class ReadBuilder:
 
     def where(self, column: str, value):
         if column is None:
-            raise ValueError("Value of column can't be None")
+            raise ValueError("Column can't be None")
 
+        # Determine if value is a list/tuple/set
         if isinstance(value, (list, tuple, set)):
-            condition = f"{column} = ANY($({column})s)"
+            # Store the value as a list for asyncpg
+            self._params = getattr(self, "_param_values", [])
+            param_index = len(self._params) + 1
+            self._params.append(list(value))  # asyncpg supports ANY($1)
+            condition = f"{column} = ANY(${param_index})"
         else:
-            condition = f"{column} = $({column})s"
+            self._params = getattr(self, "_param_values", [])
+            param_index = len(self._params) + 1
+            self._params.append(value)
+            condition = f"{column} = ${param_index}"
 
         self._where.append(condition)
-        self._params[column] = list(value) if isinstance(value, set) else value
         return self
 
 
@@ -119,7 +126,7 @@ class ReadBuilder:
         """
         self._where.append(condition)
         if params:
-            self._params.update(params)
+            pass
         return self
 
 
@@ -237,11 +244,11 @@ class ReadBuilder:
 
         if self._limit is not None:
             query += sql.SQL(" LIMIT $(limit)s")
-            self._params['limit'] = self._limit
+
 
         if self._offset is not None:
             query += sql.SQL(" OFFSET $(offset)s")
-            self._params['offset'] = self._offset
+
 
         return query, self._params
 
@@ -249,12 +256,8 @@ class ReadBuilder:
     async def fetch_all(self):
         query, param = self.build()
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(query, param)
-                rows = await cursor.fetchall()
-                column_names = [desc[0] for desc in cursor.description]
-                result = [dict(zip(column_names, row)) for row in rows]
-                return result
+            rows = await self.connection.fetch(query.as_string(), *param)
+            return [dict(row) for row in rows]
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error occurred while fetching data: {e}")
 
@@ -410,20 +413,15 @@ class ReadBuilder:
     async def fetch_one(self):
         query, param = self.build()
         try:
-            async with self.connection.cursor() as cursor:
-                await cursor.execute(query, param)
-                row = await cursor.fetchone()
-                if row is None:
-                    return None
-                column_names = [desc[0] for desc in cursor.description]
-                return dict(zip(column_names, row))
+            row = await self.connection.fetchrow(query.as_string(), *param)
+            return row
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error occurred while fetching one: {e}")
 
 
     def debug_sql(self):
         query, params = self.build()
-        return query.as_string(self.connection), params
+        return query.as_string(), params
 
 
     @staticmethod

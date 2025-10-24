@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
-      <change afterPath="$PROJECT_DIR$/services/connections/postgres/async_read.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/tasks/task_schedular.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/tasks/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/async_read.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/async_read.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/connections.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,6 +123,7 @@
     "Python.tables.executor": "Debug",
     "Python.test.executor": "Run",
     "Python.testing.executor": "Run",
+    "Python.tests.executor": "Run",
     "Python.utils.executor": "Run",
     "Python.word_doc.executor": "Run",
     "Python.x.executor": "Run",
@@ -161,14 +168,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00886" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760610537619</created>
-      <option name="number" value="00886" />
-      <option name="presentableId" value="LOCAL-00886" />
-      <option name="project" value="LOCAL" />
-      <updated>1760610537619</updated>
     </task>
     <task id="LOCAL-00887" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -554,7 +553,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761214217906</updated>
     </task>
-    <option name="localTasksCounter" value="935" />
+    <task id="LOCAL-00935" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761214886082</created>
+      <option name="number" value="00935" />
+      <option name="presentableId" value="LOCAL-00935" />
+      <option name="project" value="LOCAL" />
+      <updated>1761214886082</updated>
+    </task>
+    <option name="localTasksCounter" value="936" />
     <servers />
   </component>
   <component name="UnknownFeatures">
