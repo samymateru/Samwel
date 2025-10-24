@@ -122,7 +122,7 @@ async def catch_exceptions_middleware(request: Request, call_next):
 
 
 # noinspection PyTypeChecker
-app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
+#app.add_middleware(RateLimiterMiddleware, max_requests=500, window_seconds=60)
 
 
 @app.exception_handler(HTTPException)
@@ -135,15 +135,14 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 
 
-@app.post("/", status_code=200)
+@app.get("/", status_code=200)
 async def home(
-        connection: DBConnection = Depends(get_asyncpg_db_connection)
+        connection=Depends(get_asyncpg_db_connection)
 ):
     with exception_response():
         start = time.perf_counter()
         row = await connection.fetch("select * from users")
         end = time.perf_counter()
-
         print(end-start)
 
         return row

@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
-      <change afterPath="$PROJECT_DIR$/services/tasks/task_schedular.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/tasks/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/seedings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seedings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/postgres/async_read.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/async_read.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/connections/postgres/connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/connections.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -168,14 +163,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00887" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760610587274</created>
-      <option name="number" value="00887" />
-      <option name="presentableId" value="LOCAL-00887" />
-      <option name="project" value="LOCAL" />
-      <updated>1760610587274</updated>
     </task>
     <task id="LOCAL-00888" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -561,7 +548,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761214886082</updated>
     </task>
-    <option name="localTasksCounter" value="936" />
+    <task id="LOCAL-00936" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761287782251</created>
+      <option name="number" value="00936" />
+      <option name="presentableId" value="LOCAL-00936" />
+      <option name="project" value="LOCAL" />
+      <updated>1761287782251</updated>
+    </task>
+    <option name="localTasksCounter" value="937" />
     <servers />
   </component>
   <component name="UnknownFeatures">

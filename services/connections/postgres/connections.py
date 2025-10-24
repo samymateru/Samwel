@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Optional, Dict
+from typing import Optional
 import asyncpg
 from psycopg_pool import AsyncConnectionPool
 from dotenv import load_dotenv
@@ -98,8 +98,6 @@ class AsyncDBPoolSingleton:
 
 
 
-_prepared_statements: Dict[str, str] = {}
-
 class AsyncPGPoolSingleton:
     """
     Singleton class that manages a single instance of an asyncpg connection pool.
@@ -146,22 +144,6 @@ class AsyncPGPoolSingleton:
             schema='pg_catalog',
         )
 
-        # --- Prepare reusable statements ---
-        _prepared_statements["get_user_by_id"] = await conn.prepare(
-            "SELECT * FROM users WHERE id = $1"
-        )
-        _prepared_statements["get_all_users"] = await conn.prepare(
-            "SELECT * FROM users ORDER BY created_at DESC"
-        )
-
-
-    @staticmethod
-    async def get_statement( name: str):
-        """Return a prepared statement (for debugging, reuse, or inspection)."""
-        if name not in _prepared_statements:
-            raise KeyError(f"Prepared statement '{name}' not found.")
-        return _prepared_statements[name]
-
 
 
     async def _initialize_pool(self):
@@ -173,7 +155,7 @@ class AsyncPGPoolSingleton:
             host=os.getenv("DB_HOST"),
             port=int(os.getenv("DB_PORT", 5432)),
             min_size=10,  # Minimum connections
-            max_size=100,  # Maximum connections
+            max_size=50,  # Maximum connections
             init=self._register_codecs
         )
 
