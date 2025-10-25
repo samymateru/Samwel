@@ -140,7 +140,6 @@ async def home(
         start = time.perf_counter()
         row = await connection.fetch("select * from users")
         end = time.perf_counter()
-        print(end-start)
 
         return row
 

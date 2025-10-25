@@ -36,3 +36,4 @@ class CreateIssueActor(NewIssueActor):
 
 class ReadIssueActors(CreateIssueActor):
     pass
+

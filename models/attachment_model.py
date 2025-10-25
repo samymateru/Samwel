@@ -2,7 +2,6 @@ from fastapi import UploadFile
 from psycopg import AsyncConnection
 from typing_extensions import Optional
 from datetime import datetime
-
 from core.tables import Tables
 from schemas.attachement_schemas import CreateAttachment, AttachmentCategory, AttachmentColumns
 from services.connections.postgres.delete import DeleteQueryBuilder

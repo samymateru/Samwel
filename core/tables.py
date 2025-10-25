@@ -35,5 +35,6 @@ class Tables(str, Enum):
     REPORTS = "reports"
     BUSINESS_CONTACT = "business_contact"
     ROLES = "roles"
+    HOME_DASHBOARD = "home_dashboard"
 
 

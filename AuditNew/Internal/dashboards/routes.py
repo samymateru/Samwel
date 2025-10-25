@@ -1,8 +1,11 @@
 from AuditNew.Internal.dashboards.schemas import *
+from services.connections.postgres.connections import get_asyncpg_db_connection
 from utils import get_current_user, get_async_db_connection
 from schema import CurrentUser
 from fastapi import APIRouter, Depends
 from AuditNew.Internal.dashboards.databases import *
+from services.connections.postgres.async_read import ReadBuilder
+
 
 router = APIRouter(prefix="/dashboards")
 
@@ -54,7 +57,7 @@ async def fetch_main_dashboard(
 async def fetch_module_dashboard(
         module_id: str,
         db = Depends(get_async_db_connection),
-        #_: CurrentUser  = Depends(get_current_user)
+        _: CurrentUser  = Depends(get_current_user)
     ):
     try:
         data = await get_modules_dashboard(connection=db, module_id=module_id)
@@ -63,6 +66,24 @@ async def fetch_module_dashboard(
         return data
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+
+@router.get("/eauditNext/home/v2/{module_id}", response_model=ModuleHomeDashboard)
+async def fetch_home_dashboard(
+        module_id: str,
+        connection = Depends(get_asyncpg_db_connection)
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.HOME_DASHBOARD.value)
+            .where("module_id", module_id)
+            .fetch_one()
+        )
+
+        return builder.get("metrics") or {}
+
 
 
 @router.get("/eauditNext/plan_details/{plan_id}", response_model=PlanDetails)

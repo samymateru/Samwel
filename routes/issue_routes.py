@@ -8,7 +8,8 @@ from models.issue_models import create_new_issue_model, fetch_single_issue_item_
     delete_issue_details_model, issue_accept_model, mark_issue_reportable_model, save_issue_responses, \
     revise_issue_model, generate_issue_reference, fetch_issue_responses_model, \
     save_issue_implementation_model, send_issue_to_owner_model, send_issue_for_implementation_model, \
-    mark_issue_prepared_model, mark_issue_reviewed_model, generate_issue_notification_model
+    mark_issue_prepared_model, mark_issue_reviewed_model, generate_issue_notification_model, \
+    fetch_single_issue_item_model_v2
 from schema import ResponseMessage, CurrentUser
 from schemas.attachement_schemas import AttachmentCategory
 from schemas.issue_schemas import NewIssue, SendIssueImplementor, IssueResponseActors, IssueLOD2Feedback, \
@@ -86,7 +87,6 @@ async def update_issue_details(
 
 
 
-
 @router.delete("/{issue_id}")
 async def delete_issue_details(
         issue_id: str,
@@ -106,7 +106,6 @@ async def delete_issue_details(
 
 
 
-
 @router.get("/single/{issue_id}", response_model=ReadIssues)
 async def fetch_single_issue_item(
         issue_id: str,
@@ -114,6 +113,23 @@ async def fetch_single_issue_item(
 ):
     with exception_response():
         data = await fetch_single_issue_item_model(
+            connection=connection,
+            issue_id=issue_id
+        )
+        if data is None:
+            raise HTTPException(status_code=404, detail="Issue Not Found")
+        return data
+
+
+
+
+@router.get("/single/v2/{issue_id}")
+async def fetch_single_issue_item_v2(
+        issue_id: str,
+        connection=Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        data = await fetch_single_issue_item_model_v2(
             connection=connection,
             issue_id=issue_id
         )
@@ -149,7 +165,6 @@ async def mark_issue_prepared(
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
 ):
     with exception_response():
-
         results = await mark_issue_prepared_model(
             connection=connection,
             issue_id=issue_id,
@@ -239,9 +254,9 @@ async def save_issue_implementation(
                 item_id=results.get("id"),
                 module_id=auth.module_id,
                 url=upload_attachment(
-                category=AttachmentCategory.ISSUE_RESPONSES,
-                background_tasks=background_tasks,
-                file=attachment
+                    category=AttachmentCategory.ISSUE_RESPONSES,
+                    background_tasks=background_tasks,
+                    file=attachment
                 ),
                 category=AttachmentCategory.ISSUE_RESPONSES
             )

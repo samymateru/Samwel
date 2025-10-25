@@ -5,8 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
-      <change afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/update_home_dashboard_trigger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/attachment_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/attachment_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/role_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/role_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/issue_actor_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_actor_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/triggers/manage_staff.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/manage_staff.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/connections/postgres/triggers/update_home_dashboard_trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/update_home_dashboard_trigger.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +104,7 @@
     &quot;Python.issue_finding_model.executor&quot;: &quot;Run&quot;,
     &quot;Python.login.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.manage_staff.executor&quot;: &quot;Run&quot;,
     &quot;Python.maze.executor&quot;: &quot;Run&quot;,
     &quot;Python.mx.executor&quot;: &quot;Run&quot;,
     &quot;Python.pdf.executor&quot;: &quot;Run&quot;,
@@ -118,6 +130,7 @@
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;Python.testing.executor&quot;: &quot;Run&quot;,
     &quot;Python.tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python.update_home_dashboard_trigger.executor&quot;: &quot;Run&quot;,
     &quot;Python.utils.executor&quot;: &quot;Run&quot;,
     &quot;Python.word_doc.executor&quot;: &quot;Run&quot;,
     &quot;Python.x.executor&quot;: &quot;Run&quot;,
@@ -162,14 +175,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00894" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760764885735</created>
-      <option name="number" value="00894" />
-      <option name="presentableId" value="LOCAL-00894" />
-      <option name="project" value="LOCAL" />
-      <updated>1760764885735</updated>
     </task>
     <task id="LOCAL-00895" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -555,7 +560,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761379466723</updated>
     </task>
-    <option name="localTasksCounter" value="943" />
+    <task id="LOCAL-00943" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761382937233</created>
+      <option name="number" value="00943" />
+      <option name="presentableId" value="LOCAL-00943" />
+      <option name="project" value="LOCAL" />
+      <updated>1761382937233</updated>
+    </task>
+    <option name="localTasksCounter" value="944" />
     <servers />
   </component>
   <component name="UnknownFeatures">

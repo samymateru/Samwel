@@ -10,11 +10,11 @@ class PlanDetails(BaseModel):
     ongoing: Optional[int] = 0
 
 class _EngagementStatus_(BaseModel):
-    total: int
-    pending: int
-    ongoing: int
-    completed: int
-    archived: int
+    total: Optional[int] = 0
+    pending: Optional[int] = 0
+    ongoing: Optional[int] = 0
+    completed: Optional[int] = 0
+    archived: Optional[int] = 0
 
 
 class _IssueStatus_(BaseModel):
@@ -25,11 +25,11 @@ class _IssueStatus_(BaseModel):
 
 
 class IssueStatusSummary(BaseModel):
-    total: int
-    not_started: int
-    open: int
-    in_progress: int
-    closed: int
+    total: Optional[int] = 0
+    not_started: Optional[int] = 0
+    open: Optional[int] = 0
+    in_progress: Optional[int] = 0
+    closed: Optional[int] = 0
 
 class _Engagement_(BaseModel):
     id: Optional[str]

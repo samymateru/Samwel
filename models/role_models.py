@@ -159,7 +159,6 @@ async def generate_role_reference_model_(
             },
             order_by="eng.created_at ASC",
             limit=3
-
         )
 
         .where("eng.plan_id", module_id)

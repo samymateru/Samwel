@@ -3,7 +3,7 @@ from typing import Optional, List, Dict
 from datetime import datetime
 from enum import Enum
 
-from schemas.attachement_schemas import ReadAttachment
+from schemas.attachement_schemas import ReadAttachment, CreateAttachment
 
 
 class IssueResponseTypes(str, Enum):
@@ -172,7 +172,7 @@ class IssueAcceptResponse(BaseModel):
 
 class NewIssueResponse(BaseModel):
     notes: Optional[str] = None
-    attachments: Optional[str] = None
+    attachments: Optional[CreateAttachment] = None
     type: IssueResponseTypes
     issued_by: Optional[str] = None
 
@@ -191,6 +191,10 @@ class BaseIssueResponse(CreateIssueResponses):
 
 class ReadIssueResponse(BaseIssueResponse):
     attachment: ReadAttachment
+
+
+class ReadIssueResponseV2(BaseIssueResponse):
+    pass
 
 
 

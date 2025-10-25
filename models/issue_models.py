@@ -3,15 +3,16 @@ from fastapi import HTTPException, BackgroundTasks
 from psycopg import AsyncConnection
 from core.tables import Tables
 from core.utils import convert_to_capstone_email
+from models.attachment_model import fetch_item_attachment
 from models.engagement_models import get_single_engagement_with_plan_details
 from models.issue_actor_models import get_all_issue_actors_on_issue_by_status_model, get_all_issue_actors_on_issue_model
 from models.module_models import increment_module_reference
-from schemas.attachement_schemas import ReadAttachment
+from schemas.attachement_schemas import ReadAttachment, AttachmentCategory
 from schemas.issue_actor_schemas import ReadIssueActors
 from schemas.issue_schemas import NewIssue, CreateIssue, IssueStatus, IssueColumns, UpdateIssueStatus, NewIssueResponse, \
     CreateIssueResponses, IssueResponseColumns, UpdateIssueDetails, MarkIssueReportable, ReviseIssue, IssueActors, \
     IssueResponseTypes, SendIssueImplementor, ReadIssueResponse, BaseIssueResponse, MarkIssuePrepared, \
-    IssueReviseActors, RevisionStatus, ReviewPrepare, MarkIssueReview
+    IssueReviseActors, RevisionStatus, ReviewPrepare, MarkIssueReview, ReadIssues, ReadIssueResponseV2
 from schemas.module_schemas import ModulesColumns, IncrementInternalIssues, IncrementExternalIssues
 from schemas.notification_schemas import SendSingleIssueNotification, SingleIssueNotification
 from schemas.user_schemas import BaseUser
@@ -90,6 +91,53 @@ async def fetch_single_issue_item_model(
             .where(IssueColumns.ID.value, issue_id)
             .fetch_one()
         )
+
+        return builder
+
+
+
+async def fetch_single_issue_item_model_v2(
+        connection: AsyncConnection,
+        issue_id: str
+):
+    with exception_response():
+        builder = await (
+            ReadBuilder(connection=connection)
+            .from_table(Tables.ISSUES, alias="iss")
+            .select(ReadIssues)
+            .join_aggregate(
+                table=Tables.ISSUE_ACTORS.value,
+                alias="iss_act",
+                on="iss.id = iss_act.issue_id",
+                aggregate_column="issue_actor_id",
+                json_field_name="issue_actors",
+                model=ReadIssueActors,
+                use_prefix=True,
+            )
+            .join_aggregate(
+                table=Tables.ISSUE_RESPONSES.value,
+                alias="iss_resp",
+                on="iss.id = iss_resp.issue",
+                aggregate_column="id",
+                json_field_name="issue_responses",
+                model=ReadIssueResponseV2,
+                use_prefix=True,
+            )
+            .where("iss."+IssueColumns.ID.value, issue_id)
+            .fetch_one()
+        )
+
+        if builder is None:
+            return None
+
+        for response in builder.get("issue_responses", []):
+            attachments = await fetch_item_attachment(
+                connection=connection,
+                category=AttachmentCategory.ISSUE_RESPONSES,
+                item_id=response.get("id")
+            )
+
+            response["attachments"] = attachments
 
         return builder
 
