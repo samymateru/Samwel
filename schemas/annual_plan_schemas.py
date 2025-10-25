@@ -61,6 +61,7 @@ class UpdateAnnualPlan(BaseModel):
 class RemoveAnnualPlanPartially(BaseModel):
     status: AnnualPlanStatus
     name: str
+    year: str
 
 
 

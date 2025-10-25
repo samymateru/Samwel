@@ -156,7 +156,8 @@ async def remove_annual_plan_partially(
     with exception_response():
         __annual_plan__ = RemoveAnnualPlanPartially(
             status=AnnualPlanStatus.DELETED,
-            name=get_unique_key()
+            name=get_unique_key(),
+            year="0000"
         )
 
         builder = await (
