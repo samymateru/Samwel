@@ -477,7 +477,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query_current_plan_engagements, (module_id, module_id))
+            await cursor.execute(query_current_plan_engagements, (module_id, module_id, module_id, module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -488,7 +488,6 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying module home dashboard {e}")
-
 
 
 
