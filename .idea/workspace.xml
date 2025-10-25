@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard" />
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -159,14 +163,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00892" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760690617556</created>
-      <option name="number" value="00892" />
-      <option name="presentableId" value="LOCAL-00892" />
-      <option name="project" value="LOCAL" />
-      <updated>1760690617556</updated>
     </task>
     <task id="LOCAL-00893" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -552,7 +548,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761375333968</updated>
     </task>
-    <option name="localTasksCounter" value="941" />
+    <task id="LOCAL-00941" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761377842473</created>
+      <option name="number" value="00941" />
+      <option name="presentableId" value="LOCAL-00941" />
+      <option name="project" value="LOCAL" />
+      <updated>1761377842473</updated>
+    </task>
+    <option name="localTasksCounter" value="942" />
     <servers />
   </component>
   <component name="UnknownFeatures">

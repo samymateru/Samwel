@@ -15,7 +15,7 @@ class _EngagementStatus_(BaseModel):
     ongoing: int
     completed: int
     archived: int
-    deleted: int
+
 
 class _IssueStatus_(BaseModel):
     pending: int
