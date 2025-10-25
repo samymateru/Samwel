@@ -3,123 +3,11 @@ from typing import List, Dict, Any
 from fastapi import HTTPException
 from psycopg import AsyncConnection, sql
 from datetime import datetime
-
-from AuditNew.Internal.dashboards.schemas import ModuleHomeDashboard, _Issue_, _EngagementStatus_
-from AuditNew.Internal.reports.databases import count_issue_statuses
 from core.tables import Tables
 from models.issue_models import fetch_all_issue_in_module
-from schemas.annual_plan_schemas import AnnualPlanColumns
-from schemas.engagement_schemas import EngagementColumns
 from schemas.issue_schemas import IssueColumns
 from services.connections.postgres.read import ReadBuilder
 from utils import exception_response
-
-
-async def query_annual_plans_summary(
-        connection: AsyncConnection,
-        company_module_id:str,
-        start_year: str = None,
-        end_year: str = None,
-        year: str = None
-):
-    base_query = sql.SQL("""
-        SELECT
-            annual_plans.year,
-            COUNT(*) AS total,
-            COUNT(*) FILTER (WHERE status = 'Not Started') AS not_started,
-            COUNT(*) FILTER (WHERE status = 'In progress') AS in_progress,
-            COUNT(*) FILTER (WHERE status = 'Completed') AS completed
-        FROM annual_plans
-        WHERE company_module = {company_module}
-    """).format(
-        company_module=sql.Literal(company_module_id)
-    )
-
-    conditions = []
-
-    if start_year and end_year:
-        conditions.append(
-            sql.SQL("year BETWEEN {start} AND {end}").format(
-                start=sql.Literal(start_year),
-                end=sql.Literal(end_year)
-            )
-        )
-    elif year:
-        conditions.append(
-            sql.SQL("year = {year}").format(
-                year=sql.Literal(year)
-            )
-        )
-
-    if conditions:
-        base_query += sql.SQL(" AND ") + sql.SQL(" AND ").join(conditions)
-
-    base_query += sql.SQL(" GROUP BY annual_plans.year ORDER BY annual_plans.year;")
-    try:
-        async with connection.cursor() as cursor:
-            await cursor.execute(base_query)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
-            return audit_plan_data
-    except Exception as e:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching summary of annual plans {e}")
-
-
-
-async def query_audit_summary(
-        connection: AsyncConnection,
-        company_module_id: str,
-        start_year: str = None,
-        end_year: str = None,
-        year: str = None
-):
-    query = sql.SQL(
-        """
-        SELECT jsonb_build_object(
-            'total', COUNT(*),
-            'pending', COUNT(*) FILTER (WHERE status = 'Pending'),
-            'ongoing', COUNT(*) FILTER (WHERE status = 'Ongoing'),
-            'completed', COUNT(*) FILTER (WHERE status = 'Completed')
-        ) AS annual_plans_summary
-        FROM annual_plans ap
-        WHERE ap.module = {company_module};
-        """).format(
-        company_module=sql.Literal(company_module_id)
-    )
-    conditions = []
-
-    if start_year and end_year:
-        conditions.append(
-            sql.SQL("year BETWEEN {start} AND {end}").format(
-                start=sql.Literal(start_year),
-                end=sql.Literal(end_year)
-            )
-        )
-    elif year:
-        conditions.append(
-            sql.SQL("year = {year}").format(
-                year=sql.Literal(year)
-            )
-        )
-
-    if conditions:
-        query += sql.SQL(" AND ") + sql.SQL(" AND ").join(conditions)
-
-    try:
-        async with connection.cursor() as cursor:
-            await cursor.execute(query)
-            rows = await cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
-            audit_plan_data = [dict(zip(column_names, row_)) for row_ in rows]
-            if audit_plan_data.__len__() == 0:
-                raise HTTPException(status_code=400, detail="No audit plans found")
-            return audit_plan_data[0]
-    except Exception as e:
-        await connection.rollback()
-        raise HTTPException(status_code=400, detail=f"Error fetching audit plans {e}")
-
 
 
 async def all_engagement_with_status(connection: AsyncConnection, plan_id: str):
@@ -546,34 +434,45 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     query_current_plan_engagements = sql.SQL(
         """
-        SELECT
-        JSON_BUILD_OBJECT(
-            'engagements_metrics', JSON_BUILD_OBJECT(
-                'total', COUNT(DISTINCT eng.id),
-                'pending', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Pending'),
-                'ongoing', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Ongoing'),
-                'completed', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Completed'),
-                'archived', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Archived'),
-                'deleted', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Deleted')
-            ),
-            'issues_metrics', JSON_BUILD_OBJECT(
-                'total', COUNT(DISTINCT isu.id),
-                'not_started', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Not started'),
-                'open', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Open' OR isu.status = 'Active'),
-                'in_progress', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'In progress'),
-                'closed', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Closed')
+        SELECT JSON_BUILD_OBJECT(
+        'engagements_metrics', (
+            SELECT JSON_BUILD_OBJECT(
+                'total', COUNT(*),
+                'pending', COUNT(*) FILTER (WHERE status = 'Pending'),
+                'ongoing', COUNT(*) FILTER (WHERE status = 'Ongoing'),
+                'completed', COUNT(*) FILTER (WHERE status = 'Completed'),
+                'archived', COUNT(*) FILTER (WHERE status = 'Archived')
             )
-        ) AS metrics
-        FROM public.annual_plans pln
-        JOIN public.engagements eng ON pln.id = eng.plan_id
-        LEFT JOIN public.issue isu
-            ON eng.id = isu.engagement
-        WHERE pln.module = %s
-          AND pln.year::int = (
-                SELECT MAX(year::int)
-                FROM annual_plans
-                WHERE module = %s
-            ) AND eng.status NOT IN ('Deleted');
+            FROM engagements e
+            JOIN annual_plans p ON p.id = e.plan_id
+            WHERE p.module = %s
+              AND p.year::int = (
+                  SELECT MAX(year::int)
+                  FROM annual_plans
+                  WHERE module = %s
+              )
+              AND e.status NOT IN ('Deleted')
+            ),
+            'issues_metrics', (
+                SELECT JSON_BUILD_OBJECT(
+                    'total', COUNT(*),
+                    'not_started', COUNT(*) FILTER (WHERE status = 'Not started'),
+                    'open', COUNT(*) FILTER (WHERE status IN ('Open', 'Active')),
+                    'in_progress', COUNT(*) FILTER (WHERE status = 'In progress'),
+                    'closed', COUNT(*) FILTER (WHERE status = 'Closed')
+                )
+                FROM issue i
+                JOIN engagements e ON e.id = i.engagement
+                JOIN annual_plans p ON p.id = e.plan_id
+                WHERE p.module = %s
+                  AND p.year::int = (
+                      SELECT MAX(year::int)
+                      FROM annual_plans
+                      WHERE module = %s
+                  )
+                  AND e.status NOT IN ('Deleted')
+            )
+        ) AS metrics;
         """)
 
     try:
@@ -591,92 +490,6 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         raise HTTPException(status_code=400, detail=f"Error querying module home dashboard {e}")
 
 
-
-def separate_engagements_and_issues(rows):
-    engagements_dict = {}
-    issues_dict = {}
-
-    for row in rows:
-        # Extract engagement fields
-        engagement_id = row['engagement_id']
-        if engagement_id not in engagements_dict:
-            engagements_dict[engagement_id] = {
-                'id': engagement_id,
-                'name': row['engagement_name'],
-                'code': row['engagement_code'],
-                'status': row['engagement_status'],
-                'type': row['engagement_type'],
-                'start_date': row['engagement_start_date'],
-                'end_date': row['engagement_end_date'],
-                'stage': row['engagement_stage'],
-            }
-
-        # Extract issue fields
-        issue_id = row['issue_id']
-        if issue_id and issue_id not in issues_dict:
-            issues_dict[issue_id] = {
-                'id': issue_id,
-                'reference': row['issue_reference'],
-                'title': row['issue_title'],
-                'finding': row['issue_finding'],
-                'risk_rating': row['issue_rating'],
-                'process': row['issue_process'],
-                'engagement': engagement_id,
-                'status': row['issue_status']
-            }
-
-    return {
-        "engagements": list(engagements_dict.values()),
-        "issues": list(issues_dict.values())
-    }
-
-def count_engagement_statuses(rows):
-    status_counter = Counter()
-
-    for row in rows:
-        status = row['engagement_status']
-        if status:
-            status_counter[status] += 1
-
-    return _EngagementStatus_(
-        total=sum(status_counter.values()),
-        pending=status_counter.get("Pending", 0),
-        ongoing=status_counter.get("Ongoing", 0),
-        completed=status_counter.get("Completed", 0),
-        archived=status_counter.get("Archived", 0),
-        deleted=status_counter.get("Deleted", 0),
-    )
-
-
-async def get_engagement_metrics_model(
-        connection: AsyncConnection,
-        module_id: str
-):
-    with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ENGAGEMENTS.value)
-            .where(EngagementColumns.MODULE_ID.value, module_id)
-            .fetch_all()
-        )
-
-        return builder
-
-
-
-async def get_issue_metrics_model(
-        connection: AsyncConnection,
-        module_id: str
-):
-    with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ISSUES.value)
-            .where(IssueColumns.MODULE_ID.value, module_id)
-            .fetch_all()
-        )
-
-        return builder
 
 
 
@@ -709,25 +522,6 @@ async def fetch_all_issue_data(connection: AsyncConnection, module_id: str):
     return filtered_data
 
 
-
-async def fetch_current_plan_engagement_details(connection: AsyncConnection, module_id: str):
-    with exception_response():
-        builder = await (
-            ReadBuilder(connection=connection)
-            .from_table(Tables.ANNUAL_PLANS.value, alias="pln")
-            .join(
-                "LEFT",
-                Tables.ENGAGEMENTS.value,
-                "eng.plan_id = pln.id",
-                alias="eng",
-                use_prefix=False
-            )
-            .where("pln."+AnnualPlanColumns.MODULE.value, module_id)
-            .where("pln."+AnnualPlanColumns.YEAR.value, "2022")
-            .fetch_all()
-        )
-
-        return builder
 
 
 async def summarize_field(field: str, issues: List) -> Dict[str, Any]:
@@ -859,8 +653,6 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
             await cursor.execute(query, (module_id, module_id))
             rows = await cursor.fetchall()
             issues = []
-
-            print(rows)
 
             for row in rows:
                 issues_data = await pull_engagement_issues(

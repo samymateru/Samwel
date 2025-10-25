@@ -1,8 +1,6 @@
 import time
 import uuid
 from typing import Optional
-
-import asyncpg
 from fastapi import FastAPI, Depends, Form, Request, Query, HTTPException
 from starlette.responses import JSONResponse
 from Management.entity.profile.risk_maturity_rating.routes import router as risk_maturity
@@ -31,7 +29,7 @@ from models.organization_models import get_user_organizations
 from models.user_models import get_entity_user_details_by_mail
 from schema import CurrentUser, ResponseMessage, TokenResponse, LoginResponse, RedirectUrl
 from schemas.organization_schemas import ReadOrganization
-from services.connections.postgres.connections import get_asyncpg_db_connection, DBConnection, AsyncPGPoolSingleton
+from services.connections.postgres.connections import get_asyncpg_db_connection
 from services.logging.logger import global_logger
 from services.security.security import verify_password
 from utils import create_jwt_token, get_async_db_connection, get_current_user, \
@@ -39,7 +37,6 @@ from utils import create_jwt_token, get_async_db_connection, get_current_user, \
 from dotenv import load_dotenv
 import sys
 import asyncio
-from rate_limiter import RateLimiterMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from core.datastructures.pop_dict import PopDict
 from routes.issue_routes import router as issue_routes

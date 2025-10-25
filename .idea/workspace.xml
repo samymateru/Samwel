@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
+      <change afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/manage_staff.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/databases.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/postgres/connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/connections.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,84 +55,84 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.2048.executor": "Run",
-    "Python.2_cell_table.executor": "Run",
-    "Python.9_Types_of_Hash_Cracker.executor": "Run",
-    "Python.Changing_Wall_Paper.executor": "Run",
-    "Python.Clock.executor": "Run",
-    "Python.Connect-4.executor": "Run",
-    "Python.Current_City_Weather.executor": "Run",
-    "Python.Edge_Detection.executor": "Run",
-    "Python.OS_interaction.executor": "Run",
-    "Python.advice.executor": "Run",
-    "Python.ai-storytelling-game.executor": "Run",
-    "Python.bandwidth_py3.executor": "Run",
-    "Python.base_ai.executor": "Run",
-    "Python.blending_Image.executor": "Run",
-    "Python.bubble_sort.executor": "Run",
-    "Python.chrome-automation.executor": "Run",
-    "Python.cipher_buster.executor": "Run",
-    "Python.client.executor": "Run",
-    "Python.connections.executor": "Run",
-    "Python.constants.executor": "Run",
-    "Python.consumer.executor": "Run",
-    "Python.consumer_thread.executor": "Run",
-    "Python.conv.executor": "Run",
-    "Python.database.executor": "Run",
-    "Python.databases.executor": "Run",
-    "Python.detection.executor": "Run",
-    "Python.draft_report.executor": "Run",
-    "Python.eyes.executor": "Run",
-    "Python.face_detect.executor": "Run",
-    "Python.finder.executor": "Run",
-    "Python.finding_report.executor": "Run",
-    "Python.game.executor": "Run",
-    "Python.get_unique_identifier.executor": "Run",
-    "Python.hello.executor": "Run",
-    "Python.insert_builder.executor": "Run",
-    "Python.issue_finding_model.executor": "Run",
-    "Python.login.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.maze.executor": "Run",
-    "Python.mx.executor": "Run",
-    "Python.pdf.executor": "Run",
-    "Python.query_builder.executor": "Run",
-    "Python.queue.executor": "Run",
-    "Python.rabitmq.executor": "Run",
-    "Python.redis_cache.executor": "Run",
-    "Python.roles.executor": "Run",
-    "Python.roll_forwar_model.executor": "Run",
-    "Python.routes.executor": "Run",
-    "Python.run-payload.executor": "Run",
-    "Python.s3.executor": "Run",
-    "Python.schemas.executor": "Run",
-    "Python.script.executor": "Run",
-    "Python.security.executor": "Run",
-    "Python.seedings.executor": "Run",
-    "Python.ses.executor": "Run",
-    "Python.standard_template_models.executor": "Run",
-    "Python.start-file.executor": "Run",
-    "Python.sub_doc.executor": "Run",
-    "Python.sub_program_schemas.executor": "Run",
-    "Python.tables.executor": "Debug",
-    "Python.test.executor": "Run",
-    "Python.testing.executor": "Run",
-    "Python.tests.executor": "Run",
-    "Python.utils.executor": "Run",
-    "Python.word_doc.executor": "Run",
-    "Python.x.executor": "Run",
-    "Python.y.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "deletionFromPopupRequiresConfirmation": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Samuel/PycharmProjects/CornerStone-Client/reports/draft_report",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.2048.executor&quot;: &quot;Run&quot;,
+    &quot;Python.2_cell_table.executor&quot;: &quot;Run&quot;,
+    &quot;Python.9_Types_of_Hash_Cracker.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Changing_Wall_Paper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Clock.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Connect-4.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Current_City_Weather.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Edge_Detection.executor&quot;: &quot;Run&quot;,
+    &quot;Python.OS_interaction.executor&quot;: &quot;Run&quot;,
+    &quot;Python.advice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ai-storytelling-game.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bandwidth_py3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.base_ai.executor&quot;: &quot;Run&quot;,
+    &quot;Python.blending_Image.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bubble_sort.executor&quot;: &quot;Run&quot;,
+    &quot;Python.chrome-automation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cipher_buster.executor&quot;: &quot;Run&quot;,
+    &quot;Python.client.executor&quot;: &quot;Run&quot;,
+    &quot;Python.connections.executor&quot;: &quot;Run&quot;,
+    &quot;Python.constants.executor&quot;: &quot;Run&quot;,
+    &quot;Python.consumer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.consumer_thread.executor&quot;: &quot;Run&quot;,
+    &quot;Python.conv.executor&quot;: &quot;Run&quot;,
+    &quot;Python.database.executor&quot;: &quot;Run&quot;,
+    &quot;Python.databases.executor&quot;: &quot;Run&quot;,
+    &quot;Python.detection.executor&quot;: &quot;Run&quot;,
+    &quot;Python.draft_report.executor&quot;: &quot;Run&quot;,
+    &quot;Python.eyes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.face_detect.executor&quot;: &quot;Run&quot;,
+    &quot;Python.finder.executor&quot;: &quot;Run&quot;,
+    &quot;Python.finding_report.executor&quot;: &quot;Run&quot;,
+    &quot;Python.game.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_unique_identifier.executor&quot;: &quot;Run&quot;,
+    &quot;Python.hello.executor&quot;: &quot;Run&quot;,
+    &quot;Python.insert_builder.executor&quot;: &quot;Run&quot;,
+    &quot;Python.issue_finding_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.login.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.maze.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mx.executor&quot;: &quot;Run&quot;,
+    &quot;Python.pdf.executor&quot;: &quot;Run&quot;,
+    &quot;Python.query_builder.executor&quot;: &quot;Run&quot;,
+    &quot;Python.queue.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rabitmq.executor&quot;: &quot;Run&quot;,
+    &quot;Python.redis_cache.executor&quot;: &quot;Run&quot;,
+    &quot;Python.roles.executor&quot;: &quot;Run&quot;,
+    &quot;Python.roll_forwar_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.routes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run-payload.executor&quot;: &quot;Run&quot;,
+    &quot;Python.s3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.schemas.executor&quot;: &quot;Run&quot;,
+    &quot;Python.script.executor&quot;: &quot;Run&quot;,
+    &quot;Python.security.executor&quot;: &quot;Run&quot;,
+    &quot;Python.seedings.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ses.executor&quot;: &quot;Run&quot;,
+    &quot;Python.standard_template_models.executor&quot;: &quot;Run&quot;,
+    &quot;Python.start-file.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sub_doc.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sub_program_schemas.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tables.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python.utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.word_doc.executor&quot;: &quot;Run&quot;,
+    &quot;Python.x.executor&quot;: &quot;Run&quot;,
+    &quot;Python.y.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Samuel/PycharmProjects/CornerStone-Client/reports/draft_report&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Samuel\PycharmProjects\CornerStone-Client\reports\draft_report" />
@@ -163,14 +164,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00888" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760611553292</created>
-      <option name="number" value="00888" />
-      <option name="presentableId" value="LOCAL-00888" />
-      <option name="project" value="LOCAL" />
-      <updated>1760611553292</updated>
     </task>
     <task id="LOCAL-00889" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -556,7 +549,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761287782251</updated>
     </task>
-    <option name="localTasksCounter" value="937" />
+    <task id="LOCAL-00937" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761291572720</created>
+      <option name="number" value="00937" />
+      <option name="presentableId" value="LOCAL-00937" />
+      <option name="project" value="LOCAL" />
+      <updated>1761291572721</updated>
+    </task>
+    <option name="localTasksCounter" value="938" />
     <servers />
   </component>
   <component name="UnknownFeatures">
