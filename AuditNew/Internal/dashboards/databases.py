@@ -438,10 +438,10 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
         'engagements_metrics', (
             SELECT JSON_BUILD_OBJECT(
                 'total', COUNT(*),
-                'pending', COUNT(*) FILTER (WHERE status = 'Pending'),
-                'ongoing', COUNT(*) FILTER (WHERE status = 'Ongoing'),
-                'completed', COUNT(*) FILTER (WHERE status = 'Completed'),
-                'archived', COUNT(*) FILTER (WHERE status = 'Archived')
+                'pending', COUNT(*) FILTER (WHERE e.status = 'Pending'),
+                'ongoing', COUNT(*) FILTER (WHERE e.status = 'Ongoing'),
+                'completed', COUNT(*) FILTER (WHERE e.status = 'Completed'),
+                'archived', COUNT(*) FILTER (WHERE e.status = 'Archived')
             )
             FROM engagements e
             JOIN annual_plans p ON p.id = e.plan_id
@@ -456,10 +456,10 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
             'issues_metrics', (
                 SELECT JSON_BUILD_OBJECT(
                     'total', COUNT(*),
-                    'not_started', COUNT(*) FILTER (WHERE status = 'Not started'),
-                    'open', COUNT(*) FILTER (WHERE status IN ('Open', 'Active')),
-                    'in_progress', COUNT(*) FILTER (WHERE status = 'In progress'),
-                    'closed', COUNT(*) FILTER (WHERE status = 'Closed')
+                    'not_started', COUNT(*) FILTER (WHERE i.status = 'Not started'),
+                    'open', COUNT(*) FILTER (WHERE i.status IN ('Open', 'Active')),
+                    'in_progress', COUNT(*) FILTER (WHERE i.status = 'In progress'),
+                    'closed', COUNT(*) FILTER (WHERE i.status = 'Closed')
                 )
                 FROM issue i
                 JOIN engagements e ON e.id = i.engagement

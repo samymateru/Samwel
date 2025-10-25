@@ -160,14 +160,6 @@
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
     </task>
-    <task id="LOCAL-00890" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760636908889</created>
-      <option name="number" value="00890" />
-      <option name="presentableId" value="LOCAL-00890" />
-      <option name="project" value="LOCAL" />
-      <updated>1760636908890</updated>
-    </task>
     <task id="LOCAL-00891" summary="changing the read builder">
       <option name="closed" value="true" />
       <created>1760689077626</created>
@@ -552,7 +544,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761374304776</updated>
     </task>
-    <option name="localTasksCounter" value="939" />
+    <task id="LOCAL-00939" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761374745698</created>
+      <option name="number" value="00939" />
+      <option name="presentableId" value="LOCAL-00939" />
+      <option name="project" value="LOCAL" />
+      <updated>1761374745698</updated>
+    </task>
+    <option name="localTasksCounter" value="940" />
     <servers />
   </component>
   <component name="UnknownFeatures">
