@@ -434,50 +434,39 @@ async def query_engagement_details(connection: AsyncConnection, engagement_id: s
 async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     query_current_plan_engagements = sql.SQL(
         """
-        SELECT JSON_BUILD_OBJECT(
-        'engagements_metrics', (
-            SELECT JSON_BUILD_OBJECT(
-                'total', COUNT(*),
-                'pending', COUNT(*) FILTER (WHERE e.status = 'Pending'),
-                'ongoing', COUNT(*) FILTER (WHERE e.status = 'Ongoing'),
-                'completed', COUNT(*) FILTER (WHERE e.status = 'Completed'),
-                'archived', COUNT(*) FILTER (WHERE e.status = 'Archived')
-            )
-            FROM engagements e
-            JOIN annual_plans p ON p.id = e.plan_id
-            WHERE p.module = %s
-              AND p.year::int = (
-                  SELECT MAX(year::int)
-                  FROM annual_plans
-                  WHERE module = %s
-              )
-              AND e.status NOT IN ('Deleted')
+        SELECT
+        JSON_BUILD_OBJECT(
+            'engagements_metrics', JSON_BUILD_OBJECT(
+                'total', COUNT(DISTINCT eng.id),
+                'pending', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Pending'),
+                'ongoing', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Ongoing'),
+                'completed', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Completed'),
+                'archived', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Archived'),
+                'deleted', COUNT(DISTINCT eng.id) FILTER (WHERE eng.status = 'Deleted')
             ),
-            'issues_metrics', (
-                SELECT JSON_BUILD_OBJECT(
-                    'total', COUNT(*),
-                    'not_started', COUNT(*) FILTER (WHERE i.status = 'Not started'),
-                    'open', COUNT(*) FILTER (WHERE i.status IN ('Open', 'Active')),
-                    'in_progress', COUNT(*) FILTER (WHERE i.status = 'In progress'),
-                    'closed', COUNT(*) FILTER (WHERE i.status = 'Closed')
-                )
-                FROM issue i
-                JOIN engagements e ON e.id = i.engagement
-                JOIN annual_plans p ON p.id = e.plan_id
-                WHERE p.module = %s
-                  AND p.year::int = (
-                      SELECT MAX(year::int)
-                      FROM annual_plans
-                      WHERE module = %s
-                  )
-                  AND e.status NOT IN ('Deleted')
+            'issues_metrics', JSON_BUILD_OBJECT(
+                'total', COUNT(DISTINCT isu.id),
+                'not_started', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Not started'),
+                'open', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Open' OR isu.status = 'Active'),
+                'in_progress', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'In progress'),
+                'closed', COUNT(DISTINCT isu.id) FILTER (WHERE isu.status = 'Closed')
             )
-        ) AS metrics;
+        ) AS metrics
+        FROM public.annual_plans pln
+        JOIN public.engagements eng ON pln.id = eng.plan_id
+        LEFT JOIN public.issue isu
+            ON eng.id = isu.engagement
+        WHERE pln.module = %s
+          AND pln.year::int = (
+                SELECT MAX(year::int)
+                FROM annual_plans
+                WHERE module = %s
+            ) AND eng.status NOT IN ('Deleted');
         """)
 
     try:
         async with connection.cursor() as cursor:
-            await cursor.execute(query_current_plan_engagements, (module_id, module_id, module_id, module_id))
+            await cursor.execute(query_current_plan_engagements, (module_id, module_id))
             rows = await cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             data = [dict(zip(column_names, row_)) for row_ in rows]
@@ -488,6 +477,7 @@ async def get_modules_dashboard(connection: AsyncConnection, module_id: str):
     except Exception as e:
         await connection.rollback()
         raise HTTPException(status_code=400, detail=f"Error querying module home dashboard {e}")
+
 
 
 
