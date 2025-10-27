@@ -643,7 +643,7 @@ async def summarize_engagement_status(connection: AsyncConnection, module_id: st
                   SELECT MAX(year::int)
                   FROM annual_plans
                   WHERE module = %s
-              );
+              ) AND eng.status NOT IN ('Deleted')
             """
         )
 
