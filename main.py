@@ -133,15 +133,9 @@ async def http_exception_handler(_request: Request, exc: HTTPException):
 
 
 @app.get("/", status_code=200)
-async def home(
-        connection=Depends(get_asyncpg_db_connection)
-):
-    with exception_response():
-        start = time.perf_counter()
-        row = await connection.fetch("select * from users")
-        end = time.perf_counter()
+async def home():
+    return {"message": "Hello from Fiber with Swagger!"}
 
-        return row
 
 
 @app.get("/session/{module_id}", tags=["Authentication"], response_model=RedirectUrl)

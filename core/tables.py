@@ -36,5 +36,6 @@ class Tables(str, Enum):
     BUSINESS_CONTACT = "business_contact"
     ROLES = "roles"
     HOME_DASHBOARD = "home_dashboard"
+    ANNUAL_PLAN_DASHBOARD = "annual_plan_dashboard"
 
 

@@ -70,7 +70,7 @@ async def fetch_module_dashboard(
 
 
 @router.get("/eauditNext/home/v2/{module_id}", response_model=ModuleHomeDashboard)
-async def fetch_home_dashboard(
+async def fetch_home_dashboard_v2(
         module_id: str,
         connection = Depends(get_asyncpg_db_connection)
 ):

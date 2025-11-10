@@ -5,8 +5,10 @@ from schemas.annual_plan_schemas import NewAnnualPlan, CreateAnnualPlan, AnnualP
     UpdateAnnualPlan, RemoveAnnualPlanPartially, ReadAnnualPlan, AnnualPlan
 from schemas.attachement_schemas import ReadAttachment
 from schemas.module_schemas import ModuleDataReference, IncrementPlanReferences
+from services.connections.postgres.connections import DBConnection
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
+from services.connections.postgres.async_read import ReadBuilder as AsyncReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
 from services.logging.logger import global_logger
 from utils import exception_response, get_unique_key
@@ -209,3 +211,20 @@ async def generate_plan_reference(
 
 
         return f"P{count + 1:04d}-{year}"
+
+
+async def get_annual_plan_dashboard_metrics(
+    connection: DBConnection,
+    annual_plan_id: str,
+):
+    with exception_response():
+        builder = await (
+            AsyncReadBuilder(connection=connection)
+            .from_table(Tables.ANNUAL_PLAN_DASHBOARD.value)
+            .where("plan_id", annual_plan_id)
+            .fetch_one()
+        )
+        if builder is None:
+            return None
+
+        return builder.get("metrics")

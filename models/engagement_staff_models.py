@@ -2,7 +2,7 @@ from datetime import datetime
 from psycopg import AsyncConnection
 from core.tables import Tables
 from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, CreateEngagementStaff, \
-    EngagementStaffColumns, ReadEngagementStaff, Stage
+    EngagementStaffColumns, ReadEngagementStaff, Stage, ActualStaffTimesheet
 from schemas.role_schemas import BaseRole
 from services.connections.postgres.delete import DeleteQueryBuilder
 from services.connections.postgres.insert import InsertQueryBuilder
@@ -142,3 +142,23 @@ async def delete_staff_model(
         )
 
         return builder
+
+
+async def update_user_timesheet_model(
+        connection: AsyncConnection,
+        staff: ActualStaffTimesheet,
+        staff_id: str,
+):
+    with exception_response():
+        builder = await (
+            UpdateQueryBuilder(connection=connection)
+            .into_table(Tables.ENGAGEMENT_STAFF.value)
+            .values(staff)
+            .check_exists({EngagementStaffColumns.ID.value: staff_id})
+            .where({EngagementStaffColumns.ID.value: staff_id})
+            .returning(EngagementStaffColumns.ID.value)
+            .execute()
+        )
+
+        return builder
+

@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from models.engagement_models import get_single_engagement_details
 from models.engagement_staff_models import create_new_engagement_staff_model, fetch_engagement_staff_model, \
-    update_staff_model, delete_staff_model
+    update_staff_model, delete_staff_model, update_user_timesheet_model
 from models.notification_models import add_notification_to_user_model
 from models.user_models import get_user_by_email
 from schema import ResponseMessage
-from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, ReadEngagementStaff
+from schemas.engagement_staff_schemas import NewEngagementStaff, UpdateStaff, ReadEngagementStaff, ActualStaffTimesheet
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.logging.logger import global_logger
@@ -127,4 +127,24 @@ async def delete_staff(
             data=results,
             passed="Engagement Staff Successfully Deleted",
             failed="Failed Deleting  Engagement Staff"
+        )
+
+
+@router.put("/timesheet/{staff_id}", response_model=ResponseMessage)
+async def update_actual_user_timesheet(
+        staff_id: str,
+        staff: ActualStaffTimesheet,
+        connection = Depends(AsyncDBPoolSingleton.get_db_connection),
+):
+    with exception_response():
+        results = await update_user_timesheet_model(
+            connection=connection,
+            staff=staff,
+            staff_id=staff_id
+        )
+
+        return await return_checker(
+            data=results,
+            passed="Timesheet Successfully Updated",
+            failed="Failed Updating Actual Timesheet"
         )

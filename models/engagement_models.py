@@ -14,7 +14,7 @@ from schemas.engagement_staff_schemas import NewEngagementStaff, NewStage
 from schemas.notification_schemas import CreateNotifications, NotificationsStatus
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from schemas.user_schemas import UserColumns
-from services.connections.postgres.connections import AsyncDBPoolSingleton
+from services.connections.postgres.connections import AsyncDBPoolSingleton, DBConnection
 from services.connections.postgres.insert import InsertQueryBuilder
 from services.connections.postgres.read import ReadBuilder
 from services.connections.postgres.update import UpdateQueryBuilder
@@ -119,6 +119,53 @@ async def get_all_annual_plan_engagement(
             result = [dict(zip(column_names, row)) for row in rows]
             return result
 
+
+async def get_all_annual_plan_engagement_v2(
+        connection: DBConnection,
+        annual_plan_id: str,
+        user_id: str
+):
+    with exception_response():
+        query = sql.SQL(
+            """
+            SELECT 
+            eng.id,
+            eng.plan_id,
+            eng.module_id,
+            eng.name,
+            eng.type,
+            eng.code,
+            eng.status,
+            eng.stage,
+            eng.opinion_rating,
+            eng.quarter,
+            eng.sub_departments,
+            eng.archived,
+            eng.created_at,
+            eng.department,
+            eng.risk,
+            eng.start_date,
+            eng.end_date,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'id', stf.id,
+                        'name', stf.name,
+                        'email', stf.email,
+                        'role', stf.role
+                    )
+                ) FILTER (WHERE stf.id IS NOT NULL AND stf.role = 'Audit Lead'),
+                '[]'::json
+            ) AS leads
+            FROM engagements eng
+            LEFT JOIN staff stf ON stf.engagement = eng.id
+            WHERE eng.plan_id = %s AND eng.status NOT IN ('Deleted') AND stf.user_id = %s
+            GROUP BY eng.id, eng.plan_id, eng.name, eng.status;
+            """)
+
+
+        rows = await connection.fetch(query.as_string(), (annual_plan_id, user_id))
+        return rows
 
 
 async def get_module_engagement_model(

@@ -4,11 +4,12 @@ from typing import List, Optional
 from AuditNew.Internal.dashboards.databases import query_engagement_details
 from background import set_engagement_templates
 from core.utils import get_hits, determine_priority_stage
+from models.annual_plan_models import get_annual_plan_dashboard_metrics
 from models.engagement_models import register_new_engagement, \
     get_single_engagement_details, get_all_annual_plan_engagement, archive_annual_plan_engagement, \
     complete_annual_plan_engagement, remove_engagement_partially, \
     update_engagement_data, update_risk_maturity_rating_table_model, update_risk_maturity_rating_lower_section_model, \
-    adding_engagement_staff_model, get_engagement_stage
+    adding_engagement_staff_model, get_engagement_stage, get_all_annual_plan_engagement_v2
 from models.recent_activity_models import add_new_recent_activity
 from models.roll_forwar_model import engagement_roll_forward_model
 from models.user_models import get_module_users
@@ -17,7 +18,7 @@ from schemas.engagement_schemas import NewEngagement, ReadEngagement,  UpdateEng
 from schemas.recent_activities_schemas import RecentActivities, RecentActivityCategory
 from services.connections.postgres.connections import AsyncDBPoolSingleton
 from services.security.security import get_current_user
-from utils import exception_response, return_checker, get_unique_key
+from utils import exception_response, return_checker, get_unique_key, get_async_db_connection
 from datetime import datetime
 
 router = APIRouter(prefix="/engagements")
@@ -87,6 +88,7 @@ async def fetch_all_annual_plan_engagements(
             user_id=auth.user_id
         )
 
+
         for engagement in data:
             stage_data = await get_engagement_stage(
                 connection=connection,
@@ -100,7 +102,36 @@ async def fetch_all_annual_plan_engagements(
         return data
 
 
+@router.get("/v2/{annual_plan_id}", response_model=List[ReadEngagement])
+async def fetch_all_annual_plan_engagements_v2(
+        annual_plan_id: str,
+        connection=Depends(get_async_db_connection),
+        auth: CurrentUser = Depends(get_current_user)
+):
+    with exception_response():
+        data = await get_all_annual_plan_engagement_v2(
+            connection=connection,
+            annual_plan_id=annual_plan_id,
+            user_id=auth.user_id
+        )
 
+        annual_plan_dashboard = await get_annual_plan_dashboard_metrics(
+            connection=connection,
+            annual_plan_id=annual_plan_id
+        )
+
+
+        for engagement in data:
+            stage_data = await get_engagement_stage(
+                connection=connection,
+                engagement_id=engagement.get("id")
+            )
+
+            stage = get_hits(stage_data)
+
+            engagement["stage"] = determine_priority_stage(stage)
+
+        return data
 
 
 @router.get("/engagement_data/{engagement_id}", response_model=ReadEngagement)
@@ -327,7 +358,7 @@ async def update_engagement_risk_maturity_rating_table(
         engagement_id: str,
         engagement: EngagementRiskMaturityRating,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await update_risk_maturity_rating_table_model(
@@ -350,7 +381,7 @@ async def update_engagement_risk_maturity_rating_lower_section_table(
         engagement_id: str,
         engagement: UpdateRiskMaturityRatingLowerPart,
         connection=Depends(AsyncDBPoolSingleton.get_db_connection),
-        auth: CurrentUser = Depends(get_current_user)
+        _: CurrentUser = Depends(get_current_user)
 ):
     with exception_response():
         results = await update_risk_maturity_rating_lower_section_model(

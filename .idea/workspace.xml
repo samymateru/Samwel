@@ -4,20 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing engagement count in home dashboard">
+    <list default="true" id="d2e2280b-72c0-4add-b611-afe8197e4d77" name="Changes" comment="fixing eadit dashboard engagement count">
+      <change afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/update_annual_plan_dashboard_trigger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/AuditNew/Internal/dashboards/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/tables.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/attachment_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/attachment_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/issue_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/issue_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/role_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/role_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/issue_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/issue_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/issue_actor_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_actor_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/issue_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/issue_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/postgres/triggers/manage_staff.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/manage_staff.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/connections/postgres/triggers/update_home_dashboard_trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/connections/postgres/triggers/update_home_dashboard_trigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/annual_plan_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/annual_plan_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/engagement_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/engagement_staff_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/engagement_staff_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/engagement_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/engagement_staff_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes/engagement_staff_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/engagement_staff_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/engagement_staff_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,6 +128,7 @@
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;Python.testing.executor&quot;: &quot;Run&quot;,
     &quot;Python.tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python.update_annual_plan_dashboard_trigger.executor&quot;: &quot;Run&quot;,
     &quot;Python.update_home_dashboard_trigger.executor&quot;: &quot;Run&quot;,
     &quot;Python.utils.executor&quot;: &quot;Run&quot;,
     &quot;Python.word_doc.executor&quot;: &quot;Run&quot;,
@@ -175,22 +174,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732528093482</updated>
-    </task>
-    <task id="LOCAL-00895" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760765941617</created>
-      <option name="number" value="00895" />
-      <option name="presentableId" value="LOCAL-00895" />
-      <option name="project" value="LOCAL" />
-      <updated>1760765941617</updated>
-    </task>
-    <task id="LOCAL-00896" summary="changing the read builder">
-      <option name="closed" value="true" />
-      <created>1760767587674</created>
-      <option name="number" value="00896" />
-      <option name="presentableId" value="LOCAL-00896" />
-      <option name="project" value="LOCAL" />
-      <updated>1760767587674</updated>
     </task>
     <task id="LOCAL-00897" summary="changing the read builder">
       <option name="closed" value="true" />
@@ -568,7 +551,23 @@
       <option name="project" value="LOCAL" />
       <updated>1761382937233</updated>
     </task>
-    <option name="localTasksCounter" value="944" />
+    <task id="LOCAL-00944" summary="fixing engagement count in home dashboard">
+      <option name="closed" value="true" />
+      <created>1761393654782</created>
+      <option name="number" value="00944" />
+      <option name="presentableId" value="LOCAL-00944" />
+      <option name="project" value="LOCAL" />
+      <updated>1761393654782</updated>
+    </task>
+    <task id="LOCAL-00945" summary="fixing eadit dashboard engagement count">
+      <option name="closed" value="true" />
+      <created>1761540802345</created>
+      <option name="number" value="00945" />
+      <option name="presentableId" value="LOCAL-00945" />
+      <option name="project" value="LOCAL" />
+      <updated>1761540802345</updated>
+    </task>
+    <option name="localTasksCounter" value="946" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -600,7 +599,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="busines porcess" />
     <MESSAGE value="fixing business process" />
     <MESSAGE value="adding risk rating" />
     <MESSAGE value="adding engagement types" />
@@ -625,7 +623,8 @@
     <MESSAGE value="adding fieldwork to the staging" />
     <MESSAGE value="changing the procedure," />
     <MESSAGE value="fixing engagement count in home dashboard" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixing engagement count in home dashboard" />
+    <MESSAGE value="fixing eadit dashboard engagement count" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing eadit dashboard engagement count" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
